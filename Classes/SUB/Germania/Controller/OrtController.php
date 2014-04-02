@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Controller;
+namespace Subugoe\GermaniaSacra\Controller;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -8,13 +8,13 @@ namespace SUB\Germania\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
-use SUB\Germania\Domain\Model\Ort;
+use Subugoe\GermaniaSacra\Domain\Model\Ort;
 
 class OrtController extends ActionController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\OrtRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrtRepository
 	 */
 	protected $ortRepository;
 
@@ -26,7 +26,7 @@ class OrtController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Ort $ort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
 	 * @return void
 	 */
 	public function showAction(Ort $ort) {
@@ -40,7 +40,7 @@ class OrtController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Ort $newOrt
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $newOrt
 	 * @return void
 	 */
 	public function createAction(Ort $newOrt) {
@@ -50,7 +50,7 @@ class OrtController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Ort $ort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
 	 * @return void
 	 */
 	public function editAction(Ort $ort) {
@@ -58,7 +58,7 @@ class OrtController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Ort $ort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
 	 * @return void
 	 */
 	public function updateAction(Ort $ort) {
@@ -68,7 +68,7 @@ class OrtController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Ort $ort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
 	 * @return void
 	 */
 	public function deleteAction(Ort $ort) {

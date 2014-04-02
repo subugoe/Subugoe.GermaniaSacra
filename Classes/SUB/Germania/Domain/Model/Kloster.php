@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Domain\Model;
+namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -61,37 +61,37 @@ class Kloster {
 	protected $text_gs_band;
 	
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\SUB\Germania\Domain\Model\Klosterstandort>
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	 * @ORM\OneToMany(mappedBy="kloster", cascade={"all"})
 	 */
 	protected $klosterstandorts;
 
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\SUB\Germania\Domain\Model\Klosterorden>
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
 	 * @ORM\OneToMany(mappedBy="kloster", cascade={"all"})
 	 */
 	protected $klosterordens;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Bearbeitungsstatus'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus'
 	 * @ORM\ManyToOne(inversedBy="klosters")
 	 */
 	protected $bearbeitungsstatus;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Personallistenstatus'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus'
 	 * @ORM\ManyToOne(inversedBy="klosters")
 	 */
 	protected $personallistenstatus;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Band'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Band'
 	 * @ORM\ManyToOne(inversedBy="klosters")
 	 */
 	protected $band;
 	
 	/**
-	* @return \Doctrine\Common\Collections\Collection<\SUB\Germania\Domain\Model\Klosterstandort>
+	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	*/
 	public function getKlosterstandorts() {
 		return $this->klosterstandorts;
@@ -118,7 +118,7 @@ class Kloster {
 	}
 
 	/**
-	* @return \Doctrine\Common\Collections\Collection<\SUB\Germania\Domain\Model\Klosterorden>
+	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
 	*/
 	public function getKlosterordens() {
 		return $this->klosterordens;
@@ -246,14 +246,14 @@ class Kloster {
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Bearbeitungsstatus
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus
 	 */
 	public function getBearbeitungsstatus() {
 		return $this->bearbeitungsstatus;
 	}
 	
 	/**
-	 * @param \SUB\Germania\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
 	 * @return void
 	 */
 	public function setBearbeitungsstatus($bearbeitungsstatus) {
@@ -261,14 +261,14 @@ class Kloster {
 	}
 	
 	/**
-	 * @return \SUB\Germania\Domain\Model\Personallistenstatus
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus
 	 */
 	public function getPersonallistenstatus() {
 		return $this->personallistenstatus;
 	}
 	
 	/**
-	 * @param \SUB\Germania\Domain\Model\Personallistenstatus $personallistenstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus $personallistenstatus
 	 * @return void
 	 */
 	public function setPersonallistenstatus($personallistenstatus) {
@@ -276,14 +276,14 @@ class Kloster {
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Band
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Band
 	 */
 	public function getBand() {
 		return $this->band;
 	}
 	
 	/**
-	 * @param \SUB\Germania\Domain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
 	 * @return void
 	 */
 	public function setBand($band) {

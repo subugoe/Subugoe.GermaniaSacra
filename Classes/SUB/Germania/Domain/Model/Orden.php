@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Domain\Model;
+namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -21,7 +21,7 @@ class Orden {
 	protected $uid;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Klosterorden
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterorden
 	 * @ORM\OneToMany(mappedBy="orden")
 	 */
 	protected $klosterordens;
@@ -47,7 +47,7 @@ class Orden {
 	protected $graphik;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Ordenstyp
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp
 	 * @ORM\ManyToOne(inversedBy="Ordens")
 	 */
 	protected $ordenstyp;
@@ -129,14 +129,14 @@ class Orden {
 	
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Ordenstyp
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp
 	 */
 	public function getOrdenstyp() {
 		return $this->ordenstyp;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Ordenstyp $ordenstyp
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp $ordenstyp
 	 * @return void
 	 */
 	public function setOrdenstyp($ordenstyp) {

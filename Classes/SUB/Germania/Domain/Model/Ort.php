@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Domain\Model;
+namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -56,13 +56,13 @@ class Ort {
 	protected $laenge;
 
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\SUB\Germania\Domain\Model\Klosterstandort>
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
 	 */
 	protected $klosterstandorts;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Land'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Land'
 	 * @ORM\ManyToOne(inversedBy="orts")
 	 */
 	protected $land;

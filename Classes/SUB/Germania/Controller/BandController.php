@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Controller;
+namespace Subugoe\GermaniaSacra\Controller;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -8,13 +8,13 @@ namespace SUB\Germania\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
-use SUB\Germania\Domain\Model\Band;
+use Subugoe\GermaniaSacra\Domain\Model\Band;
 
 class BandController extends ActionController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\BandRepository
+	 * @var \Subugoe\GermaniaSacraDomain\Repository\BandRepository
 	 */
 	protected $bandRepository;
 
@@ -26,7 +26,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
 	 * @return void
 	 */
 	public function showAction(Band $band) {
@@ -40,7 +40,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Band $newBand
+	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $newBand
 	 * @return void
 	 */
 	public function createAction(Band $newBand) {
@@ -50,7 +50,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
 	 * @return void
 	 */
 	public function editAction(Band $band) {
@@ -58,7 +58,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
 	 * @return void
 	 */
 	public function updateAction(Band $band) {
@@ -68,7 +68,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
 	 * @return void
 	 */
 	public function deleteAction(Band $band) {

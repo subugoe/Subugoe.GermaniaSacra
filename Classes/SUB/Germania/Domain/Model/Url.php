@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Domain\Model;
+namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -31,7 +31,7 @@ class Url {
 	protected $bemerkung;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Urltyp
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Urltyp
 	 * @ORM\ManyToOne(inversedBy="urls")
 	 */
 	protected $urltyp;
@@ -82,14 +82,14 @@ class Url {
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Urltyp
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Urltyp
 	 */
 	public function getUrltyp() {
 		return $this->urltyp;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Urltyp $urltyp
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Urltyp $urltyp
 	 * @return void
 	 */
 	public function setUrltyp($urltyp) {

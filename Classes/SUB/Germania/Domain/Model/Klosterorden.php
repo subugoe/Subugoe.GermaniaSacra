@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Domain\Model;
+namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -21,25 +21,25 @@ class Klosterorden {
 	protected $uid;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Kloster'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster'
 	 * @ORM\ManyToOne(inversedBy="klosterordens")
 	 */
 	protected $kloster;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Zeitraum'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Zeitraum'
 	 * @ORM\OneToOne(mappedBy="klosterorden")
 	 */
 	protected $zeitraum;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Orden'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Orden'
 	 * @ORM\ManyToOne(inversedBy="klosterordens")
 	 */
 	protected $orden;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Klosterstatus'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterstatus'
 	 * @ORM\ManyToOne(inversedBy="klosterordens")
 	 */
 	protected $klosterstatus;
@@ -50,62 +50,62 @@ class Klosterorden {
 	protected $bemerkung;
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Kloster
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 */
 	public function getKloster() {
 		return $this->kloster;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Kloster $kloster
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return void
 	 */
-	public function setKloster(\SUB\Germania\Domain\Model\Kloster $kloster) {
+	public function setKloster(\Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster) {
 		$this->kloster = $kloster;
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Zeitraum
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Zeitraum
 	 */
 	public function getZeitraum() {
 		return $this->zeitraum;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Zeitraum $zeitraum
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Zeitraum $zeitraum
 	 * @return void
 	 */
-	public function setZeitraum(\SUB\Germania\Domain\Model\Zeitraum $zeitraum) {
+	public function setZeitraum(\Subugoe\GermaniaSacra\Domain\Model\Zeitraum $zeitraum) {
 		$this->zeitraum = $zeitraum;
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Orden
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Orden
 	 */
 	public function getOrden() {
 		return $this->orden;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Orden $orden
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Orden $orden
 	 * @return void
 	 */
-	public function setOrden(\SUB\Germania\Domain\Model\Orden $orden) {
+	public function setOrden(\Subugoe\GermaniaSacra\Domain\Model\Orden $orden) {
 		$this->orden = $orden;
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Klosterstatus
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Klosterstatus
 	 */
 	public function getKlosterstatus() {
 		return $this->klosterstatus;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Klosterstatus $klosterstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Klosterstatus $klosterstatus
 	 * @return void
 	 */
-	public function setKlosterstatus(\SUB\Germania\Domain\Model\Klosterstatus $klosterstatus) {
+	public function setKlosterstatus(\Subugoe\GermaniaSacra\Domain\Model\Klosterstatus $klosterstatus) {
 		$this->klosterstatus = $klosterstatus;
 	}
 

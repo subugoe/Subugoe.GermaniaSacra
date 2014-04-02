@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Domain\Model;
+namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -21,19 +21,19 @@ class Klosterstandort {
 	protected $uid;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Kloster'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster'
 	 * @ORM\ManyToOne(inversedBy="klosterstandorts")
 	 */
 	protected $kloster;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Ort'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort'
 	 * @ORM\ManyToOne(inversedBy="klosterstandorts")
 	 */
 	protected $ort;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Zeitraum'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Zeitraum'
 	 * @ORM\OneToOne(mappedBy="klosterstandort")
 	 */
 	protected $zeitraum;
@@ -70,47 +70,47 @@ class Klosterstandort {
 
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Kloster
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 */
 	public function getKloster() {
 		return $this->kloster;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Kloster $kloster
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return void
 	 */
-	public function setKloster(\SUB\Germania\Domain\Model\Kloster $kloster) {
+	public function setKloster(\Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster) {
 		$this->kloster = $kloster;
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Ort
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 */
 	public function getOrt() {
 		return $this->ort;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Ort $ort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
 	 * @return void
 	 */
-	public function setOrt(\SUB\Germania\Domain\Model\Ort $ort) {
+	public function setOrt(\Subugoe\GermaniaSacra\Domain\Model\Ort $ort) {
 		$this->ort = $ort;
 	}
 
 	/**
-	 * @return \SUB\Germania\Domain\Model\Zeitraum
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Zeitraum
 	 */
 	public function getZeitraum() {
 		return $this->zeitraum;
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Zeitraum $zeitraum
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Zeitraum $zeitraum
 	 * @return void
 	 */
-	public function setZeitraum(\SUB\Germania\Domain\Model\Zeitraum $zeitraum) {
+	public function setZeitraum(\Subugoe\GermaniaSacra\Domain\Model\Zeitraum $zeitraum) {
 		$this->zeitraum = $zeitraum;
 	}
 

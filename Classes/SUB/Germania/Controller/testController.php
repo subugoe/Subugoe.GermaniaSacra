@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Controller;
+namespace Subugoe\GermaniaSacra\Controller;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -9,7 +9,7 @@ namespace SUB\Germania\Controller;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\RestController;
 
-use SUB\Germania\Domain\Model\Kloster;
+use Subugoe\GermaniaSacra\Domain\Model\Kloster;
 
 class TestController extends RestController {
 
@@ -20,19 +20,19 @@ class TestController extends RestController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\KlosterRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterRepository
 	 */
 	protected $klosterRepository;
 
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\OrtRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrtRepository
 	 */
 	protected $ortRepository;
 
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\KlosterstandortRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterstandortRepository
 	 */
 	protected $klosterstandortRepository;
 

@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Controller;
+namespace Subugoe\GermaniaSacra\Controller;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -8,25 +8,25 @@ namespace SUB\Germania\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
-use SUB\Germania\Domain\Model\Klosterstandort;
+use Subugoe\GermaniaSacra\Domain\Model\Klosterstandort;
 
 class KlosterstandortController extends ActionController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\KlosterstandortRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterstandortRepository
 	 */
 	protected $klosterstandortRepository;
 
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\KlosterRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterRepository
 	 */
 	protected $klosterRepository;
 	
 	/**
 	 * @Flow\Inject
-	 * @var \SUB\Germania\Domain\Repository\OrtRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrtRepository
 	 */
 	protected $ortRepository;
 	
@@ -38,7 +38,7 @@ class KlosterstandortController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Klosterstandort $klosterstandort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Klosterstandort $klosterstandort
 	 * @return void
 	 */
 	public function showAction(Klosterstandort $klosterstandort) {
@@ -54,7 +54,7 @@ class KlosterstandortController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Klosterstandort $newKlosterstandort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Klosterstandort $newKlosterstandort
 	 * @return void
 	 */
 	public function createAction(Klosterstandort $newKlosterstandort) {
@@ -64,7 +64,7 @@ class KlosterstandortController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Klosterstandort $klosterstandort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Klosterstandort $klosterstandort
 	 * @return void
 	 */
 	public function editAction(Klosterstandort $klosterstandort) {
@@ -72,7 +72,7 @@ class KlosterstandortController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Klosterstandort $klosterstandort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Klosterstandort $klosterstandort
 	 * @return void
 	 */
 	public function updateAction(Klosterstandort $klosterstandort) {
@@ -82,7 +82,7 @@ class KlosterstandortController extends ActionController {
 	}
 
 	/**
-	 * @param \SUB\Germania\Domain\Model\Klosterstandort $klosterstandort
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Klosterstandort $klosterstandort
 	 * @return void
 	 */
 	public function deleteAction(Klosterstandort $klosterstandort) {

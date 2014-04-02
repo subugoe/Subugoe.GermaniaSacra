@@ -1,5 +1,5 @@
 <?php
-namespace SUB\Germania\Domain\Model;
+namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
@@ -21,7 +21,7 @@ class Band {
 	protected $uid;
 
 	/**
-	 * @var \SUB\Germania\Domain\Model\Kloster>
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster>
 	 * @ORM\OneToMany(mappedBy="band")
 	 */
 	protected $klosters;
