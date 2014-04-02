@@ -1,8 +1,8 @@
 {
     "name": "sub/germania",
     "type": "typo3-flow-package",
-    "description": null,
-    "version": null,
+    "description": 'Package for germaniasacra',
+    "version": '0.0.1',
     "require": {
         "typo3/flow": "*"
     },
