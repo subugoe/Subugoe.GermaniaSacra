@@ -1,0 +1,33 @@
+<f:layout name="Default" />
+
+<f:section name="Title">Show kloster"{kloster.name}"</f:section>
+
+<f:section name="Content">
+	<table>
+		<tr>
+			<th>Uid</th>
+			<td>{kloster.uid}</td>
+		</tr>
+	
+		<tr>
+			<th>Kloster_id</th>
+			<td>{kloster.kloster_id}</td>
+		</tr>
+	
+		<tr>
+			<th>Kloster</th>
+			<td>{kloster.kloster}</td>
+		</tr>
+	
+		<tr>
+			<th>Patrozinium</th>
+			<td>{kloster.patrozinium}</td>
+		</tr>
+	
+		<tr>
+			<th>Bemerkung</th>
+			<td>{kloster.bemerkung}</td>
+		</tr>
+	</table>
+	<f:link.action action="index">Back</f:link.action>
+</f:section>

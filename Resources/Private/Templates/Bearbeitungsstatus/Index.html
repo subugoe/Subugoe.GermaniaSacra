@@ -1,0 +1,25 @@
+<f:layout name="Default" />
+
+<f:section name="Title">A list of bearbeitungsstatuses</f:section>
+
+<f:section name="Content">
+	<f:if condition="{bearbeitungsstatuses}">
+		<f:then>
+			<ul>
+				<f:for each="{bearbeitungsstatuses}" as="bearbeitungsstatus">
+					<li>
+						<f:link.action action="show" arguments="{bearbeitungsstatus: bearbeitungsstatus}">{bearbeitungsstatus.name}</f:link.action>
+						<f:link.action action="edit" arguments="{bearbeitungsstatus: bearbeitungsstatus}">Edit</f:link.action>
+						<f:form action="delete" arguments="{bearbeitungsstatus: bearbeitungsstatus}">
+							<f:form.submit value="Delete" />
+						</f:form>
+					</li>
+				</f:for>
+			</ul>
+		</f:then>
+		<f:else>
+			<p>No bearbeitungsstatuses created yet.</p>
+		</f:else>
+	</f:if>
+	<p><f:link.action action="new">Create a new bearbeitungsstatus</f:link.action></p>
+</f:section>

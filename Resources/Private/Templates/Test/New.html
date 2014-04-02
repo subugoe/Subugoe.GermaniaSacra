@@ -1,0 +1,99 @@
+<f:layout name="Default" />
+
+<f:section name="Title">New kloster</f:section>
+
+<f:section name="Content">
+	<p>Just fill out the following form to create a new kloster:</p>
+
+	<div id="kloster-created-ok" style="display:none;">
+			<p>Ein neuer Kloster wurde angelegt.</p>	
+	</div>	
+	
+	<f:form action="create" objectName="newKloster" id="NK">
+		<ol>		
+			<li>
+				<label for="kloster_id">Kloster-Id</label>
+				<f:form.textfield property="kloster_id" id="kloster_id" />
+			</li>
+		
+			<li>
+				<label for="kloster">Klostername</label>
+				<f:form.textfield property="kloster" id="kloster" />
+			</li>
+		
+			<li>
+				<label for="patrozinium">Patrozinium</label>
+				<f:form.textfield property="patrozinium" id="patrozinium" />
+			</li>
+		
+			<li>
+				<label for="bemerkung">Bemerkung</label>
+				<f:form.textfield property="bemerkung" id="bemerkung" />
+			</li>
+					
+			<li>
+				<label for="gruender">Ort</label>
+				<f:form.select name="newKloster[klosterstandorts][0][ort]" options="{orts}" />			
+				</li>
+			<li>
+				<label for="gruender">Gründer</label>
+				<f:form.textfield name="newKloster[klosterstandorts][0][gruender]" id="gruender" />
+			</li>
+			<li>
+				<label for="bemerkung">Bemerkung</label>
+				<f:form.textfield name="newKloster[klosterstandorts][0][bemerkung]" id="bemerkung" />
+			</li>
+			<li>
+				<label for="breite">Breite</label>
+				<f:form.textfield name="newKloster[klosterstandorts][0][breite]" id="breite" />
+			</li>
+			<li>
+				<label for="laenge">Länge</label>
+				<f:form.textfield name="newKloster[klosterstandorts][0][laenge]" id="laenge" />
+			</li>
+			<li>
+				<label for="bemerkung_standort">Bemerkung Standort</label>
+				<f:form.textfield name="newKloster[klosterstandorts][0][bemerkung_standort]" id="bemerkung_standort" />
+			</li>
+			<li>
+				<label for="temp_literatur_alt">Temp Literatur Alt</label>
+				<f:form.textfield name="newKloster[klosterstandorts][0][temp_literatur_alt]" id="temp_literatur_alt" />
+			</li>
+			
+			
+			<li>
+				<label for="gruender">Ort</label>
+				<f:form.select name="newKloster[klosterstandorts][1][ort]" options="{orts}" />			
+				</li>
+			<li>
+				<label for="gruender">Gründer</label>
+				<f:form.textfield name="newKloster[klosterstandorts][1][gruender]" id="gruender" />
+			</li>
+			<li>
+				<label for="bemerkung">Bemerkung</label>
+				<f:form.textfield name="newKloster[klosterstandorts][1][bemerkung]" id="gruender" />
+			</li>			
+			<li>
+				<label for="breite">Breite</label>
+				<f:form.textfield name="newKloster[klosterstandorts][1][breite]" id="breite" />
+			</li>
+			<li>
+				<label for="laenge">Länge</label>
+				<f:form.textfield name="newKloster[klosterstandorts][1][laenge]" id="laenge" />
+			</li>
+			<li>
+				<label for="bemerkung_standort">Bemerkung Standort</label>
+				<f:form.textfield name="newKloster[klosterstandorts][1][bemerkung_standort]" id="bemerkung_standort" />
+			</li>
+			<li>
+				<label for="temp_literatur_alt">Temp Literatur Alt</label>
+				<f:form.textfield name="newKloster[klosterstandorts][1][temp_literatur_alt]" id="temp_literatur_alt" />
+			</li>
+			
+			<li>
+				<f:form.button id="NK">Speichern</f:form.button>
+				<!--<f:form.submit value="Speichern" />-->
+			</li>
+		</ol>
+	</f:form>
+</f:section>

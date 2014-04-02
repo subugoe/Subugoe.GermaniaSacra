@@ -1,0 +1,23 @@
+<f:layout name="Default" />
+
+<f:section name="Title">Show band"{band.name}"</f:section>
+
+<f:section name="Content">
+	<table>
+		<tr>
+			<th>Uid</th>
+			<td>{band.uid}</td>
+		</tr>
+	
+		<tr>
+			<th>Klosters</th>
+			<td>{band.klosters}</td>
+		</tr>
+	
+		<tr>
+			<th>Nummer</th>
+			<td>{band.nummer}</td>
+		</tr>
+	</table>
+	<f:link.action action="index">Back</f:link.action>
+</f:section>
