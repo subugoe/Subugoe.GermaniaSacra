@@ -4,7 +4,7 @@
     "description": "Package for germaniasacra",
     "version": "0.0.1",
     "require": {
-        "typo3/flow": "2.1.1"
+        "typo3/flow": "2.1.*"
     },
     "minimum-stability": "dev",
     "autoload": {
