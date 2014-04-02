@@ -5,7 +5,7 @@
   name: 'kloster List URI'
   uriPattern: 'kloster'
   defaults:
-    '@package':    'SUB.Germania'
+    '@package':    'Subugoe.GermaniaSacra'
     '@controller': 'Kloster'
 
 -
