@@ -1,2 +1,4 @@
 germaniasacra-gh-pages
 *.sql
+.idea
+/vendor/

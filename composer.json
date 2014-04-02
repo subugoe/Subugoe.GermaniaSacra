@@ -1,15 +1,16 @@
 {
     "name": "subugoe/germaniasacra",
-    "type": "typo3-flow-package",
-    "description": "Package for germaniasacra",
-    "version": "0.0.1",
-    "require": {
-        "typo3/flow": "2.1.*"
-    },
-    "minimum-stability": "dev",
-    "autoload": {
-        "psr-0": {
-            "SUB\\Germania": "Classes"
+    "description": "TYPO3 Flow package for Germania Sacra",
+    "license": "GPL3",
+    "authors": [
+        {
+            "name": "Ingo Pfennigstorf",
+            "email": "i.pfennigstorf@gmail.com"
+        },
+        {
+            "name": "Ali Reza Sajedi",
+            "email": "sajedi@sub.uni-goettingen.de"
         }
-    }
+    ],
+    "minimum-stability": "dev"
 }
