@@ -1,12 +1,18 @@
 {
-    "name": "subugoe/germaniasacra",
-    "description": "TYPO3 Flow package for Germania Sacra",
-    "license": "GPL3",
-    "authors": [
-        {
-            "name": "Ali Reza Sajedi",
-            "email": "sajedi@sub.uni-goettingen.de"
-        }
-    ],
-    "minimum-stability": "dev"
+	"name": "subugoe/germaniasacra",
+	"description": "TYPO3 Flow package for Germania Sacra",
+	"type": "typo3-flow-package",
+	"license": "GPL3",
+	"authors": [
+		{
+			"name": "Ali Reza Sajedi",
+			"email": "sajedi@sub.uni-goettingen.de"
+		}
+	],
+	"minimum-stability": "dev",
+	"autoload": {
+		"psr-0": {
+			"Subugoe\\GermaniaSacra": "Classes"
+		}
+	}
 }

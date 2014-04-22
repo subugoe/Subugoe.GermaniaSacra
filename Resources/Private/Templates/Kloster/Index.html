@@ -1,34 +1,8 @@
 <f:layout name="Default" />
 				
-<f:section name="Title">A list of klosters</f:section>
+<f:section name="Title">Klosterliste</f:section>
 
 <f:section name="Content">
-
-<!--<f:debug>{klosters}</f:debug>-->
-
-<!--
-	<f:if condition="{klosters}">
-		<f:then>
-			<ul>
-				<f:for each="{klosters}" as="kloster">		
-				
-					<li>
-						<f:link.action action="show" arguments="{kloster: kloster}">{kloster.kloster}</f:link.action>
-						<f:link.action action="edit" arguments="{kloster: kloster}">Edit</f:link.action>
-						<f:form action="delete" arguments="{kloster: kloster}">
-							<f:form.submit value="Delete" />
-						</f:form>
-					</li>
-				</f:for>
-			</ul>
-		</f:then>
-		<f:else>
-			<p>No klosters created yet.</p>
-		</f:else>
-	</f:if>
-	<p><f:link.action action="new">Create a new kloster</f:link.action></p>
-
--->
 
 <span></span>
 
@@ -74,7 +48,7 @@
 				<select name="ort[]" multiple></select>
 			</td>
 			<td>
-				<textarea name="gnd[]"></textarea>
+				<input type="text" name="GND[]">
 			</td>
 			<td>
 				<textarea name="bearbeitungsstand[]"></textarea>
@@ -82,22 +56,23 @@
 			<td>
 				<a href="" id="editLink"><button class="edit">Bearbeiten</button></a>
 			</td>
-			<!--<td>
-				<button class="edit">Bearbeiten</button>
-			</td>-->
 		</tr>
 	</table>
+
+	<a href="" id="newLink"><button class="new">Neu</button></a>
+
 	<input class="button" type="submit" value="Änderungen übernehmen">
-</form><div id="edit">
+</form>
+<div id="edit">
 	<h1>
 		Kloster bearbeiten
 	</h1>
 	<button class="close">Schließen</button>
-	<form>
+	<form id="EditKloster" action="">
 		<fieldset>
 			<legend>Kloster</legend>
 			<label class="large-9 columns">Klostername
-				<textarea name="kloster" required="required"></textarea>
+				<textarea name="kloster_name" required="required"></textarea>
 			</label>
 			<label class="large-3 columns">Kloster-Nr. 
 				<input disabled="disabled" name="kloster_id" required="required" type="text">
@@ -137,7 +112,7 @@
 					<select name="ort[]"></select>
 				</label>
 				<label class="large-5 columns">Bistum 
-					<select name="bistum_uid[]"></select>
+					<select name="bistum[]"></select>
 				</label>
 				<label class="large-2 columns">Wüstung 
 					<input name="wuestung[]" type="checkbox">
@@ -148,6 +123,8 @@
 				<label class="large-6 columns">Länge 
 					<input name="laenge[]" type="number">
 				</label>
+
+				<!--
 				<label class="large-3 columns">Standort von
 					<input name="von_von[]" type="text">
 				</label>
@@ -166,6 +143,11 @@
 				<label class="large-2 columns none">
 					<input name="bis_verbal[]" type="text">
 				</label>
+				-->
+
+				<label class="large-12 columns">Standort von - bis
+					<select name="klosterstandort_zeitraum[]"></select>
+				</label>
 				<label class="large-12 columns">Gründer
 					<textarea name="gruender[]"></textarea>
 				</label>
@@ -180,6 +162,8 @@
 				<label class="large-12 columns">Orden
 					<select name="orden[]"></select>
 				</label>
+
+				<!--
 				<label class="large-3 columns">Ordenszugehörigkeit von
 					<input name="orden_von_von[]" type="text">
 				</label>
@@ -198,6 +182,11 @@
 				<label class="large-2 columns none">
 					<input name="orden_bis_verbal[]" type="text">
 				</label>
+				-->
+
+				<label class="large-12 columns">Ordenszugehörigkeit von -  bis
+					<select name="orden_zeitraum[]"></select>
+				</label>
 				<label class="large-12 columns">Klosterstatus
 					<select name="klosterstatus[]"></select>
 				</label>
@@ -210,11 +199,13 @@
 			<legend>Links</legend>
 			<div class="clearfix">
 				<label class="large-8 columns">Wikipedia
-					<input name="wikipedia_url" type="url">
+					<input name="wikipedia" type="url">
 				</label><span class="link large-4 columns"></span>
 			</div>
 			<div class="clearfix">
-				<label class="large-8 columns">GND<input name="gnd" type="url"></label><span class="link large-4 columns"></span>
+				<label class="large-8 columns">GND
+					<input name="gnd" type="url">
+				</label><span class="link large-4 columns"></span>
 			</div>
 			<div class="clearfix">
 				<label class="large-8 columns">Externe Datenquelle<input name="externe_datenquelle_url" type="url"></label><span class="link large-4 columns"></span>
@@ -224,10 +215,168 @@
 			</div>
 		</fieldset>
 		<fieldset class="large-12 columns">
-			<legend>???</legend><label class="large-12 columns">Literatur<select name="literatur_uid"></select></label>
+			<legend>???</legend><label class="large-12 columns">Literatur<select name="literatur[]" multiple></select></label>
 		</fieldset>
 		<input class="button" type="submit" value="Speichern">
 	</form>
 </div>
+
+
+<div id="new">
+	<h1>
+		Kloster anlegen
+	</h1>
+	<button class="close">Schließen</button>
+	<form id="NewKloster" action="">
+		<fieldset>
+			<legend>Kloster</legend>
+			<label class="large-9 columns">Klostername
+				<textarea name="new_kloster_name" required="required"></textarea>
+			</label>
+
+			<!--
+			<label class="large-3 columns">Kloster-Nr.
+				<input disabled="disabled" name="kloster_id" required="required" type="text">
+			</label>
+			-->
+
+			<label class="large-4 columns">Status
+				<select name="new_bearbeitungsstatus" required="required"></select>
+			</label>
+			<label class="large-8 columns">Bearbeitungsstand
+				<textarea name="bearbeitungsstand"></textarea>
+			</label>
+			<label class="large-4 columns">Bearbeiter
+				<select name="new_personallistenstatus" required="required"></select>
+			</label>
+			<label class="large-8 columns">Datensatz erzeugt am
+				<input name="???" required="required" type="date">
+			</label>
+			<label class="large-12 columns">Patrozinium
+				<textarea name="new_patrozinium" required="required"></textarea>
+			</label>
+			<label class="large-12 columns">Öffentliche Bemerkungen
+				<textarea name="new_bemerkung"></textarea>
+			</label>
+			<label class="large-6 columns">GS-Band
+				<select name="new_band"></select>
+			</label>
+			<label class="large-6 columns">Seitenangabe GS-Band
+				<input name="new_band_seite" type="text">
+			</label>
+			<label class="large-12 columns">Inhalt GS-Band
+				<textarea name="new_text_gs_band"></textarea>
+			</label>
+		</fieldset>
+
+		<fieldset class="large-12 columns">
+			<legend>Orte</legend>
+			<div class="multiple">
+				<label class="large-5 columns">Ort
+					<select name="new_ort[]"></select>
+				</label>
+				<label class="large-5 columns">Bistum
+					<select name="new_bistum[]"></select>
+				</label>
+				<label class="large-2 columns">Wüstung
+					<input name="new_wuestung[]" type="checkbox">
+				</label>
+				<label class="large-6 columns">Breite
+					<input name="new_breite[]" type="number">
+				</label>
+				<label class="large-6 columns">Länge
+					<input name="new_laenge[]" type="number">
+				</label>
+
+				<label class="large-12 columns">Standort von - bis
+					<select name="new_klosterstandort_zeitraum[]"></select>
+				</label>
+				<label class="large-12 columns">Gründer
+					<textarea name="new_gruender[]"></textarea>
+				</label>
+
+				<label class="large-12 columns">Bemerkung
+					<textarea name="new_standortbemerkung[]"></textarea>
+				</label>
+				<label class="large-12 columns">Standortsbemerkung
+					<textarea name="new_bemerkung_standort[]"></textarea>
+				</label>
+				<label class="large-12 columns">Temp Literatur Alt
+					<textarea name="new_temp_literatur_alt[]"></textarea>
+				</label>
+			</div>
+		</fieldset>
+
+		<fieldset class="large-12 columns">
+			<legend>Ordenszugehörigkeit</legend>
+			<div class="multiple">
+				<label class="large-12 columns">Orden
+					<select name="new_orden[]"></select>
+				</label>
+				<label class="large-12 columns">Ordenszugehörigkeit von -  bis
+					<select name="new_orden_zeitraum[]"></select>
+				</label>
+				<label class="large-12 columns">Klosterstatus
+					<select name="new_klosterstatus[]"></select>
+				</label>
+				<label class="large-12 columns">
+					Interne Anmerkungen<textarea name="new_bemerkung_orden[]"></textarea>
+				</label>
+			</div>
+		</fieldset>
+
+		<!--
+
+		<fieldset class="large-12 columns">
+			<legend>Links</legend>
+			<div class="clearfix">
+				<label class="large-8 columns">Wikipedia
+					<input name="wikipedia" type="url">
+				</label><span class="link large-4 columns"></span>
+			</div>
+			<div class="clearfix">
+				<label class="large-8 columns">GND
+					<input name="gnd" type="url">
+				</label><span class="link large-4 columns"></span>
+			</div>
+			<div class="clearfix">
+				<label class="large-8 columns">Externe Datenquelle<input name="externe_datenquelle_url" type="url"></label><span class="link large-4 columns"></span>
+			</div>
+			<div class="multiple">
+				<label class="large-8 columns">Weitere Links<input name="links[]" type="url"></label><span class="link large-4 columns"></span>
+			</div>
+		</fieldset>
+		<fieldset class="large-12 columns">
+			<legend>???</legend><label class="large-12 columns">Literatur<select name="literatur[]" multiple></select></label>
+		</fieldset>
+
+		-->
+
+		<input class="button" type="submit" value="Speichern">
+	</form>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </f:section>

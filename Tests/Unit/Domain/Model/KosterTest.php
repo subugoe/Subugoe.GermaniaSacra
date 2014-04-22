@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Tests\Unit\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 

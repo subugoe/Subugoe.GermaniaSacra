@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Klosterstatus {
+class Literatur {
 
 	/**
 	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
@@ -27,16 +27,20 @@ class Klosterstatus {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
-	 * @ORM\OneToMany(mappedBy="klosterstatus")
+	 * @var string
 	 */
-//	protected $klosterordens;
+	protected $citekey;
 
 	/**
 	 * @var string
 	 */
-	protected $status;
+	protected $beschreibung;
 
+	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur
+	 * @ORM\OneToMany(mappedBy="literatur")
+	 */
+	protected $klosterHasLiteraturs;
 
 	/**
 	 * @return integer
@@ -56,21 +60,36 @@ class Klosterstatus {
 	/**
 	 * @return string
 	 */
-	public function getStatus() {
-		return $this->status;
+	public function getCitekey() {
+		return $this->citekey;
 	}
 
 	/**
-	 * @param string $status
+	 * @param string $citekey
 	 * @return void
 	 */
-	public function setStatus($status) {
-		$this->status = $status;
+	public function setCitekey($citekey) {
+		$this->citekey = $citekey;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getBeschreibung() {
+		return $this->beschreibung;
+	}
+
+	/**
+	 * @param string $beschreibung
+	 * @return void
+	 */
+	public function setBeschreibung($beschreibung) {
+		$this->beschreibung = $beschreibung;
+	}
+	
 	public function __toString()
 	{
-	  return $this->getStatus();
+	  return $this->getCitekey();
 	}
 
 	public function getUUID()

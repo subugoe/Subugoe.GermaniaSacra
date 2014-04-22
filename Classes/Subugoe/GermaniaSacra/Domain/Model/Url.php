@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -35,6 +35,30 @@ class Url {
 	 * @ORM\ManyToOne(inversedBy="urls")
 	 */
 	protected $urltyp;
+
+	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl
+	 * @ORM\OneToMany(mappedBy="url")
+	 */
+	protected $klosterHasUrls;
+
+	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\OrdenHasUrl
+	 * @ORM\OneToMany(mappedBy="orden")
+	 */
+	protected $ordenHasUrls;
+
+	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\BandHasUrl
+	 * @ORM\OneToMany(mappedBy="url")
+	 */
+	protected $bandHasUrls;
+
+	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl
+	 * @ORM\OneToMany(mappedBy="url")
+	 */
+	protected $bistumHasUrls;
 
 	/**
 	 * @return integer
@@ -95,10 +119,7 @@ class Url {
 	public function setUrltyp($urltyp) {
 		$this->urltyp = $urltyp;
 	}
-	
 
-	
-	
 	public function __toString()
 	{
 	  return $this->getUrl();

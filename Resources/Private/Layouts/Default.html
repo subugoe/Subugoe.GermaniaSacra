@@ -8,6 +8,8 @@
 		<meta charset="utf-8">
 		<link href="../../../Public/Libraries/style/foundation.min.css" rel="stylesheet">
 		<link href="../../../Public/Libraries/style/style.css" rel="stylesheet">
+		<link href="../../../Public/Libraries/style/new.css" rel="stylesheet">
+
 	</head>
 	<body>
 		<nav class="top-bar">
@@ -78,136 +80,11 @@
 		
 			</div>
 				</section>
+
 				<script src="{f:uri.resource(path: 'js/jquery.min.js')}" type="text/javascript"></script>
 				<script src="{f:uri.resource(path: 'js/jquery.autosize.min.js')}" type="text/javascript"></script>
 				<script src="{f:uri.resource(path: 'js/gs-editor.min.js')}" type="text/javascript"></script>
 				<script src="{f:uri.resource(path: 'js/populate.min.js')}" type="text/javascript"></script>
-			<script>
-	
-	<script>
-	<![CDATA[
-	$(document).ready(function () { 
-		$("#NK").submit(function(event) { 
-			// Stop form from submitting normally
-			event.preventDefault();
-		var $form = $(this);
-		var form = $('#NK');
-		var url = $form.attr("action"); alert(url);
-		$.post(url, $("#NK").serialize())
-			.done(function(respond) { alert(respond);
-				if (respond && respond == "[1]") {
-					$("#kloster-created-ok").show();
-				}
-//				else {
-//					$(".kloster-created-error").show();
-//				}
-				$('#NK')[0].reset();
-//				$("#befundinbox_msg").val('');
-			});
-		});
-	});
-	]]>
-	
-	<![CDATA[
-	$(document).ready(function () { 
-		$("#EditKloster").submit(function(event) { 
-			// Stop form from submitting normally
-			event.preventDefault();
-		var $form = $(this);
-		var form = $('#EditKloster');
-		var url = $form.attr("action"); alert(url);
-		$.post(url, $("#EditKloster").serialize())
-			.done(function(respond) { alert(respond);
-				if (respond && respond == "[1]") {
-					$("#kloster-edited-ok").show();
-				}
-//				else {
-//					$(".kloster-created-error").show();
-//				}
-//				$("#befundinbox_msg").val('');
-			});
-		});
-	});
-	]]>
-	
-//	$(document).ready(function() {
-//		var $this = $(this);
-//		url = "http://flow/sub.germania/kloster/jsonList";
-//		$.getJSON(url, function(response){ alert(response[0].kloster)
-//			$.each(response, function (key, val) { //alert(val);
-//				var tr = $('#list').find('tr:eq(1)').clone(true);
-//				$.each(val,function(key1,val1){ //alert(key1 + "=>" + val1);
-//					if (key1 == "kloster_id") {
-//						$("#kloster_id").val(val1); 
-//					}
-//					if (key1 == "kloster") {
-//						$("#kloster").val(val1); 
-//					}
-//					if (key1 == "ort") { alert(val1);
-//						$("#ort").append('<option>' + val1 + '</option>');
-//						$('#ort select').val('');
-//					}
-//				});				
-//				$('#list').append(tr);
-//				});
-//			});
-//		});
-		
-		
-		
-//		$.getJSON(url, function(response){ alert(response);
-		
-//			var json = $.parseJSON(response);
-		
-//			 var output="<ul>";
-//			$(json).each(function(i,val){ alert(val);
-//				$.each(val,function(k,v){ //alert(v);
-//					 output+="<li>" + k + ", " + v + "</li>";
-//					//alert(v);
-//				});
-//			});
-//			output+="</ul>";
-//			$('span').html(output);
-//		});
-//	});
 
-//$(document).ready(function() { alert("xxx");
-	
-//		var $this = $(this);
-		
-//		url = "http://flow/sub.germania/kloster";
-//		$.getJSON(url, function(response){
-//			$(response).each(function(i,val){ //alert(val);
-//				$.each(val,function(k,v){ alert(k + '=>' + v);
-
-					//var tr = $this.find('tr:eq(1)').clone(true);
-				
-					//tr.find('td :input').each( function() {
-				
-						//var name = $(this).attr('name');
-						//	name = name.replace('[]', '');
-							
-							//if (name == k) 
-							//alert(k);
-					
-					//});
-				
-//				});
-				
-//			});
-//		});
-	
-//});
-
-//$(document).ready(function() { alert("123");
-
-//	url = "http://flow/sub.germania/kloster";
-//	$.ajax(url, function(response){
-//		alert(response);
-//	});
-//});
-	
-	</script>		
-		
 	</body>
 </html>

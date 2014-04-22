@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -15,10 +15,37 @@ use Doctrine\ORM\Mapping as ORM;
 class Band {
 
 	/**
+	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	* @Flow\Inject
+	*/
+	protected $persistenceManager;
+
+	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
 	 */
 	protected $uid;
+
+	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bistum
+	 * @ORM\ManyToOne(inversedBy="bands")
+	 */
+	protected $bistum;
+
+	/**
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bistum
+	 */
+	public function getBistum() {
+		return $this->bistum;
+	}
+
+	/**
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum
+	 * @return void
+	 */
+	public function setBistum(\Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum) {
+		$this->bistum = $bistum;
+	}
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster>
@@ -40,6 +67,12 @@ class Band {
 	 * @var string
 	 */
 	protected $titel;
+
+	/**
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\BandHasUrl>
+	 * @ORM\OneToMany(mappedBy="band", cascade={"all"})
+	 */
+	protected $bandHasUrls;
 
 	/**
 	 * @var string
@@ -125,5 +158,11 @@ class Band {
 	{
 	  return $this->getTitel();
 	}
+
+	public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
+
 }
 ?>

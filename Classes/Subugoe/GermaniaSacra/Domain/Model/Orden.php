@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -13,6 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  * @Flow\Entity
  */
 class Orden {
+
+	/**
+	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	* @Flow\Inject
+	*/
+	protected $persistenceManager;
 
 	/**
 	 * @var integer
@@ -51,6 +57,12 @@ class Orden {
 	 * @ORM\ManyToOne(inversedBy="Ordens")
 	 */
 	protected $ordenstyp;
+
+	/**
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrdenHasUrl>
+	 * @ORM\OneToMany(mappedBy="orden", cascade={"all"})
+	 */
+	protected $ordenHasUrls;
 
 	/**
 	 * @return integer
@@ -147,5 +159,11 @@ class Orden {
 	{
 	  return $this->getOrden();
 	}
+
+	public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
+
 }
 ?>

@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -21,19 +21,19 @@ class Klosterstandort {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 * @ORM\ManyToOne(inversedBy="klosterstandorts")
 	 */
 	protected $kloster;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 * @ORM\ManyToOne(inversedBy="klosterstandorts")
 	 */
 	protected $ort;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Zeitraum'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Zeitraum
 	 * @ORM\OneToOne(mappedBy="klosterstandort")
 	 */
 	protected $zeitraum;

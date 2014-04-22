@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -13,6 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  * @Flow\Entity
  */
 class Bearbeitungsstatus {
+
+	/**
+	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	* @Flow\Inject
+	*/
+	protected $persistenceManager;
 
 	/**
 	 * @var integer
@@ -66,5 +72,11 @@ class Bearbeitungsstatus {
 	{
 	  return $this->getName();
 	}
+
+	public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
+
 }
 ?>

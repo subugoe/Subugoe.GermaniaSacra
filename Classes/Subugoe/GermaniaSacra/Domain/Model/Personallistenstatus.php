@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -13,6 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
  * @Flow\Entity
  */
 class Personallistenstatus {
+	/**
+	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	* @Flow\Inject
+	*/
+	protected $persistenceManager;
 
 	/**
 	 * @var integer
@@ -66,5 +71,11 @@ class Personallistenstatus {
 	{
 	  return $this->getName();
 	}
+
+	public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
+
 }
 ?>

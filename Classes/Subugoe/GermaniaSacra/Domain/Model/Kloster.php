@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -73,23 +73,35 @@ class Kloster {
 	protected $klosterordens;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus
 	 * @ORM\ManyToOne(inversedBy="klosters")
 	 */
 	protected $bearbeitungsstatus;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus
 	 * @ORM\ManyToOne(inversedBy="klosters")
 	 */
 	protected $personallistenstatus;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Band'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Band
 	 * @ORM\ManyToOne(inversedBy="klosters")
 	 */
 	protected $band;
-	
+
+	/**
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl>
+	 * @ORM\OneToMany(mappedBy="kloster", cascade={"all"})
+	 */
+	protected $klosterHasUrls;
+
+	/**
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur>
+	 * @ORM\OneToMany(mappedBy="kloster", cascade={"all"})
+	 */
+	protected $klosterHasLiteraturs;
+
 	/**
 	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	*/
@@ -290,8 +302,44 @@ class Kloster {
 		$this->band = $band;
 	}
 
+	/**
+	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl>
+	*/
+	public function getKlosterHasUrls() {
+		return $this->klosterHasUrls;
+	}
+
+	/**
+	* @param \Doctrine\Common\Collections\Collection $klosterHasUrls
+	* @return void
+	*/
+	public function setKlosterHasUrls(\Doctrine\Common\Collections\Collection $klosterHasUrls) {
+
+		foreach ($klosterHasUrls as $klosterHasUrl){$klosterHasUrl->setKloster($this);}
+
+		$this->klosterHasUrls = $klosterHasUrls;
+	}
+
+	/**
+	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur>
+	*/
+	public function getKlosterHasLiteraturs() {
+		return $this->klosterHasLiteraturs;
+	}
+
+	/**
+	* @param \Doctrine\Common\Collections\Collection $klosterHasLiteraturs
+	* @return void
+	*/
+	public function setKlosterHasLiteraturs(\Doctrine\Common\Collections\Collection $klosterHasLiteraturs) {
+
+		foreach ($klosterHasLiteraturs as $klosterHasLiteraturl){$klosterHasLiteratur->setKloster($this);}
+
+		$this->klosterHasLiteraturs = $klosterHasLiteraturs;
+	}
+
 	public function getUUID()
-    { 
+    {
         return $this->persistenceManager->getIdentifierByObject($this);
     }
 

@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Controller;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -14,7 +14,7 @@ class BearbeitungsstatusController extends ActionController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \Subugoe\GermaniaSacraDomain\Repository\BearbeitungsstatusRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\BearbeitungsstatusRepository
 	 */
 	protected $bearbeitungsstatusRepository;
 
@@ -26,7 +26,7 @@ class BearbeitungsstatusController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Bearbeitungsstatus $bearbeitungsstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
 	 * @return void
 	 */
 	public function showAction(Bearbeitungsstatus $bearbeitungsstatus) {
@@ -40,7 +40,7 @@ class BearbeitungsstatusController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Bearbeitungsstatus $newBearbeitungsstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $newBearbeitungsstatus
 	 * @return void
 	 */
 	public function createAction(Bearbeitungsstatus $newBearbeitungsstatus) {
@@ -50,7 +50,7 @@ class BearbeitungsstatusController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Bearbeitungsstatus $bearbeitungsstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
 	 * @return void
 	 */
 	public function editAction(Bearbeitungsstatus $bearbeitungsstatus) {
@@ -58,7 +58,7 @@ class BearbeitungsstatusController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Bearbeitungsstatus $bearbeitungsstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
 	 * @return void
 	 */
 	public function updateAction(Bearbeitungsstatus $bearbeitungsstatus) {
@@ -68,7 +68,7 @@ class BearbeitungsstatusController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Bearbeitungsstatus $bearbeitungsstatus
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
 	 * @return void
 	 */
 	public function deleteAction(Bearbeitungsstatus $bearbeitungsstatus) {

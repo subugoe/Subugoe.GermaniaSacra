@@ -12,7 +12,7 @@ use TYPO3\Flow\Persistence\Repository;
 /**
  * @Flow\Scope("singleton")
  */
-class BandRepository extends Repository {
+class KlosterstatusRepository extends Repository {
 
 	// add customized methods here
 

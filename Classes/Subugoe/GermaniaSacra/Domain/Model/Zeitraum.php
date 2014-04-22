@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -13,6 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  * @Flow\Entity
  */
 class Zeitraum {
+
+	/**
+	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	* @Flow\Inject
+	*/
+	protected $persistenceManager;
 
 	/**
 	 * @var integer
@@ -53,12 +59,12 @@ class Zeitraum {
 	/**
 	 * @ORM\OneToOne(inversedBy="zeitraum", cascade={"all"})
 	 */
-	protected $klosterstandort;
+//	protected $klosterstandort;
 
 	/**
 	 * @ORM\OneToOne(inversedBy="zeitraum", cascade={"all"})
 	 */
-	protected $klosterorden;
+//	protected $klosterorden;
 
 	/**
 	 * @return integer
@@ -164,5 +170,11 @@ class Zeitraum {
 	public function setBis_verbal($bis_verbal) {
 		$this->bis_verbal = $bis_verbal;
 	}
+
+	public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
+
 }
 ?>

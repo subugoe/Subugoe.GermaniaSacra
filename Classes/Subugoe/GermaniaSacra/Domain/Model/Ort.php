@@ -2,7 +2,7 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "SUB.Germania".          *
+
  *                                                                        *
  *                                                                        */
 
@@ -62,10 +62,22 @@ class Ort {
 	protected $klosterstandorts;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Land'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Land
 	 * @ORM\ManyToOne(inversedBy="orts")
 	 */
 	protected $land;
+
+	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bistum
+	 * @ORM\ManyToOne(inversedBy="orts")
+	 */
+	protected $bistum;
+
+	/**
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
+	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
+	 */
+	protected $ortHasUrls;
 
 	/**
 	 * @return integer
@@ -171,7 +183,22 @@ class Ort {
 	public function setLaenge($laenge) {
 		$this->laenge = $laenge;
 	}
-	
+
+	/**
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bistum
+	 */
+	public function getBistum() {
+		return $this->bistum;
+	}
+
+	/**
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum
+	 * @return void
+	 */
+	public function setBistum(\Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum) {
+		$this->bistum = $bistum;
+	}
+
 	public function __toString()
 	{
 	  return $this->getOrt();
