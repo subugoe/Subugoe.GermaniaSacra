@@ -14,7 +14,7 @@ class BandController extends ActionController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \Subugoe\GermaniaSacraDomain\Repository\BandRepository
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\BandRepository
 	 */
 	protected $bandRepository;
 
@@ -26,7 +26,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
 	 * @return void
 	 */
 	public function showAction(Band $band) {
@@ -40,7 +40,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $newBand
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $newBand
 	 * @return void
 	 */
 	public function createAction(Band $newBand) {
@@ -50,7 +50,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
 	 * @return void
 	 */
 	public function editAction(Band $band) {
@@ -58,7 +58,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
 	 * @return void
 	 */
 	public function updateAction(Band $band) {
@@ -68,7 +68,7 @@ class BandController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacraDomain\Model\Band $band
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
 	 * @return void
 	 */
 	public function deleteAction(Band $band) {
