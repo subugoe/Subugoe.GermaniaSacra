@@ -361,6 +361,7 @@ class KlosterController extends ActionController {
 		return json_encode(array(201));
 	}
 
+
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return void
