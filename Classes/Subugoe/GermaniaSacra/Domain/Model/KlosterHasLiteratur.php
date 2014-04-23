@@ -53,8 +53,5 @@ class KlosterHasLiteratur {
 	public function setLiteratur(\Subugoe\GermaniaSacra\Domain\Model\Literatur $literatur) {
 		$this->literatur = $literatur;
 	}
-
-
-
 }
 ?>

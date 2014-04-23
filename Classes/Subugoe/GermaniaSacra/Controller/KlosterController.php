@@ -7,6 +7,7 @@ use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Kloster;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterstandort;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterorden;
+use Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur;
 
 class KlosterController extends ActionController {
 
@@ -81,6 +82,12 @@ class KlosterController extends ActionController {
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\ZeitraumRepository
 	 */
 	protected $zeitraumRepository;
+
+	/**
+	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterHasLiteraturRepository
+	 */
+	protected $klosterHasLiteraturRepository;
 
 	/**
 	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
@@ -478,7 +485,11 @@ class KlosterController extends ActionController {
 		$literaturArr = array();
 		$literaturs = $this->literaturRepository->findAll();
 		foreach ($literaturs as $q=>$literatur) {
-			$literaturArr[$q] = array($literatur->getCitekey() => $literatur->getUUID());
+
+			$literatur_name = $literatur->getCitekey();
+			if (null !== $literatur->getBeschreibung() && !empty($literatur->getBeschreibung())) $literatur_name .= "(" . $literatur->getBeschreibung() . ")";
+
+			$literaturArr[$q] = array($literatur_name => $literatur->getUUID());
 		}
 
 		$bistumArr = array();
@@ -524,7 +535,6 @@ class KlosterController extends ActionController {
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return void
-	 * @FLOW\SkipCsrfProtection
 	 **/
 	public function updateAction(Kloster $kloster) {
 
@@ -577,8 +587,8 @@ class KlosterController extends ActionController {
 		foreach ($klosterstandorts as $i => $klosterstandort) {
 			$this->klosterstandortRepository->remove($klosterstandort);
 		}
-		$klosterstandort = new Klosterstandort();
 		foreach ($klosterstandortArr as $ko) {
+			$klosterstandort = new Klosterstandort();
 			$kloster_uuid = $ko['kloster'];
 			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 			$klosterstandort->setKloster($kloster);
@@ -612,8 +622,8 @@ class KlosterController extends ActionController {
 		foreach ($klosterordens as $i => $klosterorden) {
 			$this->klosterordenRepository->remove($klosterorden);
 		}
-		$klosterorden = new Klosterorden();
 		foreach ($klosterordenArr as $ko) {
+			$klosterorden = new Klosterorden();
 			$kloster_uuid = $ko['kloster'];
 			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 			$klosterorden->setKloster($kloster);
@@ -630,16 +640,22 @@ class KlosterController extends ActionController {
 			$this->klosterordenRepository->add($klosterorden);
 		}
 
-//		$bistumArr = $this->request->getArgument('bistum');
-//		$bistum_uuid = $bistumArr[$i];
-//		$bistum = $this->bistumRepository->findByIdentifier($bistum_uuid);
-//		$klosterstandort->setBistum($bistum);
-
-//		$this->klosterstandortRepository->update($klosterstandort);
+		$literaturs = $kloster->getKlosterHasLiteraturs();
+		foreach ($literaturs as $literatur) {
+			$this->klosterHasLiteraturRepository->remove($literatur);
+		}
+		$literaturArr = $this->request->getArgument('literatur');
+		foreach ($literaturArr as $lit) {
+			$klosterHasLiteratur = new KlosterHasLiteratur();
+			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+			$literatur = $this->literaturRepository->findByIdentifier($lit);
+			$klosterHasLiteratur->setKloster($kloster);
+			$klosterHasLiteratur->setLiteratur($literatur);
+			$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+		}
 
 		$status = 200;
 		return json_encode(array($status));
-
 	}
 
 	/**
