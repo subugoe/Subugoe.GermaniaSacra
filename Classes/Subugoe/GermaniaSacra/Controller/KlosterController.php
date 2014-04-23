@@ -1,10 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-/*                                                                        *
- * This script belongs to the TYPO3 Flow package "Subugoe.GermaniaSacra". *
- *                                                                        *
- *                                                                        */
 
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
