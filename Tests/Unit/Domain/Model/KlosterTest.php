@@ -1,11 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Tests\Unit\Domain\Model;
 
-/*                                                                        *
-
- *                                                                        *
- *                                                                        */
-
 /**
  * Testcase for Kloster
  */
