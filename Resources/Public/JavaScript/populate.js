@@ -149,29 +149,10 @@ $.fn.extend({
 				});
 			});
 
-			var zeitraumArray = response[8];
-			var $inputZeitraum = $("select[name='orden_zeitraum[]']");
-			$inputZeitraum.empty();
-			$.each(zeitraumArray, function (k, v) {
-				$.each(v, function (k1, v1) {
-					$inputZeitraum.append($("<option>", { value: v1, html: k1 }));
-				});
-			});
-
-			var zeitraumArray = response[8];
-			var $inputZeitraum = $("select[name='klosterstandort_zeitraum[]']");
-			$inputZeitraum.empty();
-			$.each(zeitraumArray, function (k, v) {
-				$.each(v, function (k1, v1) {
-					$inputZeitraum.append($("<option>", { value: v1, html: k1 }));
-				});
-			});
-
 			var klosterstandorte = response[0].klosterstandorte;
 			var klosterorden = response[0].klosterorden;
 			var klosterurl = response[0].url;
 			var klosterliteratur = response[0].literatur;
-
 
 			var uuid = response[0].uuid;
 			var update_url =  "kloster/update/" + uuid;
@@ -258,14 +239,6 @@ $.fn.extend({
 									}
 								});
 							}
-							else if (name== "orden_zeitraum") {
-								$this.find("select[name='orden_zeitraum[]'] option").each(function( i, opt ) {
-									if( opt.value == val ) {
-										$(opt).attr('selected', 'selected');
-									}
-								});
-							}
-
 
 						} else {
 							$(this).val( val );
@@ -315,13 +288,6 @@ $.fn.extend({
 									}
 								});
 							}
-							else if (name== "klosterstandort_zeitraum") {
-								$this.find("select[name='klosterstandort_zeitraum[]'] option").each(function( i, opt ) {
-									if( opt.value == val ) {
-										$(opt).attr('selected', 'selected');
-									}
-								});
-							}
 
 						} else {
 							$(this).val( val );
@@ -345,7 +311,6 @@ $.fn.extend({
 						$("input[name=gnd]").val(gnd);
 					}
 					if (wikipedia) {
-						//$("input[name=wikipedia]").val("");
 						$("input[name=wikipedia]").val(wikipedia);
 					}
 

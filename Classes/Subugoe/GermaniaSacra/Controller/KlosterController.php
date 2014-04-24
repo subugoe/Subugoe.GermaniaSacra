@@ -253,6 +253,7 @@ class KlosterController extends ActionController {
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return void
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function createAction() {
 
@@ -309,8 +310,9 @@ class KlosterController extends ActionController {
 			$klosterstandortArr[$i]['temp_literatur_alt'] = $temp_literatur_altArr[$i];
 			$klosterstandortArr[$i]['klosterstandort_zeitraum'] = $klosterstandort_zeitraumArr[$i];
 		}
-		$klosterstandort = new Klosterstandort();
+
 		foreach ($klosterstandortArr as $ko) {
+			$klosterstandort = new Klosterstandort();
 			$kloster_uuid = $ko['kloster'];
 			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 			$klosterstandort->setKloster($kloster);
@@ -343,8 +345,9 @@ class KlosterController extends ActionController {
 			$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
 			$klosterordenArr[$i]['bemerkung_orden'] = $bemerkung_ordenArr[$i];
 		}
-		$klosterorden = new Klosterorden();
+
 		foreach ($klosterordenArr as $ko) {
+			$klosterorden = new Klosterorden();
 			$kloster_uuid = $ko['kloster'];
 			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 			$klosterorden->setKloster($kloster);
@@ -359,6 +362,19 @@ class KlosterController extends ActionController {
 			$klosterorden->setKlosterstatus($klosterstatus);
 			$klosterorden->setBemerkung($ko['bemerkung_orden']);
 			$this->klosterordenRepository->add($klosterorden);
+		}
+
+		if ($this->request->hasArgument('literatur')){
+			$kloster_uuid = $id;
+			$literaturArr = $this->request->getArgument('literatur');
+			foreach ($literaturArr as $lit) {
+				$klosterHasLiteratur = new KlosterHasLiteratur();
+				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+				$literatur = $this->literaturRepository->findByIdentifier($lit);
+				$klosterHasLiteratur->setKloster($kloster);
+				$klosterHasLiteratur->setLiteratur($literatur);
+				$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+			}
 		}
 
 		return json_encode(array(201));
@@ -395,7 +411,6 @@ class KlosterController extends ActionController {
 		$klosterstandorte = array();
 		$klosterstandorts = $kloster->getKlosterstandorts();
 		foreach ($klosterstandorts as $i => $klosterstandort) {
-
 			$klosterstandorte[$i]['breite'] = $klosterstandort->getBreite();
 			$klosterstandorte[$i]['laenge'] = $klosterstandort->getLaenge();
 			$klosterstandorte[$i]['gruender'] = $klosterstandort->getGruender();
@@ -408,17 +423,20 @@ class KlosterController extends ActionController {
 			$bistumUUID = $ort->getBistum();
 			$klosterstandorte[$i]['bistum'] = $bistumUUID->getUUID();
 
-			$zeitraum = $klosterstandort->getZeitraum();
-
-			if (is_object($zeitraum)) {
-				$klosterstandorte[$i]['klosterstandort_zeitraum'] = $zeitraum->getUUID();
-				$klosterstandorte[$i]['von_von'] = $zeitraum->getVon_von();
-				$klosterstandorte[$i]['von_bis'] = $zeitraum->getVon_bis();
-				$klosterstandorte[$i]['von_verbal'] = $zeitraum->getVon_verbal();
-				$klosterstandorte[$i]['bis_von'] = $zeitraum->getBis_von();
-				$klosterstandorte[$i]['bis_bis'] = $zeitraum->getBis_bis();
-				$klosterstandorte[$i]['bis_verbal'] = $zeitraum->getBis_verbal();
+			if ($klosterstandort->getVon_von()) {
+				$klosterstandorte[$i]['von_von'] = $klosterstandort->getVon_von();
 			}
+			if ($klosterstandort->getVon_bis()) {
+				$klosterstandorte[$i]['von_bis'] = $klosterstandort->getVon_bis();
+			}
+			$klosterstandorte[$i]['von_verbal'] = $klosterstandort->getVon_verbal();
+			if ($klosterstandort->getBis_von()) {
+				$klosterstandorte[$i]['bis_von'] = $klosterstandort->getBis_von();
+			}
+			if ($klosterstandort->getBis_bis()) {
+				$klosterstandorte[$i]['bis_bis'] = $klosterstandort->getBis_bis();
+			}
+			$klosterstandorte[$i]['bis_verbal'] = $klosterstandort->getBis_verbal();
 		}
 		$klosterArr['klosterstandorte'] = $klosterstandorte;
 
@@ -426,21 +444,24 @@ class KlosterController extends ActionController {
 		$klosterordens = $kloster->getKlosterordens();
 		foreach ($klosterordens as $i => $ko) {
 			$klosterorden[$i]['bemerkung_orden'] = $ko->getBemerkung();
-
 			$orden = $ko->getOrden();
 			$klosterorden[$i]['orden'] = $orden->getUUID();
-
 			$klosterstatus = $ko->getKlosterstatus();
 			$klosterorden[$i]['klosterstatus'] = $klosterstatus->getUUID();
-
-			$zeitraum = $ko->getZeitraum();
-			$klosterorden[$i]['orden_zeitraum'] = $zeitraum->getUUID();
-			$klosterorden[$i]['orden_von_von'] = $zeitraum->getVon_von();
-			$klosterorden[$i]['orden_von_bis'] = $zeitraum->getVon_bis();
-			$klosterorden[$i]['orden_von_verbal'] = $zeitraum->getVon_verbal();
-			$klosterorden[$i]['orden_bis_von'] = $zeitraum->getBis_von();
-			$klosterorden[$i]['orden_bis_bis'] = $zeitraum->getBis_bis();
-			$klosterorden[$i]['orden_bis_verbal'] = $zeitraum->getBis_verbal();
+			if ($ko->getVon_von()) {
+				$klosterorden[$i]['orden_von_von'] = $ko->getVon_von();
+			}
+			if ($ko->getVon_bis()) {
+				$klosterorden[$i]['orden_von_bis'] = $ko->getVon_bis();
+			}
+			$klosterorden[$i]['orden_von_verbal'] = $ko->getVon_verbal();
+			if ($ko->getBis_von()) {
+				$klosterorden[$i]['orden_bis_von'] = $ko->getBis_von();
+			}
+			if ($ko->getBis_bis()) {
+				$klosterorden[$i]['orden_bis_bis'] = $ko->getBis_bis();
+			}
+			$klosterorden[$i]['orden_bis_verbal'] = $ko->getBis_verbal();
 		}
 		$klosterArr['klosterorden'] = $klosterorden;
 
@@ -510,14 +531,6 @@ class KlosterController extends ActionController {
 			$klosterstatusArr[$n] = array($klosterstatus->getStatus() => $klosterstatus->getUUID());
 		}
 
-		$zeitraumArr = array();
-		$zeitraums = $this->zeitraumRepository->findAll();
-		foreach ($zeitraums as $k=>$zeitraum) {
-			$zr = $zeitraum->getVon_von() . " -> " . $zeitraum->getVon_bis() . " (" . $zeitraum->getVon_verbal() . ")";
-			$zr .= " - " . $zeitraum->getBis_von() . " -> " . $zeitraum->getBis_bis() . " (" . $zeitraum->getBis_verbal() . ")";
-			$zeitraumArr[$k] = array($zr => $zeitraum->getUUID());
-		}
-
 		$response = array();
 		$response[] = $klosterArr;
 		$response[] = $bearbeitungsstatusArr;
@@ -527,7 +540,6 @@ class KlosterController extends ActionController {
 		$response[] = $bistumArr;
 		$response[] = $ordenArr;
 		$response[] = $klosterstatusArr;
-		$response[] = $zeitraumArr;
 
 		return json_encode($response);
 	}
@@ -571,7 +583,19 @@ class KlosterController extends ActionController {
 		$breiteArr = $this->request->getArgument('breite');
 		$laengeArr = $this->request->getArgument('laenge');
 		$bemerkung_standortArr = $this->request->getArgument('bemerkung_standort');
-		$klosterstandort_zeitraumArr = $this->request->getArgument('klosterstandort_zeitraum');
+//		$klosterstandort_zeitraumArr = $this->request->getArgument('klosterstandort_zeitraum');
+
+
+		$von_vonArr = $this->request->getArgument('von_von');
+		$von_bisArr = $this->request->getArgument('von_bis');
+		$von_verbalArr = $this->request->getArgument('von_verbal');
+		$bis_vonArr = $this->request->getArgument('bis_von');
+		$bis_bisArr = $this->request->getArgument('bis_bis');
+		$bis_verbalArr = $this->request->getArgument('bis_verbal');
+
+
+
+
 		$klosterstandortNumber = count($ortArr);
 		$klosterstandortArr = array();
 		for ($i=0; $i<$klosterstandortNumber; $i++) {
@@ -581,7 +605,16 @@ class KlosterController extends ActionController {
 			$klosterstandortArr[$i]['breite'] = $breiteArr[$i];
 			$klosterstandortArr[$i]['laenge'] = $laengeArr[$i];
 			$klosterstandortArr[$i]['bemerkung_standort'] = $bemerkung_standortArr[$i];
-			$klosterstandortArr[$i]['klosterstandort_zeitraum'] = $klosterstandort_zeitraumArr[$i];
+//			$klosterstandortArr[$i]['klosterstandort_zeitraum'] = $klosterstandort_zeitraumArr[$i];
+
+
+			$klosterstandortArr[$i]['von_von'] = $von_vonArr[$i];
+			$klosterstandortArr[$i]['von_bis'] = $von_bisArr[$i];
+			$klosterstandortArr[$i]['von_verbal'] = $von_verbalArr[$i];
+			$klosterstandortArr[$i]['bis_von'] = $bis_vonArr[$i];
+			$klosterstandortArr[$i]['bis_bis'] = $bis_bisArr[$i];
+			$klosterstandortArr[$i]['bis_verbal'] = $bis_verbalArr[$i];
+
 		}
 		$klosterstandorts = $kloster->getKlosterstandorts();
 		foreach ($klosterstandorts as $i => $klosterstandort) {
@@ -598,25 +631,66 @@ class KlosterController extends ActionController {
 			$klosterstandort->setGruender($ko['gruender']);
 			$klosterstandort->setBreite($ko['breite']);
 			$klosterstandort->setLaenge($ko['laenge']);
-			$zeitraum_uuid = $ko['klosterstandort_zeitraum'];
-			$zeitraum = $this->zeitraumRepository->findByIdentifier($zeitraum_uuid);
-			$klosterstandort->setZeitraum($zeitraum);
+
+//			$zeitraum_uuid = $ko['klosterstandort_zeitraum'];
+//			$zeitraum = $this->zeitraumRepository->findByIdentifier($zeitraum_uuid);
+//			$klosterstandort->setZeitraum($zeitraum);
+
+
+			$klosterstandort->setVon_von($ko['von_von']);
+			$klosterstandort->setVon_bis($ko['von_bis']);
+			$klosterstandort->setVon_verbal($ko['von_verbal']);
+			$klosterstandort->setBis_von($ko['bis_von']);
+			$klosterstandort->setBis_bis($ko['bis_bis']);
+			$klosterstandort->setBis_verbal($ko['bis_verbal']);
+
+
+
 			$this->klosterstandortRepository->add($klosterstandort);
 		}
 
 		// Orden
 		$ordenArr = $this->request->getArgument('orden');
-		$orden_zeitraumArr = $this->request->getArgument('orden_zeitraum');
+//		$orden_zeitraumArr = $this->request->getArgument('orden_zeitraum');
 		$klosterstatusArr = $this->request->getArgument('klosterstatus');
 		$bemerkung_ordenArr = $this->request->getArgument('bemerkung_orden');
+
+
+
+
+		$orden_von_vonArr = $this->request->getArgument('orden_von_von');
+		$orden_von_bisArr = $this->request->getArgument('orden_von_bis');
+		$orden_von_verbalArr = $this->request->getArgument('orden_von_verbal');
+		$orden_bis_vonArr = $this->request->getArgument('orden_bis_von');
+		$orden_bis_bisArr = $this->request->getArgument('orden_bis_bis');
+		$orden_bis_verbalArr = $this->request->getArgument('orden_bis_verbal');
+
+
+
+
 		$klosterordenNumber = count($ordenArr);
 		$klosterordenArr = array();
 		for ($i=0; $i<$klosterordenNumber; $i++) {
 			$klosterordenArr[$i]['kloster'] = $id;
 			$klosterordenArr[$i]['orden'] = $ordenArr[$i];
-			$klosterordenArr[$i]['orden_zeitraum'] = $orden_zeitraumArr[$i];
+//			$klosterordenArr[$i]['orden_zeitraum'] = $orden_zeitraumArr[$i];
 			$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
 			$klosterordenArr[$i]['bemerkung_orden'] = $bemerkung_ordenArr[$i];
+
+
+
+
+			$klosterordenArr[$i]['orden_von_von'] = $orden_von_vonArr[$i];
+			$klosterordenArr[$i]['orden_von_bis'] = $orden_von_bisArr[$i];
+			$klosterordenArr[$i]['orden_von_verbal'] = $orden_von_verbalArr[$i];
+			$klosterordenArr[$i]['orden_bis_von'] = $orden_bis_vonArr[$i];
+			$klosterordenArr[$i]['orden_bis_bis'] = $orden_bis_bisArr[$i];
+			$klosterordenArr[$i]['orden_bis_verbal'] = $orden_bis_verbalArr[$i];
+
+
+
+
+
 		}
 		$klosterordens = $kloster->getKlosterordens();
 		foreach ($klosterordens as $i => $klosterorden) {
@@ -627,9 +701,26 @@ class KlosterController extends ActionController {
 			$kloster_uuid = $ko['kloster'];
 			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 			$klosterorden->setKloster($kloster);
-			$zeitraum_uuid = $ko['orden_zeitraum'];
-			$zeitraum = $this->zeitraumRepository->findByIdentifier($zeitraum_uuid);
-			$klosterorden->setZeitraum($zeitraum);
+
+//			$zeitraum_uuid = $ko['orden_zeitraum'];
+//			$zeitraum = $this->zeitraumRepository->findByIdentifier($zeitraum_uuid);
+//			$klosterorden->setZeitraum($zeitraum);
+
+
+
+
+
+			$klosterorden->setVon_von($ko['orden_von_von']);
+			$klosterorden->setVon_bis($ko['orden_von_bis']);
+			$klosterorden->setVon_verbal($ko['orden_von_verbal']);
+			$klosterorden->setBis_von($ko['orden_bis_von']);
+			$klosterorden->setBis_bis($ko['orden_bis_bis']);
+			$klosterorden->setBis_verbal($ko['orden_bis_verbal']);
+
+
+
+
+
 			$orden_uuid = $ko['orden'];
 			$orden = $this->ordenRepository->findByIdentifier($orden_uuid);
 			$klosterorden->setOrden($orden);
@@ -644,14 +735,17 @@ class KlosterController extends ActionController {
 		foreach ($literaturs as $literatur) {
 			$this->klosterHasLiteraturRepository->remove($literatur);
 		}
-		$literaturArr = $this->request->getArgument('literatur');
-		foreach ($literaturArr as $lit) {
-			$klosterHasLiteratur = new KlosterHasLiteratur();
-			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
-			$literatur = $this->literaturRepository->findByIdentifier($lit);
-			$klosterHasLiteratur->setKloster($kloster);
-			$klosterHasLiteratur->setLiteratur($literatur);
-			$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+
+		if ($this->request->hasArgument('literatur')){
+			$literaturArr = $this->request->getArgument('literatur');
+			foreach ($literaturArr as $lit) {
+				$klosterHasLiteratur = new KlosterHasLiteratur();
+				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+				$literatur = $this->literaturRepository->findByIdentifier($lit);
+				$klosterHasLiteratur->setKloster($kloster);
+				$klosterHasLiteratur->setLiteratur($literatur);
+				$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+			}
 		}
 
 		$status = 200;

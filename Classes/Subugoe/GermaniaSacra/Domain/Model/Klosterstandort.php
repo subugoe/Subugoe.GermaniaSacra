@@ -30,11 +30,35 @@ class Klosterstandort {
 	protected $ort;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Zeitraum
-	 * @ORM\OneToOne(mappedBy="klosterstandort")
+	 * @var integer
 	 */
-	protected $zeitraum;
-	
+	protected $von_von;
+
+	/**
+	 * @var integer
+	 */
+	protected $von_bis;
+
+	/**
+	 * @var string
+	 */
+	protected $von_verbal;
+
+	/**
+	 * @var integer
+	 */
+	protected $bis_von;
+
+	/**
+	 * @var integer
+	 */
+	protected $bis_bis;
+
+	/**
+	 * @var string
+	 */
+	protected $bis_verbal;
+
 	/**
 	 * @var string
 	 */
@@ -97,18 +121,93 @@ class Klosterstandort {
 	}
 
 	/**
-	 * @return \Subugoe\GermaniaSacra\Domain\Model\Zeitraum
+	 * @return integer
 	 */
-	public function getZeitraum() {
-		return $this->zeitraum;
+	public function getVon_von() {
+		return $this->von_von;
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Zeitraum $zeitraum
+	 * @param string $von_von
 	 * @return void
 	 */
-	public function setZeitraum(\Subugoe\GermaniaSacra\Domain\Model\Zeitraum $zeitraum) {
-		$this->zeitraum = $zeitraum;
+	public function setVon_von($von_von) {
+		$this->von_von = $von_von;
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getVon_bis() {
+		return $this->von_bis;
+	}
+
+	/**
+	 * @param string $von_bis
+	 * @return void
+	 */
+	public function setVon_bis($von_bis) {
+		$this->von_bis = $von_bis;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getVon_verbal() {
+		return $this->von_verbal;
+	}
+
+	/**
+	 * @param string $von_verbal
+	 * @return void
+	 */
+	public function setVon_verbal($von_verbal) {
+		$this->von_verbal = $von_verbal;
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getBis_von() {
+		return $this->bis_von;
+	}
+
+	/**
+	 * @param string $bis_von
+	 * @return void
+	 */
+	public function setBis_von($bis_von) {
+		$this->bis_von = $bis_von;
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getBis_bis() {
+		return $this->bis_bis;
+	}
+
+	/**
+	 * @param string $bis_bis
+	 * @return void
+	 */
+	public function setBis_bis($bis_bis) {
+		$this->bis_bis = $bis_bis;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBis_verbal() {
+		return $this->bis_verbal;
+	}
+
+	/**
+	 * @param string $bis_verbal
+	 * @return void
+	 */
+	public function setBis_verbal($bis_verbal) {
+		$this->bis_verbal = $bis_verbal;
 	}
 
 	/**
