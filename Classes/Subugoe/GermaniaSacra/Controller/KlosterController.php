@@ -227,14 +227,6 @@ class KlosterController extends ActionController {
 			$klosterstatusArr[$n] = array($klosterstatus->getStatus() => $klosterstatus->getUUID());
 		}
 
-		$zeitraumArr = array();
-		$zeitraums = $this->zeitraumRepository->findAll();
-		foreach ($zeitraums as $k=>$zeitraum) {
-			$zr = $zeitraum->getVon_von() . " -> " . $zeitraum->getVon_bis() . " (" . $zeitraum->getVon_verbal() . ")";
-			$zr .= " - " . $zeitraum->getBis_von() . " -> " . $zeitraum->getBis_bis() . " (" . $zeitraum->getBis_verbal() . ")";
-			$zeitraumArr[$k] = array($zr => $zeitraum->getUUID());
-		}
-
 		$response = array();
 		$response[] = $ortGemeindeKreisArr;
 		$response[] = $bearbeitungsstatusArr;
@@ -244,7 +236,6 @@ class KlosterController extends ActionController {
 		$response[] = $bistumArr;
 		$response[] = $ordenArr;
 		$response[] = $klosterstatusArr;
-		$response[] = $zeitraumArr;
 
 		return json_encode($response);
 
