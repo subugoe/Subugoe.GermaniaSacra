@@ -100,6 +100,11 @@ class Kloster {
 	protected $klosterHasLiteraturs;
 
 	/**
+	 * @var \DateTime
+	 */
+	protected $creationDate;
+
+	/**
 	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	*/
 	public function getKlosterstandorts() {
@@ -333,6 +338,29 @@ class Kloster {
 		foreach ($klosterHasLiteraturs as $klosterHasLiteraturl){$klosterHasLiteratur->setKloster($this);}
 
 		$this->klosterHasLiteraturs = $klosterHasLiteraturs;
+	}
+
+	/**
+	* @ORM\PrePersist
+	* @return void
+	*/
+	public function prePersist() {
+		$this->setcreationDate(new \DateTime());
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getCreationDate() {
+		return $this->creationDate;
+	}
+
+	/**
+	 * @param \DateTime $creationDate
+	 * @return void
+	 */
+	public function setcreationDate(\DateTime $creationDate = NULL) {
+		$this->creationDate = $creationDate;
 	}
 
 	public function getUUID()

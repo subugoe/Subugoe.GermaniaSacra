@@ -86,9 +86,11 @@
 			<label class="large-4 columns">Bearbeiter 
 				<select name="personallistenstatus" required="required"></select>
 			</label>
+
 			<label class="large-8 columns">Datensatz erzeugt am 
-				<input name="???" required="required" type="date">
+				<input disabled="disabled" name="creationdate" required="required" type="date">
 			</label>
+
 			<label class="large-12 columns">Patrozinium 
 				<textarea name="patrozinium" required="required"></textarea>
 			</label>
@@ -229,9 +231,11 @@
 			<label class="large-4 columns">Bearbeiter
 				<select name="new_personallistenstatus" required="required"></select>
 			</label>
+			<!--
 			<label class="large-8 columns">Datensatz erzeugt am
 				<input name="???" required="required" type="date">
 			</label>
+			-->
 			<label class="large-12 columns">Patrozinium
 				<textarea name="new_patrozinium" required="required"></textarea>
 			</label>
@@ -268,13 +272,32 @@
 					<input name="new_laenge[]" type="number">
 				</label>
 
+				<label class="large-3 columns">Standort von
+					<input name="von_von[]" type="text">
+				</label>
+				<label class="large-1 columns none">
+					<input name="von_bis[]" type="text">
+				</label>
+				<label class="large-2 columns none">
+					<input name="von_verbal[]" type="text">
+				</label>
+				<label class="large-3 columns">Standort bis
+					<input name="bis_von[]" type="text">
+				</label>
+				<label class="large-1 columns none">
+					<input name="bis_bis[]" type="text">
+				</label>
+				<label class="large-2 columns none">
+					<input name="bis_verbal[]" type="text">
+				</label>
+				<!--
 				<label class="large-12 columns">Standort von - bis
 					<select name="new_klosterstandort_zeitraum[]"></select>
 				</label>
+				-->
 				<label class="large-12 columns">Gründer
 					<textarea name="new_gruender[]"></textarea>
 				</label>
-
 				<label class="large-12 columns">Bemerkung
 					<textarea name="new_standortbemerkung[]"></textarea>
 				</label>
@@ -293,9 +316,31 @@
 				<label class="large-12 columns">Orden
 					<select name="new_orden[]"></select>
 				</label>
+
+				<label class="large-3 columns">Ordenszugehörigkeit von
+					<input name="orden_von_von[]" type="text">
+				</label>
+				<label class="large-1 columns none">
+					<input name="orden_von_bis[]" type="text">
+				</label>
+				<label class="large-2 columns none">
+					<input name="orden_von_verbal[]" type="text">
+				</label>
+				<label class="large-3 columns">Ordenszugehörigkeit bis
+					<input name="orden_bis_von[]" type="text">
+				</label>
+				<label class="large-1 columns none">
+					<input name="orden_bis_bis[]" type="text">
+				</label>
+				<label class="large-2 columns none">
+					<input name="orden_bis_verbal[]" type="text">
+				</label>
+
+				<!--
 				<label class="large-12 columns">Ordenszugehörigkeit von -  bis
 					<select name="new_orden_zeitraum[]"></select>
 				</label>
+				-->
 				<label class="large-12 columns">Klosterstatus
 					<select name="new_klosterstatus[]"></select>
 				</label>
@@ -331,6 +376,7 @@
 
 		<fieldset class="large-12 columns">
 			<legend>???</legend><label class="large-12 columns">Literatur<select name="literatur[]" multiple></select></label>
+			<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 		</fieldset>
 
 

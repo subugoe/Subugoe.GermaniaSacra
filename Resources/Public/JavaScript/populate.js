@@ -213,7 +213,7 @@ $.fn.extend({
 					var fieldset = $this.find('fieldset:eq(2)');
 				}
 				else {
-					var fieldset = $this.find('div.multiple:eq(2)').clone(true);
+					var fieldset = $this.find('div.multiple:eq('+ key +')').clone(true);
 				}
 
 				fieldset.find('label :input').each( function() {
@@ -246,7 +246,7 @@ $.fn.extend({
 					});
 
 					if (key > 0) {
-						$this.find('div.multiple:eq(2)').append(fieldset);
+						$this.find('fieldset:eq(2)').append(fieldset);
 					}
 					$this.find("textarea").autosize();
 					$this.find("input[type=url]").keyup();
@@ -456,6 +456,10 @@ $.fn.extend({
 
 	create_kloster: function() {
 		var url = "Subugoe.GermaniaSacra/kloster/create";
+
+
+		alert($("#NewKloster").serialize());
+
 		$.post(url, $("#NewKloster").serialize())
 		.done(function(respond, status, jqXHR) {
 			if (status == "success") {
