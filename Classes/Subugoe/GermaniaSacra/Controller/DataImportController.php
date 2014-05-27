@@ -1239,7 +1239,6 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
-		$sql = 'SET sql_log_bin = 0';
 		$sqlConnection->executeUpdate($sql);
 		$this->delAccessTabsAction();
 		$this->importAccessAction();
@@ -1255,7 +1254,7 @@ class DataImportController extends ActionController {
 		$this->importKlosterstandortAction();
 		$this->importOrdenAction();
 		$this->importKlosterordenAction();
-		delAccessTabsAction();
+		$this->delAccessTabsAction();
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 	}
