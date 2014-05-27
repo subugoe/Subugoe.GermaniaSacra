@@ -448,7 +448,7 @@ class DataImportController extends ActionController {
 				$sql = 'SELECT * FROM Ort WHERE ID_Bistum=' . $uid . '';
 				$ortuids = $sqlConnection->fetchAll($sql);
 				if (!empty($ortuids)) {
-					foreach ($ortuids as $ortuid) { echo $ortuid['ID'] . "<br>";
+					foreach ($ortuids as $ortuid) {
 						$ort = $this->ortRepository->findOneByUid($ortuid['ID']);
 						$ortBistum = $this->bistumRepository->findByIdentifier($bistumUUID);
 						$ort->setBistum($ortBistum);
@@ -943,10 +943,6 @@ class DataImportController extends ActionController {
 				$KlosterstandortObject->setBemerkung_standort($bemerkung_standort);
 				$KlosterstandortObject->setTemp_literatur_alt($temp_literatur_alt);
 				$this->klosterstandortRepository->add($KlosterstandortObject);
-
-
-				echo "UID = " . $uid . ", Klosternummer = " . $kloster . "<br>";
-
 				$this->persistenceManager->persistAll();
 				if (isset($lit) && !empty($lit)) {
 					$lit = trim($lit, "- −");
@@ -1239,10 +1235,7 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
-<<<<<<< HEAD
-		$sqlConnection->executeUpdate($sql);
-=======
->>>>>>> dde4842b0bf38a95f3202960618959bc60edf5e4
+
 		$this->delAccessTabsAction();
 		$this->importAccessAction();
 		$this->emptyTabsAction();
@@ -1251,6 +1244,8 @@ class DataImportController extends ActionController {
 		$this->importPersonallistenstatusAction();
 		$this->importLandAction();
 		$this->importOrtAction();
+
+
 		$this->importBistumAction();
 		$this->importBandAction();
 		$this->importKlosterAction();
@@ -1258,6 +1253,7 @@ class DataImportController extends ActionController {
 		$this->importOrdenAction();
 		$this->importKlosterordenAction();
 		$this->delAccessTabsAction();
+
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 	}
