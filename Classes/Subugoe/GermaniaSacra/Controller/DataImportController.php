@@ -1239,7 +1239,10 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
+<<<<<<< HEAD
 		$sqlConnection->executeUpdate($sql);
+=======
+>>>>>>> dde4842b0bf38a95f3202960618959bc60edf5e4
 		$this->delAccessTabsAction();
 		$this->importAccessAction();
 		$this->emptyTabsAction();
