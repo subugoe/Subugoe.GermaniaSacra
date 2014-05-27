@@ -28,6 +28,12 @@ class Band {
 	protected $bistum;
 
 	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
+	 * @ORM\OneToMany(mappedBy="band")
+	 */
+	public $klosters;
+
+	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bistum
 	 */
 	public function getBistum() {
@@ -41,12 +47,6 @@ class Band {
 	public function setBistum(\Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum) {
 		$this->bistum = $bistum;
 	}
-
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster>
-	 * @ORM\OneToMany(mappedBy="band")
-	 */
-	protected $klosters;
 
 	/**
 	 * @var string

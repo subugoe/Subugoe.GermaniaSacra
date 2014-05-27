@@ -1,13 +1,15 @@
 <?php
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
+
+
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @Flow\Entity
  */
-class Urltyp {
+class Bearbeiter {
 
 	/**
 	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
@@ -22,15 +24,15 @@ class Urltyp {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
-	 * @ORM\OneToMany(mappedBy="urltyp")
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster>
+	 * @ORM\OneToMany(mappedBy="bearbeiter")
 	 */
-	protected $urls;
+	protected $klosters;
 
 	/**
 	 * @var string
 	 */
-	protected $name;
+	protected $bearbeiter;
 
 	/**
 	 * @return integer
@@ -50,21 +52,21 @@ class Urltyp {
 	/**
 	 * @return string
 	 */
-	public function getName() {
-		return $this->name;
+	public function getBearbeiter() {
+		return $this->bearbeiter;
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $bearbeiter
 	 * @return void
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setBearbeiter($bearbeiter) {
+		$this->bearbeiter = $bearbeiter;
 	}
 
 	public function __toString()
 	{
-	  return $this->getName();
+	  return $this->getBearbeiter();
 	}
 
 	public function getUUID()

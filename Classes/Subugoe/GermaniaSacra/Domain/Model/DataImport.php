@@ -9,7 +9,15 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Kloster {
+class DataImport {
+
+	/**
+	* @var string
+	* @ORM\Id
+	* @ORM\Column(name="uid")
+	* @ORM\GeneratedValue
+	*/
+	protected $persistenceObjectIdentifier;
 
     /**
      * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
@@ -22,11 +30,8 @@ class Kloster {
      * @Flow\Inject
      */
     protected $configurationManager;
-	/**
-	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
-	 */
-	protected $uid;
+
+
 
 	/**
 	 * @var integer
@@ -57,12 +62,7 @@ class Kloster {
 	 * @var string
 	 */
 	protected $text_gs_band;
-
-	/**
-	 * @var string
-	 */
-	protected $bearbeitungsstand;
-
+	
 	/**
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	 * @ORM\OneToMany(mappedBy="kloster", cascade={"all"})
@@ -76,26 +76,17 @@ class Kloster {
 	protected $klosterordens;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus
-	 * @ORM\ManyToOne(inversedBy="klosters")
+	 * @var integer
 	 */
 	protected $bearbeitungsstatus;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeiter
-	 * @ORM\ManyToOne(inversedBy="klosters")
-	 */
-	protected $bearbeiter;
-
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus
-	 * @ORM\ManyToOne(inversedBy="klosters")
+	 * @var integer
 	 */
 	protected $personallistenstatus;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Band
-	 * @ORM\ManyToOne(inversedBy="klosters")
+	 * @var integer
 	 */
 	protected $band;
 
@@ -117,30 +108,27 @@ class Kloster {
 	protected $creationDate;
 
 	/**
-	 * @var \DateTime
-	 */
-	protected $changedDate;
-
-	/**
 	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	*/
 	public function getKlosterstandorts() {
 		return $this->klosterstandorts;
 	}
- 
+
 	/**
 	* @param \Doctrine\Common\Collections\Collection $klosterstandorts
 	* @return void
 	*/
 	public function setKlosterstandorts(\Doctrine\Common\Collections\Collection $klosterstandorts) {
-		
+
 		foreach ($klosterstandorts as $klosterstandort){$klosterstandort->setKloster($this);}
-	
+
 		$this->klosterstandorts = $klosterstandorts;
 	}
 
+
+
 	public function removeKlosterstandorts($klosterstandorts) {
-		
+
 		foreach ($klosterstandorts as $klosterstandort){
 			$klosterstandort->removeElement($klosterstandort);
 		}
@@ -152,18 +140,25 @@ class Kloster {
 	public function getKlosterordens() {
 		return $this->klosterordens;
 	}
- 
+
 	/**
 	* @param \Doctrine\Common\Collections\Collection $klosterordens
 	* @return void
 	*/
 	public function setKlosterordens(\Doctrine\Common\Collections\Collection $klosterordens) {
-		
+
 		foreach ($klosterordens as $klosterorden){$klosterorden->setKloster($this);}
-	
+
 		$this->klosterordens = $klosterordens;
 	}
-	
+
+	/**
+	* @return string
+	*/
+	public function getPersistenceObjectIdentifier() {
+		return $this->persistenceObjectIdentifier;
+	}
+
 	/**
 	 * @return integer
 	 */
@@ -269,60 +264,33 @@ class Kloster {
 		$this->text_gs_band = $text_gs_band;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getBearbeitungsstand() {
-		return $this->bearbeitungsstand;
+	public function __toString()
+	{
+	  return $this->getKloster();
 	}
 
 	/**
-	 * @param string $bearbeitungsstand
-	 * @return void
-	 */
-	public function setBearbeitungsstand($bearbeitungsstand) {
-		$this->bearbeitungsstand = $bearbeitungsstand;
-	}
-
-	/**
-	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus
+	 * @return integer
 	 */
 	public function getBearbeitungsstatus() {
 		return $this->bearbeitungsstatus;
 	}
 	
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
 	 * @return void
 	 */
 	public function setBearbeitungsstatus($bearbeitungsstatus) {
 		$this->bearbeitungsstatus = $bearbeitungsstatus;
 	}
-
+	
 	/**
-	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bearbeiter
-	 */
-	public function getBearbeiter() {
-		return $this->bearbeiter;
-	}
-
-	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeiter $bearbeiter
-	 * @return void
-	 */
-	public function setBearbeiter($bearbeiter) {
-		$this->bearbeiter = $bearbeiter;
-	}
-
-	/**
-	 * @return \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus
+	 * @return integer
 	 */
 	public function getPersonallistenstatus() {
 		return $this->personallistenstatus;
 	}
 	
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus $personallistenstatus
 	 * @return void
 	 */
 	public function setPersonallistenstatus($personallistenstatus) {
@@ -330,14 +298,13 @@ class Kloster {
 	}
 
 	/**
-	 * @return \Subugoe\GermaniaSacra\Domain\Model\Band
+	 * @return integer
 	 */
 	public function getBand() {
 		return $this->band;
 	}
 	
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
 	 * @return void
 	 */
 	public function setBand($band) {
@@ -375,7 +342,7 @@ class Kloster {
 	*/
 	public function setKlosterHasLiteraturs(\Doctrine\Common\Collections\Collection $klosterHasLiteraturs) {
 
-		foreach ($klosterHasLiteraturs as $klosterHasLiteratur){$klosterHasLiteratur->setKloster($this);}
+		foreach ($klosterHasLiteraturs as $klosterHasLiteraturl){$klosterHasLiteratur->setKloster($this);}
 
 		$this->klosterHasLiteraturs = $klosterHasLiteraturs;
 	}
@@ -384,9 +351,9 @@ class Kloster {
 	* @ORM\PrePersist
 	* @return void
 	*/
-//	public function prePersist() {
-//		$this->setCreationDate(new \DateTime());
-//	}
+	public function prePersist() {
+		$this->setcreationDate(new \DateTime());
+	}
 
 	/**
 	 * @return \DateTime
@@ -399,36 +366,8 @@ class Kloster {
 	 * @param \DateTime $creationDate
 	 * @return void
 	 */
-	public function setCreationDate(\DateTime $creationDate) {
+	public function setcreationDate(\DateTime $creationDate = NULL) {
 		$this->creationDate = $creationDate;
-	}
-
-	/**
-	* @ORM\PreUpdate
-	* @return void
-	*/
-	public function preUpdate() {
-		$this->setChangedDate(new \DateTime());
-	}
-
-	/**
-	 * @return \DateTime
-	 */
-	public function getChangedDate() {
-		return $this->changedDate;
-	}
-
-	/**
-	 * @param \DateTime $changedDate
-	 * @return void
-	 */
-	public function setChangedDate(\DateTime $changedDate) {
-		$this->changedDate = $changedDate;
-	}
-
-	public function __toString()
-	{
-	  return $this->getKloster();
 	}
 
 	public function getUUID()

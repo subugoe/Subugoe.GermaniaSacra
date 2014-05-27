@@ -216,7 +216,15 @@ class Klosterstandort {
 	public function getUid() {
 		return $this->uid;
 	}
-	
+
+	/**
+	 * @param integer $uid
+	 * @return void
+	 */
+	public function setUid($uid) {
+		$this->uid = $uid;
+	}
+
 	/**
 	 * @return string
 	 */

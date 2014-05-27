@@ -46,9 +46,6 @@ $(function () {
 		})
 	}),
 
-
-
-
 	$(".new").click(function (t) {
 		t.preventDefault();
 		$("#new").new_kloster();
@@ -67,20 +64,80 @@ $(function () {
 		})
 	}),
 
-
+	$("#UpdateList").submit(function (t) {
+		t.preventDefault();
+		if ($("input[name='auswahl[]']:checked").length == 0) {
+			alert("Wählen Sie bitte mindestens einen Eintrag aus.");
+			return false;
+		}
+		var url = $('#UpdateList').attr("action");
+		$("#UpdateList").update_list(url);
+	}),
 
 	$("#EditKloster").submit(function (t) {
 		t.preventDefault();
 		var url = $('#EditKloster').attr("action");
-
 		$("#EditKloster").update_kloster(url);
 	}),
-
 
 	$("#NewKloster").submit(function (t) {
 		t.preventDefault();
 		$("#NewKloster").create_kloster();
 	}),
 
-	$("#list").populate_liste()
+	$(".delete").click(function (t) {
+		t.preventDefault();
+		var key = $(this).index(".delete");
+		var selector = "a#deleteLink" + key;
+		var uuid = $(selector).attr('href');
+		var csrfSelector = "input#csrf" + key;
+		var csrf = $(csrfSelector).val();
+
+		$("#delete").delete_kloster(uuid, csrf);
+	}),
+
+	$( "select[name='ort[]']" ).on("click", function (t) {
+		t.preventDefault();
+		var index = $(this).index("select[name='ort[]']");
+		$( "select[name='ort[]']:eq(" + index + ")" ).replaceWith( '<input id="searchOrt" type="text" name="ort">' );
+	}),
+
+	$( "#searchOrt" ).keyup(function (t) {
+		t.preventDefault();
+		var tabindex = ($(this).prop("tabindex"));
+		var ort = $(this).val();
+		if (ort.length > 3) {
+			$("#searchOrt").find_ort(ort, tabindex);
+		}
+	}),
+
+	$( "#searchOrtEdit" ).keyup(function (t) {
+		t.preventDefault();
+		var tabindex = ($(this).prop("tabindex"));
+		var ort = $(this).val();
+		if (ort.length > 3) {
+			$("#searchOrt").find_ortEdit(ort, tabindex);
+		}
+	}),
+
+	$( "#searchOrtNew" ).keyup(function (t) {
+		t.preventDefault();
+		var tabindex = ($(this).prop("tabindex"));
+		var ort = $(this).val();
+		if (ort.length > 3) {
+		  	$("#searchOrt").find_ortNew(ort, tabindex);
+		}
+	}),
+
+	$( "a" ).on("click", function (t) {
+		t.preventDefault();
+		var page = $(this).data("page");
+
+		if (page) {
+			var url = "kloster?--subugoe-germaniasacra-viewhelpers-paginateviewhelper[currentPage]=" + page;
+			window.location = url;
+		}
+	}),
+
+	$("#list").populate_liste(temp_page)
 });

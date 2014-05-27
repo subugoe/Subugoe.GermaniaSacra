@@ -11,7 +11,18 @@ use TYPO3\Flow\Persistence\Repository;
  */
 class OrtRepository extends Repository {
 
-	// add customized methods here
+	/**
+	 * Finds ort as per entered search string
+	 *
+	 * @param $searchString The entered search string
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The ort
+	 */
+	public function findOrtBySearchString($searchString) {
+	        $query = $this->createQuery();
+	        return $query->matching($query->like('ort', $searchString))
+	                ->setOrderings(array('ort' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING))
+	                ->execute();
+	}
 
 }
 ?>

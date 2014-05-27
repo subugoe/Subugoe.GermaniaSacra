@@ -115,6 +115,13 @@ textarea {
   width: 85%;
 }
 
+#edit .large-13 > input, #edit .large-13 >
+select, #edit .large-13 >
+textarea {
+  width: 85%;
+  height: 200px;
+}
+
 input[type=submit]:not([disabled]):active, input[type=submit]:not([disabled]):focus, input[type=submit]:not([disabled]):hover,
 button:not([disabled]):active,
 button:not([disabled]):focus,

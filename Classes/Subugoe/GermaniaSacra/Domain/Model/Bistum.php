@@ -45,7 +45,7 @@ class Bistum {
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl>
 	 * @ORM\OneToMany(mappedBy="bistum", cascade={"all"})
 	 */
-	protected $bistumHasUrls;
+//	protected $bistumHasUrls;
 
 	/**
 	 * @var string
@@ -179,6 +179,21 @@ class Bistum {
 		foreach ($bistumHasUrls as $bistumHasUrl){$bistumHasUrl->setBistum($this);}
 
 		$this->bistumHasUrls = $bistumHasUrls;
+	}
+
+	/**
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Ort
+	 */
+	public function getOrt() {
+		return $this->ort;
+	}
+
+	/**
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
+	 * @return void
+	 */
+	public function setOrt(\Subugoe\GermaniaSacra\Domain\Model\Ort $ort) {
+		$this->ort = $ort;
 	}
 
 	public function __toString()

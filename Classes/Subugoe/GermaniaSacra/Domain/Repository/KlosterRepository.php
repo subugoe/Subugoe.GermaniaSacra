@@ -13,9 +13,10 @@ class KlosterRepository extends Repository {
 
 	// add customized methods here
 	
-	public function findKlosters() {
-	    $query = $this->createQuery();     
-		$query->setLimit(10);
+	public function findKlosters($offset=0, $limit=10) {
+	    $query = $this->createQuery();
+		$query->setOffset($offset);
+		$query->setLimit($limit);
 		return $query->execute();
 	}
 }

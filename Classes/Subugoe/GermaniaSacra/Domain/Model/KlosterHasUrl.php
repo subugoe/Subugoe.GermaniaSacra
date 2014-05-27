@@ -12,6 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 class KlosterHasUrl {
 
 	/**
+	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	* @Flow\Inject
+	*/
+	protected $persistenceManager;
+
+	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 * @ORM\ManyToOne(inversedBy="klosterHasUrls")
 	 */
@@ -38,7 +44,6 @@ class KlosterHasUrl {
 		$this->kloster = $kloster;
 	}
 
-
 	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Url
 	 */
@@ -54,7 +59,10 @@ class KlosterHasUrl {
 		$this->url = $url;
 	}
 
-
+	public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
 
 }
 ?>

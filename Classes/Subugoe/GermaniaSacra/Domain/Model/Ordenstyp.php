@@ -12,6 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Ordenstyp {
 
 	/**
+  * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+  * @Flow\Inject
+  */
+ protected $persistenceManager;
+
+	/**
 	 * @var integer
 	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
 	 */
@@ -62,5 +68,11 @@ class Ordenstyp {
 	{
 	  return $this->getOrdenstyp();
 	}
+
+	public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
+
 }
 ?>

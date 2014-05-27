@@ -54,7 +54,5 @@ class BistumHasUrl {
 		$this->url = $url;
 	}
 
-
-
 }
 ?>

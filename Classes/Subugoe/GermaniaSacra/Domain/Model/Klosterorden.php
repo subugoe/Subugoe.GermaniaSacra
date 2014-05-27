@@ -71,6 +71,21 @@ class Klosterorden {
 	protected $bemerkung;
 
 	/**
+	 * @return integer
+	 */
+	public function getUid() {
+		return $this->uid;
+	}
+
+	/**
+	 * @param integer $uid
+	 * @return void
+	 */
+	public function setUid($uid) {
+		$this->uid = $uid;
+	}
+
+	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 */
 	public function getKloster() {
@@ -205,13 +220,6 @@ class Klosterorden {
 		$this->klosterstatus = $klosterstatus;
 	}
 
-	/**
-	 * @return integer
-	 */
-	public function getUid() {
-		return $this->uid;
-	}
-	
 	/**
 	 * @return string
 	 */

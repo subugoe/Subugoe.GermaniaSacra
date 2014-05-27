@@ -34,11 +34,10 @@ class Bearbeitungsstatus {
 	 */
 	protected $name;
 
-
 	/**
 	 * @return integer
 	 */
-	public function getuid() {
+	public function getUid() {
 		return $this->uid;
 	}
 
@@ -46,7 +45,7 @@ class Bearbeitungsstatus {
 	 * @param integer $uid
 	 * @return void
 	 */
-	public function setuid($uid) {
+	public function setUid($uid) {
 		$this->uid = $uid;
 	}
 	

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @Flow\Entity
  */
 class Ort {
+
 	/**
 	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
 	* @Flow\Inject
@@ -54,7 +55,7 @@ class Ort {
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
 	 */
-	protected $klosterstandorts;
+//	protected $klosterstandorts;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Land
@@ -72,7 +73,7 @@ class Ort {
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
 	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
 	 */
-	protected $ortHasUrls;
+//	protected $ortHasUrls;
 
 	/**
 	 * @return integer
@@ -177,6 +178,21 @@ class Ort {
 	 */
 	public function setLaenge($laenge) {
 		$this->laenge = $laenge;
+	}
+
+	/**
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Land
+	 */
+	public function getLand() {
+		return $this->land;
+	}
+
+	/**
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Land $land
+	 * @return void
+	 */
+	public function setLand(\Subugoe\GermaniaSacra\Domain\Model\Land $land) {
+		$this->land = $land;
 	}
 
 	/**

@@ -6,8 +6,7 @@
 
 <span></span>
 
-
-<form name="EditForm">
+<form id="UpdateList" name="UpdateList" action="kloster/updateList">
 	<table class="large-12 columns" id="list">
 		<tr>
 			<th></th>
@@ -45,16 +44,20 @@
 				<input type="text" name="kloster[]">
 			</td>
 			<td>
-				<select name="ort[]" multiple></select>
+				<input id="searchOrt" type="text" name="ort[]" tabindex="">
 			</td>
 			<td>
-				<input type="text" name="GND[]">
+				<input type="text" name="gnd[]">
 			</td>
 			<td>
 				<textarea name="bearbeitungsstand[]"></textarea>
 			</td>
 			<td>
 				<a href="" id="editLink"><button class="edit">Bearbeiten</button></a>
+			</td>
+			<td>
+				<a href="" id="deleteLink"><button class="delete">Löschen</button></a>
+				<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 			</td>
 		</tr>
 	</table>
@@ -63,6 +66,7 @@
 
 	<input class="button" type="submit" value="Änderungen übernehmen">
 </form>
+
 <div id="edit">
 	<h1>
 		Kloster bearbeiten
@@ -71,47 +75,54 @@
 	<form id="EditKloster" action="">
 		<fieldset>
 			<legend>Kloster</legend>
-			<label class="large-9 columns">Klostername
+			<label class="large-6 columns">Klostername
 				<textarea name="kloster_name" required="required"></textarea>
 			</label>
 			<label class="large-3 columns">Kloster-Nr. 
 				<input disabled="disabled" name="kloster_id" required="required" type="text">
 			</label>
+			<label class="large-3 columns">Datensatz erzeugt am
+				<input disabled="disabled" name="creationdate" required="required" type="date">
+			</label>
 			<label class="large-4 columns">Status 
 				<select name="bearbeitungsstatus" required="required"></select>
 			</label>
-			<label class="large-8 columns">Bearbeitungsstand 
+			<label class="large-4 columns">Bearbeitungsstand
 				<textarea name="bearbeitungsstand"></textarea>
 			</label>
-			<label class="large-4 columns">Bearbeiter 
+			<label class="large-4 columns">Bearbeiter
+				<select name="bearbeiter" required="required"></select>
+			</label>
+
+			<label class="large-4 columns">Patrozinium
+				<textarea name="patrozinium" required="required"></textarea>
+			</label>
+			<label class="large-4 columns">GS-Band
+				<select name="band"></select>
+			</label>
+			<label class="large-4 columns">Seitenangabe GS-Band
+				<input name="band_seite" type="text">
+			</label>
+			<label class="large-6 columns">Kommentar online
+				<textarea name="bemerkung"></textarea>
+			</label>
+			<label class="large-6 columns">Inhalt GS-Band
+				<textarea name="text_gs_band"></textarea>
+			</label>
+
+			<label class="large-12 columns">Personallistenstatus
 				<select name="personallistenstatus" required="required"></select>
 			</label>
 
-			<label class="large-8 columns">Datensatz erzeugt am 
-				<input disabled="disabled" name="creationdate" required="required" type="date">
-			</label>
-
-			<label class="large-12 columns">Patrozinium 
-				<textarea name="patrozinium" required="required"></textarea>
-			</label>
-			<label class="large-12 columns">Öffentliche Bemerkungen 
-				<textarea name="bemerkung"></textarea>
-			</label>
-			<label class="large-6 columns">GS-Band 
-				<select name="band"></select>
-			</label>
-			<label class="large-6 columns">Seitenangabe GS-Band 
-				<input name="band_seite" type="text">
-			</label>
-			<label class="large-12 columns">Inhalt GS-Band 
-				<textarea name="text_gs_band"></textarea>
+			<label class="large-12 columns">Zuletzt bearbeitet
+				<input disabled="disabled" name="changeddate" type="text">
 			</label>
 		</fieldset>
 		<fieldset class="large-12 columns">
 			<legend>Orte</legend>
 			<div class="multiple">
-				<label class="large-5 columns">Ort 
-					<select name="ort[]"></select>
+				<label class="large-5 columns">Ort
+					<input id="searchOrtEdit" type="text" name="ort[]" tabindex="20">
 				</label>
 				<label class="large-5 columns">Bistum 
 					<select name="bistum[]"></select>
@@ -119,10 +130,10 @@
 				<label class="large-2 columns">Wüstung 
 					<input name="wuestung[]" type="checkbox">
 				</label>
-				<label class="large-6 columns">Breite 
+				<label class="large-6 columns">Breite
 					<input name="breite[]" type="number">
 				</label>
-				<label class="large-6 columns">Länge 
+				<label class="large-6 columns">Länge
 					<input name="laenge[]" type="number">
 				</label>
 				<label class="large-3 columns">Standort von
@@ -146,8 +157,11 @@
 				<label class="large-12 columns">Gründer
 					<textarea name="gruender[]"></textarea>
 				</label>
-				<label class="large-12 columns">Interne Anmerkungen
+				<label class="large-12 columns">Bemerkung Standort
 					<textarea name="bemerkung_standort[]"></textarea>
+				</label>
+				<label class="large-12 columns">Interne Anmerkungen
+					<textarea name="standort_interne_bemerkung[]"></textarea>
 				</label>
 			</div>
 		</fieldset>
@@ -202,8 +216,8 @@
 				<label class="large-8 columns">Weitere Links<input name="links[]" type="url"></label><span class="link large-4 columns"></span>
 			</div>
 		</fieldset>
-		<fieldset class="large-12 columns">
-			<legend>???</legend><label class="large-12 columns">Literatur<select name="literatur[]" multiple size="3"></select></label>
+		<fieldset class="large-13 columns">
+			<legend>Literatur</legend><label class="large-13 columns">Literatur<select name="literatur[]" multiple size="3"></select></label>
 			<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 		</fieldset>
 		<input class="button" type="submit" value="Speichern">
@@ -226,16 +240,17 @@
 				<select name="new_bearbeitungsstatus" required="required"></select>
 			</label>
 			<label class="large-8 columns">Bearbeitungsstand
-				<textarea name="bearbeitungsstand"></textarea>
+				<textarea name="new_bearbeitungsstand"></textarea>
 			</label>
+
 			<label class="large-4 columns">Bearbeiter
+				<select name="new_bearbeiter" required="required"></select>
+			</label>
+
+
+			<label class="large-4 columns">Personallistenstatus
 				<select name="new_personallistenstatus" required="required"></select>
 			</label>
-			<!--
-			<label class="large-8 columns">Datensatz erzeugt am
-				<input name="???" required="required" type="date">
-			</label>
-			-->
 			<label class="large-12 columns">Patrozinium
 				<textarea name="new_patrozinium" required="required"></textarea>
 			</label>
@@ -257,7 +272,7 @@
 			<legend>Orte</legend>
 			<div class="multiple">
 				<label class="large-5 columns">Ort
-					<select name="new_ort[]"></select>
+					<input id="searchOrtNew" type="text" name="new_ort[]" tabindex="21">
 				</label>
 				<label class="large-5 columns">Bistum
 					<select name="new_bistum[]"></select>
@@ -290,11 +305,6 @@
 				<label class="large-2 columns none">
 					<input name="bis_verbal[]" type="text">
 				</label>
-				<!--
-				<label class="large-12 columns">Standort von - bis
-					<select name="new_klosterstandort_zeitraum[]"></select>
-				</label>
-				-->
 				<label class="large-12 columns">Gründer
 					<textarea name="new_gruender[]"></textarea>
 				</label>
@@ -335,12 +345,6 @@
 				<label class="large-2 columns none">
 					<input name="orden_bis_verbal[]" type="text">
 				</label>
-
-				<!--
-				<label class="large-12 columns">Ordenszugehörigkeit von -  bis
-					<select name="new_orden_zeitraum[]"></select>
-				</label>
-				-->
 				<label class="large-12 columns">Klosterstatus
 					<select name="new_klosterstatus[]"></select>
 				</label>
@@ -349,8 +353,6 @@
 				</label>
 			</div>
 		</fieldset>
-
-		<!--
 
 		<fieldset class="large-12 columns">
 			<legend>Links</legend>
@@ -372,39 +374,12 @@
 			</div>
 		</fieldset>
 
-		-->
-
-		<fieldset class="large-12 columns">
-			<legend>???</legend><label class="large-12 columns">Literatur<select name="literatur[]" multiple></select></label>
+		<fieldset class="large-13 columns">
+			<legend>Literatur</legend><label class="large-13 columns">Literatur<select name="literatur[]" multiple size="3"></select></label>
 			<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 		</fieldset>
-
-
 		<input class="button" type="submit" value="Speichern">
 	</form>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </f:section>

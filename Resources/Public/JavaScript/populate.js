@@ -1,21 +1,45 @@
 $.fn.extend({
 
+// Die Kloster-Liste aktualisieren
+	update_list: function(url) {
+
+		$.post(url, $("#UpdateList").serialize())
+		.done(function(respond, status, jqXHR) {
+			if (status == "success") {
+				$('#confirm').modal({
+					closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+					position: ["20%",],
+					overlayId: 'confirm-overlay',
+					containerId: 'confirm-container',
+					onShow: function (dialog) {
+						$('.message').append("Der Eintrag wurde erfolgreich bearbeitet.");
+					}
+				});
+				setTimeout(function() {window.location.href = 'kloster'} , 1000);
+			}
+		})
+		.fail(function (jqXHR, textStatus) {
+			$('#confirm').modal({
+				closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+				position: ["20%",],
+				overlayId: 'confirm-overlay',
+				containerId: 'confirm-container',
+				onShow: function (dialog) {
+					$('.message').append(jqXHR.responseText);
+				}
+			});
+	   });
+	},
+
 //  Eintragsliste anzeigen
-	populate_liste: function() {
+	populate_liste: function(page) {
 	
 		var $this = $(this);
 
-		url = "kloster/jsonlist";
-		$.getJSON(url, function(response){
-			var ortGemeindeKreisArray = response[1];
-			var $inputOrtGemeindeKreis = $("select[name='ort[]']");
-			$.each(ortGemeindeKreisArray, function (k, v) {
-				$.each(v, function (k1, v1) {
-					$inputOrtGemeindeKreis.append($("<option>", { value: v1, html: k1 }));
-				});
-			});
+		url = "kloster/jsonList";
+		$.getJSON(url, { page: page }, function(response){
 
-			var bearbeitungsstatusArray = response[2];
+			var bearbeitungsstatusArray = response[1];
 			var $inputBearbeitungsstatus = $("select[name='bearbeitungsstatus[]']");
 			$.each(bearbeitungsstatusArray, function (k, v) {
 				$.each(v, function (k1, v1) {
@@ -31,28 +55,11 @@ $.fn.extend({
 					name = name.replace('[]', '');
 					var val = response[0][key][name];
 					if ( $(this).is('[type=checkbox]') ) {
-						return;
-					} else if ( $(this).is('select') ) {
-						if(name=="ort"){
-							if (val.length > 1) {
-								$.each(val, function (ortkey, ortvalue) {
-								var selector = '#selectId' + (key+1);
-								tr.find("select[name='ort[]'] option").each(function( i, opt ) {
-								    if( opt.value == ortvalue ) {
-								        $(opt).attr('selected', 'selected');
-								    }
-								});
-								})
-							}
-							else {
-								tr.find("select[name='ort[]'] option").each(function( i, opt ) {
-									if( opt.value == val ) {
-										$(opt).attr('selected', 'selected');
-									}
-								});
-							}
+						if (name=="auswahl") {
+							$(this).val( value.uuid );
 						}
-						else if (name=="bearbeitungsstatus") {
+					} else if ( $(this).is('select') ) {
+						if (name=="bearbeitungsstatus") {
 							tr.find("select[name='bearbeitungsstatus[]'] option").each(function( i, opt ) {
 								if( opt.value == val ) {
 									$(opt).attr('selected', 'selected');
@@ -63,25 +70,47 @@ $.fn.extend({
 							$(this).append('<option>' + val + '</option>');
 						}
 					} else {
-						$(this).val( val );
+						if (name !== "__csrfToken") {
+							$(this).val( val );
+						}
 					}
+
+
+					if (name !== "__csrfToken" && name !== "auswahl") {
+						$(this).attr('name', name + '[' + value.uuid + '][]');
+					}
+
 				});
 				$this.append(tr);
+
+				var tabindex = key+1;
+				$this.find('input#searchOrt:eq(' + key + ')').attr('tabindex', tabindex);
+
 				var url= "kloster/edit/" + value.uuid;
 				var id = "editLink" + (key+1);
 				$this.find('a#editLink:eq(1)').attr('href', url);
 				$this.find('a#editLink:eq(1)').attr('id', id);
+
+				var url= value.uuid;
+				var id = "deleteLink" + (key+1);
+				$this.find('a#deleteLink:eq(1)').attr('href', url);
+				$this.find('a#deleteLink:eq(1)').attr('id', id);
+
+				var id = "csrf" + (key+1);
+				$this.find('input#csrf:eq(1)').attr('id', id);
 			});
 			$this.find("textarea").autosize();
 		});
-		
-	
+
 	},
 
 // Das Formular zum Editiren mit Daten des jeweiligen Eintrages ausfüllen
 	populate_kloster: function(index, url) {
 
 		var $this = $(this);
+
+		var ort1 = $('select[tabindex=20]');
+		ort1.replaceWith('<input id="searchOrtEdit" type="text" name="ort[]" tabindex="20">');
 
 		$.getJSON(url, function(response){
 
@@ -116,6 +145,9 @@ $.fn.extend({
 			var literaturArray = response[4];
 			var $inputLiteratur = $("select[name='literatur[]']");
 			$inputLiteratur.empty();
+
+			$inputLiteratur.append($("<option>", { value: "", html: "Keine Literatur" }));
+
 			$.each(literaturArray, function (k, v) {
 				$.each(v, function (k1, v1) {
 					$inputLiteratur.append($("<option>", { value: v1, html: k1 }));
@@ -149,6 +181,15 @@ $.fn.extend({
 				});
 			});
 
+			var bearbeiterArray = response[8];
+			var $inputBearbeiter = $("select[name='bearbeiter']");
+			$inputBearbeiter.empty();
+			$.each(bearbeiterArray, function (k, v) {
+				$.each(v, function (k1, v1) {
+					$inputBearbeiter.append($("<option>", { value: v1, html: k1 }));
+				});
+			});
+
 			var klosterstandorte = response[0].klosterstandorte;
 			var klosterorden = response[0].klosterorden;
 			var klosterurl = response[0].url;
@@ -165,17 +206,24 @@ $.fn.extend({
 				name = name.replace('[]', '');
 				var val = response[0][name];
 				if ( $(this).is('[type=checkbox]') ) {
-					if (name == "wuestung" && val==1) {
-						$(this).prop('checked', true);
-					}
-					else {
+//					if (name == "wuestung" && val==1) {
+//						$(this).prop('checked', true);
+//					}
+//					else {
 						return;
-					}
+//					}
 				}
 				else if ( $(this).is('select') ) {
 
 					if (name=="bearbeitungsstatus") {
 						fieldset.find("select[name='bearbeitungsstatus'] option").each(function( i, opt ) {
+							if( opt.value == val ) {
+								$(opt).attr('selected', 'selected');
+							}
+						});
+					}
+					else if (name=="bearbeiter") {
+						fieldset.find("select[name='bearbeiter'] option").each(function( i, opt ) {
 							if( opt.value == val ) {
 								$(opt).attr('selected', 'selected');
 							}
@@ -209,11 +257,13 @@ $.fn.extend({
 			$this.find("input[type=url]").keyup();
 
 			$.each(klosterorden, function (key, value) {
+
 				if (key == 0) {
 					var fieldset = $this.find('fieldset:eq(2)');
 				}
 				else {
-					var fieldset = $this.find('div.multiple:eq('+ key +')').clone(true);
+//					var fieldset = $this.find('div.multiple:eq('+ key +')').clone(true);
+					var fieldset = $this.find('div.multiple:eq(1)').clone(true);
 				}
 
 				fieldset.find('label :input').each( function() {
@@ -228,7 +278,7 @@ $.fn.extend({
 							if (name== "orden") {
 								$this.find("select[name='orden[]'] option").each(function( i, opt ) {
 									if( opt.value == val ) {
-										$(opt).attr('selected', 'selected');
+										$(opt).attr('selected', true);
 									}
 								});
 							}
@@ -269,19 +319,14 @@ $.fn.extend({
 							if (name == "wuestung" && val==1) {
 								$(this).prop('checked', true);
 							}
+							if (name == "wuestung" && val==0) {
+								$(this).prop('checked', false);
+							}
 							else {
 								return;
 							}
 						} else if ( $(this).is('select') ) {
-
-							if (name== "ort") {
-								$this.find("select[name='ort[]'] option").each(function( i, opt ) {
-									if( opt.value == val ) {
-										$(opt).attr('selected', 'selected');
-									}
-								});
-							}
-							else if (name== "bistum") {
+							if (name== "bistum") {
 								$this.find("select[name='bistum[]'] option").each(function( i, opt ) {
 									if( opt.value == val ) {
 										$(opt).attr('selected', 'selected');
@@ -346,11 +391,28 @@ $.fn.extend({
 		$.post(url, $("#EditKloster").serialize())
 		.done(function(respond, status, jqXHR) {
 			if (status == "success") {
-				alert('Der Eintrag wurde erfolgreich bearbeitet.')
+				$('#confirm').modal({
+					closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+					position: ["20%",],
+					overlayId: 'confirm-overlay',
+					containerId: 'confirm-container',
+					onShow: function (dialog) {
+						$('.message').append("Der Eintrag wurde erfolgreich bearbeitet.");
+					}
+				});
+				setTimeout(function() {window.location.href = 'kloster'} , 1000);
 			}
 		})
 		.fail(function (jqXHR, textStatus) {
-	        alert(jqXHR.responseText);
+			$('#confirm').modal({
+				closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+				position: ["20%",],
+				overlayId: 'confirm-overlay',
+				containerId: 'confirm-container',
+				onShow: function (dialog) {
+					$('.message').append(jqXHR.responseText);
+				}
+			});
 	   });
 	},
 
@@ -359,16 +421,7 @@ $.fn.extend({
 		var url = "Subugoe.GermaniaSacra/kloster/new";
 		$.getJSON(url, function(response){
 
-
-			var ortGemeindeKreisArray = response[0];
-			var $inputOrtGemeindeKreis = $("select[name='new_ort[]']");
-			$.each(ortGemeindeKreisArray, function (k, v) {
-				$.each(v, function (k1, v1) {
-					$inputOrtGemeindeKreis.append($("<option>", { value: v1, html: k1 }));
-				});
-			});
-
-			var bearbeitungsstatusArray = response[1];
+			var bearbeitungsstatusArray = response[0];
 			var $inputBearbeitungsstatus = $("select[name='new_bearbeitungsstatus']");
 			$inputBearbeitungsstatus.empty();
 			$.each(bearbeitungsstatusArray, function (k, v) {
@@ -377,7 +430,7 @@ $.fn.extend({
 				});
 			});
 
-			var personallistenstatusArray = response[2];
+			var personallistenstatusArray = response[1];
 			var $inputPersonallistenstatus = $("select[name='new_personallistenstatus']");
 			$inputPersonallistenstatus.empty();
 			$.each(personallistenstatusArray, function (k, v) {
@@ -386,7 +439,7 @@ $.fn.extend({
 				});
 			});
 
-			var bandArray = response[3];
+			var bandArray = response[2];
 			var $inputBand = $("select[name='new_band']");
 			$inputBand.empty();
 			$inputBand.append($("<option>", { value: '', html: 'Kein Band' }));
@@ -396,7 +449,7 @@ $.fn.extend({
 				});
 			});
 
-			var literaturArray = response[4];
+			var literaturArray = response[3];
 			var $inputLiteratur = $("select[name='literatur[]']");
 			$inputLiteratur.empty();
 			$.each(literaturArray, function (k, v) {
@@ -405,7 +458,7 @@ $.fn.extend({
 				});
 			});
 
-			var bistumArray = response[5];
+			var bistumArray = response[4];
 			var $inputBistum = $("select[name='new_bistum[]']");
 			$inputBistum.empty();
 			$.each(bistumArray, function (k, v) {
@@ -414,7 +467,7 @@ $.fn.extend({
 				});
 			});
 
-			var ordenArray = response[6];
+			var ordenArray = response[5];
 			var $inputOrden = $("select[name='new_orden[]']");
 			$inputOrden.empty();
 			$.each(ordenArray, function (k, v) {
@@ -423,7 +476,7 @@ $.fn.extend({
 				});
 			});
 
-			var klosterstatusArray = response[7];
+			var klosterstatusArray = response[6];
 			var $inputKlosterstatus = $("select[name='new_klosterstatus[]']");
 			$inputKlosterstatus.empty();
 			$.each(klosterstatusArray, function (k, v) {
@@ -432,44 +485,122 @@ $.fn.extend({
 				});
 			});
 
-			var zeitraumArray = response[8];
-			var $inputZeitraum = $("select[name='new_orden_zeitraum[]']");
-			$inputZeitraum.empty();
-			$.each(zeitraumArray, function (k, v) {
+			var bearbeiterArray = response[7];
+			var $inputBearbeiter = $("select[name='new_bearbeiter']");
+			$inputBearbeiter.empty();
+			$.each(bearbeiterArray, function (k, v) {
 				$.each(v, function (k1, v1) {
-					$inputZeitraum.append($("<option>", { value: v1, html: k1 }));
+					$inputBearbeiter.append($("<option>", { value: v1, html: k1 }));
 				});
 			});
-
-			var zeitraumArray = response[8];
-			var $inputZeitraum = $("select[name='new_klosterstandort_zeitraum[]']");
-			$inputZeitraum.empty();
-			$.each(zeitraumArray, function (k, v) {
-				$.each(v, function (k1, v1) {
-					$inputZeitraum.append($("<option>", { value: v1, html: k1 }));
-				});
-			});
-
 
 		});
 	},
 
+	// Ein neues Kloster-Object wird eingetragen
 	create_kloster: function() {
-		var url = "Subugoe.GermaniaSacra/kloster/create";
-
-
-		alert($("#NewKloster").serialize());
-
+		var url = "kloster/create";
 		$.post(url, $("#NewKloster").serialize())
 		.done(function(respond, status, jqXHR) {
 			if (status == "success") {
-				alert('Der Eintrag wurde erfolgreich gespeichert.')
+
+				var dataArray = $.parseJSON(respond);
+				var uuid = dataArray[0];
+				var addKlosterId_url = "kloster/addKlosterId";
+				$.get( addKlosterId_url, { uuid: uuid});
+
+				$('#confirm').modal({
+					closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+					position: ["20%",],
+					overlayId: 'confirm-overlay',
+					containerId: 'confirm-container',
+					onShow: function (dialog) {
+						$('.message').append("Der Eintrag wurde erfolgreich gespeichert.");
+					}
+				});
+				setTimeout(function() {window.location.href = 'kloster'} , 1000);
 			}
 		})
 		.fail(function (jqXHR, textStatus) {
 	        alert(jqXHR.responseText);
 	   });
 
+	},
+
+	delete_kloster: function(uuid, csrf) {
+
+		Check = confirm("Wollen Sie diesen Eintrag wirklich löschen?");
+
+		if (Check == true) {
+			var url = "kloster/delete";
+			$.post( url, { kloster: uuid, __csrfToken: csrf })
+			.done(function(respond, status, jqXHR) {
+				if (status == "success") {
+					$('#confirm').modal({
+						closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+						position: ["20%",],
+						overlayId: 'confirm-overlay',
+						containerId: 'confirm-container',
+						onShow: function (dialog) {
+							$('.message').append("Der Eintrag wurde erfolgreich gelöscht.");
+						}
+					});
+					setTimeout(function() {window.location.href = 'kloster'} , 1000);
+				}
+			})
+			.fail(function (jqXHR, textStatus) {
+	            alert(jqXHR.responseText);
+	        });
+		}
+	},
+
+	find_ort: function(ort, tabindex){
+		var url = "kloster/searchOrt";
+		$.getJSON(url, { searchString: ort }, function(response){
+			var ort = $('input[tabindex=' + tabindex +']');
+			if (response.length > 0) {
+				ort.replaceWith('<select name="ort[]" multiple id="ort' + tabindex + '"></select>');
+				$.each(response, function (k, v) {
+					$('#ort' + tabindex).append($("<option>", { value: v[0], html: v[1] }));
+				});
+			}
+			else {
+				ort.val("Keinen Eintrag vorhanden");
+			}
+		});
+	},
+
+	find_ortEdit: function(ort, tabindex){
+		var url = "kloster/searchOrt";
+		$.getJSON(url, { searchString: ort }, function(response){
+			var ort = $('input[tabindex=' + tabindex +']');
+			if (response.length > 0) {
+				ort.replaceWith('<select name="ort[]" multiple id="ort' + tabindex + '"></select>');
+				$.each(response, function (k, v) {
+					$('#ort' + tabindex).append($("<option>", { value: v[0], html: v[1] }));
+				});
+			}
+			else {
+				ort.val("Keinen Eintrag vorhanden");
+			}
+		});
+	},
+
+	find_ortNew: function(ort, tabindex){
+		var url = "kloster/searchOrt";
+		$.getJSON(url, { searchString: ort }, function(response){
+			var ort = $('input[tabindex=' + tabindex +']');
+			if (response.length > 0) {
+				ort.replaceWith('<select name="new_ort[]" multiple id="ort' + tabindex + '"></select>');
+				$.each(response, function (k, v) {
+					$('#ort' + tabindex).append($("<option>", { value: v[0], html: v[1] }));
+				});
+			}
+			else {
+				ort.val("Keinen Eintrag vorhanden");
+			}
+		});
 	}
 
 });
+

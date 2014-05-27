@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Urltyp {
+class Bibitem {
 
 	/**
 	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
@@ -17,25 +17,19 @@ class Urltyp {
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
 	 */
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
-	 * @ORM\OneToMany(mappedBy="urltyp")
-	 */
-	protected $urls;
-
-	/**
 	 * @var string
 	 */
-	protected $name;
+	protected $bibitem;
 
 	/**
 	 * @return integer
 	 */
-	public function getUid() {
+	public function getuid() {
 		return $this->uid;
 	}
 
@@ -43,28 +37,28 @@ class Urltyp {
 	 * @param integer $uid
 	 * @return void
 	 */
-	public function setUid($uid) {
+	public function setuid($uid) {
 		$this->uid = $uid;
 	}
 	
 	/**
 	 * @return string
 	 */
-	public function getName() {
-		return $this->name;
+	public function getBibitem() {
+		return $this->bibitem;
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $bibitem
 	 * @return void
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setBibitem($bibitem) {
+		$this->bibitem = $bibitem;
 	}
 
 	public function __toString()
 	{
-	  return $this->getName();
+	  return $this->getBibitem();
 	}
 
 	public function getUUID()
