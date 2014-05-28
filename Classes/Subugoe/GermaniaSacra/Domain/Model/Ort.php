@@ -17,7 +17,7 @@ class Ort {
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
 	 */
 	protected $uid;
 
@@ -28,26 +28,31 @@ class Ort {
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $gemeinde;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $kreis;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $wuestung;
 
 	/**
 	 * @var float
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $breite;
 
 	/**
 	 * @var float
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $laenge;
 
@@ -60,12 +65,14 @@ class Ort {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Land
 	 * @ORM\ManyToOne(inversedBy="orts")
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $land;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bistum
 	 * @ORM\ManyToOne(inversedBy="orts")
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bistum;
 
