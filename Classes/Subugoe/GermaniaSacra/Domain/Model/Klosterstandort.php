@@ -31,61 +31,73 @@ class Klosterstandort {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $von_von;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $von_bis;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $von_verbal;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bis_von;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bis_bis;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bis_verbal;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $gruender;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bemerkung;
 
 	/**
 	 * @var float
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $breite;
 
 	/**
 	 * @var float
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $laenge;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bemerkung_standort;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $temp_literatur_alt;
 

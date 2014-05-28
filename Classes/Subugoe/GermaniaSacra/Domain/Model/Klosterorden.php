@@ -25,31 +25,37 @@ class Klosterorden {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $von_von;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $von_bis;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $von_verbal;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bis_von;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bis_bis;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bis_verbal;
 
@@ -67,6 +73,7 @@ class Klosterorden {
 	
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bemerkung;
 

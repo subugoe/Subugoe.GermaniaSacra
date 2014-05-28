@@ -38,7 +38,6 @@ class BandHasUrl {
 		$this->band = $band;
 	}
 
-
 	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Url
 	 */

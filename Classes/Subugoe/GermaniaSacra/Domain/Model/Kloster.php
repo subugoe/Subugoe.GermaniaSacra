@@ -40,26 +40,31 @@ class Kloster {
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $patrozinium;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bemerkung;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $band_seite;
 	
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $text_gs_band;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bearbeitungsstand;
 
@@ -96,6 +101,7 @@ class Kloster {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Band
 	 * @ORM\ManyToOne(inversedBy="klosters")
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $band;
 

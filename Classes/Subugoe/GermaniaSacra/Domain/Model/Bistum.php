@@ -32,6 +32,7 @@ class Bistum {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 * @ORM\OneToOne(mappedBy="bistums")
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $ort;
 
@@ -54,21 +55,25 @@ class Bistum {
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $kirchenprovinz;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bemerkung;
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $ist_erzbistum;
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $shapefile;
 

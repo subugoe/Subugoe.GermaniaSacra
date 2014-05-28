@@ -30,6 +30,7 @@ class Land {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $ist_in_deutschland = FALSE;
 	

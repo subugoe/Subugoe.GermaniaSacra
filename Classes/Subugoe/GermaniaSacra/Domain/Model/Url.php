@@ -28,6 +28,7 @@ class Url {
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $bemerkung;
 

@@ -34,22 +34,8 @@ class Band {
 	public $klosters;
 
 	/**
-	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bistum
-	 */
-	public function getBistum() {
-		return $this->bistum;
-	}
-
-	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum
-	 * @return void
-	 */
-	public function setBistum(\Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum) {
-		$this->bistum = $bistum;
-	}
-
-	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $nummer;
 
@@ -60,6 +46,7 @@ class Band {
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $titel;
 
@@ -71,6 +58,7 @@ class Band {
 
 	/**
 	 * @var string
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $kurztitel;
 
@@ -88,7 +76,22 @@ class Band {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
+	/**
+	 * @return \Subugoe\GermaniaSacra\Domain\Model\Bistum
+	 */
+	public function getBistum() {
+		return $this->bistum;
+	}
+
+	/**
+	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum
+	 * @return void
+	 */
+	public function setBistum(\Subugoe\GermaniaSacra\Domain\Model\Bistum $bistum) {
+		$this->bistum = $bistum;
+	}
+
 	/**
 	 * @return string
 	 */
