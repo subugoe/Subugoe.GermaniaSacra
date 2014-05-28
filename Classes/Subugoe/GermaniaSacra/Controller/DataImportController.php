@@ -299,7 +299,7 @@ class DataImportController extends ActionController {
 			}
 		}
 		$sqlConnection->close();
-		echo "Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.";
+		echo "Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_land portiert.";
 	}
 
 	/**
@@ -330,9 +330,9 @@ class DataImportController extends ActionController {
 		}
 
 		$start = 0;
-		$offset = 15000;
+		$offset = 10000;
 
-		for ($i=1; $i<= 3; $i++) {
+		for ($i=1; $i<= 5; $i++) {
 			$sql = 'SELECT * FROM Ort ORDER BY ID ASC LIMIT ' . $start . ', ' . $offset;
 			$orts = $sqlConnection->fetchAll($sql);
 			if (isset($orts) and is_array($orts)) {
@@ -383,6 +383,7 @@ class DataImportController extends ActionController {
 				}
 			}
 			$start = $start + $offset;
+			sleep(120);
 		}
 		$sqlConnection->close();
 		echo "Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.";
@@ -468,10 +469,10 @@ class DataImportController extends ActionController {
 			        $GNDLabel = 'Bistum';
 			    $GNDLabel .= ' ' . $bistum;
 				if (isset($gnd) && !empty($gnd)) {
-					$gnds = str_replace("\t", " ", $gnd);
-					$gnds = str_replace("http:// ", " ", $gnd);
-					$gnds = str_replace(" http", ";http", $gnd);
-					$gnds = str_replace(";", "#", $gnd);
+					$gnd = str_replace("\t", " ", $gnd);
+					$gnd = str_replace("http:// ", " ", $gnd);
+					$gnd = str_replace(" http", ";http", $gnd);
+					$gnd = str_replace(";", "#", $gnd);
 					$gnds = explode("#", $gnd);
 					if (isset($gnds) && is_array($gnds)) {
 						$oldgnd = "";
@@ -504,8 +505,8 @@ class DataImportController extends ActionController {
 					}
 				}
 				if (isset($wikipedia) && !empty($wikipedia)) {
-					$wikipedias = str_replace("http:// ", " ", $wikipedia);
-					$wikipedias = str_replace(";", "#", $wikipedia);
+					$wikipedia = str_replace("http:// ", " ", $wikipedia);
+					$wikipedia = str_replace(";", "#", $wikipedia);
 					$wikipedias = explode("#", $wikipedia);
 					if (isset($wikipedias) && is_array($wikipedias)) {
 						$oldwikipedia = "";
@@ -556,7 +557,7 @@ class DataImportController extends ActionController {
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Handle"';
 		$handleurltyp = $sqlConnection->fetchAll($sql);
 		if (count($handleurltyp) > 0) {
-			$$handleurltypUUID = $handleurltyp[0]['persistence_object_identifier'];
+			$handleurltypUUID = $handleurltyp[0]['persistence_object_identifier'];
 		}
 		if (!isset($handleurltypUUID)) {
 			$handleurlTypeName = "Handle";
@@ -822,10 +823,10 @@ class DataImportController extends ActionController {
 				}
 
 				if (isset($gnd) && !empty($gnd)) {
-					$gnds = str_replace("\t", " ", $gnd);
-					$gnds = str_replace("http:// ", " ", $gnd);
-					$gnds = str_replace(" http", ";http", $gnd);
-					$gnds = str_replace(";", "#", $gnd);
+					$gnd = str_replace("\t", " ", $gnd);
+					$gnd = str_replace("http:// ", " ", $gnd);
+					$gnd = str_replace(" http", ";http", $gnd);
+					$gnd = str_replace(";", "#", $gnd);
 					$gnds = explode("#", $gnd);
 					if (isset($gnds) && is_array($gnds)) {
 						$oldgnd = "";
@@ -858,8 +859,8 @@ class DataImportController extends ActionController {
 					}
 				}
 				if (isset($wikipedia) && !empty($wikipedia)) {
-					$wikipedias = str_replace("http:// ", " ", $wikipedia);
-					$wikipedias = str_replace(";", "#", $wikipedia);
+					$wikipedia = str_replace("http:// ", " ", $wikipedia);
+					$wikipedia = str_replace(";", "#", $wikipedia);
 					$wikipedias = explode("#", $wikipedia);
 					if (isset($wikipedias) && is_array($wikipedias)) {
 						$oldwikipedia = "";
@@ -1232,7 +1233,7 @@ class DataImportController extends ActionController {
 	}
 
 	/**
-	 * Process and import access SQL dump data into the corresponding flow tables
+	 * Process and import access SQL dump data into the corresponding flow tablessub_germania_domain_model_literatur
 	 */
 	public function access2mysqlAction () {
 		$sqlConnection = $this->entityManager->getConnection();
@@ -1240,7 +1241,6 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
-
 		$this->delAccessTabsAction();
 		$this->importAccessAction();
 		$this->emptyTabsAction();
@@ -1249,8 +1249,6 @@ class DataImportController extends ActionController {
 		$this->importPersonallistenstatusAction();
 		$this->importLandAction();
 		$this->importOrtAction();
-
-
 		$this->importBistumAction();
 		$this->importBandAction();
 		$this->importKlosterAction();
@@ -1258,7 +1256,6 @@ class DataImportController extends ActionController {
 		$this->importOrdenAction();
 		$this->importKlosterordenAction();
 		$this->delAccessTabsAction();
-
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 	}
@@ -1268,7 +1265,7 @@ class DataImportController extends ActionController {
 		$tbl = 'Band, Bearbeiter, Bistum, Kloster, Klosterstandort, Land, Ort, Orden, Klosterorden';
 		$sql = 'DROP TABLE IF EXISTS  ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabellen " . $tbl . " wurde entfernt.<br>";
+		echo "Die Tabellen " . $tbl . " wurden entfernt.<br>";
 	}
 
 	/**

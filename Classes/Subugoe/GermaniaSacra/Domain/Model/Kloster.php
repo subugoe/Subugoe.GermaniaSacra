@@ -124,6 +124,7 @@ class Kloster {
 
 	/**
 	 * @var \DateTime
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $changedDate;
 
