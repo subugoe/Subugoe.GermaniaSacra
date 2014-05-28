@@ -202,7 +202,7 @@ class DataImportController extends ActionController {
 	 */
 	protected $logger;
 
-	public function __construct($logger) {
+	public function __construct($logger = NULL) {
 		parent::__construct();
 		$this->dumpDirectory = FLOW_PATH_ROOT . '/Data/GermaniaSacra/Access';
 		$this->logger = $logger;
@@ -1245,7 +1245,15 @@ class DataImportController extends ActionController {
 	public function access2mysqlAction() {
 
 		$log = new \TYPO3\Flow\Log\LoggerFactory();
-		$this->logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\NullBackend');
+		$this->logger = $log->create(
+				'GermaniaSacra',
+				'TYPO3\Flow\Log\Logger',
+				'\TYPO3\Flow\Log\Backend\FileBackend',
+				array(
+						'logFileUrl' => FLOW_PATH_DATA . 'GermaniaSacra/Log/AccessImport.log',
+						'createParentDirectories' => TRUE
+				)
+		);
 
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
