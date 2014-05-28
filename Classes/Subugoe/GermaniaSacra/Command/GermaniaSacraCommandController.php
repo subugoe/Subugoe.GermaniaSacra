@@ -31,6 +31,12 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$this->dumpDirectory = FLOW_PATH_ROOT . '/Build/GermaniaSacra/Access';
 	}
 
+
+	public function alisImportCommand() {
+		$importer = new \Subugoe\GermaniaSacra\Controller\DataImportController();
+		$importer->access2mysqlAction();
+	}
+
 	/**
 	 * import Access SQL Dump into Flow database structure
 	 *
