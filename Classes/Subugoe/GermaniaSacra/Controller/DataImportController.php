@@ -28,7 +28,7 @@ use Subugoe\GermaniaSacra\Domain\Model\BandHasUrl;
 use Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl;
 use Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl;
 
-class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
+class DataImportController extends ActionController {
 
 	/**
 	 * @Flow\Inject
