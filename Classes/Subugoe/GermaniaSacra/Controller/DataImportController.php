@@ -468,10 +468,10 @@ class DataImportController extends ActionController {
 			        $GNDLabel = 'Bistum';
 			    $GNDLabel .= ' ' . $bistum;
 				if (isset($gnd) && !empty($gnd)) {
-					$gnds = str_replace("\t", " ", $gnd);
-					$gnds = str_replace("http:// ", " ", $gnd);
-					$gnds = str_replace(" http", ";http", $gnd);
-					$gnds = str_replace(";", "#", $gnd);
+					$gnd = str_replace("\t", " ", $gnd);
+					$gnd = str_replace("http:// ", " ", $gnd);
+					$gnd = str_replace(" http", ";http", $gnd);
+					$gnd = str_replace(";", "#", $gnd);
 					$gnds = explode("#", $gnd);
 					if (isset($gnds) && is_array($gnds)) {
 						$oldgnd = "";
@@ -504,8 +504,8 @@ class DataImportController extends ActionController {
 					}
 				}
 				if (isset($wikipedia) && !empty($wikipedia)) {
-					$wikipedias = str_replace("http:// ", " ", $wikipedia);
-					$wikipedias = str_replace(";", "#", $wikipedia);
+					$wikipedia = str_replace("http:// ", " ", $wikipedia);
+					$wikipedia = str_replace(";", "#", $wikipedia);
 					$wikipedias = explode("#", $wikipedia);
 					if (isset($wikipedias) && is_array($wikipedias)) {
 						$oldwikipedia = "";
@@ -556,7 +556,7 @@ class DataImportController extends ActionController {
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Handle"';
 		$handleurltyp = $sqlConnection->fetchAll($sql);
 		if (count($handleurltyp) > 0) {
-			$$handleurltypUUID = $handleurltyp[0]['persistence_object_identifier'];
+			$handleurltypUUID = $handleurltyp[0]['persistence_object_identifier'];
 		}
 		if (!isset($handleurltypUUID)) {
 			$handleurlTypeName = "Handle";
@@ -822,10 +822,10 @@ class DataImportController extends ActionController {
 				}
 
 				if (isset($gnd) && !empty($gnd)) {
-					$gnds = str_replace("\t", " ", $gnd);
-					$gnds = str_replace("http:// ", " ", $gnd);
-					$gnds = str_replace(" http", ";http", $gnd);
-					$gnds = str_replace(";", "#", $gnd);
+					$gnd = str_replace("\t", " ", $gnd);
+					$gnd = str_replace("http:// ", " ", $gnd);
+					$gnd = str_replace(" http", ";http", $gnd);
+					$gnd = str_replace(";", "#", $gnd);
 					$gnds = explode("#", $gnd);
 					if (isset($gnds) && is_array($gnds)) {
 						$oldgnd = "";
@@ -858,8 +858,8 @@ class DataImportController extends ActionController {
 					}
 				}
 				if (isset($wikipedia) && !empty($wikipedia)) {
-					$wikipedias = str_replace("http:// ", " ", $wikipedia);
-					$wikipedias = str_replace(";", "#", $wikipedia);
+					$wikipedia = str_replace("http:// ", " ", $wikipedia);
+					$wikipedia = str_replace(";", "#", $wikipedia);
 					$wikipedias = explode("#", $wikipedia);
 					if (isset($wikipedias) && is_array($wikipedias)) {
 						$oldwikipedia = "";
@@ -1062,10 +1062,10 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 				$ordenUUID = $ordenObject->getUUID();
 				if (isset($gnd) && !empty($gnd)) {
-					$gnds = str_replace("\t", " ", $gnd);
-					$gnds = str_replace("http:// ", " ", $gnd);
-					$gnds = str_replace(" http", ";http", $gnd);
-					$gnds = str_replace(";", "#", $gnd);
+					$gnd = str_replace("\t", " ", $gnd);
+					$gnd = str_replace("http:// ", " ", $gnd);
+					$gnd = str_replace(" http", ";http", $gnd);
+					$gnd = str_replace(";", "#", $gnd);
 					$gnds = explode("#", $gnd);
 					if (isset($gnds) && is_array($gnds)) {
 						$oldgnd = "";
@@ -1098,8 +1098,8 @@ class DataImportController extends ActionController {
 					}
 				}
 				if (isset($wikipedia) && !empty($wikipedia)) {
-					$wikipedias = str_replace("http:// ", " ", $wikipedia);
-					$wikipedias = str_replace(";", "#", $wikipedia);
+					$wikipedia = str_replace("http:// ", " ", $wikipedia);
+					$wikipedia = str_replace(";", "#", $wikipedia);
 					$wikipedias = explode("#", $wikipedia);
 					if (isset($wikipedias) && is_array($wikipedias)) {
 						$oldwikipedia = "";
