@@ -22,7 +22,7 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	public function alisImportCommand() {
 
 		$log = new \TYPO3\Flow\Log\LoggerFactory();
-		$logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\AnsiConsoleBackend');
+		$logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\ConsoleBackend');
 
 		$importer = new \Subugoe\GermaniaSacra\Controller\DataImportController($logger);
 
