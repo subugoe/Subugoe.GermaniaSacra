@@ -19,89 +19,41 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 */
 	protected $entityManager;
 
-	/**
-	 * @var string
-	 */
-	protected $dumpDirectory;
-
-	protected $readPrefix = 'tbl';
-
-	public function __construct() {
-		parent::__construct();
-		$this->dumpDirectory = FLOW_PATH_ROOT . '/Build/GermaniaSacra/Access';
-	}
-
-
 	public function alisImportCommand() {
-		$importer = new \Subugoe\GermaniaSacra\Controller\DataImportController();
-		$importer->access2mysqlAction();
-	}
 
-	/**
-	 * import Access SQL Dump into Flow database structure
-	 *
-	 * @return void
-	 */
-	public function importAccessCommand() {
-		$logger = new \TYPO3\Flow\Log\Logger();
-		$dumpFileName = 'klosterdatenbankdump.sql';
+		$log = new \TYPO3\Flow\Log\LoggerFactory();
+		$logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\AnsiConsoleBackend');
 
-		if (!is_dir($this->dumpDirectory)) {
-			throw new \TYPO3\Flow\Resource\Exception;
-		}
-		if (!file_exists($this->dumpDirectory . '/' . $dumpFileName)) {
-			throw new \TYPO3\Flow\Resource\Exception(1398846324);
-		}
+		$importer = new \Subugoe\GermaniaSacra\Controller\DataImportController($logger);
 
-		$sql = file_get_contents($this->dumpDirectory . '/' . $dumpFileName);
-		$sql = str_replace('CREATE DATABASE IF NOT EXISTS `Klosterdatenbank`;', '', $sql);
-		$sql = str_replace('USE `Klosterdatenbank`;', '', $sql);
 		$sqlConnection = $this->entityManager->getConnection();
+		$sql = 'SET unique_checks = 0';
+		$sqlConnection->executeUpdate($sql);
+		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
 
-		/** @var array $citeKeys */
-		$citeKeys = $this->getCiteKeys();
+		$importer->delAccessTabsAction();
+		$importer->importAccessAction();
+		$importer->emptyTabsAction();
+		$importer->importBearbeitungsstatusAction();
+		$importer->importBearbeiterAction();
+		$importer->importPersonallistenstatusAction();
+		$importer->importLandAction();
+		$importer->importOrtAction();
 
-		/** @var array $bistumUrl */
-		$bistumUrl = $this->getBistumUrl();
 
+		$importer->importBistumAction();
+		$importer->importBandAction();
+		$importer->importKlosterAction();
+		$importer->importKlosterstandortAction();
+		$importer->importOrdenAction();
+		$importer->importKlosterordenAction();
+		$importer->delAccessTabsAction();
+
+		$sql = 'SET foreign_key_checks = 1';
+		$sqlConnection->executeUpdate($sql);
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function getCiteKeys() {
-		$citeKeyFile = $this->dumpDirectory . '/GS-citekeys.csv';
-		return $csv = array_map('str_getcsv', file($citeKeyFile));
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function getBistumUrl() {
-		/** @var Doctrine\DBAL\Connection $sqlConnection */
-		$sqlConnection = $this->entityManager->getConnection();
-		$sql = 'Select * FROM ' . $this->readPrefix . 'Bistum';
-		$bistums = $sqlConnection->fetchAll($sql);
-
-		$bistumDict = array();
-		foreach ($bistums as $row) {
-			$istErzbistum = ($row['ErzbistumAuswahlfeld'] === 'Erzbistum');
-
-			$bistum = array(
-					'uid' => $row['ID'],
-					'bistum' => $row['Bistum'],
-					'kirchenprovinz' => $row['Kirchenprovinz'],
-					'bemerkung' => $row['Bemerkung'],
-					'ist_erzbistum' => $istErzbistum,
-					'shapefile' => $row['Shapefile'],
-					'ort_uid' => $row['Bistumssitz']
-
-			);
-			array_push($bistumDict, $bistum);
-		}
-		return $bistumDict;
-	}
 }
 
 ?>
