@@ -197,9 +197,15 @@ class DataImportController extends ActionController {
 	*/
 	protected $dumpDirectory;
 
+	/**
+	 * @var \TYPO3\Flow\Log\Logger
+	 */
+	protected $logger;
+
 	public function __construct() {
 		parent::__construct();
 		$this->dumpDirectory = FLOW_PATH_ROOT . '/Data/GermaniaSacra/Access';
+		$this->logger = new \TYPO3\Flow\Log\Logger();
 	}
 
 	/**
@@ -224,7 +230,7 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		echo "Tabelle subugoe_germaniasacra_domain_model_bearbeitungsstatus wurde erfolgreich angelegt.";
+		$this->logger->log("Tabelle subugoe_germaniasacra_domain_model_bearbeitungsstatus wurde erfolgreich angelegt.");
 	}
 
 	/**
@@ -377,7 +383,6 @@ class DataImportController extends ActionController {
 				}
 			}
 			$start = $start + $offset;
-			sleep(120);
 		}
 		$sqlConnection->close();
 		echo "Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.";
