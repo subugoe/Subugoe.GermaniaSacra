@@ -175,9 +175,9 @@ class DataImportController extends ActionController {
 	protected $klosterHasLiteraturRepository;
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\inject
+	 */
 	protected $persistenceManager;
 
 	/**
@@ -187,14 +187,14 @@ class DataImportController extends ActionController {
 	protected $securityContext;
 
 	/**
-	* @Flow\Inject
-	* @var \Doctrine\Common\Persistence\ObjectManager
-	*/
+	 * @Flow\Inject
+	 * @var \Doctrine\Common\Persistence\ObjectManager
+	 */
 	protected $entityManager;
 
 	/**
-	* @var string
-	*/
+	 * @var string
+	 */
 	protected $dumpDirectory;
 
 	/**
@@ -202,25 +202,25 @@ class DataImportController extends ActionController {
 	 */
 	protected $logger;
 
-	public function __construct() {
+	public function __construct($logger) {
 		parent::__construct();
 		$this->dumpDirectory = FLOW_PATH_ROOT . '/Data/GermaniaSacra/Access';
-		$this->logger = new \TYPO3\Flow\Log\Logger();
+		$this->logger = $logger;
 	}
 
 	/**
 	 * Imports Bearbeitungsstatus table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_bearbeitungsstatus
-	* @return void
-	*/
-	protected function importBearbeitungsstatusAction() {
+	 * @return void
+	 */
+	public function importBearbeitungsstatusAction() {
 		$bearbeitungsstatusArr = array(1 => 'Angaben unklar',
-										2 =>'Daten importiert',
-										3 => 'Quellenlage unvollständig',
-										4 => 'Geprüft (bei Eingabe)',
-										5 => 'Redaktionell geprüft',
-										6 => 'Neuaufnahme, unvollständig',
-										7 => 'Online'
-										);
+				2 => 'Daten importiert',
+				3 => 'Quellenlage unvollständig',
+				4 => 'Geprüft (bei Eingabe)',
+				5 => 'Redaktionell geprüft',
+				6 => 'Neuaufnahme, unvollständig',
+				7 => 'Online'
+		);
 		if (isset($bearbeitungsstatusArr) and is_array($bearbeitungsstatusArr)) {
 			foreach ($bearbeitungsstatusArr as $key => $name) {
 				$bearbeitungsstatusObject = new Bearbeitungsstatus();
@@ -235,9 +235,9 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Imports Bearbeiter table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_bearbeiter
-	* @return void
-	*/
-	protected function importBearbeiterAction() {
+	 * @return void
+	 */
+	public function importBearbeiterAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT ID, Bearbeiter FROM Bearbeiter';
 		$bearbeiters = $sqlConnection->fetchAll($sql);
@@ -253,18 +253,18 @@ class DataImportController extends ActionController {
 			}
 		}
 		$sqlConnection->close();
-		echo "Mitarbeiter-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.";
+		$this->logger->log("Mitarbeiter-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.");
 	}
 
 	/**
 	 * Imports Personallistenstatus table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_personallistenstatus
-	* @return void
-	*/
-	protected function importPersonallistenstatusAction() {
+	 * @return void
+	 */
+	public function importPersonallistenstatusAction() {
 		$personallistenstatusArr = array(1 => 'Erfassung aus den Registern der Germania-Sacra-Bände (in Bearbeitung):',
-										2 =>'Die Aufstellung enthält alle Einträge aus den Personallisten des zugehörigen Germania-Sacra-Bandes:',
-										3 => 'unvollständig'
-										);
+				2 => 'Die Aufstellung enthält alle Einträge aus den Personallisten des zugehörigen Germania-Sacra-Bandes:',
+				3 => 'unvollständig'
+		);
 		if (isset($personallistenstatusArr) and is_array($personallistenstatusArr)) {
 			foreach ($personallistenstatusArr as $key => $name) {
 				$personallistenstatusObject = new Personallistenstatus();
@@ -274,14 +274,14 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		echo "Tabelle subugoe_germaniasacra_domain_model_personallistenstatus wurde erfolgreich angelegt.";
+		$this->logger->log("Tabelle subugoe_germaniasacra_domain_model_personallistenstatus wurde erfolgreich angelegt.");
 	}
 
 	/**
 	 * Imports Länder table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_land
-	* @return void
-	*/
-	protected function importLandAction() {
+	 * @return void
+	 */
+	public function importLandAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT ID_Bundesland, Land, Deutschland FROM Land';
 		$Lands = $sqlConnection->fetchAll($sql);
@@ -299,14 +299,14 @@ class DataImportController extends ActionController {
 			}
 		}
 		$sqlConnection->close();
-		echo "Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.";
+		$this->logger->log("Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.");
 	}
 
 	/**
 	 * Imports Orte table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_ort
-	* @return void
-	*/
-	protected function importOrtAction() {
+	 * @return void
+	 */
+	public function importOrtAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_ort';
 		$sql = "ANALYZE LOCAL TABLE " . $tbl;
@@ -332,7 +332,7 @@ class DataImportController extends ActionController {
 		$start = 0;
 		$offset = 15000;
 
-		for ($i=1; $i<= 3; $i++) {
+		for ($i = 1; $i <= 3; $i++) {
 			$sql = 'SELECT * FROM Ort ORDER BY ID ASC LIMIT ' . $start . ', ' . $offset;
 			$orts = $sqlConnection->fetchAll($sql);
 			if (isset($orts) and is_array($orts)) {
@@ -385,14 +385,14 @@ class DataImportController extends ActionController {
 			$start = $start + $offset;
 		}
 		$sqlConnection->close();
-		echo "Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.";
+		$this->logger->log("Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.");
 	}
 
 	/**
 	 * Imports Bistums table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_bistum
-	* @return void
-	*/
-	protected function importBistumAction() {
+	 * @return void
+	 */
+	public function importBistumAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "GND"';
@@ -462,11 +462,11 @@ class DataImportController extends ActionController {
 					}
 				}
 				$GNDLabel = '';
-			    if ($is_erzbistum)
-			        $GNDLabel = 'Erzbistum';
-			    else
-			        $GNDLabel = 'Bistum';
-			    $GNDLabel .= ' ' . $bistum;
+				if ($is_erzbistum)
+					$GNDLabel = 'Erzbistum';
+				else
+					$GNDLabel = 'Bistum';
+				$GNDLabel .= ' ' . $bistum;
 				if (isset($gnd) && !empty($gnd)) {
 					$gnd = str_replace("\t", " ", $gnd);
 					$gnd = str_replace("http:// ", " ", $gnd);
@@ -478,7 +478,7 @@ class DataImportController extends ActionController {
 						foreach ($gnds as $gnd) {
 							if (isset($gnd) && !empty($gnd)) {
 								if ($gnd != $oldgnd) {
-									$gnd = str_replace(" ","",$gnd);
+									$gnd = str_replace(" ", "", $gnd);
 									$gnd = str_replace("# ", "", $gnd);
 									$gndid = str_replace("http://d-nb.info/gnd/", "", $gnd);
 									$gndbemerkung = $bistum . " [" . $gndid . "]";
@@ -514,7 +514,7 @@ class DataImportController extends ActionController {
 								if ($wikipedia != $oldwikipedia) {
 
 									$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
-									$wikipediabemerkung = str_replace("_"," ",$wikipediabemerkung);
+									$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
 									$wikipediabemerkung = rawurldecode($wikipediabemerkung);
 
 									$urlObject = new Url();
@@ -543,14 +543,14 @@ class DataImportController extends ActionController {
 
 			}
 		}
-		echo "Bistum-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bistum portiert.";
+		$this->logger->log("Bistum-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bistum portiert.");
 	}
 
 	/**
 	 * Imports Bände table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_band
-	* @return void
-	*/
-	protected function importBandAction() {
+	 * @return void
+	 */
+	public function importBandAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Handle"';
@@ -641,7 +641,7 @@ class DataImportController extends ActionController {
 					$bandhasurlObject->setUrl($urlObject);
 					$this->bandHasUrlRepository->add($bandhasurlObject);
 					$this->persistenceManager->persistAll();
-					}
+				}
 				if (isset($handle) && !empty($handle)) {
 					$handle = trim($handle, "#");
 					$urlObject = new Url();
@@ -683,14 +683,14 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		echo "Band-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_band portiert.";
+		$this->logger->log("Band-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_band portiert.");
 	}
 
 	/**
 	 * Imports Klöster table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_kloster
-	* @return void
-	*/
-	protected function importKlosterAction() {
+	 * @return void
+	 */
+	public function importKlosterAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Quelle"';
@@ -734,18 +734,30 @@ class DataImportController extends ActionController {
 		}
 		if (isset($urltypUUID) && !empty($urltypUUID)) {
 			$tbl = 'subugoe_germaniasacra_domain_model_url';
-			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $urltypUUID .'\'';
-			$sqlConnection->executeUpdate($sql);
+			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $urltypUUID . '\'';
+			try {
+				$sqlConnection->executeUpdate($sql);
+			} catch (\Exception $e) {
+				$this->logger->logException($e);
+			}
 		}
 		if (isset($gndurltypUUID) && !empty($gndurltypUUID)) {
 			$tbl = 'subugoe_germaniasacra_domain_model_url';
-			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $gndurltypUUID .'\'';
-			$sqlConnection->executeUpdate($sql);
+			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $gndurltypUUID . '\'';
+			try {
+				$sqlConnection->executeUpdate($sql);
+			} catch (\Exception $e) {
+				$this->logger->logException($e);
+			}
 		}
 		if (isset($wikiurltypUUID) && !empty($wikiurltypUUID)) {
 			$tbl = 'subugoe_germaniasacra_domain_model_url';
-			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $wikiurltypUUID .'\'';
-			$sqlConnection->executeUpdate($sql);
+			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $wikiurltypUUID . '\'';
+			try {
+				$sqlConnection->executeUpdate($sql);
+			} catch (\Exception $e) {
+				$this->logger->logException($e);
+			}
 		}
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
@@ -832,7 +844,7 @@ class DataImportController extends ActionController {
 						foreach ($gnds as $gnd) {
 							if (isset($gnd) && !empty($gnd)) {
 								if ($gnd != $oldgnd) {
-									$gnd = str_replace(" ","",$gnd);
+									$gnd = str_replace(" ", "", $gnd);
 									$gnd = str_replace("# ", "", $gnd);
 									$gndid = str_replace("http://d-nb.info/gnd/", "", $gnd);
 									$gndbemerkung = $kloster . " [" . $gndid . "]";
@@ -867,7 +879,7 @@ class DataImportController extends ActionController {
 							if (isset($wikipedia) && !empty($wikipedia)) {
 								if ($wikipedia != $oldwikipedia) {
 									$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
-									$wikipediabemerkung = str_replace("_"," ",$wikipediabemerkung);
+									$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
 									$wikipediabemerkung = rawurldecode($wikipediabemerkung);
 									$urlObject = new Url();
 									$urlObject->setUrl($wikipedia);
@@ -892,14 +904,14 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		echo "Kloster-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_kloster portiert.";
+		$this->logger->log("Kloster-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_kloster portiert.");
 	}
 
 	/**
 	 * Imports Klosterstandorte table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_klosterstandort
-	* @return void
-	*/
-	protected function importKlosterstandortAction() {
+	 * @return void
+	 */
+	public function importKlosterstandortAction() {
 		$csvArr = $this->citekeysAction();
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterstandort ORDER  BY ID_Kloster ASC';
@@ -982,8 +994,7 @@ class DataImportController extends ActionController {
 							if ($citekey and $csvArr[$buch]['detail'] and $csvArr[$buch]['detail'] != '#N/A') {
 								if ($beschreibung and !strpos($csvArr[$buch]['detail'], $beschreibung)) {
 									$beschreibung = $csvArr[$buch]['detail'] . ', ' . $beschreibung;
-								}
-								else {
+								} else {
 									$beschreibung = $csvArr[$buch]['detail'];
 								}
 							}
@@ -1008,14 +1019,14 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		echo "Klosterstandort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterstandort portiert.";
+		$this->logger->log("Klosterstandort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterstandort portiert.");
 	}
 
 	/**
 	 * Imports Orden table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_orden
-	* @return void
-	*/
-	protected function importOrdenAction() {
+	 * @return void
+	 */
+	public function importOrdenAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Orden';
 		$ordens = $sqlConnection->fetchAll($sql);
@@ -1047,8 +1058,7 @@ class DataImportController extends ActionController {
 				array_push($ordenstypArr, $ordenstyp);
 				if (isset($ordenstypUUID) && !empty($ordenstypUUID)) {
 					$ordenstypObject = $this->ordenstypRepository->findByIdentifier($ordenstypUUID);
-				}
-				else {
+				} else {
 					$ordenstypObject = $this->ordenstypRepository->findOneByOrdenstyp($ordenstyp);
 				}
 				$ordenObject = new Orden();
@@ -1072,7 +1082,7 @@ class DataImportController extends ActionController {
 						foreach ($gnds as $gnd) {
 							if (isset($gnd) && !empty($gnd)) {
 								if ($gnd != $oldgnd) {
-									$gnd = str_replace(" ","",$gnd);
+									$gnd = str_replace(" ", "", $gnd);
 									$gnd = str_replace("# ", "", $gnd);
 									$gndid = str_replace("http://d-nb.info/gnd/", "", $gnd);
 									$gndbemerkung = $orden . " [" . $gndid . "]";
@@ -1107,7 +1117,7 @@ class DataImportController extends ActionController {
 							if (isset($wikipedia) && !empty($wikipedia)) {
 								if ($wikipedia != $oldwikipedia) {
 									$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
-									$wikipediabemerkung = str_replace("_"," ",$wikipediabemerkung);
+									$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
 									$wikipediabemerkung = rawurldecode($wikipediabemerkung);
 									$urlObject = new Url();
 									$urlObject->setUrl($wikipedia);
@@ -1132,14 +1142,15 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		echo "Orden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_orden portiert.";
+
+		$this->logger->log("Orden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_orden portiert.");
 	}
 
 	/**
 	 * Imports Klosterorden table into the FLOW domain_model tabel subugoe_germaniasacra_domain_klosterorden_band
-	* @return void
-	*/
-	protected function importKlosterordenAction() {
+	 * @return void
+	 */
+	public function importKlosterordenAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterorden ORDER BY ID_KlosterOrden ASC';
 		$klosterordens = $sqlConnection->fetchAll($sql);
@@ -1164,8 +1175,7 @@ class DataImportController extends ActionController {
 						$this->persistenceManager->persistAll();
 						$klosterstatusUUID = $klosterstatusObject->getUUID();
 						$klosterstatusObject = $this->klosterstatusRepository->findByIdentifier($klosterstatusUUID);
-					}
-					else {
+					} else {
 						$klosterstatusObject = $this->klosterstatusRepository->findOneByStatus($klosterstatus);
 					}
 					$von_von = $klosterorden['von_von'];
@@ -1193,16 +1203,16 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		echo "Klosterorden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterorden portiert.";
+		$this->logger->log("Klosterorden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterorden portiert.");
 
 		exit;
 	}
 
 	/**
 	 * Process GS-citekeys.csv file and return an array for further Literatur processing
-	* @return array $csvArr The array created from csv file
-	*/
-	public function citekeysAction(){
+	 * @return array $csvArr The array created from csv file
+	 */
+	public function citekeysAction() {
 		$file = "GS-citekeys.csv";
 		if (!file_exists($this->dumpDirectory . '/' . $file)) {
 			throw new \TYPO3\Flow\Resource\Exception(1398846324);
@@ -1217,12 +1227,10 @@ class DataImportController extends ActionController {
 				}
 				if (isset($value[2]) && !empty($value[2])) {
 					$citekey = $value[2];
-				}
-				else $citekey = null;
+				} else $citekey = null;
 				if (isset($value[3]) && !empty($value[3])) {
 					$detail = $value[3];
-				}
-				else $detail = null;
+				} else $detail = null;
 				if (isset($titel) && !empty($titel)) {
 					$csvArr[$titel] = array('title' => $titel, 'citekey' => $citekey, 'detail' => $detail);
 				}
@@ -1234,7 +1242,11 @@ class DataImportController extends ActionController {
 	/**
 	 * Process and import access SQL dump data into the corresponding flow tables
 	 */
-	public function access2mysqlAction () {
+	public function access2mysqlAction() {
+
+		$log = new \TYPO3\Flow\Log\LoggerFactory();
+		$this->logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\NullBackend');
+
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1268,14 +1280,14 @@ class DataImportController extends ActionController {
 		$tbl = 'Band, Bearbeiter, Bistum, Kloster, Klosterstandort, Land, Ort, Orden, Klosterorden';
 		$sql = 'DROP TABLE IF EXISTS  ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabellen " . $tbl . " wurde entfernt.<br>";
+		$this->logger->log("Die Tabellen " . $tbl . " wurden entfernt.");
 	}
 
 	/**
-	* Truncate bearbeitungsstatus table of Germania Sacra package
-	* @return void
-	*/
-	public  function emptyBearbeitungsstatusTabAction() {
+	 * Truncate bearbeitungsstatus table of Germania Sacra package
+	 * @return void
+	 */
+	public function emptyBearbeitungsstatusTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1284,17 +1296,17 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate bearbeiter table of Germania Sacra package
-	* @return void
-	*/
-	public  function emptyBearbeiterTabAction() {
+	 * Truncate bearbeiter table of Germania Sacra package
+	 * @return void
+	 */
+	public function emptyBearbeiterTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1303,17 +1315,17 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate personallistenstatus table of Germania Sacra package
-	* @return void
-	*/
-	public  function emptyPersonallistenstatusTabAction() {
+	 * Truncate personallistenstatus table of Germania Sacra package
+	 * @return void
+	 */
+	public function emptyPersonallistenstatusTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1322,16 +1334,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate land table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate land table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyLandTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1341,16 +1353,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate ort table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate ort table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyOrtTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1360,16 +1372,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate orthasurl table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate orthasurl table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyOrtHasUrlTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1379,16 +1391,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate bistum table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate bistum table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyBistumTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1398,16 +1410,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate bistumhasurl table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate bistumhasurl table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyBistumHasUrlTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1417,16 +1429,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate band table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate band table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyBandTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1436,16 +1448,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate bandhasurl table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate bandhasurl table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyBandHasUrlTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1455,16 +1467,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate urltyp table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate urltyp table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyUrltypTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1474,16 +1486,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate kloster table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate kloster table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyKlosterTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1493,16 +1505,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate url table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate url table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyUrlTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1512,16 +1524,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate klosterhasurl table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate klosterhasurl table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyKlosterHasUrlTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1531,16 +1543,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate klosterstandort table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate klosterstandort table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyKlosterstandortTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1550,16 +1562,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate bibitem table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate bibitem table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyBibitemTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1569,16 +1581,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate literatur table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate literatur table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyLiteraturTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1588,16 +1600,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate klosterhasliteratur table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate klosterhasliteratur table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyKlosterHasLiteraturTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1607,16 +1619,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate orden table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate orden table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyOrdenTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1626,16 +1638,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate ordenstyp table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate ordenstyp table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyOrdenstypTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1645,16 +1657,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate ordenhasurl table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate ordenhasurl table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyOrdenHasUrlTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1664,16 +1676,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate klosterorden table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate klosterorden table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyKlosterordenTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1683,16 +1695,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate klosterstatus table of Germania Sacra package
-	* @return void
-	*/
+	 * Truncate klosterstatus table of Germania Sacra package
+	 * @return void
+	 */
 	public function emptyKlosterstatusTabAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
@@ -1702,16 +1714,16 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 		exit;
 	}
 
 	/**
-	* Truncate all the available Germania Sacra package tables
-	* @return void
-	*/
+	 * Truncate all the available Germania Sacra package tables
+	 * @return void
+	 */
 	public function emptyTabsAction() {
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_bearbeitungsstatus';
@@ -1719,167 +1731,167 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bearbeiter';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_personallistenstatus';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_land';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_ort';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_orthasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bistum';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bistumhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_band';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bandhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_kloster';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_url';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterstandort';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bibitem';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_literatur';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterhasliteratur';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_orden';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_ordenstyp';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_ordenhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterorden';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterstatus';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		echo "Die Tabelle " . $tbl . " wurde entleert.<br>";
+		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 	}
 
 	/**
-	* import access SQL dump into Flow
-	* @return void
-	*/
+	 * import access SQL dump into Flow
+	 * @return void
+	 */
 	public function importAccessAction() {
 		$logger = new \TYPO3\Flow\Log\Logger();
 		$dumpFileName = 'klosterdatenbankdump.sql';
@@ -1912,7 +1924,7 @@ class DataImportController extends ActionController {
 		$sql = str_replace('`OrdenszugehörigkeitVerbal_bis`', '`verbal_bis`', $sql);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sqlConnection->executeUpdate($sql);
-		echo "Access Datenbank wurde imported.";
+		$this->logger->log("Access Datenbank wurde importiert.");
 	}
 
 }
