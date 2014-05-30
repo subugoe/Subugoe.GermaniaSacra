@@ -66,22 +66,6 @@
 				</fieldset>
 			</form>
 
-			<!--
-			<div class="pagination-centered">
-				<ul class="pagination">
-					<li class="arrow unavailable"><a href="">&laquo;</a></li>
-					<li class="current"><a href="">1</a></li>
-					<li><a href="" id="pager">2</a></li>
-					<li><a href="">3</a></li>
-					<li><a href="">4</a></li>
-					<li class="unavailable"><a href="">&hellip;</a></li>
-					<li><a href="">12</a></li>
-					<li><a href="">13</a></li>
-					<li class="arrow"><a href="">&raquo;</a></li>
-				</ul>
-			</div>
-			-->
-
 			<m:Paginate objects="{klosters}" as="paginatedKloster" configuration="{itemsPerPage: 10, insertAbove: 1, insertBelow: 0, maximumNumberOfLinks: 20}">
 				<f:for each="{paginatedKloster}" as="kloster">
 				</f:for>
@@ -118,7 +102,6 @@
 		<script src="{f:uri.resource(path: 'JavaScript/gs-editor.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/populate.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/jquery.simplemodal-1.4.4.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/simple-modal.js')}" type="text/javascript"></script>
 
 	</body>
 </html>
