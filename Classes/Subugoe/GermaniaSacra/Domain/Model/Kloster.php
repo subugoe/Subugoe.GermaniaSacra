@@ -34,6 +34,7 @@ class Kloster {
 	protected $kloster_id;
 
 	/**
+	 * @Flow\Validate(type="Text")
 	 * @var string
 	 */
 	protected $kloster;
@@ -46,25 +47,25 @@ class Kloster {
 
 	/**
 	 * @var string
-	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $bemerkung;
 
 	/**
 	 * @var string
-	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(length=45, nullable=true)
 	 */
 	protected $band_seite;
 	
 	/**
 	 * @var string
-	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $text_gs_band;
 
 	/**
 	 * @var string
-	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $bearbeitungsstand;
 
@@ -83,25 +84,28 @@ class Kloster {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus
 	 * @ORM\ManyToOne(inversedBy="klosters")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $bearbeitungsstatus;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeiter
 	 * @ORM\ManyToOne(inversedBy="klosters")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $bearbeiter;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus
 	 * @ORM\ManyToOne(inversedBy="klosters")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $personallistenstatus;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Band
 	 * @ORM\ManyToOne(inversedBy="klosters")
-	 * @ORM\Column(nullable=true)
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=true)
 	 */
 	protected $band;
 
@@ -119,6 +123,7 @@ class Kloster {
 
 	/**
 	 * @var \DateTime
+	 * @ORM\Column(type="datetime")
 	 */
 	protected $creationDate;
 

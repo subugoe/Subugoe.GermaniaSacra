@@ -12,12 +12,14 @@ class OrtHasUrl {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 * @ORM\ManyToOne(inversedBy="ortHasUrls")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $ort;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
 	 * @ORM\ManyToOne(inversedBy="ortHasUrls")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $url;
 

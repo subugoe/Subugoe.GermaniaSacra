@@ -14,12 +14,14 @@ class OrdenHasUrl {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Orden
 	 * @ORM\ManyToOne(inversedBy="ordenHasUrls")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $orden;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
 	 * @ORM\ManyToOne(inversedBy="ordenHasUrls")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $url;
 

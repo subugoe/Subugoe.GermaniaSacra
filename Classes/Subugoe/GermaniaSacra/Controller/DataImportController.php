@@ -1260,7 +1260,6 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
-
 		$this->delAccessTabsAction();
 		$this->importAccessAction();
 		$this->emptyTabsAction();
@@ -1269,16 +1268,13 @@ class DataImportController extends ActionController {
 		$this->importPersonallistenstatusAction();
 		$this->importLandAction();
 		$this->importOrtAction();
-
-
-		$this->importBistumAction();
-		$this->importBandAction();
-		$this->importKlosterAction();
-		$this->importKlosterstandortAction();
-		$this->importOrdenAction();
-		$this->importKlosterordenAction();
-		$this->delAccessTabsAction();
-
+//		$this->importBistumAction();
+//		$this->importBandAction();
+//		$this->importKlosterAction();
+//		$this->importKlosterstandortAction();
+//		$this->importOrdenAction();
+//		$this->importKlosterordenAction();
+//		$this->delAccessTabsAction();
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 	}

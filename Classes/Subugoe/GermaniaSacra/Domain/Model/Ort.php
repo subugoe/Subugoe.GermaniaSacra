@@ -65,6 +65,7 @@ class Ort {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Land
 	 * @ORM\ManyToOne(inversedBy="orts")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 * @ORM\Column(nullable=true)
 	 */
 	protected $land;
@@ -72,6 +73,7 @@ class Ort {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bistum
 	 * @ORM\ManyToOne(inversedBy="orts")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 * @ORM\Column(nullable=true)
 	 */
 	protected $bistum;

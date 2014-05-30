@@ -55,6 +55,7 @@ class Orden {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp
 	 * @ORM\ManyToOne(inversedBy="Ordens")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $ordenstyp;
 

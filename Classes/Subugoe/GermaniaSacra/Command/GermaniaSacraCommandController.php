@@ -31,7 +31,6 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
-
 		$importer->delAccessTabsAction();
 		$importer->importAccessAction();
 		$importer->emptyTabsAction();
@@ -40,8 +39,6 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$importer->importPersonallistenstatusAction();
 		$importer->importLandAction();
 		$importer->importOrtAction();
-
-
 		$importer->importBistumAction();
 		$importer->importBandAction();
 		$importer->importKlosterAction();
@@ -49,7 +46,6 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$importer->importOrdenAction();
 		$importer->importKlosterordenAction();
 		$importer->delAccessTabsAction();
-
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 	}

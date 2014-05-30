@@ -24,7 +24,7 @@ class Bearbeiter {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster>
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 * @ORM\OneToMany(mappedBy="bearbeiter")
 	 */
 	protected $klosters;

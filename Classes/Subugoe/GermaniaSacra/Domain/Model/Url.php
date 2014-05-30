@@ -35,6 +35,7 @@ class Url {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Urltyp
 	 * @ORM\ManyToOne(inversedBy="urls")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $urltyp;
 

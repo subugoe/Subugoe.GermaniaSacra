@@ -32,7 +32,8 @@ class Bistum {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 * @ORM\OneToOne(mappedBy="bistums")
-	 * @ORM\Column(nullable=true)
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
+ 	 * @ORM\Column(nullable=true)
 	 */
 	protected $ort;
 

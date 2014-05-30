@@ -20,12 +20,14 @@ class Klosterstandort {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 * @ORM\ManyToOne(inversedBy="klosterstandorts")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $kloster;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 * @ORM\ManyToOne(inversedBy="klosterstandorts")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $ort;
 

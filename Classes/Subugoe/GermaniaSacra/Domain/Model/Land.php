@@ -18,7 +18,7 @@ class Land {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort>
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 * @ORM\OneToMany(mappedBy="land")
 	 */
 	protected $orts;

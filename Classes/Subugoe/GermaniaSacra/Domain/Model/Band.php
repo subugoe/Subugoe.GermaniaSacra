@@ -24,6 +24,7 @@ class Band {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bistum
 	 * @ORM\ManyToOne(inversedBy="bands")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $bistum;
 

@@ -18,8 +18,9 @@ class Klosterorden {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 * @ORM\ManyToOne(inversedBy="klosterordens")
+	 * @ORM\JoinColumn(onDelete="No ACTION")
 	 */
 	protected $kloster;
 
@@ -60,14 +61,16 @@ class Klosterorden {
 	protected $bis_verbal;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Orden'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Orden
 	 * @ORM\ManyToOne(inversedBy="klosterordens")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $orden;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterstatus'
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterstatus
 	 * @ORM\ManyToOne(inversedBy="klosterordens")
+	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $klosterstatus;
 	

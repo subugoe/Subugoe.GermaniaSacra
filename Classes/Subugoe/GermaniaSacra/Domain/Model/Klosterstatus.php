@@ -24,7 +24,7 @@ class Klosterstatus {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterorden
 	 * @ORM\OneToMany(mappedBy="klosterstatus")
 	 */
 //	protected $klosterordens;
