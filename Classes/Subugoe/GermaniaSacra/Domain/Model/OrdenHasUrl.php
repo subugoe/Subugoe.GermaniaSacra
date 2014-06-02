@@ -1,8 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
-
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -57,6 +55,6 @@ class OrdenHasUrl {
 	}
 
 
-
 }
+
 ?>

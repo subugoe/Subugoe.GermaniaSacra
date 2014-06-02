@@ -13,7 +13,6 @@ class Klosterorden {
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
 	 */
 	protected $uid;
 

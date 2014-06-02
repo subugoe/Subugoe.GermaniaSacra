@@ -10,14 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Band {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
 	 */
 	protected $uid;
 
@@ -107,7 +106,7 @@ class Band {
 	public function setNummer($nummer) {
 		$this->nummer = $nummer;
 	}
-	
+
 	/**
 	 * @return integer
 	 */
@@ -122,7 +121,7 @@ class Band {
 	public function setSortierung($sortierung) {
 		$this->sortierung = $sortierung;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -151,17 +150,16 @@ class Band {
 	 */
 	public function setKurztitel($kurztitel) {
 		$this->kurztitel = $kurztitel;
-	}	
-	
-	public function __toString()
-	{
-	  return $this->getTitel();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function __toString() {
+		return $this->getTitel();
+	}
+
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

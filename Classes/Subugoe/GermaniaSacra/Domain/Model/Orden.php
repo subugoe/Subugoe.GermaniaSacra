@@ -1,8 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
-
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,14 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Orden {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
 	 */
 	protected $uid;
 
@@ -79,7 +76,7 @@ class Orden {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -124,7 +121,7 @@ class Orden {
 	public function setSymbol($symbol) {
 		$this->symbol = $symbol;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -139,7 +136,6 @@ class Orden {
 	public function setGraphik($graphik) {
 		$this->graphik = $graphik;
 	}
-	
 
 	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp
@@ -156,15 +152,14 @@ class Orden {
 		$this->ordenstyp = $ordenstyp;
 	}
 
-	public function __toString()
-	{
-	  return $this->getOrden();
+	public function __toString() {
+		return $this->getOrden();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,14 +11,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Bistum {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
 	 */
 	protected $uid;
 
@@ -33,7 +31,7 @@ class Bistum {
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 * @ORM\OneToOne(mappedBy="bistums")
 	 * @ORM\JoinColumn(onDelete="NO ACTION")
- 	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $ort;
 
@@ -42,12 +40,6 @@ class Bistum {
 	 * @ORM\OneToMany(mappedBy="bistum")
 	 */
 	protected $bands;
-
-	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl>
-	 * @ORM\OneToMany(mappedBy="bistum", cascade={"all"})
-	 */
-//	protected $bistumHasUrls;
 
 	/**
 	 * @var string
@@ -92,7 +84,7 @@ class Bistum {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -137,7 +129,7 @@ class Bistum {
 	public function setBemerkung($bemerkung) {
 		$this->bemerkung = $bemerkung;
 	}
-	
+
 	/**
 	 * @return integer
 	 */
@@ -152,7 +144,7 @@ class Bistum {
 	public function setIst_erzbistum($ist_erzbistum) {
 		$this->ist_erzbistum = $ist_erzbistum;
 	}
-	
+
 
 	/**
 	 * @return string
@@ -170,24 +162,6 @@ class Bistum {
 	}
 
 	/**
-	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl>
-	*/
-	public function getBistumHasUrls() {
-		return $this->bistumHasUrls;
-	}
-
-	/**
-	* @param \Doctrine\Common\Collections\Collection $bistumHasUrls
-	* @return void
-	*/
-	public function setBistumHasUrls(\Doctrine\Common\Collections\Collection $bistumHasUrls) {
-
-		foreach ($bistumHasUrls as $bistumHasUrl){$bistumHasUrl->setBistum($this);}
-
-		$this->bistumHasUrls = $bistumHasUrls;
-	}
-
-	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Ort
 	 */
 	public function getOrt() {
@@ -202,15 +176,14 @@ class Bistum {
 		$this->ort = $ort;
 	}
 
-	public function __toString()
-	{
-	  return $this->getBistum();
+	public function __toString() {
+		return $this->getBistum();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>
