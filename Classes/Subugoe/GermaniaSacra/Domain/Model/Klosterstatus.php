@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,22 +11,16 @@ use Doctrine\ORM\Mapping as ORM;
 class Klosterstatus {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(nullable=TRUE)
 	 */
 	protected $uid;
-
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterorden
-	 * @ORM\OneToMany(mappedBy="klosterstatus")
-	 */
-//	protected $klosterordens;
 
 	/**
 	 * @var string
@@ -49,7 +42,7 @@ class Klosterstatus {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -65,15 +58,14 @@ class Klosterstatus {
 		$this->status = $status;
 	}
 
-	public function __toString()
-	{
-	  return $this->getStatus();
+	public function __toString() {
+		return $this->getStatus();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

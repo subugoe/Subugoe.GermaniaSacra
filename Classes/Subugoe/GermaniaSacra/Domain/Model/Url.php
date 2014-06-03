@@ -10,14 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Url {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(nullable=TRUE)
 	 */
 	protected $uid;
 
@@ -53,7 +53,7 @@ class Url {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -99,15 +99,14 @@ class Url {
 		$this->urltyp = $urltyp;
 	}
 
-	public function __toString()
-	{
-	  return $this->getUrl();
+	public function __toString() {
+		return $this->getUrl();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

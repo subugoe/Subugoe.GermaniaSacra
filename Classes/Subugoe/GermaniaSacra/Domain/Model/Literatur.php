@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,14 +11,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Literatur {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(nullable=TRUE)
 	 */
 	protected $uid;
 
@@ -55,7 +54,7 @@ class Literatur {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -85,16 +84,15 @@ class Literatur {
 	public function setBeschreibung($beschreibung) {
 		$this->beschreibung = $beschreibung;
 	}
-	
-	public function __toString()
-	{
-	  return $this->getCitekey();
+
+	public function __toString() {
+		return $this->getCitekey();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

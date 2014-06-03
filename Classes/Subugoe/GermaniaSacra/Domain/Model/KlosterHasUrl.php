@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,9 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 class KlosterHasUrl {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
@@ -61,10 +60,10 @@ class KlosterHasUrl {
 		$this->url = $url;
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

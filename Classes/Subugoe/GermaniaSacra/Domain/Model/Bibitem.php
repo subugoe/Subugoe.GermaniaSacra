@@ -10,14 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Bibitem {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
+	 * @ORM\Column(nullable=TRUE)
 	 */
 	protected $uid;
 
@@ -40,7 +40,7 @@ class Bibitem {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -56,15 +56,14 @@ class Bibitem {
 		$this->bibitem = $bibitem;
 	}
 
-	public function __toString()
-	{
-	  return $this->getBibitem();
+	public function __toString() {
+		return $this->getBibitem();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

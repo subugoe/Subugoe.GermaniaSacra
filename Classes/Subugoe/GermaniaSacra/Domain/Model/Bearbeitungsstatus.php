@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,14 +11,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Bearbeitungsstatus {
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
 	 */
 	protected $uid;
 
@@ -48,7 +46,7 @@ class Bearbeitungsstatus {
 	public function setUid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -64,15 +62,14 @@ class Bearbeitungsstatus {
 		$this->name = $name;
 	}
 
-	public function __toString()
-	{
-	  return $this->getName();
+	public function __toString() {
+		return $this->getName();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

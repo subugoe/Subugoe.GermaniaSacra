@@ -299,7 +299,7 @@ class DataImportController extends ActionController {
 			}
 		}
 		$sqlConnection->close();
-		$this->logger->log("Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.");
+		$this->logger->log("Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_land portiert.");
 	}
 
 	/**

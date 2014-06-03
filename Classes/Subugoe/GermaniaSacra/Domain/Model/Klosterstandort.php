@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,7 +12,7 @@ class Klosterstandort {
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(nullable=TRUE)
 	 */
 	protected $uid;
 
@@ -329,9 +328,9 @@ class Klosterstandort {
 		$this->temp_literatur_alt = $temp_literatur_alt;
 	}
 
-	public function __toString()
-	{
-	  return $this->getGruender();
+	public function __toString() {
+		return $this->getGruender();
 	}
 }
+
 ?>

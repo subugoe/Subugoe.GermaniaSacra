@@ -54,7 +54,6 @@ class OrtHasUrl {
 		$this->url = $url;
 	}
 
-
-
 }
+
 ?>

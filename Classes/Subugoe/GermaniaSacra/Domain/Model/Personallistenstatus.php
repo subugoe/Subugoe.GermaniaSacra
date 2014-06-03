@@ -9,14 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Personallistenstatus {
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
 	protected $persistenceManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE") 
+	 * @ORM\Column(nullable=TRUE)
 	 */
 	protected $uid;
 
@@ -46,7 +46,7 @@ class Personallistenstatus {
 	public function setuid($uid) {
 		$this->uid = $uid;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -62,15 +62,14 @@ class Personallistenstatus {
 		$this->name = $name;
 	}
 
-	public function __toString()
-	{
-	  return $this->getName();
+	public function __toString() {
+		return $this->getName();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>

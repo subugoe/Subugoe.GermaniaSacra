@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,21 +10,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Kloster {
 
-    /**
-     * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-     * @Flow\Inject
-     */
-    protected $persistenceManager;
- 
-    /**
-     * @var \TYPO3\Flow\Configuration\ConfigurationManager
-     * @Flow\Inject
-     */
-    protected $configurationManager;
+	/**
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
+	protected $persistenceManager;
+
+	/**
+	 * @var \TYPO3\Flow\Configuration\ConfigurationManager
+	 * @Flow\Inject
+	 */
+	protected $configurationManager;
 
 	/**
 	 * @var integer
-	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
 	 */
 	protected $uid;
 
@@ -58,7 +56,7 @@ class Kloster {
 	 * @ORM\Column(length=45, nullable=true)
 	 */
 	protected $band_seite;
-	
+
 	/**
 	 * @var string
 	 * @ORM\Column(type="text", nullable=true)
@@ -136,48 +134,52 @@ class Kloster {
 	protected $changedDate;
 
 	/**
-	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
-	*/
+	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
+	 */
 	public function getKlosterstandorts() {
 		return $this->klosterstandorts;
 	}
- 
+
 	/**
-	* @param \Doctrine\Common\Collections\Collection $klosterstandorts
-	* @return void
-	*/
+	 * @param \Doctrine\Common\Collections\Collection $klosterstandorts
+	 * @return void
+	 */
 	public function setKlosterstandorts(\Doctrine\Common\Collections\Collection $klosterstandorts) {
-		
-		foreach ($klosterstandorts as $klosterstandort){$klosterstandort->setKloster($this);}
-	
+
+		foreach ($klosterstandorts as $klosterstandort) {
+			$klosterstandort->setKloster($this);
+		}
+
 		$this->klosterstandorts = $klosterstandorts;
 	}
 
 	public function removeKlosterstandorts($klosterstandorts) {
-		
-		foreach ($klosterstandorts as $klosterstandort){
+
+		foreach ($klosterstandorts as $klosterstandort) {
 			$klosterstandort->removeElement($klosterstandort);
 		}
 	}
 
 	/**
-	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
-	*/
+	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
+	 */
 	public function getKlosterordens() {
 		return $this->klosterordens;
 	}
- 
+
 	/**
-	* @param \Doctrine\Common\Collections\Collection $klosterordens
-	* @return void
-	*/
+	 * @param \Doctrine\Common\Collections\Collection $klosterordens
+	 * @return void
+	 */
 	public function setKlosterordens(\Doctrine\Common\Collections\Collection $klosterordens) {
-		
-		foreach ($klosterordens as $klosterorden){$klosterorden->setKloster($this);}
-	
+
+		foreach ($klosterordens as $klosterorden) {
+			$klosterorden->setKloster($this);
+		}
+
 		$this->klosterordens = $klosterordens;
 	}
-	
+
 	/**
 	 * @return integer
 	 */
@@ -304,7 +306,7 @@ class Kloster {
 	public function getBearbeitungsstatus() {
 		return $this->bearbeitungsstatus;
 	}
-	
+
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
 	 * @return void
@@ -334,7 +336,7 @@ class Kloster {
 	public function getPersonallistenstatus() {
 		return $this->personallistenstatus;
 	}
-	
+
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus $personallistenstatus
 	 * @return void
@@ -349,7 +351,7 @@ class Kloster {
 	public function getBand() {
 		return $this->band;
 	}
-	
+
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
 	 * @return void
@@ -359,48 +361,61 @@ class Kloster {
 	}
 
 	/**
-	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl>
-	*/
+	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl>
+	 */
 	public function getKlosterHasUrls() {
 		return $this->klosterHasUrls;
 	}
 
 	/**
-	* @param \Doctrine\Common\Collections\Collection $klosterHasUrls
-	* @return void
-	*/
+	 * @param \Doctrine\Common\Collections\Collection $klosterHasUrls
+	 * @return void
+	 */
 	public function setKlosterHasUrls(\Doctrine\Common\Collections\Collection $klosterHasUrls) {
 
-		foreach ($klosterHasUrls as $klosterHasUrl){$klosterHasUrl->setKloster($this);}
+		foreach ($klosterHasUrls as $klosterHasUrl) {
+			$klosterHasUrl->setKloster($this);
+		}
 
 		$this->klosterHasUrls = $klosterHasUrls;
 	}
 
 	/**
-	* @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur>
-	*/
+	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur>
+	 */
 	public function getKlosterHasLiteraturs() {
 		return $this->klosterHasLiteraturs;
 	}
 
 	/**
-	* @param \Doctrine\Common\Collections\Collection $klosterHasLiteraturs
-	* @return void
-	*/
+	 * @param \Doctrine\Common\Collections\Collection $klosterHasLiteraturs
+	 * @return void
+	 */
 	public function setKlosterHasLiteraturs(\Doctrine\Common\Collections\Collection $klosterHasLiteraturs) {
 
-		foreach ($klosterHasLiteraturs as $klosterHasLiteratur){$klosterHasLiteratur->setKloster($this);}
+		foreach ($klosterHasLiteraturs as $klosterHasLiteratur) {
+			$klosterHasLiteratur->setKloster($this);
+		}
 
 		$this->klosterHasLiteraturs = $klosterHasLiteraturs;
 	}
 
 	/**
+<<<<<<< HEAD
 	* @ORM\PrePersist
 	* @return void
 	*/
 	public function prePersist() {
 		$this->setCreationDate(new \DateTime());
 	}
+=======
+	 * @ORM\PrePersist
+	 * @return void
+	 */
+//	public function prePersist() {
+//		$this->setCreationDate(new \DateTime());
+//	}
+>>>>>>> d7636dc6d5713a9d94b5c1e792fec2678dbd9728
 
 	/**
 	 * @return \DateTime
@@ -418,9 +433,9 @@ class Kloster {
 	}
 
 	/**
-	* @ORM\PreUpdate
-	* @return void
-	*/
+	 * @ORM\PreUpdate
+	 * @return void
+	 */
 	public function preUpdate() {
 		$this->setChangedDate(new \DateTime());
 	}
@@ -440,15 +455,14 @@ class Kloster {
 		$this->changedDate = $changedDate;
 	}
 
-	public function __toString()
-	{
-	  return $this->getKloster();
+	public function __toString() {
+		return $this->getKloster();
 	}
 
-	public function getUUID()
-    {
-        return $this->persistenceManager->getIdentifierByObject($this);
-    }
+	public function getUUID() {
+		return $this->persistenceManager->getIdentifierByObject($this);
+	}
 
 }
+
 ?>
