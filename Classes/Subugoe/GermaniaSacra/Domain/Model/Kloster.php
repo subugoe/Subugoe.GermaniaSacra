@@ -401,21 +401,12 @@ class Kloster {
 	}
 
 	/**
-<<<<<<< HEAD
 	* @ORM\PrePersist
 	* @return void
 	*/
 	public function prePersist() {
 		$this->setCreationDate(new \DateTime());
 	}
-=======
-	 * @ORM\PrePersist
-	 * @return void
-	 */
-//	public function prePersist() {
-//		$this->setCreationDate(new \DateTime());
-//	}
->>>>>>> d7636dc6d5713a9d94b5c1e792fec2678dbd9728
 
 	/**
 	 * @return \DateTime
