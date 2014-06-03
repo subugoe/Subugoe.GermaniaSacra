@@ -1,127 +1,168 @@
+/* line 3, ../../Private/Scss/style.sass */
 body {
   background: #e6e3d3;
   overflow-y: scroll;
 }
+/* line 6, ../../Private/Scss/style.sass */
 body > section {
   padding: 1rem;
 }
 
+/* line 8, ../../Private/Scss/style.sass */
 button {
   min-width: 4rem;
   padding: 0.6rem;
 }
 
+/* line 11, ../../Private/Scss/style.sass */
 textarea {
   min-height: 0;
   resize: none;
 }
 
+/* line 14, ../../Private/Scss/style.sass */
 fieldset {
   border: 0;
   border-top: 1px solid;
   margin-bottom: 0;
 }
+/* line 18, ../../Private/Scss/style.sass */
 fieldset legend {
   background: none;
 }
 
+/* line 20, ../../Private/Scss/style.sass */
 h1 + button {
   float: right;
   margin-top: -3.5em;
 }
 
+/* line 23, ../../Private/Scss/style.sass */
 label {
   line-height: 2.33333em;
 }
+/* line 25, ../../Private/Scss/style.sass */
+label.columns {
+  padding: 0;
+  text-indent: 1rem;
+}
+/* line 28, ../../Private/Scss/style.sass */
 label + span {
   padding-top: 0.66667em;
 }
 
+/* line 30, ../../Private/Scss/style.sass */
 table {
   background: none;
   border: none;
   border-collapse: collapse;
 }
+/* line 34, ../../Private/Scss/style.sass */
 table tr {
   border-bottom: 1px solid;
   margin-bottom: -1px;
 }
+/* line 37, ../../Private/Scss/style.sass */
 table tr:nth-of-type(2n) {
   background: none;
 }
+/* line 39, ../../Private/Scss/style.sass */
 table td {
   vertical-align: top;
 }
+/* line 41, ../../Private/Scss/style.sass */
 table button,
 table select,
 table textarea {
   margin: 0;
 }
 
+/* line 45, ../../Private/Scss/style.sass */
 input,
 select,
 textarea {
   float: right;
 }
+/* line 49, ../../Private/Scss/style.sass */
 label.none input, label.none
 select, label.none
 textarea {
-  width: 100%;
+  width: 100% !important;
 }
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-1 > input, #edit .large-1 >
 select, #edit .large-1 >
 textarea {
-  margin-right: -20%;
-  width: 140% !important;
+  width: -100%;
 }
+/* line 52, ../../Private/Scss/style.sass */
+#edit .large-2 > input, #edit .large-2 >
+select, #edit .large-2 >
+textarea {
+  width: 0%;
+}
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-3 > input, #edit .large-3 >
 select, #edit .large-3 >
 textarea {
-  width: 35%;
+  width: 33.33333%;
 }
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-4 > input, #edit .large-4 >
 select, #edit .large-4 >
 textarea {
-  width: 53%;
+  width: 50%;
 }
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-5 > input, #edit .large-5 >
 select, #edit .large-5 >
 textarea {
-  width: 63%;
+  width: 60%;
 }
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-6 > input, #edit .large-6 >
 select, #edit .large-6 >
 textarea {
-  width: 69%;
+  width: 66.66667%;
 }
+/* line 52, ../../Private/Scss/style.sass */
+#edit .large-7 > input, #edit .large-7 >
+select, #edit .large-7 >
+textarea {
+  width: 71.42857%;
+}
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-8 > input, #edit .large-8 >
 select, #edit .large-8 >
 textarea {
-  width: 77.5%;
+  width: 75%;
 }
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-9 > input, #edit .large-9 >
 select, #edit .large-9 >
 textarea {
-  width: 80%;
+  width: 77.77778%;
 }
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-10 > input, #edit .large-10 >
 select, #edit .large-10 >
 textarea {
   width: 80%;
 }
+/* line 52, ../../Private/Scss/style.sass */
+#edit .large-11 > input, #edit .large-11 >
+select, #edit .large-11 >
+textarea {
+  width: 81.81818%;
+}
+/* line 52, ../../Private/Scss/style.sass */
 #edit .large-12 > input, #edit .large-12 >
 select, #edit .large-12 >
 textarea {
-  width: 85%;
+  width: 83.33333%;
 }
 
-#edit .large-13 > input, #edit .large-13 >
-select, #edit .large-13 >
-textarea {
-  width: 85%;
-  height: 200px;
-}
-
+/* line 58, ../../Private/Scss/style.sass */
 input[type=submit]:not([disabled]):active, input[type=submit]:not([disabled]):focus, input[type=submit]:not([disabled]):hover,
 button:not([disabled]):active,
 button:not([disabled]):focus,
@@ -133,10 +174,12 @@ button:not([disabled]):hover {
   background: linear-gradient(top, #970124 0%, #790015 95%, #6f0011 100%);
 }
 
+/* line 61, ../../Private/Scss/style.sass */
 input[name="kloster_nr[]"] {
   max-width: 5rem;
 }
 
+/* line 64, ../../Private/Scss/style.sass */
 input[type=submit],
 button,
 .top-bar {
@@ -147,6 +190,7 @@ button,
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
 }
 
+/* line 69, ../../Private/Scss/style.sass */
 .top-bar-section a {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #c90230), color-stop(95%, #ac001e), color-stop(100%, #a20019)) !important;
   background: -webkit-linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
@@ -155,11 +199,13 @@ button,
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
 }
 
+/* line 72, ../../Private/Scss/style.sass */
 .clear,
 .multiple {
   clear: both;
 }
 
+/* line 76, ../../Private/Scss/style.sass */
 #edit {
   clear: both;
 }
