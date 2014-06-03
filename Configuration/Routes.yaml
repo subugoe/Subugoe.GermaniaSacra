@@ -13,6 +13,14 @@
   defaults:
     '@controller': 'Kloster'
     '@action': 'jsonList'
+
+-
+  name: 'JSON-List-All Kloster URI'
+  uriPattern: 'jsonListAll'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'jsonListAll'
+
 -
   name: 'Update_List Kloster URI'
   uriPattern: 'updateList'
@@ -62,7 +70,6 @@
   defaults:
     '@controller': 'Kloster'
     '@action': 'create'
-
 
 -
   name: 'Add Kloster Id URI'

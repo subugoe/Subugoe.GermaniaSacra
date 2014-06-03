@@ -218,25 +218,8 @@ class KlosterController extends ActionController {
 		return json_encode(array($status));
 	}
 
-	/** Gets and returns the list of Orte as per search string
-	 * @param void
-	 * @return array $reponse
-	 */
-	public function searchOrtAction() {
-		if ($this->request->hasArgument('searchString')) {
-			$searchString = $this->request->getArgument('searchString');
-			$searchString = "%" . $searchString . "%";
-			$searchResult = $this->ortRepository->findOrtBySearchString($searchString);
-			$orte = array();
-			foreach ($searchResult as $res){
-				$orte[] = array ($res->getUUID(), $res->getOrt());
-			}
-			return json_encode($orte);
-		}
-	}
-
 	/**
-	 * @return array $reponse The list of Kloster in json format
+	 * @return array $reponse The list (10 entries each time) of Kloster in json format
 	 */
 	public function jsonListAction() {
 		if ($this->request->hasArgument('page')){
@@ -291,6 +274,31 @@ class KlosterController extends ActionController {
 		$response[] = $klosterArr;
 		$response[] = $bearbeitungsstatusArr;
 
+		return json_encode($response);
+	}
+
+	/**
+	 * @return array $reponse The list of all Kloster in json format
+	 */
+	public function jsonListAllAction() {
+
+		$this->klosterRepository->setDefaultOrderings(
+			array( 'uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
+		);
+
+		$klosters = $this->klosterRepository->findAll();
+
+		$klosterArr = array();
+		foreach ($klosters as $k => $kloster) {
+			$klosterArr[$k]['uuid'] = $kloster->getUUID();
+			$klosterArr[$k]['kloster'] = $kloster->getKloster();
+			$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
+			$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
+			$bearbeitungsstatus = $kloster->getBearbeitungsstatus();
+			$klosterArr[$k]['bearbeitungsstatus'] = $bearbeitungsstatus->getUUID();
+		}
+
+		$response = $klosterArr;
 		return json_encode($response);
 	}
 
@@ -1114,6 +1122,23 @@ class KlosterController extends ActionController {
 		}
 		$status = 200;
 		return json_encode(array($status));
+	}
+
+	/** Gets and returns the list of Orte as per search string
+	 * @param void
+	 * @return array $reponse
+	 */
+	public function searchOrtAction() {
+		if ($this->request->hasArgument('searchString')) {
+			$searchString = $this->request->getArgument('searchString');
+			$searchString = "%" . $searchString . "%";
+			$searchResult = $this->ortRepository->findOrtBySearchString($searchString);
+			$orte = array();
+			foreach ($searchResult as $res){
+				$orte[] = array ($res->getUUID(), $res->getOrt());
+			}
+			return json_encode($orte);
+		}
 	}
 
 }
