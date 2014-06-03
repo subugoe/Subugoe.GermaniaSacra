@@ -40,30 +40,6 @@ class Url {
 	protected $urltyp;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl
-	 * @ORM\OneToMany(mappedBy="url")
-	 */
-	protected $klosterHasUrls;
-
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\OrdenHasUrl
-	 * @ORM\OneToMany(mappedBy="orden")
-	 */
-//	protected $ordenHasUrls;
-
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\BandHasUrl
-	 * @ORM\OneToMany(mappedBy="url")
-	 */
-//	protected $bandHasUrls;
-
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl
-	 * @ORM\OneToMany(mappedBy="url")
-	 */
-	protected $bistumHasUrls;
-
-	/**
 	 * @return integer
 	 */
 	public function getuid() {

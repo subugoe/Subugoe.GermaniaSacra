@@ -14,14 +14,14 @@ class BistumHasUrl {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bistum
 	 * @ORM\ManyToOne(inversedBy="bistumHasUrls")
-	 * @ORM\JoinColumn(onDelete="NO ACTION")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $bistum;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
 	 * @ORM\ManyToOne(inversedBy="bistumHasUrls")
-	 * @ORM\JoinColumn(onDelete="NO ACTION")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $url;
 

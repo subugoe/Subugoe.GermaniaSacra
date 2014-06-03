@@ -22,6 +22,7 @@ class Kloster {
      * @Flow\Inject
      */
     protected $configurationManager;
+
 	/**
 	 * @var integer
 	 * @ORM\Column(columnDefinition="INT(11) NOT NULL AUTO_INCREMENT UNIQUE")
@@ -30,6 +31,7 @@ class Kloster {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $kloster_id;
 
@@ -396,9 +398,9 @@ class Kloster {
 	* @ORM\PrePersist
 	* @return void
 	*/
-//	public function prePersist() {
-//		$this->setCreationDate(new \DateTime());
-//	}
+	public function prePersist() {
+		$this->setCreationDate(new \DateTime());
+	}
 
 	/**
 	 * @return \DateTime

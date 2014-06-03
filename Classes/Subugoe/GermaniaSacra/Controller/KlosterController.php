@@ -162,7 +162,11 @@ class KlosterController extends ActionController {
 			(isset($klosterArr[$auswahl]) && !empty($klosterArr[$auswahl])) &&
 			(isset($bearbeitungsstatusArr[$auswahl]) && !empty($bearbeitungsstatusArr[$auswahl]))
 			) {
-				$list[$auswahl] = array("bearbeitungsstatus" => $bearbeitungsstatusArr[$auswahl][0], "klostername" => $klosterArr[$auswahl][0], "gnd" => $gndArr[$auswahl][0], "bearbeitungsstand" => $bearbeitungsstandArr[$auswahl][0]);
+				$list[$auswahl] = array("bearbeitungsstatus" => $bearbeitungsstatusArr[$auswahl][0],
+										"klostername" => $klosterArr[$auswahl][0],
+										"gnd" => $gndArr[$auswahl][0],
+										"bearbeitungsstand" => $bearbeitungsstandArr[$auswahl][0],
+										"ort" => $ortArr[$auswahl]);
 			}
 		}
 
@@ -174,13 +178,44 @@ class KlosterController extends ActionController {
 				$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
 				$klosterObject->setBearbeitungsstand($v['bearbeitungsstand']);
 				$this->klosterRepository->update($klosterObject);
-				$this->persistenceManager->persistAll();
+
+				$klosterHasUrls = $klosterObject->getKlosterHasUrls();
+				foreach ($klosterHasUrls as $klosterHasUrl) {
+					$urlObject = $klosterHasUrl->getUrl();
+					$urlTypObject = $urlObject->getUrltyp();
+					$urlTyp = $urlTypObject->getName();
+					if ($urlTyp == "GND") {
+						$urlObject->setUrl($v['gnd']);
+						$this->urlRepository->update($urlObject);
+						$this->persistenceManager->persistAll();
+					}
+				}
+
+				$klosterstandorts = $klosterObject->getKlosterstandorts();
+				if (is_object($klosterstandorts)) {
+					foreach ($klosterstandorts as $i => $klosterstandort) {
+						$this->klosterstandortRepository->remove($klosterstandort);
+					}
+				}
+
+				$ort = $v['ort'];
+				if (isset($ort) && !empty($ort) && is_array($ort)) {
+					foreach ($ort as $ort_uuid) {
+						$ortObject = $this->ortRepository->findByIdentifier($ort_uuid);
+						if (is_object($ortObject)) {
+							$klosterstandort = new Klosterstandort();
+							$klosterstandort->setKloster($klosterObject);
+							$klosterstandort->setOrt($ortObject);
+							$this->klosterstandortRepository->add($klosterstandort);
+						}
+					}
+				}
 			}
+			$this->persistenceManager->persistAll();
 		}
 
 		$status = 200;
 		return json_encode(array($status));
-
 	}
 
 	/** Gets and returns the list of Orte as per search string

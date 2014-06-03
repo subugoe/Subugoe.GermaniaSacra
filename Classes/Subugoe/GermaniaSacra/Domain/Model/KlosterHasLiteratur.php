@@ -14,14 +14,14 @@ class KlosterHasLiteratur {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 * @ORM\ManyToOne(inversedBy="klosterHasLiteraturs")
-	 * @ORM\JoinColumn(onDelete="NO ACTION")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $kloster;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Literatur
 	 * @ORM\ManyToOne(inversedBy="klosterHasLiteraturs")
-	 * @ORM\JoinColumn(onDelete="NO ACTION")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $literatur;
 

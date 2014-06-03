@@ -20,14 +20,14 @@ class KlosterHasUrl {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
 	 * @ORM\ManyToOne(inversedBy="klosterHasUrls")
-	 * @ORM\JoinColumn(onDelete="NO ACTION")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $kloster;
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
 	 * @ORM\ManyToOne(inversedBy="klosterHasUrls")
-	 * @ORM\JoinColumn(onDelete="NO ACTION")
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $url;
 

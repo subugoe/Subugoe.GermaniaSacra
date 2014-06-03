@@ -104,10 +104,11 @@ $(function () {
 
 	$( "#searchOrt" ).keyup(function (t) {
 		t.preventDefault();
-		var tabindex = ($(this).prop("tabindex"));
+		var tabindex = $(this).prop("tabindex");
+		var kloster_uuid =  $(this).data("uuid");
 		var ort = $(this).val();
 		if (ort.length > 3) {
-			$("#searchOrt").find_ort(ort, tabindex);
+			$("#searchOrt").find_ort(ort, tabindex, kloster_uuid);
 		}
 	}),
 
@@ -134,7 +135,7 @@ $(function () {
 		var page = $(this).data("page");
 
 		if (page) {
-			var url = "kloster?--subugoe-germaniasacra-viewhelpers-paginateviewhelper[currentPage]=" + page;
+			var url = "?--subugoe-germaniasacra-viewhelpers-paginateviewhelper[currentPage]=" + page;
 			window.location = url;
 		}
 	}),

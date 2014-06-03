@@ -1,0 +1,72 @@
+#                                                                        #
+# Routes configuration for the GermaniaSacra package                     #
+#                                                                        #
+-
+  name: 'List Kloster URI'
+  uriPattern: ''
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'index'
+-
+  name: 'JSON-List Kloster URI'
+  uriPattern: 'jsonList'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'jsonList'
+-
+  name: 'Update_List Kloster URI'
+  uriPattern: 'updateList'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'updateList'
+
+-
+  name: 'Search Ort'
+  uriPattern: 'searchOrt'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'searchOrt'
+
+-
+  name: 'Edit Kloster URI'
+  uriPattern: '{@action}/{kloster.__identity}'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'edit'
+
+-
+  name: 'Update Kloster URI'
+  uriPattern: '{@action}/__identity}'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'update'
+    '@format': 'json'
+
+-
+  name: 'Update Kloster URI'
+  uriPattern: 'delete'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'delete'
+
+-
+  name: 'New Kloster URI'
+  uriPattern: '{@action}'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'new'
+
+-
+  name: 'Create Kloster URI'
+  uriPattern: '{@action}'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'create'
+
+
+-
+  name: 'Add Kloster Id URI'
+  uriPattern: '{@action}'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'addKlosterId'

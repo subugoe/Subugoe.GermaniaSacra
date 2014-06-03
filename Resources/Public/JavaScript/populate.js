@@ -15,7 +15,7 @@ $.fn.extend({
 						$('.message').append("Der Eintrag wurde erfolgreich bearbeitet.");
 					}
 				});
-				setTimeout(function() {window.location.href = 'kloster'} , 1000);
+				setTimeout(function() {window.location.href = ''} , 1000);
 			}
 		})
 		.fail(function (jqXHR, textStatus) {
@@ -36,7 +36,7 @@ $.fn.extend({
 	
 		var $this = $(this);
 
-		url = "kloster/jsonList";
+		url = "jsonList";
 		$.getJSON(url, { page: page }, function(response){
 
 			var bearbeitungsstatusArray = response[1];
@@ -75,7 +75,6 @@ $.fn.extend({
 						}
 					}
 
-
 					if (name !== "__csrfToken" && name !== "auswahl") {
 						$(this).attr('name', name + '[' + value.uuid + '][]');
 					}
@@ -86,7 +85,10 @@ $.fn.extend({
 				var tabindex = key+1;
 				$this.find('input#searchOrt:eq(' + key + ')').attr('tabindex', tabindex);
 
-				var url= "kloster/edit/" + value.uuid;
+				var seq = key + 1;
+				$this.find('input#searchOrt:eq(' + seq + ')').attr('data-uuid', value.uuid);
+
+				var url= "edit/" + value.uuid;
 				var id = "editLink" + (key+1);
 				$this.find('a#editLink:eq(1)').attr('href', url);
 				$this.find('a#editLink:eq(1)').attr('id', id);
@@ -196,7 +198,7 @@ $.fn.extend({
 			var klosterliteratur = response[0].literatur;
 
 			var uuid = response[0].uuid;
-			var update_url =  "kloster/update/" + uuid;
+			var update_url =  "update/" + uuid;
 			$('#EditKloster').attr("action", update_url);
 
 			var fieldset = $this.find('fieldset:eq(0)');
@@ -400,7 +402,7 @@ $.fn.extend({
 						$('.message').append("Der Eintrag wurde erfolgreich bearbeitet.");
 					}
 				});
-				setTimeout(function() {window.location.href = 'kloster'} , 1000);
+				setTimeout(function() {window.location.href = ''} , 1000);
 			}
 		})
 		.fail(function (jqXHR, textStatus) {
@@ -418,7 +420,7 @@ $.fn.extend({
 
 // Das Formular zum Eintragen mit den Stammdaten ausfüllen
 	new_kloster: function() {
-		var url = "Subugoe.GermaniaSacra/kloster/new";
+		var url = "new";
 		$.getJSON(url, function(response){
 
 			var bearbeitungsstatusArray = response[0];
@@ -499,14 +501,14 @@ $.fn.extend({
 
 	// Ein neues Kloster-Object wird eingetragen
 	create_kloster: function() {
-		var url = "kloster/create";
+		var url = "create";
 		$.post(url, $("#NewKloster").serialize())
 		.done(function(respond, status, jqXHR) {
 			if (status == "success") {
 
 				var dataArray = $.parseJSON(respond);
 				var uuid = dataArray[0];
-				var addKlosterId_url = "kloster/addKlosterId";
+				var addKlosterId_url = "addKlosterId";
 				$.get( addKlosterId_url, { uuid: uuid});
 
 				$('#confirm').modal({
@@ -518,7 +520,7 @@ $.fn.extend({
 						$('.message').append("Der Eintrag wurde erfolgreich gespeichert.");
 					}
 				});
-				setTimeout(function() {window.location.href = 'kloster'} , 1000);
+				setTimeout(function() {window.location.href = ''} , 1000);
 			}
 		})
 		.fail(function (jqXHR, textStatus) {
@@ -532,7 +534,7 @@ $.fn.extend({
 		Check = confirm("Wollen Sie diesen Eintrag wirklich löschen?");
 
 		if (Check == true) {
-			var url = "kloster/delete";
+			var url = "delete";
 			$.post( url, { kloster: uuid, __csrfToken: csrf })
 			.done(function(respond, status, jqXHR) {
 				if (status == "success") {
@@ -545,7 +547,7 @@ $.fn.extend({
 							$('.message').append("Der Eintrag wurde erfolgreich gelöscht.");
 						}
 					});
-					setTimeout(function() {window.location.href = 'kloster'} , 1000);
+					setTimeout(function() {window.location.href = ''} , 1000);
 				}
 			})
 			.fail(function (jqXHR, textStatus) {
@@ -554,12 +556,12 @@ $.fn.extend({
 		}
 	},
 
-	find_ort: function(ort, tabindex){
-		var url = "kloster/searchOrt";
+	find_ort: function(ort, tabindex, kloster_uuid){
+		var url = "searchOrt";
 		$.getJSON(url, { searchString: ort }, function(response){
 			var ort = $('input[tabindex=' + tabindex +']');
 			if (response.length > 0) {
-				ort.replaceWith('<select name="ort[]" multiple id="ort' + tabindex + '"></select>');
+				ort.replaceWith('<select name="ort[' + kloster_uuid + '][]" multiple id="ort' + tabindex + '" required="required"></select>');
 				$.each(response, function (k, v) {
 					$('#ort' + tabindex).append($("<option>", { value: v[0], html: v[1] }));
 				});
@@ -571,7 +573,7 @@ $.fn.extend({
 	},
 
 	find_ortEdit: function(ort, tabindex){
-		var url = "kloster/searchOrt";
+		var url = "searchOrt";
 		$.getJSON(url, { searchString: ort }, function(response){
 			var ort = $('input[tabindex=' + tabindex +']');
 			if (response.length > 0) {
@@ -587,7 +589,7 @@ $.fn.extend({
 	},
 
 	find_ortNew: function(ort, tabindex){
-		var url = "kloster/searchOrt";
+		var url = "searchOrt";
 		$.getJSON(url, { searchString: ort }, function(response){
 			var ort = $('input[tabindex=' + tabindex +']');
 			if (response.length > 0) {
