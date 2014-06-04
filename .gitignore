@@ -2,3 +2,4 @@ germaniasacra-gh-pages
 *.sql
 .idea
 /vendor/
+.sass-cache
