@@ -68,6 +68,9 @@ input,
 select,
 textarea {
 	float: right;
+	td & {
+		margin: 0 !important;
+	}
 	label.none & {
 		width: 100% !important;
 	}
