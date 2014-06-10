@@ -33,6 +33,12 @@ h1 + button {
 label {
   line-height: 2.33333em;
 }
+
+label.columns {
+  padding: 0;
+  text-indent: 1rem;
+}
+
 label + span {
   padding-top: 0.66667em;
 }
@@ -66,53 +72,62 @@ textarea {
 label.none input, label.none
 select, label.none
 textarea {
-  width: 100%;
+  width: 100% !important;
 }
 #edit .large-1 > input, #edit .large-1 >
 select, #edit .large-1 >
 textarea {
-  margin-right: -20%;
-  width: 140% !important;
+  width: -100%;
 }
 #edit .large-3 > input, #edit .large-3 >
 select, #edit .large-3 >
 textarea {
-  width: 35%;
+  width: 33.33333%;
 }
 #edit .large-4 > input, #edit .large-4 >
 select, #edit .large-4 >
 textarea {
-  width: 53%;
+  width: 50%;
 }
 #edit .large-5 > input, #edit .large-5 >
 select, #edit .large-5 >
 textarea {
-  width: 63%;
+  width: 60%;
 }
 #edit .large-6 > input, #edit .large-6 >
 select, #edit .large-6 >
 textarea {
-  width: 69%;
+  width: 66.66667%;
+}
+#edit .large-7 > input, #edit .large-7 >
+select, #edit .large-7 >
+textarea {
+  width: 71.42857%;
 }
 #edit .large-8 > input, #edit .large-8 >
 select, #edit .large-8 >
 textarea {
-  width: 77.5%;
+  width: 75%;
 }
 #edit .large-9 > input, #edit .large-9 >
 select, #edit .large-9 >
 textarea {
-  width: 80%;
+  width: 77.77778%;
 }
 #edit .large-10 > input, #edit .large-10 >
 select, #edit .large-10 >
 textarea {
   width: 80%;
 }
+#edit .large-11 > input, #edit .large-11 >
+select, #edit .large-11 >
+textarea {
+  width: 81.81818%;
+}
 #edit .large-12 > input, #edit .large-12 >
 select, #edit .large-12 >
 textarea {
-  width: 85%;
+  width: 83.33333%;
 }
 
 #edit .large-13 > input, #edit .large-13 >
