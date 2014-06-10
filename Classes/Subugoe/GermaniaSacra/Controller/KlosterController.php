@@ -253,7 +253,7 @@ class KlosterController extends ActionController {
 			}
 
 			$klosterHasUrls = $kloster->getKlosterHasUrls();
-			foreach ($klosterHasUrls as $i => $klosterHasUrl) {
+			foreach ($klosterHasUrls as $klosterHasUrl) {
 				$urlObj = $klosterHasUrl->getUrl();
 				$url = $urlObj->getUrl();
 				$urlTypObj = $urlObj->getUrltyp();
@@ -280,7 +280,7 @@ class KlosterController extends ActionController {
 	/**
 	 * @return array $reponse The list of all Kloster in json format
 	 */
-	public function jsonListAllAction() {
+	public function klosterListAllAction() {
 
 		$this->klosterRepository->setDefaultOrderings(
 			array( 'uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
@@ -296,6 +296,23 @@ class KlosterController extends ActionController {
 			$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
 			$bearbeitungsstatus = $kloster->getBearbeitungsstatus();
 			$klosterArr[$k]['bearbeitungsstatus'] = $bearbeitungsstatus->getUUID();
+
+			$klosterstandorts = $kloster->getKlosterstandorts();
+			foreach ($klosterstandorts as $i => $klosterstandort) {
+				$ort = $klosterstandort->getOrt();
+				$klosterArr[$k]['ort'][$i] = $ort->getOrt();
+			}
+
+			$klosterHasUrls = $kloster->getKlosterHasUrls();
+			foreach ($klosterHasUrls as $i => $klosterHasUrl) {
+				$urlObj = $klosterHasUrl->getUrl();
+				$url = $urlObj->getUrl();
+				$urlTypObj = $urlObj->getUrltyp();
+				$urlTyp = $urlTypObj->getName();
+				if ($urlTyp == "GND") {
+					$klosterArr[$k]['gnd'] = $url;
+				}
+			}
 		}
 
 		$response = $klosterArr;

@@ -152,6 +152,26 @@ class Band {
 		$this->kurztitel = $kurztitel;
 	}
 
+	/**
+	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\BandHasUrl>
+	 */
+	public function getBandHasUrls() {
+		return $this->bandHasUrls;
+	}
+
+	/**
+	 * @param \Doctrine\Common\Collections\Collection $bandHasUrls
+	 * @return void
+	 */
+	public function setBandHasUrls(\Doctrine\Common\Collections\Collection $bandHasUrls) {
+
+		foreach ($bandHasUrls as $bandHasUrl) {
+			$bandHasUrl->setBand($this);
+		}
+
+		$this->bandHasUrls = $bandHasUrls;
+	}
+
 	public function __toString() {
 		return $this->getTitel();
 	}

@@ -383,7 +383,6 @@ class DataImportController extends ActionController {
 				}
 			}
 			$start = $start + $offset;
-			sleep(120);
 		}
 		$sqlConnection->close();
 		$this->logger->log("Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.");
@@ -630,7 +629,7 @@ class DataImportController extends ActionController {
 					$urlObject = new Url();
 					$urlObject->setUrl($url);
 					$urlObject->setBemerkung($buchtitel);
-					$documenturlObject = $this->urlRepository->findByIdentifier($documenturltypUUID);
+					$documenturlObject = $this->urltypRepository->findByIdentifier($documenturltypUUID);
 					$urlObject->setUrltyp($documenturlObject);
 					$this->urlRepository->add($urlObject);
 					$this->persistenceManager->persistAll();
@@ -648,7 +647,7 @@ class DataImportController extends ActionController {
 					$urlObject = new Url();
 					$urlObject->setUrl($handle);
 					$urlObject->setBemerkung($buchtitel);
-					$handleurlObject = $this->urlRepository->findByIdentifier($handleurltypUUID);
+					$handleurlObject = $this->urltypRepository->findByIdentifier($handleurltypUUID);
 					$urlObject->setUrltyp($handleurlObject);
 					$this->urlRepository->add($urlObject);
 					$this->persistenceManager->persistAll();
@@ -663,13 +662,13 @@ class DataImportController extends ActionController {
 					$this->persistenceManager->persistAll();
 				}
 				if (isset($findpage) && !empty($findpage)) {
-					$findpage = trim($handle, "#");
+					$findpage = trim($findpage, "#");
 					$findpage = explode("#", $findpage);
 					$findpage = trim($findpage[0], "/");
 					$urlObject = new Url();
 					$urlObject->setUrl($findpage);
 					$urlObject->setBemerkung($buchtitel);
-					$findpageurlObject = $this->urlRepository->findByIdentifier($findpageurltypUUID);
+					$findpageurlObject = $this->urltypRepository->findByIdentifier($findpageurltypUUID);
 					$urlObject->setUrltyp($findpageurlObject);
 					$this->urlRepository->add($urlObject);
 					$this->persistenceManager->persistAll();
