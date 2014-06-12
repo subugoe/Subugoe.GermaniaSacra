@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+	<file original="" source-language="de" target-language="de" datatype="plaintext">
+		<body>
+			<trans-unit id="app.title" approved="yes">
+				<source>Germania Sacra Kloster-Editor</source> <target state="signed-off">Germania Sacra Kloster-Editor</target> </trans-unit>
+		</body>
+	</file>
+</xliff>
