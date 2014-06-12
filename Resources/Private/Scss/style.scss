@@ -38,9 +38,6 @@ label {
 		padding: 0;
 		text-indent: 1rem;
 	}
-	+ span {
-		padding-top: 0.66667em;
-	}
 }
 
 table {
@@ -74,7 +71,7 @@ textarea {
 	label.none & {
 		width: 100% !important;
 	}
-	@for $i from 1 through 12 {
+	@for $i from 3 through 12 {
 		#edit .large-#{$i} > & {
 			width: percentage(($i - 2) / $i);
 		}
@@ -113,3 +110,4 @@ button,
 	clear: both;
 }
 
+@import 'geopicker';
