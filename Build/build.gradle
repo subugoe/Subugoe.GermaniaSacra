@@ -1,0 +1,54 @@
+loadConfiguration()
+
+def loadConfiguration() {
+    defaultTasks = ['cleanUp', 'prepare', 'compileSass']
+}
+
+// Invoke the plugin
+apply plugin: 'compass'
+
+project.ext.set("cssSrcDir", "../Resources/Public/CSS")
+
+FileCollection generatedFiles = files([
+        cssSrcDir + '/style.css',
+])
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.10'
+}
+
+// Pull the plugin from Maven Central
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'http://dl.bintray.com/robfletcher/gradle-plugins' }
+    }
+    dependencies {
+        classpath 'org.gradle.plugins:gradle-compass:1.0.9'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+compass {
+    cssDir = file('../Resources/Public/CSS')
+    sassDir = file('../Resources/Private/Scss')
+    outputStyle = "expanded"
+    debugInfo = false
+    noLineComments = true
+}
+
+task cleanUp << {
+    description 'Cleanup build artifacts'
+
+    generatedFiles.each { File file ->
+        delete file
+    }
+}
+
+task prepare << {
+    description 'Prepare for build'
+}

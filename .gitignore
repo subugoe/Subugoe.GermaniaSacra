@@ -2,4 +2,6 @@ germaniasacra-gh-pages
 *.sql
 .idea
 /vendor/
-.sass-cache
+style.css
+.sass-cache/
+Build/.*
