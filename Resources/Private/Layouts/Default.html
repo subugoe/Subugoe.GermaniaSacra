@@ -32,7 +32,7 @@
 						<a href="#">Orden</a>
 					</li>
 					<li>
-						<a href="#">Orte</a>
+						<a href="ort">Orte</a>
 					</li>
 					<li>
 						<a href="#">GS-Bände</a>
@@ -52,6 +52,10 @@
 				</ul>
 			</section>
 		</nav>
+
+		<f:if condition="{klosters}">
+			<f:then>
+
 		<section role="main">
 			<h1>Klosterliste</h1>
 			<form>
@@ -74,6 +78,9 @@
 				<f:for each="{paginatedKloster}" as="kloster">
 				</f:for>
 			</m:Paginate>
+
+			</f:then>
+			</f:if>
 
 			<f:flashMessages class="flashmessages" />
 

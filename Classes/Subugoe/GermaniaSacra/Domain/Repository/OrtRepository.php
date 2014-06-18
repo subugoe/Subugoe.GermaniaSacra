@@ -23,6 +23,20 @@ class OrtRepository extends Repository {
 				->execute();
 	}
 
+	/**
+	 * Returns a list of Ort entries
+	 *
+	 * @param integer $offset The select offset
+	 * @param integer $limit The select limit
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The ort
+	 */
+	public function findOrts($offset=0, $limit=10) {
+	    $query = $this->createQuery();
+		$query->setOffset($offset);
+		$query->setLimit($limit);
+		return $query->execute();
+	}
+
 }
 
 ?>

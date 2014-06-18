@@ -2,7 +2,7 @@
 # Routes configuration for the GermaniaSacra package                     #
 #                                                                        #
 -
-  name: 'List Kloster URI'
+  name: 'Kloster List URI'
   uriPattern: ''
   defaults:
     '@controller': 'Kloster'
@@ -16,10 +16,10 @@
 
 -
   name: 'JSON-List-All Kloster URI'
-  uriPattern: 'jsonListAll'
+  uriPattern: 'klosterListAll'
   defaults:
     '@controller': 'Kloster'
-    '@action': 'jsonListAll'
+    '@action': 'klosterListAll'
 
 -
   name: 'Update_List Kloster URI'
@@ -37,14 +37,14 @@
 
 -
   name: 'Edit Kloster URI'
-  uriPattern: '{@action}/{kloster.__identity}'
+  uriPattern: 'edit/{kloster.__identity}'
   defaults:
     '@controller': 'Kloster'
     '@action': 'edit'
 
 -
   name: 'Update Kloster URI'
-  uriPattern: '{@action}/__identity}'
+  uriPattern: 'update/{kloster.__identity}'
   defaults:
     '@controller': 'Kloster'
     '@action': 'update'
@@ -59,21 +59,29 @@
 
 -
   name: 'New Kloster URI'
-  uriPattern: '{@action}'
+  uriPattern: 'new'
   defaults:
     '@controller': 'Kloster'
     '@action': 'new'
 
 -
   name: 'Create Kloster URI'
-  uriPattern: '{@action}'
+  uriPattern: 'create'
   defaults:
     '@controller': 'Kloster'
     '@action': 'create'
 
 -
   name: 'Add Kloster Id URI'
-  uriPattern: '{@action}'
+  uriPattern: 'addKlosterId'
   defaults:
     '@controller': 'Kloster'
     '@action': 'addKlosterId'
+
+-
+  name: 'Ort List URI'
+  uriPattern: 'ort'
+  defaults:
+    package: 'Subugoe.GermaniaSacra'
+    '@controller': 'Ort'
+    '@action': 'index'

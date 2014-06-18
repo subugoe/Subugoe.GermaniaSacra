@@ -17,7 +17,7 @@ class OrtController extends ActionController {
 	 * @return void
 	 */
 	public function indexAction() {
-		$this->view->assign('orts', $this->ortRepository->findAll());
+		$this->view->assign('orts', $this->ortRepository->findOrts());
 	}
 
 	/**

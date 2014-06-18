@@ -152,6 +152,33 @@ class Orden {
 		$this->ordenstyp = $ordenstyp;
 	}
 
+
+
+
+	/**
+	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrdenHasUrl>
+	 */
+	public function getOrdenHasUrls() {
+		return $this->ordenHasUrls;
+	}
+
+	/**
+	 * @param \Doctrine\Common\Collections\Collection $ordenHasUrls
+	 * @return void
+	 */
+	public function setOrdenHasUrls(\Doctrine\Common\Collections\Collection $ordenHasUrls) {
+
+		foreach ($ordenHasUrls as $ordenHasUrl) {
+			$ordenHasUrl->setOrden($this);
+		}
+
+		$this->ordenHasUrls = $ordenHasUrls;
+	}
+
+
+
+
+
 	public function __toString() {
 		return $this->getOrden();
 	}
