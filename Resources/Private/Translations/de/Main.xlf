@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+	<file original="" source-language="de" target-language="de" datatype="plaintext">
+		<body>
+			<trans-unit id="app.title" approved="yes">
+				<source>Germania Sacra Klosterdatenbank</source>
+				<target state="signed-off">Germania Sacra Klosterdatenbank</target>
+			</trans-unit>
+			<trans-unit id="app.navigation" approved="yes">
+				<source>Navigation</source>
+				<target state="signed-off">Navigation</target>
+			</trans-unit>
+			<trans-unit id="orden" approved="yes">
+				<source>Orden</source>
+				<target state="signed-off">Orden</target>
+			</trans-unit>
+			<trans-unit id="orte" approved="yes">
+				<source>Orte</source>
+				<target state="signed-off">Orte</target>
+			</trans-unit>
+			<trans-unit id="baende" approved="yes">
+				<source>GS-Bände</source>
+				<target state="signed-off">GS-Bände</target>
+			</trans-unit>
+			<trans-unit id="bistuemer" approved="yes">
+				<source>Bistümer</source>
+				<target state="signed-off">Bistümer</target>
+			</trans-unit>
+			<trans-unit id="kirchenprovinz" approved="yes">
+				<source>Kirchenprovinz</source>
+				<target state="signed-off">Kirchenprovinz</target>
+			</trans-unit>
+			<trans-unit id="datasetstatus" approved="yes">
+				<source>Datensatzstatus</source>
+				<target state="signed-off">Datensatzstatus</target>
+			</trans-unit>
+			<trans-unit id="aemterstatus" approved="yes">
+				<source>Ämterstatus</source>
+				<target state="signed-off">Ämterstatus</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

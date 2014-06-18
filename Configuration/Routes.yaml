@@ -71,6 +71,7 @@
     '@controller': 'Kloster'
     '@action': 'create'
 
+
 -
   name: 'Add Kloster Id URI'
   uriPattern: 'addKlosterId'

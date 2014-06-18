@@ -54,16 +54,12 @@
 			</td>
 			<td>
 				<a href="" id="editLink"><button class="edit">Bearbeiten</button></a>
-			</td>
-			<td>
 				<a href="" id="deleteLink"><button class="delete">Löschen</button></a>
 				<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 			</td>
 		</tr>
 	</table>
-
 	<a href="" id="newLink"><button class="new">Neu</button></a>
-
 	<input class="button" type="submit" value="Änderungen übernehmen">
 </form>
 
@@ -93,7 +89,6 @@
 			<label class="large-4 columns">Bearbeiter
 				<select name="bearbeiter" required="required"></select>
 			</label>
-
 			<label class="large-4 columns">Patrozinium
 				<textarea name="patrozinium" required="required"></textarea>
 			</label>
@@ -109,11 +104,9 @@
 			<label class="large-6 columns">Inhalt GS-Band
 				<textarea name="text_gs_band"></textarea>
 			</label>
-
 			<label class="large-12 columns">Personallistenstatus
 				<select name="personallistenstatus" required="required"></select>
 			</label>
-
 			<label class="large-12 columns">Zuletzt bearbeitet
 				<input disabled="disabled" name="changeddate" type="text">
 			</label>
@@ -130,12 +123,14 @@
 				<label class="large-2 columns">Wüstung 
 					<input name="wuestung[]" type="checkbox">
 				</label>
-				<label class="large-6 columns">Breite
-					<input name="breite[]" type="number">
-				</label>
-				<label class="large-6 columns">Länge
-					<input name="laenge[]" type="number">
-				</label>
+				<div class="coordinates">
+					<label class="large-6 columns">Breite
+						<input name="breite[]" type="number">
+					</label>
+					<label class="large-6 columns">Länge
+						<input name="laenge[]" type="number">
+					</label>
+				</div>
 				<label class="large-3 columns">Standort von
 					<input name="von_von[]" type="text">
 				</label>
@@ -210,10 +205,12 @@
 				</label><span class="link large-4 columns"></span>
 			</div>
 			<div class="clearfix">
-				<label class="large-8 columns">Externe Datenquelle<input name="externe_datenquelle_url" type="url"></label><span class="link large-4 columns"></span>
+				<label class="large-8 columns">Externe Datenquelle<input name="externe_datenquelle_url" type="url"></label>
+				<span class="link large-4 columns"></span>
 			</div>
 			<div class="multiple">
-				<label class="large-8 columns">Weitere Links<input name="links[]" type="url"></label><span class="link large-4 columns"></span>
+				<label class="large-8 columns">Weitere Links<input name="links[]" type="url"></label>
+				<span class="link large-4 columns"></span>
 			</div>
 		</fieldset>
 		<fieldset class="large-13 columns">
@@ -242,12 +239,9 @@
 			<label class="large-8 columns">Bearbeitungsstand
 				<textarea name="new_bearbeitungsstand"></textarea>
 			</label>
-
 			<label class="large-4 columns">Bearbeiter
 				<select name="new_bearbeiter" required="required"></select>
 			</label>
-
-
 			<label class="large-4 columns">Personallistenstatus
 				<select name="new_personallistenstatus" required="required"></select>
 			</label>
@@ -267,7 +261,6 @@
 				<textarea name="new_text_gs_band"></textarea>
 			</label>
 		</fieldset>
-
 		<fieldset class="large-12 columns">
 			<legend>Orte</legend>
 			<div class="multiple">
@@ -280,13 +273,14 @@
 				<label class="large-2 columns">Wüstung
 					<input name="new_wuestung[]" type="checkbox">
 				</label>
-				<label class="large-6 columns">Breite
-					<input name="new_breite[]" type="number">
-				</label>
-				<label class="large-6 columns">Länge
-					<input name="new_laenge[]" type="number">
-				</label>
-
+				<div class="coordinates">
+					<label class="large-6 columns">Breite
+						<input name="new_breite[]" type="number">
+					</label>
+					<label class="large-6 columns">Länge
+						<input name="new_laenge[]" type="number">
+					</label>
+				</div>
 				<label class="large-3 columns">Standort von
 					<input name="von_von[]" type="text">
 				</label>
@@ -319,14 +313,12 @@
 				</label>
 			</div>
 		</fieldset>
-
 		<fieldset class="large-12 columns">
 			<legend>Ordenszugehörigkeit</legend>
 			<div class="multiple">
 				<label class="large-12 columns">Orden
 					<select name="new_orden[]"></select>
 				</label>
-
 				<label class="large-3 columns">Ordenszugehörigkeit von
 					<input name="orden_von_von[]" type="text">
 				</label>
@@ -348,32 +340,34 @@
 				<label class="large-12 columns">Klosterstatus
 					<select name="new_klosterstatus[]"></select>
 				</label>
-				<label class="large-12 columns">
-					Interne Anmerkungen<textarea name="new_bemerkung_orden[]"></textarea>
+				<label class="large-12 columns">Interne Anmerkungen
+					<textarea name="new_bemerkung_orden[]"></textarea>
 				</label>
 			</div>
 		</fieldset>
-
 		<fieldset class="large-12 columns">
 			<legend>Links</legend>
 			<div class="clearfix">
 				<label class="large-8 columns">Wikipedia
 					<input name="wikipedia" type="url">
-				</label><span class="link large-4 columns"></span>
+				</label>
+				<span class="link large-4 columns"></span>
 			</div>
 			<div class="clearfix">
 				<label class="large-8 columns">GND
 					<input name="gnd" type="url">
-				</label><span class="link large-4 columns"></span>
+				</label>
+				<span class="link large-4 columns"></span>
 			</div>
 			<div class="clearfix">
-				<label class="large-8 columns">Externe Datenquelle<input name="externe_datenquelle_url" type="url"></label><span class="link large-4 columns"></span>
+				<label class="large-8 columns">Externe Datenquelle<input name="externe_datenquelle_url" type="url"></label>
+				<span class="link large-4 columns"></span>
 			</div>
 			<div class="multiple">
-				<label class="large-8 columns">Weitere Links<input name="links[]" type="url"></label><span class="link large-4 columns"></span>
+				<label class="large-8 columns">Weitere Links<input name="links[]" type="url"></label>
+				<span class="link large-4 columns"></span>
 			</div>
 		</fieldset>
-
 		<fieldset class="large-13 columns">
 			<legend>Literatur</legend><label class="large-13 columns">Literatur<select name="literatur[]" multiple size="3"></select></label>
 			<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
