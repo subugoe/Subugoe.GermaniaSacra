@@ -8,6 +8,13 @@
 	display: none;
 	margin: 1rem 0;
 	position: relative;
+	form {
+		margin: 0
+	}
+	input[type=radio] {
+		float: left;
+		margin: .5rem;
+	}
 	.close {
 		position: absolute;
 		right: 1rem;
