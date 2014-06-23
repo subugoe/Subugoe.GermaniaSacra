@@ -72,12 +72,14 @@ class Kloster {
 	/**
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
 	 * @ORM\OneToMany(mappedBy="kloster", cascade={"all"})
+	 * @ORM\OrderBy({"von_von" = "ASC", "von_bis" = "ASC", "bis_von" = "ASC", "bis_bis" = "ASC"})
 	 */
 	protected $klosterstandorts;
 
 	/**
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
 	 * @ORM\OneToMany(mappedBy="kloster", cascade={"all"})
+	 * @ORM\OrderBy({"von_von" = "ASC", "von_bis" = "ASC", "bis_von" = "ASC", "bis_bis" = "ASC"})
 	 */
 	protected $klosterordens;
 

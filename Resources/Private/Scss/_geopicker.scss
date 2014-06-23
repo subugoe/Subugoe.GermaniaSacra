@@ -1,0 +1,31 @@
+#map-container,
+#map {
+	height: 560px;
+}
+
+#map-container {
+	clear: both;
+	display: none;
+	margin: 1rem 0;
+	position: relative;
+	form {
+		margin: 0
+	}
+	input[type=radio] {
+		float: left;
+		margin: .5rem;
+	}
+	.close {
+		position: absolute;
+		right: 1rem;
+		top: 1rem;
+		z-index: 9;
+	}
+	.leaflet-container { // Don't change this class here as leaflet itself defines another cursor for this container
+		cursor: crosshair;
+	}
+}
+
+#map {
+	border: 1px solid #ccc;
+}

@@ -11,13 +11,12 @@ use TYPO3\Flow\Persistence\Repository;
  */
 class KlosterRepository extends Repository {
 
-	// add customized methods here
-	
 	public function findKlosters($offset=0, $limit=10) {
 	    $query = $this->createQuery();
 		$query->setOffset($offset);
 		$query->setLimit($limit);
 		return $query->execute();
 	}
+
 }
 ?>
