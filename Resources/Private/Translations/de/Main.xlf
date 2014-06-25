@@ -38,6 +38,34 @@
 				<source>Ämterstatus</source>
 				<target state="signed-off">Ämterstatus</target>
 			</trans-unit>
+			<trans-unit id="literature" approved="yes">
+				<source>Literatur</source>
+				<target state="signed-off">Literatur</target>
+			</trans-unit>
+			<trans-unit id="personalliststatus" approved="yes">
+				<source>Personallistenstatus</source>
+				<target state="signed-off">Personallistenstatus</target>
+			</trans-unit>
+			<trans-unit id="countries" approved="yes">
+				<source>Länder</source>
+				<target state="signed-off">Länder</target>
+			</trans-unit>
+			<trans-unit id="states" approved="yes">
+				<source>Statuus</source>
+				<target state="signed-off">Statuus</target>
+			</trans-unit>
+			<trans-unit id="types" approved="yes">
+				<source>Typen</source>
+				<target state="signed-off">Typen</target>
+			</trans-unit>
+			<trans-unit id="ordentype" approved="yes">
+				<source>Ordenstyp</source>
+				<target state="signed-off">Ordenstyp</target>
+			</trans-unit>
+			<trans-unit id="urltype" approved="yes">
+				<source>URL Typ</source>
+				<target state="signed-off">URL Typ</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
