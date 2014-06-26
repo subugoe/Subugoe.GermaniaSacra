@@ -2,10 +2,10 @@
 namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Band;
+use TYPO3\Flow\Mvc\Controller\RestController;
 
-class BandController extends ActionController {
+class BandController extends RestController {
 
 	/**
 	 * @Flow\Inject
@@ -14,9 +14,25 @@ class BandController extends ActionController {
 	protected $bandRepository;
 
 	/**
+	 * @var array
+	 */
+	protected $supportedMediaTypes = array('text/html', 'application/json');
+
+	/**
+	 * @var array
+	 */
+	protected $viewFormatToObjectNameMap = array(
+			'json' => 'TYPO3\\Flow\\Mvc\\View\\JsonView',
+			'html' => 'TYPO3\\Fluid\\View\\TemplateView'
+	);
+
+	/**
 	 * @return void
 	 */
-	public function indexAction() {
+	public function listAction() {
+		if ($this->request->getFormat() === 'json') {
+			$this->view->setVariablesToRender(array('bands'));
+		}
 		$this->view->assign('bands', $this->bandRepository->findAll());
 	}
 
@@ -25,13 +41,8 @@ class BandController extends ActionController {
 	 * @return void
 	 */
 	public function showAction(Band $band) {
+		$this->view->setVariablesToRender(array('band'));
 		$this->view->assign('band', $band);
-	}
-
-	/**
-	 * @return void
-	 */
-	public function newAction() {
 	}
 
 	/**
@@ -40,16 +51,7 @@ class BandController extends ActionController {
 	 */
 	public function createAction(Band $newBand) {
 		$this->bandRepository->add($newBand);
-		$this->addFlashMessage('Created a new band.');
-		$this->redirect('index');
-	}
-
-	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Band $band
-	 * @return void
-	 */
-	public function editAction(Band $band) {
-		$this->view->assign('band', $band);
+		$this->response->setStatus(201);
 	}
 
 	/**
@@ -58,8 +60,6 @@ class BandController extends ActionController {
 	 */
 	public function updateAction(Band $band) {
 		$this->bandRepository->update($band);
-		$this->addFlashMessage('Updated the band.');
-		$this->redirect('index');
 	}
 
 	/**
@@ -68,8 +68,6 @@ class BandController extends ActionController {
 	 */
 	public function deleteAction(Band $band) {
 		$this->bandRepository->remove($band);
-		$this->addFlashMessage('Deleted a band.');
-		$this->redirect('index');
 	}
 
 }
