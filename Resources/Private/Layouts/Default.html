@@ -1,17 +1,19 @@
+{namespace m=Subugoe\GermaniaSacra\ViewHelpers}
+
 <!DOCTYPE html>
-<html>
+<html ng-app="germaniaSacra">
 	<head>
 		<title>
 			<f:translate id="app.title" />
 		</title>
 		<f:base />
 		<meta charset="utf-8">
-		<link href="../../../Public/CSS/foundation.min.css" rel="stylesheet">
-		<link href="../../../Public/CSS/confirm.css" rel="stylesheet">
-		<link href="../../../Public/CSS/leaflet.css" rel="stylesheet">
-		<link href="../../../Public/CSS/style.css" rel="stylesheet">
+		<link href="{f:uri.resource(path:'CSS/foundation.min.css')}" rel="stylesheet">
+		<link href="{f:uri.resource(path:'CSS/confirm.css')}" rel="stylesheet">
+		<link href="{f:uri.resource(path:'CSS/leaflet.css')}" rel="stylesheet">
+		<link href="{f:uri.resource(path:'CSS/style.css')}" rel="stylesheet">
 	</head>
-	<body>
+	<body ng-controller="monasteryController">
 		<nav class="top-bar" data-topbar>
 			<ul class="title-area">
 				<li class="name">
@@ -95,6 +97,8 @@
 		<script src="{f:uri.resource(path: 'JavaScript/jquery.autosize.min.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/foundation/foundation.js')}"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/foundation/foundation.topbar.js')}"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+		<script src="{f:uri.resource(path: 'JavaScript/App/Controllers.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/gs-editor.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/populate.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/jquery.simplemodal-1.4.4.js')}" type="text/javascript"></script>
