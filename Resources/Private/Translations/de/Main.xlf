@@ -4,7 +4,7 @@
 		<body>
 			<trans-unit id="app.title" approved="yes">
 				<source>Germania Sacra Klosterdatenbank</source>
-				<target state="signed-off">Germania Sacra Klosterdatenbank</target>
+				<target state="signed-off">Germania Sacra</target>
 			</trans-unit>
 			<trans-unit id="app.navigation" approved="yes">
 				<source>Navigation</source>

@@ -3,10 +3,10 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus;
+use TYPO3\Flow\Mvc\Controller\RestController;
 
-class BearbeitungsstatusController extends ActionController {
+class BearbeitungsstatusController extends RestController {
 
 	/**
 	 * @Flow\Inject
@@ -15,9 +15,25 @@ class BearbeitungsstatusController extends ActionController {
 	protected $bearbeitungsstatusRepository;
 
 	/**
+	 * @var array
+	 */
+	protected $supportedMediaTypes = array('text/html', 'application/json');
+
+	/**
+	 * @var array
+	 */
+	protected $viewFormatToObjectNameMap = array(
+			'json' => 'TYPO3\\Flow\\Mvc\\View\\JsonView',
+			'html' => 'TYPO3\\Fluid\\View\\TemplateView'
+	);
+
+	/**
 	 * @return void
 	 */
-	public function indexAction() {
+	public function listAction() {
+		if ($this->request->getFormat() === 'json') {
+			$this->view->setVariablesToRender(array('bearbeitungsstatuses'));
+		}
 		$this->view->assign('bearbeitungsstatuses', $this->bearbeitungsstatusRepository->findAll());
 	}
 
@@ -26,13 +42,8 @@ class BearbeitungsstatusController extends ActionController {
 	 * @return void
 	 */
 	public function showAction(Bearbeitungsstatus $bearbeitungsstatus) {
+		$this->view->setVariablesToRender(array('bearbeitungsstatus'));
 		$this->view->assign('bearbeitungsstatus', $bearbeitungsstatus);
-	}
-
-	/**
-	 * @return void
-	 */
-	public function newAction() {
 	}
 
 	/**
@@ -41,16 +52,7 @@ class BearbeitungsstatusController extends ActionController {
 	 */
 	public function createAction(Bearbeitungsstatus $newBearbeitungsstatus) {
 		$this->bearbeitungsstatusRepository->add($newBearbeitungsstatus);
-		$this->addFlashMessage('Created a new bearbeitungsstatus.');
-		$this->redirect('index');
-	}
-
-	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
-	 * @return void
-	 */
-	public function editAction(Bearbeitungsstatus $bearbeitungsstatus) {
-		$this->view->assign('bearbeitungsstatus', $bearbeitungsstatus);
+		$this->response->setStatus(201);
 	}
 
 	/**
@@ -59,8 +61,6 @@ class BearbeitungsstatusController extends ActionController {
 	 */
 	public function updateAction(Bearbeitungsstatus $bearbeitungsstatus) {
 		$this->bearbeitungsstatusRepository->update($bearbeitungsstatus);
-		$this->addFlashMessage('Updated the bearbeitungsstatus.');
-		$this->redirect('index');
 	}
 
 	/**
@@ -69,8 +69,6 @@ class BearbeitungsstatusController extends ActionController {
 	 */
 	public function deleteAction(Bearbeitungsstatus $bearbeitungsstatus) {
 		$this->bearbeitungsstatusRepository->remove($bearbeitungsstatus);
-		$this->addFlashMessage('Deleted a bearbeitungsstatus.');
-		$this->redirect('index');
 	}
 
 }
