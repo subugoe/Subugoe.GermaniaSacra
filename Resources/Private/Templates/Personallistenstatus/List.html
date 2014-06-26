@@ -1,7 +1,13 @@
 <f:layout name="Default" />
 
-<f:section name="Title"></f:section>
+<f:section name="Title"><f:translate id="personalliststatus" /></f:section>
 
 <f:section name="Content">
-Personallistenstatus/Index
+	<section ng-controller="personallistenstatusController">
+		<ul>
+			<li ng-repeat="status in personallistenstatus">
+				{{status.name}}
+			</li>
+		</ul>
+	</section>
 </f:section>

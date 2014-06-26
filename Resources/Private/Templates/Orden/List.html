@@ -1,7 +1,14 @@
 <f:layout name="Default" />
 
-<f:section name="Title"></f:section>
+<f:section name="Title"><f:translate id="orden" /></f:section>
 
 <f:section name="Content">
-Orden/Index
+	<section ng-controller="ordenController">
+		<ul>
+			<li ng-repeat="orden in ordens">
+				{{orden.orden}}
+			</li>
+		</ul>
+	</section>
+
 </f:section>

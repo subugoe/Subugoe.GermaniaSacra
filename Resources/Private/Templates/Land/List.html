@@ -1,7 +1,13 @@
 <f:layout name="Default" />
 
-<f:section name="Title"></f:section>
+<f:section name="Title"><f:translate id="countries" /></f:section>
 
 <f:section name="Content">
-Land/Index
+	<section ng-controller="landController">
+		<ul>
+			<li ng-repeat="land in laender">
+				{{land.land}}
+			</li>
+		</ul>
+	</section>
 </f:section>

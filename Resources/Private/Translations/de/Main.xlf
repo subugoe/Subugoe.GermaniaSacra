@@ -46,6 +46,10 @@
 				<source>Personallistenstatus</source>
 				<target state="signed-off">Personallistenstatus</target>
 			</trans-unit>
+			<trans-unit id="bearbeitungsstatus" approved="yes">
+				<source>Bearbeitungsstatus</source>
+				<target state="signed-off">Bearbeitungsstatus</target>
+			</trans-unit>
 			<trans-unit id="countries" approved="yes">
 				<source>Länder</source>
 				<target state="signed-off">Länder</target>
