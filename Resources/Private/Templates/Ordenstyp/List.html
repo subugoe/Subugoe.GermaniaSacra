@@ -1,7 +1,13 @@
 <f:layout name="Default" />
 
-<f:section name="Title"></f:section>
+<f:section name="Title"><f:translate id="ordentype" /></f:section>
 
 <f:section name="Content">
-Ordenstyp/Index
+	<section ng-controller="ordenstypController">
+		<ul>
+			<li ng-repeat="typ in ordenstyp">
+				{{typ.ordenstyp}}
+			</li>
+		</ul>
+	</section>
 </f:section>

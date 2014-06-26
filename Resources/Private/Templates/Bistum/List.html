@@ -1,7 +1,13 @@
-<f:layout name="Default" />
+<f:layout name="Default"/>
 
-<f:section name="Title"></f:section>
+<f:section name="Title"><f:translate id="bistuemer" /></f:section>
 
 <f:section name="Content">
-Bistum/Index
+	<section ng-controller="bistumController">
+		<ul>
+			<li ng-repeat="bistum in bistums">
+				{{bistum.bistum}}
+			</li>
+		</ul>
+	</section>
 </f:section>
