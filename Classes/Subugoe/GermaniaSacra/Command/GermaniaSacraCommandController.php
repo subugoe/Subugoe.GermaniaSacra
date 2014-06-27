@@ -7,7 +7,7 @@ namespace Subugoe\GermaniaSacra\Command;
  *                                                                        */
 
 use TYPO3\Flow\Annotations as Flow;
-
+use TYPO3\Flow\Log\LoggerFactory;
 /**
  * Surf command controller
  */
@@ -19,13 +19,24 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 */
 	protected $entityManager;
 
+	/**
+	 * @var \TYPO3\Flow\Log\Logger
+	 */
+	protected $logger;
+
+	public function __construct() {
+		parent::__construct();
+		$log = new LoggerFactory();
+		$this->logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\ConsoleBackend');
+	}
+
+	public  function alisImportExportCommand() {
+		$this->alisImportCommand();
+		$this->alisExportCommand();
+	}
+
 	public function alisImportCommand() {
-
-		$log = new \TYPO3\Flow\Log\LoggerFactory();
-		$logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\ConsoleBackend');
-
-		$importer = new \Subugoe\GermaniaSacra\Controller\DataImportController($logger);
-
+		$importer = new \Subugoe\GermaniaSacra\Controller\DataImportController($this->logger);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -48,6 +59,11 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$importer->delAccessTabsAction();
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
+	}
+
+	public function alisExportCommand() {
+		$exporter = new \Subugoe\GermaniaSacra\Controller\DataExportController($this->logger);
+		$exporter->mysql2solrExportAction();
 	}
 
 }

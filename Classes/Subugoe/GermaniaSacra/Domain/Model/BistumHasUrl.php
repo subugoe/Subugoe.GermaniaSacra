@@ -39,7 +39,6 @@ class BistumHasUrl {
 		$this->bistum = $bistum;
 	}
 
-
 	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Url
 	 */

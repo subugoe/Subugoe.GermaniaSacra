@@ -78,8 +78,8 @@ class Ort {
 	protected $bistum;
 
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
-	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl
+	 * @ORM\OneToMany(mappedBy="ort")
 	 */
 	protected $ortHasUrls;
 
@@ -222,17 +222,17 @@ class Ort {
 
 
 
-	/**
-	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
-	 */
+//	/**
+//	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
+//	 */
 	public function getOrtHasUrls() {
 		return $this->ortHasUrls;
 	}
-
-	/**
-	 * @param \Doctrine\Common\Collections\Collection $ortHasUrls
-	 * @return void
-	 */
+//
+//	/**
+//	 * @param \Doctrine\Common\Collections\Collection $ortHasUrls
+//	 * @return void
+//	 */
 	public function setOrtHasUrls(\Doctrine\Common\Collections\Collection $ortHasUrls) {
 
 		foreach ($ortHasUrls as $ortHasUrl) {

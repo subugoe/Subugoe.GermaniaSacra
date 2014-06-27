@@ -70,25 +70,11 @@ class Bistum {
 	 */
 	protected $shapefile;
 
-
-
-
-
-
-
-
-
-
 	/**
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl>
-	 * @ORM\OneToMany(mappedBy="bistum", cascade={"all"})
+	 * @ORM\OneToMany(mappedBy="bistum")
 	 */
 	protected $bistumHasUrls;
-
-
-
-
-
 
 	/**
 	 * @return integer

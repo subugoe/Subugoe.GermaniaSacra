@@ -12,11 +12,18 @@ use TYPO3\Flow\Persistence\Repository;
 class KlosterRepository extends Repository {
 
 	public function findKlosters($offset=0, $limit=10) {
-	    $query = $this->createQuery();
-		$query->setOffset($offset);
-		$query->setLimit($limit);
+	    $query = $this->createQuery()
+				->setOffset($offset)
+				->setLimit($limit);
 		return $query->execute();
 	}
 
+	public function findLastEntry($offset=0, $limit=1) {
+		$query = $this->createQuery()
+				->setOffset($offset)
+				->setLimit($limit)
+				->setOrderings(array('kloster_id' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING));
+		return $query->execute();
+	}
 }
 ?>

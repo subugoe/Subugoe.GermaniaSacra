@@ -2,7 +2,6 @@
 namespace Subugoe\GermaniaSacra\Controller;
 
 
-use Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Kloster;
@@ -10,6 +9,7 @@ use Subugoe\GermaniaSacra\Domain\Model\Klosterstandort;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterorden;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
+use Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl;
 
 class KlosterController extends ActionController {
 
@@ -424,6 +424,8 @@ class KlosterController extends ActionController {
 	public function createAction() {
 		$kloster = new Kloster();
 
+		$kloster->setUid($this->getLastKlosterIdAction());
+
 		// Add Kloster
 		$kloster_name = $this->request->getArgument('new_kloster_name');
 		$patrozinium = $this->request->getArgument('new_patrozinium');
@@ -645,7 +647,8 @@ class KlosterController extends ActionController {
 		$klosterObject->setKloster_id($kloster_uid);
 		$this->klosterRepository->update($klosterObject);
 		$this->persistenceManager->persistAll();
-		return json_encode(array($kloster_uid));
+		return json_encode(array($uuid));
+//		return json_encode(array($kloster_uid));
 	}
 
 	/**
@@ -1158,5 +1161,16 @@ class KlosterController extends ActionController {
 		}
 	}
 
+	public function getLastKlosterIdAction() {
+		$result = $this->klosterRepository->findLastEntry();
+
+		foreach ($result as $res) {
+			$last_kloster_id = $res->kloster_id;
+		}
+
+		$new_kloster_id = $last_kloster_id + 1;
+
+		return $new_kloster_id;
+	}
 }
 ?>
