@@ -5,3 +5,5 @@ germaniasacra-gh-pages
 style.css
 .sass-cache/
 Build/.*
+config.rb
+*~
