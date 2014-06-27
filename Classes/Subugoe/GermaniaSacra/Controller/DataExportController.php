@@ -364,7 +364,6 @@ class DataExportController extends ActionController {
 					$koordinaten_institutionengenauArr[] = True;
 					$klosterstandorte[$k][$i]['koordinaten_institutionengenau'] = True;
 				} else {
-					\TYPO3\Flow\var_dump($klosterstandort->getUid());
 					$ortObj = $klosterstandort->getOrt();
 					$breite = $ortObj->getBreite();
 					$laenge = $ortObj->getLaenge();
