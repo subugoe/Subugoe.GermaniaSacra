@@ -1,0 +1,1 @@
+var germaniaSacra = angular.module('germaniaSacra', ['angular-loading-bar']);

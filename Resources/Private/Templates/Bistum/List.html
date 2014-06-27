@@ -1,13 +1,19 @@
 <f:layout name="Default"/>
 
-<f:section name="Title"><f:translate id="bistuemer" /></f:section>
+<f:section name="Title">
+	<div class="row">
+		<f:translate id="bistuemer"/>
+	</div>
+</f:section>
 
 <f:section name="Content">
-	<section ng-controller="bistumController">
-		<ul>
-			<li ng-repeat="bistum in bistums">
-				{{bistum.bistum}}
-			</li>
-		</ul>
-	</section>
+	<div class="large-4 columns">
+	<div class="row">
+		<section ng-controller="bistumController">
+				<div class="data" ng-repeat="bistum in bistums">
+					<input type="text" ng-model="bistum.bistum" /> <a href="#">X</a>
+				</div>
+		</section>
+	</div>
+	</div>
 </f:section>
