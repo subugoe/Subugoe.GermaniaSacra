@@ -1,0 +1,13 @@
+<f:layout name="Default" />
+
+<f:section name="Title"><f:translate id="baende" /></f:section>
+
+<f:section name="Content">
+	<section ng-controller="bandController">
+		<ul>
+			<li ng-repeat="band in baende">
+				{{band.kurztitel}}
+			</li>
+		</ul>
+	</section>
+</f:section>

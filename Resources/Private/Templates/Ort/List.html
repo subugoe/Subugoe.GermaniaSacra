@@ -1,0 +1,13 @@
+<f:layout name="Default" />
+
+<f:section name="Title"><f:translate id="orte" /></f:section>
+
+<f:section name="Content">
+	<section ng-controller="ortController">
+		<ul>
+			<li ng-repeat="ort in orts">
+				{{ort.ort}}
+			</li>
+		</ul>
+	</section>
+</f:section>

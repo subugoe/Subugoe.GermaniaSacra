@@ -2,10 +2,10 @@
 namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Ort;
+use TYPO3\Flow\Mvc\Controller\RestController;
 
-class OrtController extends ActionController {
+class OrtController extends RestController {
 
 	/**
 	 * @Flow\Inject
@@ -14,9 +14,25 @@ class OrtController extends ActionController {
 	protected $ortRepository;
 
 	/**
+	 * @var array
+	 */
+	protected $supportedMediaTypes = array('text/html', 'application/json');
+
+	/**
+	 * @var array
+	 */
+	protected $viewFormatToObjectNameMap = array(
+			'json' => 'TYPO3\\Flow\\Mvc\\View\\JsonView',
+			'html' => 'TYPO3\\Fluid\\View\\TemplateView'
+	);
+
+	/**
 	 * @return void
 	 */
-	public function indexAction() {
+	public function listAction() {
+		if ($this->request->getFormat() === 'json') {
+			$this->view->setVariablesToRender(array('orts'));
+		}
 		$this->view->assign('orts', $this->ortRepository->findOrts());
 	}
 
@@ -25,13 +41,8 @@ class OrtController extends ActionController {
 	 * @return void
 	 */
 	public function showAction(Ort $ort) {
+		$this->view->setVariablesToRender(array('ort'));
 		$this->view->assign('ort', $ort);
-	}
-
-	/**
-	 * @return void
-	 */
-	public function newAction() {
 	}
 
 	/**
@@ -40,16 +51,7 @@ class OrtController extends ActionController {
 	 */
 	public function createAction(Ort $newOrt) {
 		$this->ortRepository->add($newOrt);
-		$this->addFlashMessage('Created a new ort.');
-		$this->redirect('index');
-	}
-
-	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
-	 * @return void
-	 */
-	public function editAction(Ort $ort) {
-		$this->view->assign('ort', $ort);
+		$this->response->setStatus(201);
 	}
 
 	/**
@@ -58,8 +60,6 @@ class OrtController extends ActionController {
 	 */
 	public function updateAction(Ort $ort) {
 		$this->ortRepository->update($ort);
-		$this->addFlashMessage('Updated the ort.');
-		$this->redirect('index');
 	}
 
 	/**
@@ -68,8 +68,6 @@ class OrtController extends ActionController {
 	 */
 	public function deleteAction(Ort $ort) {
 		$this->ortRepository->remove($ort);
-		$this->addFlashMessage('Deleted a ort.');
-		$this->redirect('index');
 	}
 
 }

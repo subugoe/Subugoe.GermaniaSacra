@@ -1,0 +1,13 @@
+<f:layout name="Default" />
+
+<f:section name="Title"><f:translate id="literature" /></f:section>
+
+<f:section name="Content">
+	<section ng-controller="literaturController">
+		<ul>
+			<li ng-repeat="entry in literature">
+				{{entry.citekey}}
+			</li>
+		</ul>
+	</section>
+</f:section>

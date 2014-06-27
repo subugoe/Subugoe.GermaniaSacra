@@ -86,3 +86,4 @@
     package: 'Subugoe.GermaniaSacra'
     '@controller': 'Ort'
     '@action': 'index'
+    '@format': 'json'

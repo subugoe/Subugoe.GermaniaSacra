@@ -1,0 +1,13 @@
+<f:layout name="Default" />
+
+<f:section name="Title"></f:section>
+
+<f:section name="Content">
+	<section ng-controller="urltypController">
+		<ul>
+			<li ng-repeat="typ in urltyp">
+				{{typ.name}}
+			</li>
+		</ul>
+	</section>
+</f:section>

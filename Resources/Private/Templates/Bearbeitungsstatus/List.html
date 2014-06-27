@@ -1,0 +1,13 @@
+<f:layout name="Default" />
+
+<f:section name="Title"><f:translate id="bearbeitungsstatus" /></f:section>
+
+<f:section name="Content">
+	<section ng-controller="bearbeitungsstatusController">
+		<ul>
+			<li ng-repeat="status in bearbeitungsstatus">
+				{{status.name}}
+			</li>
+		</ul>
+	</section>
+</f:section>
