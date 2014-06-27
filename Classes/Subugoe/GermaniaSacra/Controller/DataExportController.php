@@ -32,27 +32,39 @@ class DataExportController extends ActionController {
 	protected $ordenRepository;
 
 	/**
-	* @var \Solarium\Client
-	*/
+	 * @var \Solarium\Client
+	 */
 	protected $client;
 
 	/**
-	* Solr configuration Array
-	* @var array
-	*/
+	 * Solr configuration Array
+	 * @var array
+	 */
 	protected $configuration = array();
 
-	protected  $distantPast = -10000;
+	/**
+	 * @var int
+	 */
+	protected $distantPast = -10000;
 
+	/**
+	 * @var int
+	 */
 	protected $distantFuture = 10000;
 
+	/**
+	 * @var string
+	 */
 	protected $personenURL = 'http://personendatenbank.germania-sacra.de/export/export.json';
 
+	/**
+	 * @var mixed
+	 */
 	protected $personen;
 
 	/**
-	* @var \TYPO3\Flow\Log\Logger
-	*/
+	 * @var \TYPO3\Flow\Log\Logger
+	 */
 	protected $logger;
 
 	public function __construct($logger = NULL) {
@@ -61,30 +73,30 @@ class DataExportController extends ActionController {
 		$this->logger = $logger;
 
 		$this->configuration = array(
-		    'endpoint' => array(
-		        'localhost' => array(
-		            'host' => '127.0.0.1',
-		            'port' => 8983,
-		            'path' => '/solr/germaniasacra',
-		        )
-		    ),
+				'endpoint' => array(
+						'localhost' => array(
+								'host' => $this->settings['solr']['host'],
+								'port' => $this->settings['solr']['port'],
+								'path' => $this->settings['solr']['path'],
+						)
+				),
 		);
 
 		$this->client = new \Solarium\Client($this->configuration);
 
-		$this->personen =  json_decode(file_get_contents($this->personenURL), true);
+		$this->personen = json_decode(file_get_contents($this->personenURL), true);
 
 		if (!$this->logger) {
 			$log = new \TYPO3\Flow\Log\LoggerFactory();
 
 			$this->logger = $log->create(
-						'GermaniaSacra',
-						'TYPO3\Flow\Log\Logger',
-						'\TYPO3\Flow\Log\Backend\FileBackend',
-						array(
+					'GermaniaSacra',
+					'TYPO3\Flow\Log\Logger',
+					'\TYPO3\Flow\Log\Backend\FileBackend',
+					array(
 							'logFileUrl' => FLOW_PATH_DATA . 'GermaniaSacra/Log/Mysql2Solr.log',
 							'createParentDirectories' => TRUE
-						)
+					)
 			);
 		}
 	}
@@ -118,7 +130,7 @@ class DataExportController extends ActionController {
 		$update = $this->client->createUpdate();
 		$docs = array();
 
-		foreach ($klosterArr as $k=>$v) {
+		foreach ($klosterArr as $k => $v) {
 			$doc = $update->createDocument();
 			foreach ($v as $i => $v1) {
 				$doc->$i = $v1;
@@ -126,8 +138,8 @@ class DataExportController extends ActionController {
 			array_push($docs, $doc);
 		}
 
-		foreach ($klosterstandortArr as $k=>$v) {
-			foreach ($v as $k1=>$v1) {
+		foreach ($klosterstandortArr as $k => $v) {
+			foreach ($v as $k1 => $v1) {
 				$doc = $update->createDocument();
 				foreach ($v1 as $k2 => $v2) {
 					$doc->$k2 = $v2;
@@ -136,8 +148,8 @@ class DataExportController extends ActionController {
 			}
 		}
 
-		foreach ($klosterordenArr as $k=>$v) {
-			foreach ($v as $k1=>$v1) {
+		foreach ($klosterordenArr as $k => $v) {
+			foreach ($v as $k1 => $v1) {
 				$doc = $update->createDocument();
 				foreach ($v1 as $k2 => $v2) {
 					$doc->$k2 = $v2;
@@ -146,8 +158,8 @@ class DataExportController extends ActionController {
 			}
 		}
 
-		foreach ($standort_ordenArr as $k=>$v) {
-			foreach ($v as $k1=>$v1) {
+		foreach ($standort_ordenArr as $k => $v) {
+			foreach ($v as $k1 => $v1) {
 				foreach ($v1 as $k2 => $v2) {
 					$doc = $update->createDocument();
 					foreach ($v2 as $k3 => $v3) {
@@ -162,7 +174,7 @@ class DataExportController extends ActionController {
 		$update->addCommit();
 		$result = $this->client->update($update);
 
-        $this->logger->log('Data export done. Export time: ' . round($result->getQueryTime()/100) . ' seconds');
+		$this->logger->log('Data export done. Export time: ' . round($result->getQueryTime() / 100) . ' seconds');
 
 		exit;
 	}
@@ -173,7 +185,7 @@ class DataExportController extends ActionController {
 	public function klosterListAllAction() {
 
 		$this->klosterRepository->setDefaultOrderings(
-			array( 'uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 
 		$klosters = $this->klosterRepository->findAll();
@@ -254,15 +266,13 @@ class DataExportController extends ActionController {
 				if ($urlTyp == "Wikipedia") {
 					$url_wikipedia = rawurldecode($klosterUrl);
 					$klosterArr[$k]['url_wikipedia'] = $url_wikipedia;
-				}
-				elseif ($urlTyp == "Quelle") {
+				} elseif ($urlTyp == "Quelle") {
 					$url_quelle = rawurldecode($klosterUrl);
-					$klosterArr[$k]['url_quelle'] =  $url_quelle;
+					$klosterArr[$k]['url_quelle'] = $url_quelle;
 
 					$url_quelle_titel = $urlObj->getBemerkung();
 					$klosterArr[$k]['url_quelle_titel'] = $url_quelle_titel;
-				}
-				else {
+				} else {
 					$url = rawurldecode($klosterUrl);
 					$klosterArr[$k]['url'] = $url;
 
@@ -347,16 +357,16 @@ class DataExportController extends ActionController {
 				$klosterstandorte[$k][$i]['kloster_id'] = $kloster_id;
 				$klosterstandorte[$k][$i]['typ'] = 'kloster-standort';
 
-				$breite =  $klosterstandort->getBreite();
+				$breite = $klosterstandort->getBreite();
 				$laenge = $klosterstandort->getLaenge();
 				if (!empty($breite) && !empty($laenge)) {
 					$koordinatenArr[] = $breite . "," . $laenge;
 					$koordinaten_institutionengenauArr[] = True;
 					$klosterstandorte[$k][$i]['koordinaten_institutionengenau'] = True;
-				}
-				else {
+				} else {
+					\TYPO3\Flow\var_dump($klosterstandort->getUid());
 					$ortObj = $klosterstandort->getOrt();
-					$breite =  $ortObj->getBreite();
+					$breite = $ortObj->getBreite();
 					$laenge = $ortObj->getLaenge();
 					$koordinatenArr[] = $breite . "," . $laenge;
 					$koordinaten_institutionengenauArr[] = False;
@@ -379,13 +389,11 @@ class DataExportController extends ActionController {
 				$von_bis = $klosterstandort->getVon_bis();
 				if (!empty($von_bis)) {
 					$von_bisArr[] = $von_bis;
-				}
-				else {
+				} else {
 					if (!empty($von_von)) {
 						$von_bisArr[] = $von_von;
 						$von_bis = $von_von;
-					}
-					else {
+					} else {
 						$von_vonArr[] = $this->distantPast;
 						$von_bisArr[] = $this->distantPast;
 						$von_bis = $this->distantPast;
@@ -395,8 +403,7 @@ class DataExportController extends ActionController {
 				$von_verbal = $klosterstandort->getVon_verbal();
 				if (!empty($von_verbal)) {
 					$von_verbalArr[] = $von_verbal;
-				}
-				else {
+				} else {
 					if (!empty($von_von)) {
 						if ($von_von != $this->distantPast && $von_von != $this->distantFuture) {
 							$von_verbalArr[] = (string)$von_von;
@@ -418,17 +425,14 @@ class DataExportController extends ActionController {
 					if (empty($bis_bis)) {
 						$bis_bis = $bis_von;
 						$bis_bisArr[] = $bis_von;
-					}
-					else {
+					} else {
 						$bis_bisArr[] = $bis_bis;
 					}
-				}
-				else {
+				} else {
 					if (!empty($bis_bis)) {
 						$bis_vonArr[] = $von_von;
 						$bis_von = $von_von;
-					}
-					else {
+					} else {
 						$bis_vonArr[] = $this->distantPast;
 						$bis_bisArr[] = $this->distantFuture;
 
@@ -440,8 +444,7 @@ class DataExportController extends ActionController {
 				$bis_verbal = $klosterstandort->getBis_verbal();
 				if (!empty($bis_verbal)) {
 					$bis_verbalArr[] = $bis_verbal;
-				}
-				else {
+				} else {
 					if (!empty($bis_von)) {
 						if ($bis_von != $this->distantPast && $bis_von != $this->distantFuture) {
 							$bis_verbalArr[] = (string)$bis_von;
@@ -520,7 +523,7 @@ class DataExportController extends ActionController {
 					}
 
 					$bistumObj = $ortObj->getBistum();
-					if(is_object($bistumObj)) {
+					if (is_object($bistumObj)) {
 
 						$bistumuid = $bistumObj->getUid();
 						$bistumuidArr[] = $bistumuid;
@@ -549,8 +552,7 @@ class DataExportController extends ActionController {
 							if ($urlTyp == "Wikipedia") {
 								$klosterArr[$k]['bistum_wikipedia'] = rawurldecode($bistumUrl);
 								$klosterstandorte[$k][$i]['bistum_wikipedia'] = rawurldecode($bistumUrl);
-							}
-							elseif ($urlTyp == "GND") {
+							} elseif ($urlTyp == "GND") {
 								$components = explode("/gnd/", $bistumUrl);
 								if (count($components) > 1) {
 									$klosterArr[$k]['bistum_gnd'] = $components[1];
@@ -638,13 +640,11 @@ class DataExportController extends ActionController {
 				$ko_von_bis = $ko->getVon_bis();
 				if (!empty($ko_von_bis)) {
 					$ko_von_bisArr[] = $ko_von_bis;
-				}
-				else {
+				} else {
 					if (!empty($ko_von_von)) {
 						$ko_von_bisArr[] = $ko_von_von;
 						$ko_von_bis = $ko_von_von;
-					}
-					else {
+					} else {
 						$ko_von_vonArr[] = $this->distantPast;
 						$ko_von_bisArr[] = $this->distantPast;
 						$ko_von_bis = $this->distantPast;
@@ -654,8 +654,7 @@ class DataExportController extends ActionController {
 				$ko_von_verbal = $ko->getVon_verbal();
 				if (!empty($ko_von_verbal)) {
 					$ko_von_verbalArr[] = $ko_von_verbal;
-				}
-				else {
+				} else {
 					if (!empty($ko_von_von)) {
 						if ($ko_von_von != $this->distantPast && $ko_von_von != $this->distantFuture) {
 							$ko_von_verbalArr[] = (string)$ko_von_von;
@@ -675,17 +674,14 @@ class DataExportController extends ActionController {
 					if (empty($ko_bis_bis)) {
 						$ko_bis_bis = $ko_bis_von;
 						$ko_bis_bisArr[] = $ko_bis_von;
-					}
-					else {
+					} else {
 						$ko_bis_bisArr[] = $ko_bis_bis;
 					}
-				}
-				else {
+				} else {
 					if (!empty($ko_bis_bis)) {
 						$ko_bis_vonArr[] = $ko_von_von;
 						$ko_bis_von = $ko_von_von;
-					}
-					else {
+					} else {
 						$ko_bis_vonArr[] = $this->distantPast;
 						$ko_bis_bisArr[] = $this->distantFuture;
 
@@ -697,8 +693,7 @@ class DataExportController extends ActionController {
 				$ko_bis_verbal = $ko->getBis_verbal();
 				if (!empty($ko_bis_verbal)) {
 					$ko_bis_verbalArr[] = $ko_bis_verbal;
-				}
-				else {
+				} else {
 					if (!empty($ko_bis_von)) {
 						if ($ko_bis_von != $this->distantPast && $ko_bis_von != $this->distantFuture) {
 							$ko_bis_verbalArr[] = (string)$ko_bis_von;
@@ -722,8 +717,7 @@ class DataExportController extends ActionController {
 					if ($urlTyp == "Wikipedia") {
 						$ordenwikipediaArr[] = rawurldecode($ordenUrl);
 						$klosterorden[$k][$i]['orden_wikipedia'] = rawurldecode($ordenUrl);
-					}
-					elseif ($urlTyp == "GND") {
+					} elseif ($urlTyp == "GND") {
 						$components = explode("/gnd/", $ordenUrl);
 						if (count($components) > 1) {
 							$ordengndArr[] = $components[1];
@@ -874,29 +868,29 @@ class DataExportController extends ActionController {
 						if (!empty($myorden['bemerkung_orden'])) {
 							$standort_ordenArr[$k][$m][$n]['bemerkung_orden'] = $myorden['bemerkung_orden'];
 						}
-						if (!empty($literatur_citekey)){
+						if (!empty($literatur_citekey)) {
 							$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = $literatur_citekey;
 						}
-						if (!empty($literatur_beschreibung)){
+						if (!empty($literatur_beschreibung)) {
 							$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = $literatur_beschreibung;
 						}
-						if (!empty($url_wikipedia)){
+						if (!empty($url_wikipedia)) {
 							$standort_ordenArr[$k][$m][$n]['url_wikipedia'] = $url_wikipedia;
 						}
 
-						if (!empty($url)){
+						if (!empty($url)) {
 							$standort_ordenArr[$k][$m][$n]['url'] = $url;
 							$standort_ordenArr[$k][$m][$n]['url_typ'] = $urlTyp;
 							$standort_ordenArr[$k][$m][$n]['url_bemerkung'] = $url_bemerkung;
 							$standort_ordenArr[$k][$m][$n]['url_relation'] = $url_relation;
 						}
 
-						if (!empty($url_quelle)){
+						if (!empty($url_quelle)) {
 							$standort_ordenArr[$k][$m][$n]['url_quelle'] = $url_quelle;
 							$standort_ordenArr[$k][$m][$n]['url_quelle_titel'] = $url_quelle_titel;
 						}
 
-						if (!empty($gnd)){
+						if (!empty($gnd)) {
 							$standort_ordenArr[$k][$m][$n]['gnd'] = $gnd;
 						}
 
@@ -1034,11 +1028,11 @@ class DataExportController extends ActionController {
 			}
 
 			if (isset($ist_in_deutschlandArr) && !empty($ist_in_deutschlandArr)) {
-				$klosterArr[$k]['ist_in_deutschland'] =  $ist_in_deutschlandArr;
+				$klosterArr[$k]['ist_in_deutschland'] = $ist_in_deutschlandArr;
 			}
 
 			if (isset($ortGeonameArr) && !empty($ortGeonameArr)) {
-				$klosterArr[$k]['geonames'] =  $ortGeonameArr;
+				$klosterArr[$k]['geonames'] = $ortGeonameArr;
 			}
 
 			if (isset($bistumuidArr) && !empty($bistumuidArr)) {
@@ -1054,11 +1048,11 @@ class DataExportController extends ActionController {
 			}
 
 			if (isset($ist_erzbistumArr) && !empty($ist_erzbistumArr)) {
-				$klosterArr[$k]['ist_erzbistum'] =  $ist_erzbistumArr;
+				$klosterArr[$k]['ist_erzbistum'] = $ist_erzbistumArr;
 			}
 
 			if (isset($ordenuidArr) && !empty($ordenuidArr)) {
-				$klosterArr[$k]['kloster_orden_uid'] =  $ordenuidArr;
+				$klosterArr[$k]['kloster_orden_uid'] = $ordenuidArr;
 			}
 
 			if (isset($ordenArr) && !empty($ordenArr)) {
@@ -1125,4 +1119,5 @@ class DataExportController extends ActionController {
 	}
 
 }
+
 ?>
