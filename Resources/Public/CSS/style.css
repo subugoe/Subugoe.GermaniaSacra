@@ -1,158 +1,130 @@
-/* line 3, ../../Private/Scss/style.scss */
 body {
   background: #e6e3d3;
   overflow-y: scroll;
 }
-/* line 6, ../../Private/Scss/style.scss */
 body > section {
   padding: 1rem;
 }
 
-/* line 11, ../../Private/Scss/style.scss */
 button {
   min-width: 4rem;
   padding: 0.6rem;
 }
 
-/* line 16, ../../Private/Scss/style.scss */
 textarea {
   min-height: 0;
   resize: none;
 }
 
-/* line 21, ../../Private/Scss/style.scss */
 fieldset {
   border: 0;
   border-top: 1px solid;
   margin-bottom: 0;
 }
-/* line 25, ../../Private/Scss/style.scss */
 fieldset legend {
   background: none;
 }
 
-/* line 30, ../../Private/Scss/style.scss */
 h1 + button {
   float: right;
   margin-top: -3.5em;
 }
 
-/* line 35, ../../Private/Scss/style.scss */
 label {
   line-height: 2.33333em;
 }
-/* line 37, ../../Private/Scss/style.scss */
 label.columns {
   padding: 0;
   text-indent: 1rem;
 }
 
-/* line 43, ../../Private/Scss/style.scss */
 table {
   background: none;
   border: none;
   border-collapse: collapse;
 }
-/* line 47, ../../Private/Scss/style.scss */
 table tr {
   border-bottom: 1px solid;
   margin-bottom: -1px;
 }
-/* line 50, ../../Private/Scss/style.scss */
 table tr:nth-of-type(2n) {
   background: none;
 }
-/* line 54, ../../Private/Scss/style.scss */
 table td {
   vertical-align: top;
 }
-/* line 59, ../../Private/Scss/style.scss */
 table button,
 table select,
 table textarea {
   margin: 0;
 }
 
-/* line 66, ../../Private/Scss/style.scss */
 input,
 select,
 textarea {
   float: right;
 }
-/* line 68, ../../Private/Scss/style.scss */
 td input, td
 select, td
 textarea {
   margin: 0 !important;
 }
-/* line 71, ../../Private/Scss/style.scss */
 label.none input, label.none
 select, label.none
 textarea {
   width: 100% !important;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-3 > input, #edit .large-3 >
 select, #edit .large-3 >
 textarea {
   width: 33.33333%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-4 > input, #edit .large-4 >
 select, #edit .large-4 >
 textarea {
   width: 50%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-5 > input, #edit .large-5 >
 select, #edit .large-5 >
 textarea {
   width: 60%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-6 > input, #edit .large-6 >
 select, #edit .large-6 >
 textarea {
   width: 66.66667%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-7 > input, #edit .large-7 >
 select, #edit .large-7 >
 textarea {
   width: 71.42857%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-8 > input, #edit .large-8 >
 select, #edit .large-8 >
 textarea {
   width: 75%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-9 > input, #edit .large-9 >
 select, #edit .large-9 >
 textarea {
   width: 77.77778%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-10 > input, #edit .large-10 >
 select, #edit .large-10 >
 textarea {
   width: 80%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-11 > input, #edit .large-11 >
 select, #edit .large-11 >
 textarea {
   width: 81.81818%;
 }
-/* line 75, ../../Private/Scss/style.scss */
 #edit .large-12 > input, #edit .large-12 >
 select, #edit .large-12 >
 textarea {
   width: 83.33333%;
 }
 
-/* line 84, ../../Private/Scss/style.scss */
 input[type=submit]:not([disabled]):active, input[type=submit]:not([disabled]):focus, input[type=submit]:not([disabled]):hover,
 button:not([disabled]):active,
 button:not([disabled]):focus,
@@ -164,12 +136,10 @@ button:not([disabled]):hover {
   background: linear-gradient(top, #970124 0%, #790015 95%, #6f0011 100%);
 }
 
-/* line 90, ../../Private/Scss/style.scss */
 input[name="kloster_nr[]"] {
   max-width: 5rem;
 }
 
-/* line 96, ../../Private/Scss/style.scss */
 input[type=submit],
 button,
 .top-bar {
@@ -180,7 +150,6 @@ button,
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
 }
 
-/* line 100, ../../Private/Scss/style.scss */
 .top-bar-section a {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #c90230), color-stop(95%, #ac001e), color-stop(100%, #a20019)) !important;
   background: -webkit-linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
@@ -189,43 +158,43 @@ button,
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
 }
 
-/* line 105, ../../Private/Scss/style.scss */
 .clear,
 .multiple {
   clear: both;
 }
 
-/* line 109, ../../Private/Scss/style.scss */
 #edit {
   clear: both;
 }
 
-/* line 2, ../../Private/Scss/_geopicker.scss */
 #map-container,
 #map {
   height: 560px;
 }
 
-/* line 6, ../../Private/Scss/_geopicker.scss */
 #map-container {
   clear: both;
   display: none;
   margin: 1rem 0;
   position: relative;
 }
-/* line 11, ../../Private/Scss/_geopicker.scss */
+#map-container form {
+  margin: 0;
+}
+#map-container input[type=radio] {
+  float: left;
+  margin: .5rem;
+}
 #map-container .close {
   position: absolute;
   right: 1rem;
   top: 1rem;
   z-index: 9;
 }
-/* line 17, ../../Private/Scss/_geopicker.scss */
 #map-container .leaflet-container {
   cursor: crosshair;
 }
 
-/* line 22, ../../Private/Scss/_geopicker.scss */
 #map {
   border: 1px solid #ccc;
 }
