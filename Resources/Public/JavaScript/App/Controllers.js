@@ -1,5 +1,5 @@
 germaniaSacra.controller('monasteryController', function($scope, $http) {
-	$http.get('jsonList').success(function(data) {
+	$http.get('subugoe.germaniasacra/kloster/list.json').success(function(data) {
 		$scope.monasteries = data;
 	});
 

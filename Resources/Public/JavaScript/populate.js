@@ -73,9 +73,6 @@ $.fn.extend({
 
 				});
 
-				//$tr.find('input#searchOrt:eq(' + index + ')').attr('tabindex', index + 1)
-				//$tr.find('input#searchOrt:eq(' + (index + 1) + ')').attr('data-uuid', kloster.uuid)
-
 				$tr.find('.edit').attr('href', "edit/" + kloster.uuid)
 				$tr.find('.delete').attr('href', "delete/" + kloster.uuid)
 
@@ -206,12 +203,7 @@ $.fn.extend({
 				name = name.replace('[]', '')
 				var val = response[0][name]
 				if ( $(this).is('[type=checkbox]') ) {
-//					if (name == "wuestung" && val==1) {
-//						$(this).prop('checked', true)
-//					}
-//					else {
 						return
-//					}
 				}
 				else if ( $(this).is('select') ) {
 

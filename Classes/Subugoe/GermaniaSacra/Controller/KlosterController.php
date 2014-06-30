@@ -127,6 +127,19 @@ class KlosterController extends ActionController {
 	 */
 	protected $securityContext;
 
+	/**
+	 * @var array
+	 */
+	protected $supportedMediaTypes = array('text/html', 'application/json');
+
+	/**
+	 * @var array
+	 */
+	protected $viewFormatToObjectNameMap = array(
+			'json' => 'TYPO3\\Flow\\Mvc\\View\\JsonView',
+			'html' => 'TYPO3\\Fluid\\View\\TemplateView'
+	);
+
 	/** Updates the list of Kloster
 	 * @FLOW\SkipCsrfProtection
 	 * @return integer $status http status
@@ -216,6 +229,13 @@ class KlosterController extends ActionController {
 
 		$status = 200;
 		return json_encode(array($status));
+	}
+
+	public function listAction() {
+		if ($this->request->getFormat() === 'json') {
+			$this->view->setVariablesToRender(array('$monasteries'));
+		}
+		$this->view->assign('monasteries', $this->klosterRepository->findAll());
 	}
 
 	/**
