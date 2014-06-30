@@ -384,7 +384,7 @@ class DataImportController extends ActionController {
 			}
 			$start = $start + $offset;
 		}
-//		$sqlConnection->close();
+		$sqlConnection->close();
 		$this->logger->log("Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.");
 	}
 
@@ -1204,8 +1204,6 @@ class DataImportController extends ActionController {
 			}
 		}
 		$this->logger->log("Klosterorden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterorden portiert.");
-
-//		exit;
 	}
 
 	/**

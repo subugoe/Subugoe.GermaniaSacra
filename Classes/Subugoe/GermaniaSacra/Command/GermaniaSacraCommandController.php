@@ -24,6 +24,15 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 */
 	protected $logger;
 
+	/**
+	 * @var array
+	 */
+	protected $settings;
+
+	public function injectSettings($settings) {
+		$this->settings = $settings;
+	}
+
 	public function __construct() {
 		parent::__construct();
 		$log = new LoggerFactory();
@@ -63,6 +72,8 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 
 	public function alisExportCommand() {
 		$exporter = new \Subugoe\GermaniaSacra\Controller\DataExportController($this->logger);
+		$exporter->injectSettings($this->settings);
+		$exporter->initializeAction();
 		$exporter->mysql2solrExportAction();
 	}
 

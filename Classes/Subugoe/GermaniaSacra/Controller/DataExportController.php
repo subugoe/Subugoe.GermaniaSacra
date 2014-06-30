@@ -67,11 +67,25 @@ class DataExportController extends ActionController {
 	 */
 	protected $logger;
 
+	/**
+	 * @var array
+	 */
+	protected $settings;
+
+	/**
+	 * @param array $settings
+	 */
+	public function injectSettings(array $settings) {
+		$this->settings = $settings;
+	}
+
+
 	public function __construct($logger = NULL) {
 		parent::__construct();
-
 		$this->logger = $logger;
+	}
 
+	public function initializeAction() {
 		$this->configuration = array(
 				'endpoint' => array(
 						'localhost' => array(
@@ -258,36 +272,39 @@ class DataExportController extends ActionController {
 			}
 
 			$klosterHasUrls = $kloster->getKlosterHasUrls();
-			foreach ($klosterHasUrls as $klosterHasUrl) {
-				$urlObj = $klosterHasUrl->getUrl();
-				$klosterUrl = $urlObj->getUrl();
-				$urlTypObj = $urlObj->getUrltyp();
-				$urlTyp = $urlTypObj->getName();
-				if ($urlTyp == "Wikipedia") {
-					$url_wikipedia = rawurldecode($klosterUrl);
-					$klosterArr[$k]['url_wikipedia'] = $url_wikipedia;
-				} elseif ($urlTyp == "Quelle") {
-					$url_quelle = rawurldecode($klosterUrl);
-					$klosterArr[$k]['url_quelle'] = $url_quelle;
 
-					$url_quelle_titel = $urlObj->getBemerkung();
-					$klosterArr[$k]['url_quelle_titel'] = $url_quelle_titel;
-				} else {
-					$url = rawurldecode($klosterUrl);
-					$klosterArr[$k]['url'] = $url;
+			if (isset($klosterHasUrls) && is_array($klosterHasUrls)) {
+				foreach ($klosterHasUrls as $klosterHasUrl) {
+					$urlObj = $klosterHasUrl->getUrl();
+					$klosterUrl = $urlObj->getUrl();
+					$urlTypObj = $urlObj->getUrltyp();
+					$urlTyp = $urlTypObj->getName();
+					if ($urlTyp == "Wikipedia") {
+						$url_wikipedia = rawurldecode($klosterUrl);
+						$klosterArr[$k]['url_wikipedia'] = $url_wikipedia;
+					} elseif ($urlTyp == "Quelle") {
+						$url_quelle = rawurldecode($klosterUrl);
+						$klosterArr[$k]['url_quelle'] = $url_quelle;
 
-					$url_bemerkung = $urlObj->getBemerkung();
-					$klosterArr[$k]['url_bemerkung'] = $url_bemerkung;
-					$klosterArr[$k]['url_typ'] = $urlTyp;
-					$url_relation = 'kloster';
-					$klosterArr[$k]['url_relation'] = $url_relation;
-				}
+						$url_quelle_titel = $urlObj->getBemerkung();
+						$klosterArr[$k]['url_quelle_titel'] = $url_quelle_titel;
+					} else {
+						$url = rawurldecode($klosterUrl);
+						$klosterArr[$k]['url'] = $url;
 
-				if ($urlTyp == "GND") {
-					$components = explode("/gnd/", $klosterUrl);
-					if (count($components) > 1) {
-						$gnd = $components[1];
-						$klosterArr[$k]['gnd'] = $gnd;
+						$url_bemerkung = $urlObj->getBemerkung();
+						$klosterArr[$k]['url_bemerkung'] = $url_bemerkung;
+						$klosterArr[$k]['url_typ'] = $urlTyp;
+						$url_relation = 'kloster';
+						$klosterArr[$k]['url_relation'] = $url_relation;
+					}
+
+					if ($urlTyp == "GND") {
+						$components = explode("/gnd/", $klosterUrl);
+						if (count($components) > 1) {
+							$gnd = $components[1];
+							$klosterArr[$k]['gnd'] = $gnd;
+						}
 					}
 				}
 			}
@@ -346,224 +363,224 @@ class DataExportController extends ActionController {
 
 			$klosterstandorts = $kloster->getKlosterstandorts();
 			foreach ($klosterstandorts as $i => $klosterstandort) {
-				$standortuid = $klosterstandort->getUid();
-				if (!empty($standortuid)) {
-					$standortuidArr[] = $standortuid;
-					$klosterstandorte[$k][$i]['id'] = 'kloster-standort-' . $standortuid;
-				}
-
-				$klosterstandorte[$k][$i]['sql_uid'] = $kloster_id;
-
-				$klosterstandorte[$k][$i]['kloster_id'] = $kloster_id;
-				$klosterstandorte[$k][$i]['typ'] = 'kloster-standort';
-
-				$breite = $klosterstandort->getBreite();
-				$laenge = $klosterstandort->getLaenge();
-				if (!empty($breite) && !empty($laenge)) {
-					$koordinatenArr[] = $breite . "," . $laenge;
-					$koordinaten_institutionengenauArr[] = True;
-					$klosterstandorte[$k][$i]['koordinaten_institutionengenau'] = True;
-				} else {
-					$ortObj = $klosterstandort->getOrt();
-					$breite = $ortObj->getBreite();
-					$laenge = $ortObj->getLaenge();
-					$koordinatenArr[] = $breite . "," . $laenge;
-					$koordinaten_institutionengenauArr[] = False;
-					$klosterstandorte[$k][$i]['koordinaten_institutionengenau'] = False;
-				}
-
-				$klosterstandorte[$k][$i]['koordinaten'] = $breite . "," . $laenge;
-
-				$gruender = $klosterstandort->getGruender();
-				if (!empty($gruender)) {
-					$gruenderArr[] = $gruender;
-					$klosterstandorte[$k][$i]['gruender'] = $gruender;
-				}
-
-				$von_von = $klosterstandort->getVon_von();
-				if (!empty($von_von)) {
-					$von_vonArr[] = $von_von;
-				}
-
-				$von_bis = $klosterstandort->getVon_bis();
-				if (!empty($von_bis)) {
-					$von_bisArr[] = $von_bis;
-				} else {
-					if (!empty($von_von)) {
-						$von_bisArr[] = $von_von;
-						$von_bis = $von_von;
-					} else {
-						$von_vonArr[] = $this->distantPast;
-						$von_bisArr[] = $this->distantPast;
-						$von_bis = $this->distantPast;
-					}
-				}
-
-				$von_verbal = $klosterstandort->getVon_verbal();
-				if (!empty($von_verbal)) {
-					$von_verbalArr[] = $von_verbal;
-				} else {
-					if (!empty($von_von)) {
-						if ($von_von != $this->distantPast && $von_von != $this->distantFuture) {
-							$von_verbalArr[] = (string)$von_von;
-							$von_verbal = (string)$von_von;
-						}
-					}
-				}
-
-				$vonArr[] = intval($von_von);
-
-				$klosterstandorte[$k][$i]['standort_von_von'] = $von_von;
-				$klosterstandorte[$k][$i]['standort_von_bis'] = $von_bis;
-				$klosterstandorte[$k][$i]['standort_von_verbal'] = $von_verbal;
-
-				$bis_von = $klosterstandort->getBis_von();
-				$bis_bis = $klosterstandort->getBis_bis();
-				if (!empty($bis_von)) {
-					$bis_vonArr[] = $bis_von;
-					if (empty($bis_bis)) {
-						$bis_bis = $bis_von;
-						$bis_bisArr[] = $bis_von;
-					} else {
-						$bis_bisArr[] = $bis_bis;
-					}
-				} else {
-					if (!empty($bis_bis)) {
-						$bis_vonArr[] = $von_von;
-						$bis_von = $von_von;
-					} else {
-						$bis_vonArr[] = $this->distantPast;
-						$bis_bisArr[] = $this->distantFuture;
-
-						$bis_von = $this->distantPast;
-						$bis_bis = $this->distantFuture;
-					}
-				}
-
-				$bis_verbal = $klosterstandort->getBis_verbal();
-				if (!empty($bis_verbal)) {
-					$bis_verbalArr[] = $bis_verbal;
-				} else {
-					if (!empty($bis_von)) {
-						if ($bis_von != $this->distantPast && $bis_von != $this->distantFuture) {
-							$bis_verbalArr[] = (string)$bis_von;
-							$bis_verbal = (string)$bis_von;
-						}
-					}
-				}
-
-				$bisArr[] = intval($bis_bis);
-
-				$klosterstandorte[$k][$i]['standort_bis_von'] = $bis_von;
-				$klosterstandorte[$k][$i]['standort_bis_bis'] = $bis_bis;
-				$klosterstandorte[$k][$i]['standort_bis_verbal'] = $bis_verbal;
-
 				$ortObj = $klosterstandort->getOrt();
 				if (is_object($ortObj)) {
-					$klosterstandorte[$k][$i]['ort'] = $ortObj->getOrt();
-					$klosterstandorte[$k][$i]['wuestung'] = $ortObj->getWuestung();
-
-					$ort = $ortObj->getOrt();
-					if (!empty($ort)) {
-						$ortArr[] = $ort;
-						$klosterstandorte[$k][$i]['ort'] = $ort;
+					$standortuid = $klosterstandort->getUid();
+					if (!empty($standortuid)) {
+						$standortuidArr[] = $standortuid;
+						$klosterstandorte[$k][$i]['id'] = 'kloster-standort-' . $standortuid;
 					}
 
-					$ortuid = $ortObj->getUid();
-					if (!empty($ortuid)) {
-						$ortuidArr[] = $ortuid;
-						$klosterstandorte[$k][$i]['ort_uid'] = $ortuid;
+					$klosterstandorte[$k][$i]['sql_uid'] = $kloster_id;
+
+					$klosterstandorte[$k][$i]['kloster_id'] = $kloster_id;
+					$klosterstandorte[$k][$i]['typ'] = 'kloster-standort';
+
+					$breite = $klosterstandort->getBreite();
+					$laenge = $klosterstandort->getLaenge();
+					if (!empty($breite) && !empty($laenge)) {
+						$koordinatenArr[] = $breite . "," . $laenge;
+						$koordinaten_institutionengenauArr[] = True;
+						$klosterstandorte[$k][$i]['koordinaten_institutionengenau'] = True;
+					} else {
+						$ortObj = $klosterstandort->getOrt();
+						$breite = $ortObj->getBreite();
+						$laenge = $ortObj->getLaenge();
+						$koordinatenArr[] = $breite . "," . $laenge;
+						$koordinaten_institutionengenauArr[] = False;
+						$klosterstandorte[$k][$i]['koordinaten_institutionengenau'] = False;
 					}
 
-					$kreis = $ortObj->getKreis();
-					if (!empty($kreis)) {
-						$kreisArr[] = $kreis;
-						$klosterstandorte[$k][$i]['kreis'] = $kreis;
+					$klosterstandorte[$k][$i]['koordinaten'] = $breite . "," . $laenge;
+
+					$gruender = $klosterstandort->getGruender();
+					if (!empty($gruender)) {
+						$gruenderArr[] = $gruender;
+						$klosterstandorte[$k][$i]['gruender'] = $gruender;
 					}
 
-					$gemeinde = $ortObj->getGemeinde();
-					if (!empty($gemeinde)) {
-						$gemeindeArr[] = $gemeinde;
-						$klosterstandorte[$k][$i]['gemeinde'] = $gemeinde;
+					$von_von = $klosterstandort->getVon_von();
+					if (!empty($von_von)) {
+						$von_vonArr[] = $von_von;
 					}
 
-					$wuestung = $ortObj->getWuestung();
-					if (!empty($wuestung)) {
-						$wuestungArr[] = $wuestung;
-						$klosterstandorte[$k][$i]['wuestung'] = $wuestung;
-					}
-
-					$landObj = $ortObj->getLand();
-					if (is_object(($landObj))) {
-						$land = $landObj->getLand();
-						if (!empty($land)) {
-							$landArr[] = $land;
-							$klosterstandorte[$k][$i]['land'] = $land;
+					$von_bis = $klosterstandort->getVon_bis();
+					if (!empty($von_bis)) {
+						$von_bisArr[] = $von_bis;
+					} else {
+						if (!empty($von_von)) {
+							$von_bisArr[] = $von_von;
+							$von_bis = $von_von;
+						} else {
+							$von_vonArr[] = $this->distantPast;
+							$von_bisArr[] = $this->distantPast;
+							$von_bis = $this->distantPast;
 						}
-						$ist_in_deutschland = $landObj->getIst_in_deutschland();
-						if (!empty($ist_in_deutschland)) {
-							$ist_in_deutschlandArr[] = $ist_in_deutschland;
-							$klosterstandorte[$k][$i]['ist_in_deutschland'] = $ist_in_deutschland;
-						}
+					}
 
-						$ortGeonameArr = array();
-						$ortUrls = $ortObj->getOrtHasUrls();
-						foreach ($ortUrls as $ortUrl) {
-							$ortUrlObj = $ortUrl->getUrl();
-							$ortUrl = $ortUrlObj->getUrl();
-							$ortUrlTypObj = $ortUrlObj->getUrltyp();
-							$ortUrlTyp = $ortUrlTypObj->getName();
-							if ($ortUrlTyp == "Geonames") {
-								$geoname = explode('geonames.org/', $ortUrl)[1];
-								$ortGeonameArr[] = $geoname;
-								$klosterstandorte[$k][$i]['geonames'] = $geoname;
+					$von_verbal = $klosterstandort->getVon_verbal();
+					if (!empty($von_verbal)) {
+						$von_verbalArr[] = $von_verbal;
+					} else {
+						if (!empty($von_von)) {
+							if ($von_von != $this->distantPast && $von_von != $this->distantFuture) {
+								$von_verbalArr[] = (string)$von_von;
+								$von_verbal = (string)$von_von;
 							}
 						}
 					}
 
-					$bistumObj = $ortObj->getBistum();
-					if (is_object($bistumObj)) {
+					$vonArr[] = intval($von_von);
 
-						$bistumuid = $bistumObj->getUid();
-						$bistumuidArr[] = $bistumuid;
-						$klosterstandorte[$k][$i]['bistum_uid'] = $bistumuid;
+					$klosterstandorte[$k][$i]['standort_von_von'] = $von_von;
+					$klosterstandorte[$k][$i]['standort_von_bis'] = $von_bis;
+					$klosterstandorte[$k][$i]['standort_von_verbal'] = $von_verbal;
 
-						$bistum = $bistumObj->getBistum();
-						$bistumArr[] = $bistum;
-						$klosterstandorte[$k][$i]['bistum'] = $bistum;
+					$bis_von = $klosterstandort->getBis_von();
+					$bis_bis = $klosterstandort->getBis_bis();
+					if (!empty($bis_von)) {
+						$bis_vonArr[] = $bis_von;
+						if (empty($bis_bis)) {
+							$bis_bis = $bis_von;
+							$bis_bisArr[] = $bis_von;
+						} else {
+							$bis_bisArr[] = $bis_bis;
+						}
+					} else {
+						if (!empty($bis_bis)) {
+							$bis_vonArr[] = $von_von;
+							$bis_von = $von_von;
+						} else {
+							$bis_vonArr[] = $this->distantPast;
+							$bis_bisArr[] = $this->distantFuture;
 
-						$kirchenprovinz = $bistumObj->getKirchenprovinz();
-						$kirchenprovinzArr[] = $kirchenprovinz;
-						$klosterstandorte[$k][$i]['kirchenprovinz'] = $kirchenprovinz;
+							$bis_von = $this->distantPast;
+							$bis_bis = $this->distantFuture;
+						}
+					}
 
-						$ist_erzbistum = $bistumObj->getIst_erzbistum();
-						if ($ist_erzbistum) {
-							$ist_erzbistumArr[] = $ist_erzbistum;
-							$klosterstandorte[$k][$i]['ist_erzbistum'] = $ist_erzbistum;
+					$bis_verbal = $klosterstandort->getBis_verbal();
+					if (!empty($bis_verbal)) {
+						$bis_verbalArr[] = $bis_verbal;
+					} else {
+						if (!empty($bis_von)) {
+							if ($bis_von != $this->distantPast && $bis_von != $this->distantFuture) {
+								$bis_verbalArr[] = (string)$bis_von;
+								$bis_verbal = (string)$bis_von;
+							}
+						}
+					}
+
+					$bisArr[] = intval($bis_bis);
+
+					$klosterstandorte[$k][$i]['standort_bis_von'] = $bis_von;
+					$klosterstandorte[$k][$i]['standort_bis_bis'] = $bis_bis;
+					$klosterstandorte[$k][$i]['standort_bis_verbal'] = $bis_verbal;
+
+					$ortObj = $klosterstandort->getOrt();
+					if (is_object($ortObj)) {
+						$klosterstandorte[$k][$i]['ort'] = $ortObj->getOrt();
+						$klosterstandorte[$k][$i]['wuestung'] = $ortObj->getWuestung();
+
+						$ort = $ortObj->getOrt();
+						if (!empty($ort)) {
+							$ortArr[] = $ort;
+							$klosterstandorte[$k][$i]['ort'] = $ort;
 						}
 
-						$bistumHasUrls = $bistumObj->getBistumHasUrls();
-						foreach ($bistumHasUrls as $bistumHasUrl) {
-							$urlObj = $bistumHasUrl->getUrl();
-							$bistumUrl = $urlObj->getUrl();
-							$urlTypObj = $urlObj->getUrltyp();
-							$urlTyp = $urlTypObj->getName();
-							if ($urlTyp == "Wikipedia") {
-								$klosterArr[$k]['bistum_wikipedia'] = rawurldecode($bistumUrl);
-								$klosterstandorte[$k][$i]['bistum_wikipedia'] = rawurldecode($bistumUrl);
-							} elseif ($urlTyp == "GND") {
-								$components = explode("/gnd/", $bistumUrl);
-								if (count($components) > 1) {
-									$klosterArr[$k]['bistum_gnd'] = $components[1];
-									$klosterstandorte[$k][$i]['bistum_gnd'] = $components[1];
+						$ortuid = $ortObj->getUid();
+						if (!empty($ortuid)) {
+							$ortuidArr[] = $ortuid;
+							$klosterstandorte[$k][$i]['ort_uid'] = $ortuid;
+						}
+
+						$kreis = $ortObj->getKreis();
+						if (!empty($kreis)) {
+							$kreisArr[] = $kreis;
+							$klosterstandorte[$k][$i]['kreis'] = $kreis;
+						}
+
+						$gemeinde = $ortObj->getGemeinde();
+						if (!empty($gemeinde)) {
+							$gemeindeArr[] = $gemeinde;
+							$klosterstandorte[$k][$i]['gemeinde'] = $gemeinde;
+						}
+
+						$wuestung = $ortObj->getWuestung();
+						if (!empty($wuestung)) {
+							$wuestungArr[] = $wuestung;
+							$klosterstandorte[$k][$i]['wuestung'] = $wuestung;
+						}
+
+						$landObj = $ortObj->getLand();
+						if (is_object(($landObj))) {
+							$land = $landObj->getLand();
+							if (!empty($land)) {
+								$landArr[] = $land;
+								$klosterstandorte[$k][$i]['land'] = $land;
+							}
+							$ist_in_deutschland = $landObj->getIst_in_deutschland();
+							if (!empty($ist_in_deutschland)) {
+								$ist_in_deutschlandArr[] = $ist_in_deutschland;
+								$klosterstandorte[$k][$i]['ist_in_deutschland'] = $ist_in_deutschland;
+							}
+
+							$ortGeonameArr = array();
+							$ortUrls = $ortObj->getOrtHasUrls();
+							foreach ($ortUrls as $ortUrl) {
+								$ortUrlObj = $ortUrl->getUrl();
+								$ortUrl = $ortUrlObj->getUrl();
+								$ortUrlTypObj = $ortUrlObj->getUrltyp();
+								$ortUrlTyp = $ortUrlTypObj->getName();
+								if ($ortUrlTyp == "Geonames") {
+									$geoname = explode('geonames.org/', $ortUrl)[1];
+									$ortGeonameArr[] = $geoname;
+									$klosterstandorte[$k][$i]['geonames'] = $geoname;
 								}
 							}
 						}
 
+						$bistumObj = $ortObj->getBistum();
+						if (is_object($bistumObj)) {
+
+							$bistumuid = $bistumObj->getUid();
+							$bistumuidArr[] = $bistumuid;
+							$klosterstandorte[$k][$i]['bistum_uid'] = $bistumuid;
+
+							$bistum = $bistumObj->getBistum();
+							$bistumArr[] = $bistum;
+							$klosterstandorte[$k][$i]['bistum'] = $bistum;
+
+							$kirchenprovinz = $bistumObj->getKirchenprovinz();
+							$kirchenprovinzArr[] = $kirchenprovinz;
+							$klosterstandorte[$k][$i]['kirchenprovinz'] = $kirchenprovinz;
+
+							$ist_erzbistum = $bistumObj->getIst_erzbistum();
+							if ($ist_erzbistum) {
+								$ist_erzbistumArr[] = $ist_erzbistum;
+								$klosterstandorte[$k][$i]['ist_erzbistum'] = $ist_erzbistum;
+							}
+
+							$bistumHasUrls = $bistumObj->getBistumHasUrls();
+							foreach ($bistumHasUrls as $bistumHasUrl) {
+								$urlObj = $bistumHasUrl->getUrl();
+								$bistumUrl = $urlObj->getUrl();
+								$urlTypObj = $urlObj->getUrltyp();
+								$urlTyp = $urlTypObj->getName();
+								if ($urlTyp == "Wikipedia") {
+									$klosterArr[$k]['bistum_wikipedia'] = rawurldecode($bistumUrl);
+									$klosterstandorte[$k][$i]['bistum_wikipedia'] = rawurldecode($bistumUrl);
+								} elseif ($urlTyp == "GND") {
+									$components = explode("/gnd/", $bistumUrl);
+									if (count($components) > 1) {
+										$klosterArr[$k]['bistum_gnd'] = $components[1];
+										$klosterstandorte[$k][$i]['bistum_gnd'] = $components[1];
+									}
+								}
+							}
+						}
 					}
-
 				}
-
 			}
 
 			$ordenuidArr = array();
@@ -761,146 +778,150 @@ class DataExportController extends ActionController {
 
 			$standortOrdenCount = 1;
 
-			foreach ($klosterorden[$k] as $m => $myorden) {
+			if (isset($klosterorden[$k])) {
 
-				foreach ($klosterstandorte[$k] as $n => $mystandort) {
+				foreach ($klosterorden[$k] as $m => $myorden) {
 
-					if (($myorden['orden_von_von'] < $mystandort['standort_bis_bis']) && ($mystandort['standort_von_von'] < $myorden['orden_bis_bis'])) {
+					if (isset($klosterstandorte[$k])) {
 
-						$standort_ordenArr[$k][$m][$n]['kloster_id'] = (string)$sql_uid;
-						$standort_ordenArr[$k][$m][$n]['id'] = 'standort-orden-' . (string)$sql_uid . '-' . (string)$standortOrdenCount;
-						$standort_ordenArr[$k][$m][$n]['sql_uid'] = (string)$sql_uid;
-						$standort_ordenArr[$k][$m][$n]['typ'] = 'standort-orden';
-						$standort_ordenArr[$k][$m][$n]['patrozinium'] = $patrozinium;
-						$standort_ordenArr[$k][$m][$n]['kloster'] = $kloster;
-						$standort_ordenArr[$k][$m][$n]['bemerkung_kloster'] = $bemerkung_kloster;
-						$standort_ordenArr[$k][$m][$n]['text_gs_band'] = $text_gs_band;
-						$standort_ordenArr[$k][$m][$n]['band_seite'] = $band_seite;
-						$standort_ordenArr[$k][$m][$n]['bearbeitungsstatus'] = $bearbeitungsstatus;
-						$standort_ordenArr[$k][$m][$n]['personallistenstatus'] = $personallistenstatus;
-						$standort_ordenArr[$k][$m][$n]['koordinaten'] = $mystandort['koordinaten'];
-						$standort_ordenArr[$k][$m][$n]['koordinaten_institutionengenau'] = $mystandort['koordinaten_institutionengenau'];
-						$standort_ordenArr[$k][$m][$n]['standort_von_von'] = $mystandort['standort_von_von'];
-						$standort_ordenArr[$k][$m][$n]['standort_von_bis'] = $mystandort['standort_von_bis'];
-						$standort_ordenArr[$k][$m][$n]['standort_von_verbal'] = $mystandort['standort_von_verbal'];
-						$standort_ordenArr[$k][$m][$n]['standort_bis_von'] = $mystandort['standort_bis_von'];
-						$standort_ordenArr[$k][$m][$n]['standort_bis_bis'] = $mystandort['standort_bis_bis'];
-						$standort_ordenArr[$k][$m][$n]['standort_bis_verbal'] = $mystandort['standort_bis_verbal'];
+						foreach ($klosterstandorte[$k] as $n => $mystandort) {
 
-						$standort_ordenArr[$k][$m][$n]['standort_uid'] = explode('-', $mystandort['id'])[2];
+							if (($myorden['orden_von_von'] < $mystandort['standort_bis_bis']) && ($mystandort['standort_von_von'] < $myorden['orden_bis_bis'])) {
 
-						if (!empty($mystandort['gruender'])) {
-							$standort_ordenArr[$k][$m][$n]['gruender'] = $mystandort['gruender'];
-						}
-						if (!empty($mystandort['ort'])) {
-							$standort_ordenArr[$k][$m][$n]['ort'] = $mystandort['ort'];
-						}
-						if (!empty($mystandort['gemeinde'])) {
-							$standort_ordenArr[$k][$m][$n]['gemeinde'] = $mystandort['gemeinde'];
-						}
-						if (!empty($mystandort['kreis'])) {
-							$standort_ordenArr[$k][$m][$n]['kreis'] = $mystandort['kreis'];
-						}
-						if (!empty($mystandort['land'])) {
-							$standort_ordenArr[$k][$m][$n]['land'] = $mystandort['land'];
-						}
-						if (!empty($mystandort['ort_uid'])) {
-							$standort_ordenArr[$k][$m][$n]['ort_uid'] = $mystandort['ort_uid'];
-						}
-						if (!empty($mystandort['ist_in_deutschland'])) {
-							$standort_ordenArr[$k][$m][$n]['ist_in_deutschland'] = $mystandort['ist_in_deutschland'];
-						}
-						if (!empty($mystandort['geonames'])) {
-							$standort_ordenArr[$k][$m][$n]['geonames'] = $mystandort['geonames'];
-						}
-						if (!empty($mystandort['wuestung'])) {
-							$standort_ordenArr[$k][$m][$n]['wuestung'] = $mystandort['wuestung'];
-						}
-						if (!empty($mystandort['bistum'])) {
-							$standort_ordenArr[$k][$m][$n]['bistum'] = $mystandort['bistum'];
-						}
-						if (!empty($mystandort['ist_erzbistum'])) {
-							$standort_ordenArr[$k][$m][$n]['ist_erzbistum'] = $mystandort['ist_erzbistum'];
-						}
-						if (!empty($mystandort['bistum_gnd'])) {
-							$standort_ordenArr[$k][$m][$n]['bistum_gnd'] = $mystandort['bistum_gnd'];
-						}
-						if (!empty($mystandort['bistum_wikipedia'])) {
-							$standort_ordenArr[$k][$m][$n]['bistum_wikipedia'] = $mystandort['bistum_wikipedia'];
-						}
-						if (!empty($mystandort['bistum_uid'])) {
-							$standort_ordenArr[$k][$m][$n]['bistum_uid'] = $mystandort['bistum_uid'];
-						}
-						if (!empty($mystandort['kirchenprovinz'])) {
-							$standort_ordenArr[$k][$m][$n]['kirchenprovinz'] = $mystandort['kirchenprovinz'];
-						}
-						$standort_ordenArr[$k][$m][$n]['orden'] = $myorden['orden'];
-						if (!empty($myorden['orden_ordo'])) {
-							$standort_ordenArr[$k][$m][$n]['orden_ordo'] = $myorden['orden_ordo'];
-						}
-						$standort_ordenArr[$k][$m][$n]['orden_typ'] = $myorden['orden_typ'];
-						$standort_ordenArr[$k][$m][$n]['orden_von_von'] = $myorden['orden_von_von'];
-						$standort_ordenArr[$k][$m][$n]['orden_von_bis'] = $myorden['orden_von_bis'];
-						$standort_ordenArr[$k][$m][$n]['orden_von_verbal'] = $myorden['orden_von_verbal'];
-						$standort_ordenArr[$k][$m][$n]['orden_bis_von'] = $myorden['orden_bis_von'];
-						$standort_ordenArr[$k][$m][$n]['orden_bis_bis'] = $myorden['orden_bis_bis'];
-						$standort_ordenArr[$k][$m][$n]['orden_bis_verbal'] = $myorden['orden_bis_verbal'];
+								$standort_ordenArr[$k][$m][$n]['kloster_id'] = (string)$sql_uid;
+								$standort_ordenArr[$k][$m][$n]['id'] = 'standort-orden-' . (string)$sql_uid . '-' . (string)$standortOrdenCount;
+								$standort_ordenArr[$k][$m][$n]['sql_uid'] = (string)$sql_uid;
+								$standort_ordenArr[$k][$m][$n]['typ'] = 'standort-orden';
+								$standort_ordenArr[$k][$m][$n]['patrozinium'] = $patrozinium;
+								$standort_ordenArr[$k][$m][$n]['kloster'] = $kloster;
+								$standort_ordenArr[$k][$m][$n]['bemerkung_kloster'] = $bemerkung_kloster;
+								$standort_ordenArr[$k][$m][$n]['text_gs_band'] = $text_gs_band;
+								$standort_ordenArr[$k][$m][$n]['band_seite'] = $band_seite;
+								$standort_ordenArr[$k][$m][$n]['bearbeitungsstatus'] = $bearbeitungsstatus;
+								$standort_ordenArr[$k][$m][$n]['personallistenstatus'] = $personallistenstatus;
+								$standort_ordenArr[$k][$m][$n]['koordinaten'] = $mystandort['koordinaten'];
+								$standort_ordenArr[$k][$m][$n]['koordinaten_institutionengenau'] = $mystandort['koordinaten_institutionengenau'];
+								$standort_ordenArr[$k][$m][$n]['standort_von_von'] = $mystandort['standort_von_von'];
+								$standort_ordenArr[$k][$m][$n]['standort_von_bis'] = $mystandort['standort_von_bis'];
+								$standort_ordenArr[$k][$m][$n]['standort_von_verbal'] = $mystandort['standort_von_verbal'];
+								$standort_ordenArr[$k][$m][$n]['standort_bis_von'] = $mystandort['standort_bis_von'];
+								$standort_ordenArr[$k][$m][$n]['standort_bis_bis'] = $mystandort['standort_bis_bis'];
+								$standort_ordenArr[$k][$m][$n]['standort_bis_verbal'] = $mystandort['standort_bis_verbal'];
 
-						$standort_ordenArr[$k][$m][$n]['kloster_orden_uid'] = explode('-', $myorden['id'])[2];
+								$standort_ordenArr[$k][$m][$n]['standort_uid'] = explode('-', $mystandort['id'])[2];
 
-						if (!empty($myorden['orden_gnd'])) {
-							$standort_ordenArr[$k][$m][$n]['orden_gnd'] = $myorden['orden_gnd'];
-						}
-						if (!empty($myorden['orden_wikipedia'])) {
-							$standort_ordenArr[$k][$m][$n]['orden_wikipedia'] = $myorden['orden_wikipedia'];
-						}
-						if (!empty($myorden['orden_graphik'])) {
-							$standort_ordenArr[$k][$m][$n]['orden_graphik'] = $myorden['orden_graphik'];
-						}
-						if (!empty($myorden['orden_symbol'])) {
-							$standort_ordenArr[$k][$m][$n]['orden_symbol'] = $myorden['orden_symbol'];
-						}
+								if (!empty($mystandort['gruender'])) {
+									$standort_ordenArr[$k][$m][$n]['gruender'] = $mystandort['gruender'];
+								}
+								if (!empty($mystandort['ort'])) {
+									$standort_ordenArr[$k][$m][$n]['ort'] = $mystandort['ort'];
+								}
+								if (!empty($mystandort['gemeinde'])) {
+									$standort_ordenArr[$k][$m][$n]['gemeinde'] = $mystandort['gemeinde'];
+								}
+								if (!empty($mystandort['kreis'])) {
+									$standort_ordenArr[$k][$m][$n]['kreis'] = $mystandort['kreis'];
+								}
+								if (!empty($mystandort['land'])) {
+									$standort_ordenArr[$k][$m][$n]['land'] = $mystandort['land'];
+								}
+								if (!empty($mystandort['ort_uid'])) {
+									$standort_ordenArr[$k][$m][$n]['ort_uid'] = $mystandort['ort_uid'];
+								}
+								if (!empty($mystandort['ist_in_deutschland'])) {
+									$standort_ordenArr[$k][$m][$n]['ist_in_deutschland'] = $mystandort['ist_in_deutschland'];
+								}
+								if (!empty($mystandort['geonames'])) {
+									$standort_ordenArr[$k][$m][$n]['geonames'] = $mystandort['geonames'];
+								}
+								if (!empty($mystandort['wuestung'])) {
+									$standort_ordenArr[$k][$m][$n]['wuestung'] = $mystandort['wuestung'];
+								}
+								if (!empty($mystandort['bistum'])) {
+									$standort_ordenArr[$k][$m][$n]['bistum'] = $mystandort['bistum'];
+								}
+								if (!empty($mystandort['ist_erzbistum'])) {
+									$standort_ordenArr[$k][$m][$n]['ist_erzbistum'] = $mystandort['ist_erzbistum'];
+								}
+								if (!empty($mystandort['bistum_gnd'])) {
+									$standort_ordenArr[$k][$m][$n]['bistum_gnd'] = $mystandort['bistum_gnd'];
+								}
+								if (!empty($mystandort['bistum_wikipedia'])) {
+									$standort_ordenArr[$k][$m][$n]['bistum_wikipedia'] = $mystandort['bistum_wikipedia'];
+								}
+								if (!empty($mystandort['bistum_uid'])) {
+									$standort_ordenArr[$k][$m][$n]['bistum_uid'] = $mystandort['bistum_uid'];
+								}
+								if (!empty($mystandort['kirchenprovinz'])) {
+									$standort_ordenArr[$k][$m][$n]['kirchenprovinz'] = $mystandort['kirchenprovinz'];
+								}
+								$standort_ordenArr[$k][$m][$n]['orden'] = $myorden['orden'];
+								if (!empty($myorden['orden_ordo'])) {
+									$standort_ordenArr[$k][$m][$n]['orden_ordo'] = $myorden['orden_ordo'];
+								}
+								$standort_ordenArr[$k][$m][$n]['orden_typ'] = $myorden['orden_typ'];
+								$standort_ordenArr[$k][$m][$n]['orden_von_von'] = $myorden['orden_von_von'];
+								$standort_ordenArr[$k][$m][$n]['orden_von_bis'] = $myorden['orden_von_bis'];
+								$standort_ordenArr[$k][$m][$n]['orden_von_verbal'] = $myorden['orden_von_verbal'];
+								$standort_ordenArr[$k][$m][$n]['orden_bis_von'] = $myorden['orden_bis_von'];
+								$standort_ordenArr[$k][$m][$n]['orden_bis_bis'] = $myorden['orden_bis_bis'];
+								$standort_ordenArr[$k][$m][$n]['orden_bis_verbal'] = $myorden['orden_bis_verbal'];
 
-						if (!empty($myorden['kloster_status'])) {
-							$standort_ordenArr[$k][$m][$n]['kloster_status'] = $myorden['kloster_status'];
-						}
-						if (!empty($myorden['bemerkung_orden'])) {
-							$standort_ordenArr[$k][$m][$n]['bemerkung_orden'] = $myorden['bemerkung_orden'];
-						}
-						if (!empty($literatur_citekey)) {
-							$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = $literatur_citekey;
-						}
-						if (!empty($literatur_beschreibung)) {
-							$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = $literatur_beschreibung;
-						}
-						if (!empty($url_wikipedia)) {
-							$standort_ordenArr[$k][$m][$n]['url_wikipedia'] = $url_wikipedia;
-						}
+								$standort_ordenArr[$k][$m][$n]['kloster_orden_uid'] = explode('-', $myorden['id'])[2];
 
-						if (!empty($url)) {
-							$standort_ordenArr[$k][$m][$n]['url'] = $url;
-							$standort_ordenArr[$k][$m][$n]['url_typ'] = $urlTyp;
-							$standort_ordenArr[$k][$m][$n]['url_bemerkung'] = $url_bemerkung;
-							$standort_ordenArr[$k][$m][$n]['url_relation'] = $url_relation;
+								if (!empty($myorden['orden_gnd'])) {
+									$standort_ordenArr[$k][$m][$n]['orden_gnd'] = $myorden['orden_gnd'];
+								}
+								if (!empty($myorden['orden_wikipedia'])) {
+									$standort_ordenArr[$k][$m][$n]['orden_wikipedia'] = $myorden['orden_wikipedia'];
+								}
+								if (!empty($myorden['orden_graphik'])) {
+									$standort_ordenArr[$k][$m][$n]['orden_graphik'] = $myorden['orden_graphik'];
+								}
+								if (!empty($myorden['orden_symbol'])) {
+									$standort_ordenArr[$k][$m][$n]['orden_symbol'] = $myorden['orden_symbol'];
+								}
+
+								if (!empty($myorden['kloster_status'])) {
+									$standort_ordenArr[$k][$m][$n]['kloster_status'] = $myorden['kloster_status'];
+								}
+								if (!empty($myorden['bemerkung_orden'])) {
+									$standort_ordenArr[$k][$m][$n]['bemerkung_orden'] = $myorden['bemerkung_orden'];
+								}
+								if (!empty($literatur_citekey)) {
+									$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = $literatur_citekey;
+								}
+								if (!empty($literatur_beschreibung)) {
+									$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = $literatur_beschreibung;
+								}
+								if (!empty($url_wikipedia)) {
+									$standort_ordenArr[$k][$m][$n]['url_wikipedia'] = $url_wikipedia;
+								}
+
+								if (!empty($url)) {
+									$standort_ordenArr[$k][$m][$n]['url'] = $url;
+									$standort_ordenArr[$k][$m][$n]['url_typ'] = $urlTyp;
+									$standort_ordenArr[$k][$m][$n]['url_bemerkung'] = $url_bemerkung;
+									$standort_ordenArr[$k][$m][$n]['url_relation'] = $url_relation;
+								}
+
+								if (!empty($url_quelle)) {
+									$standort_ordenArr[$k][$m][$n]['url_quelle'] = $url_quelle;
+									$standort_ordenArr[$k][$m][$n]['url_quelle_titel'] = $url_quelle_titel;
+								}
+
+								if (!empty($gnd)) {
+									$standort_ordenArr[$k][$m][$n]['gnd'] = $gnd;
+								}
+
+								$standort_ordenArr[$k][$m][$n]['orden_standort_von'] = max($myorden['orden_von_von'], $mystandort['standort_von_von']);
+								$standort_ordenArr[$k][$m][$n]['orden_standort_bis'] = min($myorden['orden_bis_bis'], $mystandort['standort_bis_bis']);
+
+								$standortOrdenCount++;
+							}
 						}
-
-						if (!empty($url_quelle)) {
-							$standort_ordenArr[$k][$m][$n]['url_quelle'] = $url_quelle;
-							$standort_ordenArr[$k][$m][$n]['url_quelle_titel'] = $url_quelle_titel;
-						}
-
-						if (!empty($gnd)) {
-							$standort_ordenArr[$k][$m][$n]['gnd'] = $gnd;
-						}
-
-						$standort_ordenArr[$k][$m][$n]['orden_standort_von'] = max($myorden['orden_von_von'], $mystandort['standort_von_von']);
-						$standort_ordenArr[$k][$m][$n]['orden_standort_bis'] = min($myorden['orden_bis_bis'], $mystandort['standort_bis_bis']);
-
-						$standortOrdenCount++;
 					}
-
 				}
-
 			}
 
 			if (isset($person_nameArr) && !empty($person_nameArr)) {
