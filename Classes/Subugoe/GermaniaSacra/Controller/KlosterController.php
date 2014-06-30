@@ -231,9 +231,12 @@ class KlosterController extends ActionController {
 		return json_encode(array($status));
 	}
 
+	/**
+	 * Fetches all monasteries and assigns them as json to the view
+	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
-			$this->view->setVariablesToRender(array('$monasteries'));
+			$this->view->setVariablesToRender(array('monasteries'));
 		}
 		$this->view->assign('monasteries', $this->klosterRepository->findAll());
 	}
