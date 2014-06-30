@@ -1,1 +1,1 @@
-var germaniaSacra = angular.module('germaniaSacra', ['angular-loading-bar']);
+var germaniaSacra = angular.module('germaniaSacra', ['angular-loading-bar', 'ngResource']);
