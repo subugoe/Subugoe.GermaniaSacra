@@ -61,13 +61,20 @@ table {
 	}
 }
 
+td {
+	input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], select, textarea {
+		background: none;
+		border: 0;
+		box-shadow: none;
+		float: none;
+		margin: -8px -10px;
+	}
+}
+
 input,
 select,
 textarea {
 	float: right;
-	td & {
-		margin: 0 !important;
-	}
 	label.none & {
 		width: 100% !important;
 	}

@@ -1,146 +1,72 @@
-{namespace m=Subugoe\GermaniaSacra\ViewHelpers}
-
 <f:layout name="Default"/>
 
 <f:section name="Title">Klosterliste</f:section>
 
 <f:section name="Content">
-<f:if condition="{klosters}">
-		<section role="main" ng-controller="monasteryController">
-			<form>
-				<fieldset>
-					<label class="large-1 column">Kloster-Nr. <input name="kloster_nr" type="text"></label>
-					<label class="large-2 column">Status <input name="status" type="text"></label>
-					<label class="large-2 column">Klostername <input name="kloster" type="text"></label>
-					<label class="large-2 column">Ort <input name="ort" type="text"></label>
-					<label class="large-2 column">Suche über alle Felder <input name="alle" type="text"></label>
 
-					<div class="large-3 columns text-right margin-top">
-						<button class="toggle" data-text="ausblenden">Erweiterte Suche einblenden</button>
-					</div>
-				</fieldset>
-				<fieldset class="togglable">
-					<legend>Erweiterte Suche</legend>
-					<div class="multiple">
-						<label class="large-2 column">
-							<select name="filter">
-								<option value="band.nummer">band.nummer</option>
-								<option value="bearbeitungsstatus.name">bearbeitungsstatus.name</option>
-								<option value="bistum.bistum">bistum.bistum</option>
-								<option value="bundesland.bundesland">bundesland.bundesland</option>
-								<option value="kloster.kloster_id">kloster.kloster_id</option>
-								<option value="kloster.kloster">kloster.kloster</option>
-								<option value="kloster.patrozinium">kloster.patrozinium</option>
-								<option value="klosterstatus.status">klosterstatus.status</option>
-								<option value="kloster.breite">kloster.breite</option>
-								<option value="kloster.laenge">kloster.laenge</option>
-								<option value="land.land">land.land</option>
-								<option value="orden.orden">orden.orden</option>
-								<option value="ort.ort">ort.ort</option>
-								<option value="personallistenstatus.name">personallistenstatus.name</option>
-								<option value="url.url">url.url</option>
-								<option value="zeitraum.von_von">zeitraum.von_von</option>
-								<option value="zeitraum.bis_bis">zeitraum.bis_bis</option>
-							</select>
-						</label>
-						<label class="large-2 column">
-							<select name="operator">
-								<option value="ist gleich">ist gleich</option>
-								<option value="ist gleich (inkl. Schreibweise)">ist gleich (inkl. Schreibweise)</option>
-								<option value="ist nicht">ist nicht</option>
-								<option value="enthält">enthält</option>
-								<option value="enthält nicht">enthält nicht</option>
-								<option value="beginnt mit">beginnt mit</option>
-								<option value="endet mit">endet mit</option>
-								<option value="ist kleiner als">ist kleiner als</option>
-								<option value="ist größer als">ist größer als</option>
-								<option value="entspricht regex">entspricht regex</option>
-								<option value="entspricht nicht regex">entspricht nicht regex</option>
-								<option value="fehlt">fehlt</option>
-							</select>
-						</label>
-						<label class="large-4 column"><input name="value" type="text"></label>
-						<label class="large-2 column">
-							<select name="concat">
-								<option value="und">und</option>
-								<option value="oder">oder</option>
-								<option value="und nicht">und nicht</option>
-							</select>
-						</label>
-					</div>
-				</fieldset>
-			</form>
+<div id="browse" ng-controller="monasteryController">
+	<form id="UpdateList" name="UpdateList" action="updateList">
+		<table class="large-12 columns display" id="list">
+			<thead>
+				<tr>
+					<th></th>
+					<th>
+						Kloster-Nr.
+					</th>
+					<th>
+						Status
+					</th>
+					<th>
+						Klostername
+					</th>
+					<th>
+						Ort
+					</th>
+					<th>
+						GND
+					</th>
+					<th>
+						Bearbeitungsstand
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<input name="auswahl" type="checkbox">
+					</td>
+					<td>
+						<input type="text" disabled="disabled" name="kloster_id">
+					</td>
+					<td>
+						<select name="bearbeitungsstatus"></select>
+					</td>
+					<td>
+						<input type="text" name="kloster">
+					</td>
+					<td>
+						<input id="searchOrt" type="text" name="ort" tabindex="">
+					</td>
+					<td>
+						<input type="text" name="gnd">
+					</td>
+					<td>
+						<textarea name="bearbeitungsstand"></textarea>
+					</td>
+					<td>
+						<a href="" class="edit">Edit</a>
+						<a href="" class="delete">Del</a>
+						<input class="csrf" type="hidden" name="__csrfToken">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<input class="button" type="submit" value="Änderungen übernehmen">
+	</form>
+</div>
 
-			<m:Paginate objects="{klosters}" as="paginatedKloster" configuration="{itemsPerPage: 10, insertAbove: 1, insertBelow: 0, maximumNumberOfLinks: 20}">
-				<f:for each="{paginatedKloster}" as="kloster">
-				</f:for>
-			</m:Paginate>
-		</section>
-</f:if>
-<span></span>
-
-<form id="UpdateList" name="UpdateList" action="updateList">
-	<table class="large-12 columns" id="list">
-		<tr>
-			<th></th>
-			<th>
-				Kloster-Nr.
-			</th>
-			<th>
-				Status
-			</th>
-			<th>
-				Klostername
-			</th>
-			<th>
-				Ort
-			</th>
-			<th>
-				GND
-			</th>
-			<th>
-				Bearbeitungsstand
-			</th>
-			<th></th>
-		</tr>
-		<tr>
-			<td>
-				<input name="auswahl[]" type="checkbox">
-			</td>
-			<td>
-				<input type="text" disabled="disabled" name="kloster_id[]">
-			</td>
-			<td>
-				<select name="bearbeitungsstatus[]"></select>
-			</td>
-			<td>
-				<input type="text" name="kloster[]">
-			</td>
-			<td>
-				<input id="searchOrt" type="text" name="ort[]" tabindex="">
-			</td>
-			<td>
-				<input type="text" name="gnd[]">
-			</td>
-			<td>
-				<textarea name="bearbeitungsstand[]"></textarea>
-			</td>
-			<td>
-				<a href="" id="editLink">
-					<button class="edit">Bearbeiten</button>
-				</a>
-				<a href="" id="deleteLink">
-					<button class="delete">Löschen</button>
-				</a>
-				<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
-			</td>
-		</tr>
-	</table>
-	<a href="" id="newLink">
-		<button class="new">Neu</button>
-	</a>
-	<input class="button" type="submit" value="Änderungen übernehmen">
-</form>
+<a href="" id="newLink"><button class="new">Neu</button></a>
 
 <div id="edit">
 	<h1>
@@ -202,7 +128,6 @@
 				<label class="large-2 columns">Wüstung
 					<input name="wuestung[]" type="checkbox">
 				</label>
-
 				<div class="coordinates">
 					<label class="large-6 columns">Breite
 						<input name="breite[]" type="text">
@@ -355,7 +280,6 @@
 				<label class="large-2 columns">Wüstung
 					<input name="new_wuestung[]" type="checkbox">
 				</label>
-
 				<div class="coordinates">
 					<label class="large-6 columns">Breite
 						<input name="new_breite[]" type="number">

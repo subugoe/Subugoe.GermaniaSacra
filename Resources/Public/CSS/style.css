@@ -59,16 +59,22 @@ table textarea {
   margin: 0;
 }
 
+/* line 65, ../../Private/Scss/style.scss */
+td input[type="text"], td input[type="password"], td input[type="date"], td input[type="datetime"], td input[type="datetime-local"], td input[type="month"], td input[type="week"], td input[type="email"], td input[type="number"], td input[type="search"], td input[type="tel"], td input[type="time"], td input[type="url"], td select, td textarea {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  float: none;
+  margin: -8px -10px;
+}
+
+/* line 76, ../../Private/Scss/style.scss */
 input,
 select,
 textarea {
   float: right;
 }
-td input, td
-select, td
-textarea {
-  margin: 0 !important;
-}
+/* line 78, ../../Private/Scss/style.scss */
 label.none input, label.none
 select, label.none
 textarea {
