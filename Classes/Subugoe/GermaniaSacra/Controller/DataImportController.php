@@ -370,7 +370,11 @@ class DataImportController extends ActionController {
 						$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
 						$urlObject->setUrltyp($urltypObject);
 						$this->urlRepository->add($urlObject);
-						$this->persistenceManager->persistAll();
+						try {
+							$this->persistenceManager->persistAll();
+						} catch (\Exception $e) {
+							$this->logger->logException($e);
+						}
 						$urlUUID = $urlObject->getUUID();
 						$orthasurlObject = new Orthasurl();
 						$ortObject = $this->ortRepository->findByIdentifier($ortUUID);
@@ -733,6 +737,8 @@ class DataImportController extends ActionController {
 			$wikiurltypUUID = $urltypObject->getUUID();
 		}
 		if (isset($urltypUUID) && !empty($urltypUUID)) {
+			$sql = 'SET foreign_key_checks = 0';
+			$sqlConnection->executeUpdate($sql);
 			$tbl = 'subugoe_germaniasacra_domain_model_url';
 			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $urltypUUID . '\'';
 			try {
@@ -740,8 +746,12 @@ class DataImportController extends ActionController {
 			} catch (\Exception $e) {
 				$this->logger->logException($e);
 			}
+			$sql = 'SET foreign_key_checks = 1';
+			$sqlConnection->executeUpdate($sql);
 		}
 		if (isset($gndurltypUUID) && !empty($gndurltypUUID)) {
+			$sql = 'SET foreign_key_checks = 0';
+			$sqlConnection->executeUpdate($sql);
 			$tbl = 'subugoe_germaniasacra_domain_model_url';
 			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $gndurltypUUID . '\'';
 			try {
@@ -749,8 +759,13 @@ class DataImportController extends ActionController {
 			} catch (\Exception $e) {
 				$this->logger->logException($e);
 			}
+			$sql = 'SET foreign_key_checks = 1';
+			$sqlConnection->executeUpdate($sql);
 		}
 		if (isset($wikiurltypUUID) && !empty($wikiurltypUUID)) {
+			$sql = 'SET foreign_key_checks = 0';
+			$sqlConnection->executeUpdate($sql);
+
 			$tbl = 'subugoe_germaniasacra_domain_model_url';
 			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $wikiurltypUUID . '\'';
 			try {
@@ -758,6 +773,8 @@ class DataImportController extends ActionController {
 			} catch (\Exception $e) {
 				$this->logger->logException($e);
 			}
+			$sql = 'SET foreign_key_checks = 1';
+			$sqlConnection->executeUpdate($sql);
 		}
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
