@@ -323,7 +323,9 @@ class KlosterController extends ActionController {
 			$klosterstandorts = $kloster->getKlosterstandorts();
 			foreach ($klosterstandorts as $i => $klosterstandort) {
 				$ort = $klosterstandort->getOrt();
-				$klosterArr[$k]['ort'][$i] = $ort->getOrt();
+				if (is_object($ort)) {
+					$klosterArr[$k]['ort'][$i] = $ort->getOrt();
+				}
 			}
 
 			$klosterHasUrls = $kloster->getKlosterHasUrls();
@@ -338,7 +340,16 @@ class KlosterController extends ActionController {
 			}
 		}
 
-		$response = $klosterArr;
+		$bearbeitungsstatusArr = array();
+		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
+		foreach ($bearbeitungsstatuses as $n=>$bearbeitungsstatus) {
+			$bearbeitungsstatusArr[$n] = array($bearbeitungsstatus->getName() => $bearbeitungsstatus->getUUID());
+		}
+
+		$response = array();
+		$response[] = $klosterArr;
+		$response[] = $bearbeitungsstatusArr;
+
 		return json_encode($response);
 	}
 
