@@ -116,9 +116,9 @@ class KlosterController extends ActionController {
 	protected $urltypRepository;
 
 	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\inject
-	*/
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\inject
+	 */
 	protected $persistenceManager;
 
 	/**
@@ -172,14 +172,14 @@ class KlosterController extends ActionController {
 		$list = array();
 		foreach ($auswahlArr as $auswahl) {
 			if (
-			(isset($klosterArr[$auswahl]) && !empty($klosterArr[$auswahl])) &&
-			(isset($bearbeitungsstatusArr[$auswahl]) && !empty($bearbeitungsstatusArr[$auswahl]))
+					(isset($klosterArr[$auswahl]) && !empty($klosterArr[$auswahl])) &&
+					(isset($bearbeitungsstatusArr[$auswahl]) && !empty($bearbeitungsstatusArr[$auswahl]))
 			) {
 				$list[$auswahl] = array("bearbeitungsstatus" => $bearbeitungsstatusArr[$auswahl][0],
-										"klostername" => $klosterArr[$auswahl][0],
-										"gnd" => $gndArr[$auswahl][0],
-										"bearbeitungsstand" => $bearbeitungsstandArr[$auswahl][0],
-										"ort" => $ortArr[$auswahl]);
+						"klostername" => $klosterArr[$auswahl][0],
+						"gnd" => $gndArr[$auswahl][0],
+						"bearbeitungsstand" => $bearbeitungsstandArr[$auswahl][0],
+						"ort" => $ortArr[$auswahl]);
 			}
 		}
 
@@ -245,16 +245,15 @@ class KlosterController extends ActionController {
 	 * @return array $reponse The list (10 entries each time) of Kloster in json format
 	 */
 	public function jsonListAction() {
-		if ($this->request->hasArgument('page')){
+		if ($this->request->hasArgument('page')) {
 			$page = $this->request->getArgument('page');
-		}
-		else $page = 1;
+		} else $page = 1;
 
 		$offset = ($page - 1) * 10;
 		$limit = 10;
 
 		$this->klosterRepository->setDefaultOrderings(
-			array( 'uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
+				array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
 		);
 
 		$klosters = $this->klosterRepository->findKlosters($offset, $limit);
@@ -289,7 +288,7 @@ class KlosterController extends ActionController {
 
 		$bearbeitungsstatusArr = array();
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
-		foreach ($bearbeitungsstatuses as $n=>$bearbeitungsstatus) {
+		foreach ($bearbeitungsstatuses as $n => $bearbeitungsstatus) {
 			$bearbeitungsstatusArr[$n] = array($bearbeitungsstatus->getName() => $bearbeitungsstatus->getUUID());
 		}
 
@@ -306,7 +305,7 @@ class KlosterController extends ActionController {
 	public function klosterListAllAction() {
 
 		$this->klosterRepository->setDefaultOrderings(
-			array( 'uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
+				array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
 		);
 
 		$klosters = $this->klosterRepository->findAll();
@@ -342,7 +341,7 @@ class KlosterController extends ActionController {
 
 		$bearbeitungsstatusArr = array();
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
-		foreach ($bearbeitungsstatuses as $n=>$bearbeitungsstatus) {
+		foreach ($bearbeitungsstatuses as $n => $bearbeitungsstatus) {
 			$bearbeitungsstatusArr[$n] = array($bearbeitungsstatus->getName() => $bearbeitungsstatus->getUUID());
 		}
 
@@ -373,67 +372,67 @@ class KlosterController extends ActionController {
 	public function newAction() {
 		$bearbeitungsstatusArr = array();
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
-		foreach ($bearbeitungsstatuses as $n=>$bearbeitungsstatus) {
+		foreach ($bearbeitungsstatuses as $n => $bearbeitungsstatus) {
 			$bearbeitungsstatusArr[$n] = array($bearbeitungsstatus->getName() => $bearbeitungsstatus->getUUID());
 		}
 
 		$personallistenstatusArr = array();
 		$personallistenstatuses = $this->personallistenstatusRepository->findAll();
-		foreach ($personallistenstatuses as $m=>$personallistenstatus) {
+		foreach ($personallistenstatuses as $m => $personallistenstatus) {
 			$personallistenstatusArr[$m] = array($personallistenstatus->getName() => $personallistenstatus->getUUID());
 		}
 
 		$bandArr = array();
 		$this->bandRepository->setDefaultOrderings(
-			array( 'titel' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('titel' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bands = $this->bandRepository->findAll();
-		foreach ($bands as $p=>$band) {
+		foreach ($bands as $p => $band) {
 			$bandArr[$p] = array($band->getTitel() => $band->getUUID());
 		}
 
 		$literaturArr = array();
 		$this->literaturRepository->setDefaultOrderings(
-			array( 'citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$literaturs = $this->literaturRepository->findAll();
-		foreach ($literaturs as $q=>$literatur) {
+		foreach ($literaturs as $q => $literatur) {
 			$literaturArr[$q] = array($literatur->getCitekey() => $literatur->getUUID());
 		}
 
 		$bistumArr = array();
 		$this->bistumRepository->setDefaultOrderings(
-			array( 'bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bistums = $this->bistumRepository->findAll();
-		foreach ($bistums as $r=>$bistum) {
+		foreach ($bistums as $r => $bistum) {
 			$bistumArr[$r] = array($bistum->getBistum() => $bistum->getUUID());
 		}
 
 		$ordenArr = array();
 		$this->ordenRepository->setDefaultOrderings(
-			array( 'orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$ordens = $this->ordenRepository->findAll();
-		foreach ($ordens as $m=>$orden) {
+		foreach ($ordens as $m => $orden) {
 			$ordenArr[$m] = array($orden->getOrden() => $orden->getUUID());
 		}
 
 		$klosterstatusArr = array();
 		$this->klosterstatusRepository->setDefaultOrderings(
-			array( 'status' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('status' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$klosterstatuses = $this->klosterstatusRepository->findAll();
-		foreach ($klosterstatuses as $n=>$klosterstatus) {
+		foreach ($klosterstatuses as $n => $klosterstatus) {
 			$klosterstatusArr[$n] = array($klosterstatus->getStatus() => $klosterstatus->getUUID());
 		}
 
 		$bearbeiterArr = array();
 		$this->bearbeiterRepository->setDefaultOrderings(
-			array( 'bearbeiter' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('bearbeiter' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bearbeiters = $this->bearbeiterRepository->findAll();
-		foreach ($bearbeiters as $q=>$bearbeiter) {
+		foreach ($bearbeiters as $q => $bearbeiter) {
 			$bearbeiterArr[$q] = array($bearbeiter->getBearbeiter() => $bearbeiter->getUUID());
 		}
 
@@ -516,7 +515,7 @@ class KlosterController extends ActionController {
 		$klosterstandortNumber = count($ortArr);
 		$klosterstandortArr = array();
 
-		for ($i=0; $i<$klosterstandortNumber; $i++) {
+		for ($i = 0; $i < $klosterstandortNumber; $i++) {
 			$klosterstandortArr[$i]['kloster'] = $uuid;
 			$klosterstandortArr[$i]['ort'] = $ortArr[$i];
 			$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
@@ -534,8 +533,7 @@ class KlosterController extends ActionController {
 			$klosterstandortArr[$i]['bis_verbal'] = $bis_verbalArr[$i];
 			if (isset($wuestungArr[$i]) && !empty($wuestungArr[$i])) {
 				$klosterstandortArr[$i]['wuestung'] = 1;
-			}
-			else {
+			} else {
 				$klosterstandortArr[$i]['wuestung'] = 0;
 			}
 		}
@@ -564,8 +562,8 @@ class KlosterController extends ActionController {
 			$ort->setWuestung($ko['wuestung']);
 
 			$bistumObject = $this->bistumRepository->findByIdentifier($ko['bistum']);
-			if(is_object($bistumObject)) {
-			    $ort->setBistum($bistumObject);
+			if (is_object($bistumObject)) {
+				$ort->setBistum($bistumObject);
 			}
 
 			$this->ortRepository->update($ort);
@@ -583,7 +581,7 @@ class KlosterController extends ActionController {
 		$bemerkung_ordenArr = $this->request->getArgument('new_bemerkung_orden');
 		$klosterordenNumber = count($ordenArr);
 		$klosterordenArr = array();
-		for ($i=0; $i<$klosterordenNumber; $i++) {
+		for ($i = 0; $i < $klosterordenNumber; $i++) {
 			$klosterordenArr[$i]['kloster'] = $uuid;
 			$klosterordenArr[$i]['orden'] = $ordenArr[$i];
 			$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
@@ -617,7 +615,7 @@ class KlosterController extends ActionController {
 			$this->klosterordenRepository->add($klosterorden);
 		}
 
-		if ($this->request->hasArgument('literatur')){
+		if ($this->request->hasArgument('literatur')) {
 			$kloster_uuid = $uuid;
 			$literaturArr = $this->request->getArgument('literatur');
 			foreach ($literaturArr as $lit) {
@@ -631,7 +629,7 @@ class KlosterController extends ActionController {
 		}
 
 		// Add GND if set
-		if ($this->request->hasArgument('gnd')){
+		if ($this->request->hasArgument('gnd')) {
 			$gnd = $this->request->getArgument('gnd');
 			if (isset($gnd) && !empty($gnd)) {
 				$url = new Url();
@@ -649,7 +647,7 @@ class KlosterController extends ActionController {
 		}
 
 		// Add Wikipedia if set
-		if ($this->request->hasArgument('wikipedia')){
+		if ($this->request->hasArgument('wikipedia')) {
 			$wikipedia = $this->request->getArgument('wikipedia');
 			if (isset($wikipedia) && !empty($wikipedia)) {
 				$url = new Url();
@@ -671,9 +669,9 @@ class KlosterController extends ActionController {
 	}
 
 	/**
-	* @FLOW\SkipCsrfProtection
-	* @return $kloster_id The id of the kloster in json format
-	*/
+	 * @FLOW\SkipCsrfProtection
+	 * @return $kloster_id The id of the kloster in json format
+	 */
 	public function addKlosterIdAction() {
 		$uuid = $this->request->getArgument('uuid');
 		$klosterObject = $this->klosterRepository->findByIdentifier($uuid);
@@ -736,8 +734,8 @@ class KlosterController extends ActionController {
 			$klosterstandorte[$i]['wuestung'] = $ort->getWuestung();
 
 			$bistumObject = $ort->getBistum();
-			if(is_object($bistumObject)) {
-			    $klosterstandorte[$i]['bistum'] = $bistumObject->getUUID();
+			if (is_object($bistumObject)) {
+				$klosterstandorte[$i]['bistum'] = $bistumObject->getUUID();
 			}
 
 			if ($klosterstandort->getVon_von()) {
@@ -808,34 +806,34 @@ class KlosterController extends ActionController {
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
-		foreach ($bearbeitungsstatuses as $n=>$bearbeitungsstatus) {
+		foreach ($bearbeitungsstatuses as $n => $bearbeitungsstatus) {
 			$bearbeitungsstatusArr[$n] = array($bearbeitungsstatus->getName() => $bearbeitungsstatus->getUUID());
 		}
 
 		// Personallistenstatus data
 		$personallistenstatusArr = array();
 		$personallistenstatuses = $this->personallistenstatusRepository->findAll();
-		foreach ($personallistenstatuses as $m=>$personallistenstatus) {
+		foreach ($personallistenstatuses as $m => $personallistenstatus) {
 			$personallistenstatusArr[$m] = array($personallistenstatus->getName() => $personallistenstatus->getUUID());
 		}
 
 		// Band data
 		$bandArr = array();
 		$this->bandRepository->setDefaultOrderings(
-			array( 'titel' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('titel' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bands = $this->bandRepository->findAll();
-		foreach ($bands as $p=>$band) {
+		foreach ($bands as $p => $band) {
 			$bandArr[$p] = array($band->getTitel() => $band->getUUID());
 		}
 
 		// Literature data for select box
 		$literaturArr = array();
 		$this->literaturRepository->setDefaultOrderings(
-			array( 'citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$literaturs = $this->literaturRepository->findAll();
-		foreach ($literaturs as $q=>$literatur) {
+		foreach ($literaturs as $q => $literatur) {
 			$literatur_name = $literatur->getCitekey();
 			$literatur_beschreibung = $literatur->getBeschreibung();
 			if (null !== $literatur_beschreibung && !empty($literatur_beschreibung)) $literatur_name .= "(" . $literatur_beschreibung . ")";
@@ -845,40 +843,40 @@ class KlosterController extends ActionController {
 		// Bistum data for select box
 		$bistumArr = array();
 		$this->bistumRepository->setDefaultOrderings(
-			array( 'bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bistums = $this->bistumRepository->findAll();
-		foreach ($bistums as $r=>$bistum) {
+		foreach ($bistums as $r => $bistum) {
 			$bistumArr[$r] = array($bistum->getBistum() => $bistum->getUUID());
 		}
 
 		// Orden data for select box
 		$ordenArr = array();
 		$this->ordenRepository->setDefaultOrderings(
-			array( 'orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$ordens = $this->ordenRepository->findAll();
-		foreach ($ordens as $m=>$orden) {
+		foreach ($ordens as $m => $orden) {
 			$ordenArr[$m] = array($orden->getOrden() => $orden->getUUID());
 		}
 
 		// Klosterstatus data for select box
 		$klosterstatusArr = array();
 		$this->klosterstatusRepository->setDefaultOrderings(
-			array( 'status' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('status' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$klosterstatuses = $this->klosterstatusRepository->findAll();
-		foreach ($klosterstatuses as $n=>$klosterstatus) {
+		foreach ($klosterstatuses as $n => $klosterstatus) {
 			$klosterstatusArr[$n] = array($klosterstatus->getStatus() => $klosterstatus->getUUID());
 		}
 
 		// Bearbeiter data for select box
 		$bearbeiterArr = array();
 		$this->bearbeiterRepository->setDefaultOrderings(
-			array( 'bearbeiter' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('bearbeiter' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bearbeiters = $this->bearbeiterRepository->findAll();
-		foreach ($bearbeiters as $q=>$bearbeiter) {
+		foreach ($bearbeiters as $q => $bearbeiter) {
 			$bearbeiterArr[$q] = array($bearbeiter->getBearbeiter() => $bearbeiter->getUUID());
 		}
 
@@ -950,7 +948,7 @@ class KlosterController extends ActionController {
 		}
 		$klosterstandortNumber = count($ortArr);
 		$klosterstandortArr = array();
-		for ($i=0; $i<$klosterstandortNumber; $i++) {
+		for ($i = 0; $i < $klosterstandortNumber; $i++) {
 			$klosterstandortArr[$i]['kloster'] = $id;
 			$klosterstandortArr[$i]['ort'] = $ortArr[$i];
 			$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
@@ -967,8 +965,7 @@ class KlosterController extends ActionController {
 			$klosterstandortArr[$i]['bis_verbal'] = $bis_verbalArr[$i];
 			if (isset($wuestungArr[$i]) && !empty($wuestungArr[$i])) {
 				$klosterstandortArr[$i]['wuestung'] = 1;
-			}
-			else {
+			} else {
 				$klosterstandortArr[$i]['wuestung'] = 0;
 			}
 		}
@@ -1000,8 +997,8 @@ class KlosterController extends ActionController {
 				$this->klosterstandortRepository->add($klosterstandort);
 				$ort->setWuestung($ko['wuestung']);
 				$bistumObject = $this->bistumRepository->findByIdentifier($ko['bistum']);
-				if(is_object($bistumObject)) {
-				    $ort->setBistum($bistumObject);
+				if (is_object($bistumObject)) {
+					$ort->setBistum($bistumObject);
 				}
 				$this->ortRepository->update($ort);
 			}
@@ -1019,7 +1016,7 @@ class KlosterController extends ActionController {
 		$orden_bis_verbalArr = $this->request->getArgument('orden_bis_verbal');
 		$klosterordenNumber = count($ordenArr);
 		$klosterordenArr = array();
-		for ($i=0; $i<$klosterordenNumber; $i++) {
+		for ($i = 0; $i < $klosterordenNumber; $i++) {
 			$klosterordenArr[$i]['kloster'] = $id;
 			$klosterordenArr[$i]['orden'] = $ordenArr[$i];
 			$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
@@ -1064,7 +1061,7 @@ class KlosterController extends ActionController {
 			$this->klosterHasLiteraturRepository->remove($literatur);
 		}
 
-		if ($this->request->hasArgument('literatur')){
+		if ($this->request->hasArgument('literatur')) {
 			$literaturArr = $this->request->getArgument('literatur');
 			if (isset($literaturArr) && !empty($literaturArr) && is_array($literaturArr)) {
 				foreach ($literaturArr as $lit) {
@@ -1085,7 +1082,7 @@ class KlosterController extends ActionController {
 		$klosterHasGND = false;
 
 		// Update GND if set
-		if ($this->request->hasArgument('gnd')){
+		if ($this->request->hasArgument('gnd')) {
 			$gnd = $this->request->getArgument('gnd');
 			if (isset($gnd) && !empty($gnd)) {
 				foreach ($klosterHasUrls as $i => $klosterHasUrl) {
@@ -1117,7 +1114,7 @@ class KlosterController extends ActionController {
 
 		//Update Wikipedia if set
 		$klosterHasWiki = false;
-		if ($this->request->hasArgument('wikipedia')){
+		if ($this->request->hasArgument('wikipedia')) {
 			$wikipedia = $this->request->getArgument('wikipedia');
 			if (isset($wikipedia) && !empty($wikipedia)) {
 				foreach ($klosterHasUrls as $i => $klosterHasUrl) {
@@ -1196,8 +1193,8 @@ class KlosterController extends ActionController {
 			$searchString = "%" . $searchString . "%";
 			$searchResult = $this->ortRepository->findOrtBySearchString($searchString);
 			$orte = array();
-			foreach ($searchResult as $res){
-				$orte[] = array ($res->getUUID(), $res->getOrt());
+			foreach ($searchResult as $res) {
+				$orte[] = array($res->getUUID(), $res->getOrt());
 			}
 			return json_encode($orte);
 		}
@@ -1215,4 +1212,5 @@ class KlosterController extends ActionController {
 		return $new_kloster_id;
 	}
 }
+
 ?>
