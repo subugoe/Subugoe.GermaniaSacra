@@ -62,7 +62,7 @@ $.fn.extend({
 					} else if ( $(this).is('select') ) {
 						if (name == "bearbeitungsstatus") {
 							$tr.find("select[name=bearbeitungsstatus] option").each(function( i, opt ) {
-								if( opt.kloster == val ) {
+								if( opt.value == val ) {
 									$(opt).attr('selected', 'selected');
 								}
 							});
