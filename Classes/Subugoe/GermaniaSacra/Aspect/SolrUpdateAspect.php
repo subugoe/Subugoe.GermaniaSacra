@@ -80,19 +80,19 @@ class SolrUpdateAspect {
 	 */
 	protected $logger;
 
-
 	/**
-	 * Inject the settings
-	 *
 	 * @param array $settings
-	 * @return void
 	 */
 	public function injectSettings(array $settings) {
 		$this->settings = $settings;
 	}
 
-	public function __construct() {
+	public function __construct($logger = NULL) {
+		parent::__construct();
+		$this->logger = $logger;
+	}
 
+	public function initializeAction() {
 		$this->configuration = array(
 				'endpoint' => array(
 						'localhost' => array(
@@ -107,18 +107,19 @@ class SolrUpdateAspect {
 
 		$this->personen = json_decode(file_get_contents($this->personenURL), true);
 
-		$log = new \TYPO3\Flow\Log\LoggerFactory();
+		if (!$this->logger) {
+			$log = new \TYPO3\Flow\Log\LoggerFactory();
 
-		$this->logger = $log->create(
-				'GermaniaSacra',
-				'TYPO3\Flow\Log\Logger',
-				'\TYPO3\Flow\Log\Backend\FileBackend',
-				array(
-						'logFileUrl' => FLOW_PATH_DATA . 'Logs/GermaniaSacra/SolrUpdate.log',
-						'createParentDirectories' => TRUE
-				)
-		);
-
+			$this->logger = $log->create(
+					'GermaniaSacra',
+					'TYPO3\Flow\Log\Logger',
+					'\TYPO3\Flow\Log\Backend\FileBackend',
+					array(
+							'logFileUrl' => FLOW_PATH_DATA . 'GermaniaSacra/Log/Mysql2Solr.log',
+							'createParentDirectories' => TRUE
+					)
+			);
+		}
 	}
 
 	/**
