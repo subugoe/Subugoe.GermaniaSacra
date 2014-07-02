@@ -52,7 +52,7 @@
 
 -
   name: 'Update Kloster URI'
-  uriPattern: 'delete'
+  uriPattern: 'delete/{kloster.__identity}'
   defaults:
     '@controller': 'Kloster'
     '@action': 'delete'

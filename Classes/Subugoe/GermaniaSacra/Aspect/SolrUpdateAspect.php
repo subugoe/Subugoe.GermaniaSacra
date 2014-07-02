@@ -88,7 +88,6 @@ class SolrUpdateAspect {
 	}
 
 	public function __construct($logger = NULL) {
-		parent::__construct();
 		$this->logger = $logger;
 	}
 
@@ -134,6 +133,8 @@ class SolrUpdateAspect {
 		$json = json_decode($joinPoint->getResult(), true);
 		$kloster_uuid = $json[0];
 		$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+		$this->injectSettings($this->settings);
+		$this->initializeAction();
 		$this->solrUpdate($kloster);
 		$kloster_id = $kloster->getKloster_id();
 		$this->logger->log('Record ' . $kloster_id . " is added to solr index.", LOG_INFO);
@@ -150,6 +151,8 @@ class SolrUpdateAspect {
 	public function solrUpdateWhenKlosterUpdated(\TYPO3\Flow\AOP\JoinPointInterface $joinPoint) {
 		$kloster = $joinPoint->getMethodArgument('kloster');
 		$kloster_uid = $kloster->getUid();
+		$this->injectSettings($this->settings);
+		$this->initializeAction();
 		$this->solrDelete($kloster_uid);
 		$this->solrUpdate($kloster);
 		$this->logger->log('Record ' . $kloster_uid . " is updated in solr index.", LOG_INFO);
@@ -166,6 +169,8 @@ class SolrUpdateAspect {
 	public function solrUpdateWhenKlosterDeleted(\TYPO3\Flow\AOP\JoinPointInterface $joinPoint) {
 		$kloster = $joinPoint->getMethodArgument('kloster');
 		$kloster_uid = $kloster->getUid();
+		$this->injectSettings($this->settings);
+		$this->initializeAction();
 		$this->solrDelete($kloster_uid);
 		$this->logger->log('Record ' . $kloster_uid . " is deleted from solr index.", LOG_INFO);
 	}

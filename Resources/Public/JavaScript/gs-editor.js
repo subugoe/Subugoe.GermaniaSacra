@@ -54,11 +54,9 @@ $(function() {
 	$(".delete").click(function(t) {
 		t.preventDefault()
 		var key = $(this).index(".delete")
-		var selector = "a#deleteLink" + key
-		var uuid = $(selector).attr('href')
 		var csrfSelector = "input#csrf" + key
 		var csrf = $(csrfSelector).val()
-		$("#delete").delete_kloster(uuid, csrf)
+		$("#delete").delete_kloster($(this).attr("href"), csrf)
 	})
 
 	$("#UpdateList").submit(function(t) {

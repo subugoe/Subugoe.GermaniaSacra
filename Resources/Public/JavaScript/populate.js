@@ -39,9 +39,17 @@ $.fn.extend({
 		$.getJSON("klosterListAll", function(response) {
 
 			// TODO: Get values for select fields
+			var bearbeitungsstatusArray = response[1]
+			var $inputBearbeitungsstatus = $("select[name='bearbeitungsstatus']")
+			$inputBearbeitungsstatus.empty()
+			$.each(bearbeitungsstatusArray, function (k, v) {
+				$.each(v, function (k1, v1) {
+					$inputBearbeitungsstatus.append($("<option>", { value: v1, html: k1 }))
+				})
+			})
 
-			// response[0]: klosters
-			$.each(response, function (index, kloster) {
+			var klosters = response[0];
+			$.each(klosters, function (index, kloster) {
 				var $tr = $this.find('tbody tr:first').clone(true)
 				$tr.find(':input').each( function() {
 					var name = $(this).attr('name')
@@ -54,7 +62,7 @@ $.fn.extend({
 					} else if ( $(this).is('select') ) {
 						if (name == "bearbeitungsstatus") {
 							$tr.find("select[name=bearbeitungsstatus] option").each(function( i, opt ) {
-								if( opt.kloster == val ) {
+								if( opt.value == val ) {
 									$(opt).attr('selected', 'selected');
 								}
 							});
@@ -74,9 +82,10 @@ $.fn.extend({
 				});
 
 				$tr.find('.edit').attr('href', "edit/" + kloster.uuid)
+
 				$tr.find('.delete').attr('href', "delete/" + kloster.uuid)
 
-				$tr.find('input.csrf').attr('id', "csrf" + (index + 1)).val(kloster.uuid)
+				$tr.find('input.csrf').attr('id', "csrf" + (index))
 
 				$this.append($tr)
 			})
@@ -253,7 +262,6 @@ $.fn.extend({
 					var fieldset = $this.find('fieldset:eq(2)')
 				}
 				else {
-//					var fieldset = $this.find('div.multiple:eq('+ key +')').clone(true)
 					var fieldset = $this.find('div.multiple:eq(1)').clone(true)
 				}
 
@@ -518,13 +526,12 @@ $.fn.extend({
 
 	},
 
-	delete_kloster: function(uuid, csrf) {
+	delete_kloster: function(url, csrf) {
 
 		Check = confirm("Wollen Sie diesen Eintrag wirklich löschen?")
 
 		if (Check == true) {
-			var url = "delete";
-			$.post( url, { kloster: uuid, __csrfToken: csrf })
+			$.post( url, { __csrfToken: csrf })
 			.done(function(respond, status, jqXHR) {
 				if (status == "success") {
 					$('#confirm').modal({
