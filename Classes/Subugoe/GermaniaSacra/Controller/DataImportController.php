@@ -384,7 +384,7 @@ class DataImportController extends ActionController {
 			}
 			$start = $start + $offset;
 		}
-		$sqlConnection->close();
+//		$sqlConnection->close();
 		$this->logger->log("Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.");
 	}
 
@@ -934,6 +934,15 @@ class DataImportController extends ActionController {
 				$bemerkung = $Klosterstandort['interne_Anmerkungen'];
 				$breite = $Klosterstandort['Breite'];
 				$laenge = $Klosterstandort['Laenge'];
+
+				if ($laenge > 180 || $laenge < -180) {
+					$laenge = '';
+				}
+
+				if ($breite > 90 || $breite < -90) {
+					$breite = '';
+				}
+
 				$bemerkung_standort = $Klosterstandort['BemerkungenStandort'];
 				$temp_literatur_alt = $Klosterstandort['Literaturnachweise'];
 				$lit = $temp_literatur_alt;
@@ -1203,6 +1212,9 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
+
+		$sqlConnection->close();
+
 		$this->logger->log("Klosterorden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterorden portiert.");
 	}
 
