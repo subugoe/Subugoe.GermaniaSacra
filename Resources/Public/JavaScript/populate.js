@@ -32,7 +32,7 @@ $.fn.extend({
 	},
 
 	//  Eintragsliste anzeigen
-	populate_liste: function(page) {
+	populate_liste: function() {
 
 		var $this = $(this);
 
@@ -42,7 +42,10 @@ $.fn.extend({
 
 			// response[0]: klosters
 			$.each(response, function (index, kloster) {
+
+				// Clone with triggers for edit and delete
 				var $tr = $this.find('tbody tr:first').clone(true)
+
 				$tr.find(':input').each( function() {
 					var name = $(this).attr('name')
 					if ( typeof name === 'undefined' ) return;
@@ -69,6 +72,8 @@ $.fn.extend({
 					}
 					if (name !== "__csrfToken" && name !== "auswahl") {
 						$(this).attr('name', name + '[' + kloster.uuid + ']')
+						// WORKAROUND: DataTables 1.10.0 has a bug that prevents sorting of :input elements, so we use plain text for sorting
+						$( '<span class="val">' + $(this).val() + '</span>').hide().insertBefore( $(this) )
 					}
 
 				});
@@ -82,21 +87,20 @@ $.fn.extend({
 				$tr.find('input.csrf').attr('id', "csrf" + (index + 1)).val(kloster.uuid)
 
 				$this.append($tr)
+
 			})
 
-			//$this.find("textarea").autosize()
 			$this.find("tbody tr:first").remove()
 
 			$('#list').dataTable({
-				'dom': 'lpfti', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
+				'dom': 'lifpt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
 				'language': {
 					// TODO
 					//'url': 'i18n/German.json',
 				},
 				'fnDrawCallback': function() {
-					// Since only visible textareas can be autosized, it has to be called after every page change
-					// TODO: This could have some serious performance impact, check benchmark
-					$("#UpdateList textarea").autosize()
+					// Since only visible textareas can be autosized, this has to be called after every page render
+					$("#list textarea").autosize()
 				}
 			})
 
@@ -366,9 +370,9 @@ $.fn.extend({
 					if($.isArray(value)) {
 						$.each(value, function (literaturkey, literaturvalue) {
 							$this.find("select[name='literatur[]'] option").each(function( i, opt ) {
-							    if( opt.value == literaturvalue ) {
-							        $(opt).attr('selected', 'selected')
-							    }
+								if( opt.value == literaturvalue ) {
+									$(opt).attr('selected', 'selected')
+								}
 							})
 							})
 						}
@@ -521,7 +525,7 @@ $.fn.extend({
 			}
 		})
 		.fail(function (jqXHR, textStatus) {
-	        alert(jqXHR.responseText)
+			alert(jqXHR.responseText)
 	   })
 
 	},
@@ -548,8 +552,8 @@ $.fn.extend({
 				}
 			})
 			.fail(function (jqXHR, textStatus) {
-	            alert(jqXHR.responseText)
-	        })
+				alert(jqXHR.responseText)
+			})
 		}
 	},
 
@@ -602,4 +606,3 @@ $.fn.extend({
 	}
 
 })
-

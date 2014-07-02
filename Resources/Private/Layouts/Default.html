@@ -66,14 +66,14 @@
 			</section>
 		</nav>
 
-			<f:flashMessages class="flashmessages" />
+		<f:flashMessages class="flashmessages" />
 
-			<h1><f:render section="Title" /></h1>
-
+		<div id="content">
 			<f:render section="Content" />
+		</div>
 
 		<div id='container'>
-			<div id='content'>
+			<div id='modal'>
 				<!-- modal content -->
 				<div id='confirm'>
 					<div class='header'><span>Bestätigung</span></div>
@@ -87,9 +87,6 @@
 			</div>
 		</div>
 
-		<f:if condition="{page}">
-			<script>var temp_page = {page};</script>
-		</f:if>
 		<script src="{f:uri.resource(path: 'JavaScript/jquery.min.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/jquery.autosize.min.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/foundation/foundation.js')}"></script>
@@ -102,7 +99,6 @@
 		<script src="{f:uri.resource(path: 'JavaScript/populate.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/jquery.simplemodal-1.4.4.js')}" type="text/javascript"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/leaflet-0.7.3.min.js')}"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/leaflet-google.js')}"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/geopicker.js')}"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/jquery.dataTables.min.js')}"></script>
 		<script src="{f:uri.resource(path: 'JavaScript/dataTables.foundation.js')}"></script>

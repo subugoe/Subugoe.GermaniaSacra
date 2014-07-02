@@ -111,6 +111,14 @@ button,
 	clear: both;
 }
 
+#content {
+	padding: rem-calc(15)
+}
+
+#browse {
+	@include clearfix
+}
+
 #edit {
 	clear: both;
 }

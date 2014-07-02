@@ -5,6 +5,7 @@
 <f:section name="Content">
 
 <div id="browse" ng-controller="monasteryController">
+	<h1><f:render section="Title" /></h1>
 	<form id="UpdateList" name="UpdateList" action="updateList">
 		<table class="large-12 columns display" id="list">
 			<thead>
@@ -37,19 +38,17 @@
 						<input name="auswahl" type="checkbox">
 					</td>
 					<td>
-						<input type="text" disabled="disabled" name="kloster_id">
+						<textarea class="large-6 columns" name="kloster_id" disabled></textarea>
 					</td>
 					<td>
 						<select name="bearbeitungsstatus"></select>
 					</td>
+					<td><textarea name="kloster"></textarea></td>
 					<td>
-						<input type="text" name="kloster">
+						<textarea name="ort"></textarea>
 					</td>
 					<td>
-						<input id="searchOrt" type="text" name="ort" tabindex="">
-					</td>
-					<td>
-						<input type="text" name="gnd">
+						<textarea name="gnd"></textarea>
 					</td>
 					<td>
 						<textarea name="bearbeitungsstand"></textarea>

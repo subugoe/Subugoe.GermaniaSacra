@@ -55,8 +55,8 @@
 				<target state="signed-off">Länder</target>
 			</trans-unit>
 			<trans-unit id="states" approved="yes">
-				<source>Statuus</source>
-				<target state="signed-off">Statuus</target>
+				<source>Status</source>
+				<target state="signed-off">Status</target>
 			</trans-unit>
 			<trans-unit id="types" approved="yes">
 				<source>Typen</source>
