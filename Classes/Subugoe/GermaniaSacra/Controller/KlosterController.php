@@ -1159,20 +1159,28 @@ class KlosterController extends ActionController {
 	public function deleteAction(Kloster $kloster) {
 		$this->klosterRepository->remove($kloster);
 		$klosterordens = $kloster->getKlosterordens();
-		foreach ($klosterordens as $i => $klosterorden) {
-			$this->klosterordenRepository->remove($klosterorden);
+		if (is_array($klosterordens)) {
+			foreach ($klosterordens as $i => $klosterorden) {
+				$this->klosterordenRepository->remove($klosterorden);
+			}
 		}
 		$klosterstandorts = $kloster->getKlosterstandorts();
-		foreach ($klosterstandorts as $i => $klosterstandort) {
-			$this->klosterstandortRepository->remove($klosterstandort);
+		if (is_array($klosterstandorts)) {
+			foreach ($klosterstandorts as $i => $klosterstandort) {
+				$this->klosterstandortRepository->remove($klosterstandort);
+			}
 		}
 		$literaturs = $kloster->getKlosterHasLiteraturs();
-		foreach ($literaturs as $literatur) {
-			$this->klosterHasLiteraturRepository->remove($literatur);
+		if (is_array($literaturs)) {
+			foreach ($literaturs as $literatur) {
+				$this->klosterHasLiteraturRepository->remove($literatur);
+			}
 		}
 		$urls = $kloster->getKlosterHasUrls();
-		foreach ($urls as $url) {
-			$this->klosterHasUrlRepository->remove($url);
+		if (is_array($urls)) {
+			foreach ($urls as $url) {
+				$this->klosterHasUrlRepository->remove($url);
+			}
 		}
 		$status = 200;
 		return json_encode(array($status));

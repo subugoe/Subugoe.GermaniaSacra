@@ -127,6 +127,42 @@ class DataExportController extends ActionController {
 		$result = $this->client->update($update);
 	}
 
+	public function selectAction() {
+
+		// get a select query instance
+		$query = $this->client->createSelect();
+//		$query = $this->client->createSelect($this->select);
+//		$query->setStart(0)->setRows(20);
+
+		$query->setQuery('kloster_id:3590');
+
+		// this executes the query and returns the result
+		$resultset = $this->client->execute($query);
+
+		// display the total number of documents found by solr
+		echo 'NumFound: '.$resultset->getNumFound();
+
+		// show documents using the resultset iterator
+		foreach ($resultset as $document) {
+
+		    echo '<hr/><table>';
+
+		    // the documents are also iterable, to get all fields
+		    foreach ($document as $field => $value) {
+//		         this converts multivalue fields to a comma-separated string
+		        if (is_array($value)) {
+		            $value = implode(', ', $value);
+		        }
+
+		        echo '<tr><th>' . $field . '</th><td>' . $value . '</td></tr>';
+		    }
+
+		    echo '</table>';
+		}
+
+		exit;
+	}
+
 	/**
 	 * Exports Kloster data from mysql into solr
 	 */
