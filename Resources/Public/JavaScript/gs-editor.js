@@ -47,8 +47,8 @@ $(function() {
 		$("#new").new_kloster()
 		$("#new").slideDown()
 		$("html, body").animate({
-									scrollTop: $("#new").position().top
-								})
+			scrollTop: $("#new").position().top
+		})
 	})
 
 	$(".delete").click(function(t) {
@@ -114,9 +114,7 @@ $(function() {
 		}
 	})
 
-	if (typeof temp_page != 'undefined') {
-		$("#list").populate_liste(temp_page);
-	}
+	$("#list").populate_liste();
 
 	// Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
 	$(window).bind('keydown', function(e) {

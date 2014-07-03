@@ -38,7 +38,7 @@ $.fn.extend({
 
 		$.getJSON("klosterListAll", function(response) {
 
-			// TODO: Get values for select fields
+			// Fill "Status" select fields
 			var bearbeitungsstatusArray = response[1]
 			var $inputBearbeitungsstatus = $("select[name='bearbeitungsstatus']")
 			$inputBearbeitungsstatus.empty()
@@ -50,7 +50,10 @@ $.fn.extend({
 
 			var klosters = response[0];
 			$.each(klosters, function (index, kloster) {
+
+				// Clone with triggers for edit and delete
 				var $tr = $this.find('tbody tr:first').clone(true)
+
 				$tr.find(':input').each( function() {
 					var name = $(this).attr('name')
 					if ( typeof name === 'undefined' ) return;
@@ -77,32 +80,35 @@ $.fn.extend({
 					}
 					if (name !== "__csrfToken" && name !== "auswahl") {
 						$(this).attr('name', name + '[' + kloster.uuid + ']')
+						// WORKAROUND: DataTables 1.10.0 has a bug that prevents sorting of :input elements, so we use plain text for sorting
+						$( '<span class="val">' + $(this).val() + '</span>').hide().insertBefore( $(this) )
 					}
 
 				});
 
-				$tr.find('.edit').attr('href', "edit/" + kloster.uuid)
+				//$tr.find('input#searchOrt:eq(' + index + ')').attr('tabindex', index + 1)
+				//$tr.find('input#searchOrt:eq(' + (index + 1) + ')').attr('data-uuid', kloster.uuid)
 
+				$tr.find('.edit').attr('href', "edit/" + kloster.uuid)
 				$tr.find('.delete').attr('href', "delete/" + kloster.uuid)
 
-				$tr.find('input.csrf').attr('id', "csrf" + (index))
+				$tr.find('input.csrf').attr('id', "csrf" + index)
 
 				$this.append($tr)
+
 			})
 
-			//$this.find("textarea").autosize()
 			$this.find("tbody tr:first").remove()
 
 			$('#list').dataTable({
-				'dom': 'lpfti', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
+				'dom': 'lifpt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
 				'language': {
 					// TODO
 					//'url': 'i18n/German.json',
 				},
 				'fnDrawCallback': function() {
-					// Since only visible textareas can be autosized, it has to be called after every page change
-					// TODO: This could have some serious performance impact, check benchmark
-					$("#UpdateList textarea").autosize()
+					// Since only visible textareas can be autosized, this has to be called after every page render
+					$("#list textarea").autosize()
 				}
 			})
 
@@ -212,7 +218,12 @@ $.fn.extend({
 				name = name.replace('[]', '')
 				var val = response[0][name]
 				if ( $(this).is('[type=checkbox]') ) {
+//					if (name == "wuestung" && val==1) {
+//						$(this).prop('checked', true)
+//					}
+//					else {
 						return
+//					}
 				}
 				else if ( $(this).is('select') ) {
 
@@ -366,9 +377,9 @@ $.fn.extend({
 					if($.isArray(value)) {
 						$.each(value, function (literaturkey, literaturvalue) {
 							$this.find("select[name='literatur[]'] option").each(function( i, opt ) {
-							    if( opt.value == literaturvalue ) {
-							        $(opt).attr('selected', 'selected')
-							    }
+								if( opt.value == literaturvalue ) {
+									$(opt).attr('selected', 'selected')
+								}
 							})
 							})
 						}
@@ -521,7 +532,7 @@ $.fn.extend({
 			}
 		})
 		.fail(function (jqXHR, textStatus) {
-	        alert(jqXHR.responseText)
+			alert(jqXHR.responseText)
 	   })
 
 	},
@@ -547,8 +558,8 @@ $.fn.extend({
 				}
 			})
 			.fail(function (jqXHR, textStatus) {
-	            alert(jqXHR.responseText)
-	        })
+				alert(jqXHR.responseText)
+			})
 		}
 	},
 
@@ -601,4 +612,3 @@ $.fn.extend({
 	}
 
 })
-
