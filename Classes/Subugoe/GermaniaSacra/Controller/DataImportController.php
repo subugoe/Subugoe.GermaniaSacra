@@ -252,7 +252,6 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		$sqlConnection->close();
 		$this->logger->log("Mitarbeiter-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.");
 	}
 
@@ -298,7 +297,6 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		$sqlConnection->close();
 		$this->logger->log("Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_land portiert.");
 	}
 
@@ -329,62 +327,55 @@ class DataImportController extends ActionController {
 			$urltypUUID = $urltypObject->getUUID();
 		}
 
-		$start = 0;
-		$offset = 15000;
-
-		for ($i = 1; $i <= 3; $i++) {
-			$sql = 'SELECT * FROM Ort ORDER BY ID ASC LIMIT ' . $start . ', ' . $offset;
-			$orts = $sqlConnection->fetchAll($sql);
-			if (isset($orts) and is_array($orts)) {
-				foreach ($orts as $ortvalue) {
-					$uid = $ortvalue['ID'];
-					$ort = $ortvalue['Ort'];
-					$laenge = round($ortvalue['Laenge'], 5);
-					$breite = round($ortvalue['Breite'], 5);
-					$wuestung = $ortvalue['Wuestung'];
-					$gemeinde = $ortvalue['Gemeinde'];
-					$kreis = $ortvalue['Kreis'];
-					$land = $ortvalue['Land'];
-					$url = $ortvalue['GeoNameId'];
-					$ortObject = new Ort();
-					$ortObject->setUid($uid);
-					$ortObject->setOrt($ort);
-					$ortObject->setLaenge($laenge);
-					$ortObject->setBreite($breite);
-					$ortObject->setWuestung($wuestung);
-					$ortObject->setGemeinde($gemeinde);
-					$ortObject->setKreis($kreis);
-					$landObject = $this->landRepository->findOneByUid($land);
-					if (is_object($landObject)) {
-						$ortObject->setLand($landObject);
-					}
-					$this->ortRepository->add($ortObject);
+		$sql = 'SELECT * FROM Ort ORDER BY ID ASC';
+		$orts = $sqlConnection->fetchAll($sql);
+		if (isset($orts) and is_array($orts)) {
+			foreach ($orts as $ortvalue) {
+				$uid = $ortvalue['ID'];
+				$ort = $ortvalue['Ort'];
+				$laenge = round($ortvalue['Laenge'], 5);
+				$breite = round($ortvalue['Breite'], 5);
+				$wuestung = $ortvalue['Wuestung'];
+				$gemeinde = $ortvalue['Gemeinde'];
+				$kreis = $ortvalue['Kreis'];
+				$land = $ortvalue['Land'];
+				$url = $ortvalue['GeoNameId'];
+				$ortObject = new Ort();
+				$ortObject->setUid($uid);
+				$ortObject->setOrt($ort);
+				$ortObject->setLaenge($laenge);
+				$ortObject->setBreite($breite);
+				$ortObject->setWuestung($wuestung);
+				$ortObject->setGemeinde($gemeinde);
+				$ortObject->setKreis($kreis);
+				$landObject = $this->landRepository->findOneByUid($land);
+				if (is_object($landObject)) {
+					$ortObject->setLand($landObject);
+				}
+				$this->ortRepository->add($ortObject);
+				$this->persistenceManager->persistAll();
+				$ortUUID = $ortObject->getUUID();
+				if (isset($url) && !empty($url)) {
+					$url = 'http://geonames.org/' . $url;
+					$urlbemerkung = $ort . " " . $url;
+					$urlObject = new Url();
+					$urlObject->setUrl($url);
+					$urlObject->setBemerkung($urlbemerkung);
+					$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
+					$urlObject->setUrltyp($urltypObject);
+					$this->urlRepository->add($urlObject);
 					$this->persistenceManager->persistAll();
-					$ortUUID = $ortObject->getUUID();
-					if (isset($url) && !empty($url)) {
-						$url = 'http://geonames.org/' . $url;
-						$urlbemerkung = $ort . " " . $url;
-						$urlObject = new Url();
-						$urlObject->setUrl($url);
-						$urlObject->setBemerkung($urlbemerkung);
-						$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
-						$urlObject->setUrltyp($urltypObject);
-						$this->urlRepository->add($urlObject);
-						$this->persistenceManager->persistAll();
-						$urlUUID = $urlObject->getUUID();
-						$orthasurlObject = new Orthasurl();
-						$ortObject = $this->ortRepository->findByIdentifier($ortUUID);
-						$orthasurlObject->setOrt($ortObject);
-						$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
-						$orthasurlObject->setUrl($urlObject);
-						$this->ortHasUrlRepository->add($orthasurlObject);
-						$this->persistenceManager->persistAll();
-					}
+					$urlUUID = $urlObject->getUUID();
+					$orthasurlObject = new Orthasurl();
+					$ortObject = $this->ortRepository->findByIdentifier($ortUUID);
+					$orthasurlObject->setOrt($ortObject);
+					$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
+					$orthasurlObject->setUrl($urlObject);
+					$this->ortHasUrlRepository->add($orthasurlObject);
+					$this->persistenceManager->persistAll();
 				}
 			}
-			$start = $start + $offset;
 		}
-//		$sqlConnection->close();
 		$this->logger->log("Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.");
 	}
 
@@ -731,33 +722,6 @@ class DataImportController extends ActionController {
 			$this->urltypRepository->add($urltypObject);
 			$this->persistenceManager->persistAll();
 			$wikiurltypUUID = $urltypObject->getUUID();
-		}
-		if (isset($urltypUUID) && !empty($urltypUUID)) {
-			$tbl = 'subugoe_germaniasacra_domain_model_url';
-			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $urltypUUID . '\'';
-			try {
-				$sqlConnection->executeUpdate($sql);
-			} catch (\Exception $e) {
-				$this->logger->logException($e);
-			}
-		}
-		if (isset($gndurltypUUID) && !empty($gndurltypUUID)) {
-			$tbl = 'subugoe_germaniasacra_domain_model_url';
-			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $gndurltypUUID . '\'';
-			try {
-				$sqlConnection->executeUpdate($sql);
-			} catch (\Exception $e) {
-				$this->logger->logException($e);
-			}
-		}
-		if (isset($wikiurltypUUID) && !empty($wikiurltypUUID)) {
-			$tbl = 'subugoe_germaniasacra_domain_model_url';
-			$sql = 'DELETE FROM ' . $tbl . ' WHERE urltyp=\'' . $wikiurltypUUID . '\'';
-			try {
-				$sqlConnection->executeUpdate($sql);
-			} catch (\Exception $e) {
-				$this->logger->logException($e);
-			}
 		}
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
@@ -1212,9 +1176,6 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-
-		$sqlConnection->close();
-
 		$this->logger->log("Klosterorden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterorden portiert.");
 	}
 
