@@ -737,13 +737,10 @@ class DataImportController extends ActionController {
 				$uid = $kloster['Klosternummer'];
 				$bearbeiter = $kloster['Bearbeiter'];
 				$bearbeiterObject = $this->bearbeiterRepository->findOneByUid($bearbeiter);
-				$bearbeiterUUID = $bearbeiterObject->getUUID();
 				$bearbeitungsstatus = $kloster['Status'];
 				$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findOneByName($bearbeitungsstatus);
-				$bearbeitungsstatusUUID = $bearbeitungsstatusObject->getUUID();
 				$personallistenstatus = $kloster['Personallisten'];
 				$personallistenstatusObject = $this->personallistenstatusRepository->findOneByName($personallistenstatus);
-				$personallistenstatusUUID = $personallistenstatusObject->getUUID();
 				$band = $kloster['GermaniaSacraBandNr'];
 				$band_seite = $kloster['GSBandSeite'];
 				$text_gs_band = $kloster['TextGSBand'];
@@ -751,9 +748,15 @@ class DataImportController extends ActionController {
 				$kloster = $kloster['Klostername'];
 				$klosterObject = new Kloster();
 				$klosterObject->setUid($uid);
-				$klosterObject->setBearbeiter($bearbeiterObject);
-				$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
-				$klosterObject->setPersonallistenstatus($personallistenstatusObject);
+				if (is_object($bearbeiterObject)) {
+					$klosterObject->setBearbeiter($bearbeiterObject);
+				}
+				if (is_object($bearbeitungsstatusObject)) {
+					$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
+				}
+				if (is_object($personallistenstatusObject)) {
+					$klosterObject->setPersonallistenstatus($personallistenstatusObject);
+				}
 				$klosterObject->setKloster_id($uid);
 				$klosterObject->setKloster($kloster);
 				$klosterObject->setPatrozinium($patrozinium);
