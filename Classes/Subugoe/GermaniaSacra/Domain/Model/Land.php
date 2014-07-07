@@ -12,6 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Land {
 
 	/**
+	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	* @Flow\Inject
+	*/
+	protected $persistenceManager;
+
+	/**
 	 * @var integer
 	 */
 	protected $uid;
@@ -78,9 +84,13 @@ class Land {
 		$this->ist_in_deutschland = $ist_in_deutschland;
 	}
 
-	public function __toString()
-	{
+	public function __toString() {
 	  return $this->getLand();
 	}
+
+	public function getUUID() {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
+
 }
 ?>

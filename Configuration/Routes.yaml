@@ -87,3 +87,12 @@
     '@controller': 'Ort'
     '@action': 'index'
     '@format': 'json'
+
+-
+  name: 'New Ort URI'
+  uriPattern: 'ort/new'
+  defaults:
+    package: 'Subugoe.GermaniaSacra'
+    '@controller': 'Ort'
+    '@action': 'new'
+    '@format': 'html'
