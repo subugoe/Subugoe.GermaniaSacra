@@ -4,36 +4,36 @@ $.fn.extend({
 	update_list: function(url) {
 
 		$.post(url, $("#UpdateList").serialize())
-				.done(function(respond, status, jqXHR) {
-						  if (status == "success") {
-							  $('#confirm').modal({
-													  closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-													  position: ["20%", ],
-													  overlayId: 'confirm-overlay',
-													  containerId: 'confirm-container',
-													  onShow: function(dialog) {
-														  $('.message').append("Der Eintrag wurde erfolgreich bearbeitet.")
-													  }
-												  })
-							  setTimeout(function() {
-								  window.location.href = ''
-							  }, 1000)
-						  }
-					  })
-				.fail(function(jqXHR, textStatus) {
-						  $('#confirm').modal({
-												  closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-												  position: ["20%", ],
-												  overlayId: 'confirm-overlay',
-												  containerId: 'confirm-container',
-												  onShow: function(dialog) {
-													  $('.message').append(jqXHR.responseText)
-												  }
-											  })
-					  })
+			.done(function(respond, status, jqXHR) {
+				if (status == "success") {
+					$('#confirm').modal({
+						closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+						position: ["20%", ],
+						overlayId: 'confirm-overlay',
+						containerId: 'confirm-container',
+						onShow: function(dialog) {
+							$('.message').append("Der Eintrag wurde erfolgreich bearbeitet.")
+						}
+					})
+					setTimeout(function() {
+						window.location.href = ''
+					}, 1000)
+				}
+			})
+			.fail(function(jqXHR, textStatus) {
+				$('#confirm').modal({
+					closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+					position: ["20%", ],
+					overlayId: 'confirm-overlay',
+					containerId: 'confirm-container',
+					onShow: function(dialog) {
+						$('.message').append(jqXHR.responseText)
+					}
+				})
+			})
 	},
 
-	//  Eintragsliste anzeigen
+	//Eintragsliste anzeigen
 	populate_liste: function(page) {
 
 		var $this = $(this);
@@ -104,15 +104,15 @@ $.fn.extend({
 			$this.find("tbody tr:first").remove()
 
 			$('#list').dataTable({
-									 'dom': 'lifpt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
-									 "language": {
-										 "url": "_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/German.json"
-									 },
-									 'fnDrawCallback': function() {
-										 // Since only visible textareas can be autosized, this has to be called after every page render
-										 $("#list textarea").autosize()
-									 }
-								 })
+				'dom': 'lifpt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
+				"language": {
+					"url": "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/German.json"
+				},
+				'fnDrawCallback': function() {
+					// Since only visible textareas can be autosized, this has to be called after every page render
+					$("#list textarea").autosize()
+				}
+			})
 
 		})
 
@@ -289,7 +289,8 @@ $.fn.extend({
 					var val = value[name];
 					if ($(this).is('[type=checkbox]')) {
 						return;
-					} else
+					}
+					else
 						if ($(this).is('select')) {
 
 							if (name == "orden") {
@@ -413,33 +414,33 @@ $.fn.extend({
 	// Den bearbeiteten Eintrag aktualisieren
 	update_kloster: function(url) {
 		$.post(url, $("#EditKloster").serialize())
-				.done(function(respond, status, jqXHR) {
-						  if (status == "success") {
-							  $('#confirm').modal({
-													  closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-													  position: ["20%", ],
-													  overlayId: 'confirm-overlay',
-													  containerId: 'confirm-container',
-													  onShow: function(dialog) {
-														  $('.message').append("Der Eintrag wurde erfolgreich bearbeitet.")
-													  }
-												  })
-							  setTimeout(function() {
-								  window.location.href = ''
-							  }, 1000)
-						  }
-					  })
-				.fail(function(jqXHR, textStatus) {
-						  $('#confirm').modal({
-												  closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-												  position: ["20%", ],
-												  overlayId: 'confirm-overlay',
-												  containerId: 'confirm-container',
-												  onShow: function(dialog) {
-													  $('.message').append(jqXHR.responseText)
-												  }
-											  })
-					  })
+			.done(function(respond, status, jqXHR) {
+					if (status == "success") {
+						$('#confirm').modal({
+							closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+							position: ["20%", ],
+							overlayId: 'confirm-overlay',
+							containerId: 'confirm-container',
+							onShow: function(dialog) {
+								$('.message').append("Der Eintrag wurde erfolgreich bearbeitet.")
+							}
+						})
+						setTimeout(function() {
+							window.location.href = ''
+						}, 1000)
+					}
+				})
+			.fail(function(jqXHR, textStatus) {
+					$('#confirm').modal({
+						closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+						position: ["20%", ],
+						overlayId: 'confirm-overlay',
+						containerId: 'confirm-container',
+						onShow: function(dialog) {
+							$('.message').append(jqXHR.responseText)
+						}
+					})
+				})
 	},
 
 	// Das Formular zum Eintragen mit den Stammdaten ausfüllen
@@ -527,31 +528,31 @@ $.fn.extend({
 	create_kloster: function() {
 		var url = "create";
 		$.post(url, $("#NewKloster").serialize())
-				.done(function(respond, status, jqXHR) {
-						  if (status == "success") {
+			.done(function(respond, status, jqXHR) {
+				if (status == "success") {
 
-							  var dataArray = $.parseJSON(respond)
-							  var uuid = dataArray[0];
-							  var addKlosterId_url = "addKlosterId";
-							  $.get(addKlosterId_url, { uuid: uuid})
+					var dataArray = $.parseJSON(respond)
+					var uuid = dataArray[0];
+					var addKlosterId_url = "addKlosterId";
+					$.get(addKlosterId_url, { uuid: uuid})
 
-							  $('#confirm').modal({
-													  closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-													  position: ["20%", ],
-													  overlayId: 'confirm-overlay',
-													  containerId: 'confirm-container',
-													  onShow: function(dialog) {
-														  $('.message').append("Der Eintrag wurde erfolgreich gespeichert.")
-													  }
-												  })
-							  setTimeout(function() {
-								  window.location.href = ''
-							  }, 1000)
-						  }
-					  })
-				.fail(function(jqXHR, textStatus) {
-						  alert(jqXHR.responseText)
-					  })
+					$('#confirm').modal({
+						closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+						position: ["20%", ],
+						overlayId: 'confirm-overlay',
+						containerId: 'confirm-container',
+						onShow: function(dialog) {
+							$('.message').append("Der Eintrag wurde erfolgreich gespeichert.")
+						}
+					})
+					setTimeout(function() {
+						window.location.href = ''
+					}, 1000)
+				}
+			})
+			.fail(function(jqXHR, textStatus) {
+				alert(jqXHR.responseText)
+			})
 
 	},
 
@@ -561,25 +562,25 @@ $.fn.extend({
 
 		if (Check == true) {
 			$.post(url, { __csrfToken: csrf })
-					.done(function(respond, status, jqXHR) {
-							  if (status == "success") {
-								  $('#confirm').modal({
-														  closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-														  position: ["20%", ],
-														  overlayId: 'confirm-overlay',
-														  containerId: 'confirm-container',
-														  onShow: function(dialog) {
-															  $('.message').append("Der Eintrag wurde erfolgreich gelöscht.")
-														  }
-													  })
-								  setTimeout(function() {
-									  window.location.href = ''
-								  }, 1000)
-							  }
-						  })
-					.fail(function(jqXHR, textStatus) {
-							  alert(jqXHR.responseText)
-						  })
+				.done(function(respond, status, jqXHR) {
+						if (status == "success") {
+							$('#confirm').modal({
+								closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
+								position: ["20%", ],
+								overlayId: 'confirm-overlay',
+								containerId: 'confirm-container',
+								onShow: function(dialog) {
+									$('.message').append("Der Eintrag wurde erfolgreich gelöscht.")
+								}
+							})
+							setTimeout(function() {
+								window.location.href = ''
+							}, 1000)
+						}
+					})
+				.fail(function(jqXHR, textStatus) {
+					alert(jqXHR.responseText)
+				})
 		}
 	},
 
