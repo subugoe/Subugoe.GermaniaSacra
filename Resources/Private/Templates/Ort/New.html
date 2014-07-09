@@ -1,0 +1,27 @@
+<f:layout name="Default" />
+
+<f:section name="Title"><f:translate id="orte" /></f:section>
+
+<f:section name="Content">
+	<f:form action="create" controller="ort" package="Subugoe.GermaniaSacra" name="newOrt" object="{newOrt}">
+
+		<f:form.textfield name="newOrt[ort]" id="ort" placeholder="Name des Ortes" />
+
+		<f:form.textfield name="newOrt[kreis]" id="kreis" placeholder="Kreis des Ortes" />
+
+		<f:form.textfield name="newOrt[gemeinde]" id="gemeinde" placeholder="Gemeinde des Ortes" />
+
+		<f:form.textfield name="newOrt[breite]" id="breite" placeholder="Breite des Ortes" />
+
+		<f:form.textfield name="newOrt[laenge]" id="laenge" placeholder="Länge des Ortes" />
+
+		<f:form.select name="newOrt[land]" options="{lands}" optionValueField="uuid" optionLabelField="land" />
+
+		<f:form.select name="newOrt[bistum]" options="{bistums}" optionValueField="uuid" optionLabelField="bistum" />
+
+		<f:form.select name="newOrt[wuestung]" options="{1: 'Ja', 0: 'Nein'}" />
+
+		<f:form.submit class="button" value="Speichern" />
+
+	</f:form>
+</f:section>

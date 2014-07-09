@@ -14,6 +14,18 @@ class OrtController extends RestController {
 	protected $ortRepository;
 
 	/**
+	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\LandRepository
+	 */
+	protected $landRepository;
+
+	/**
+	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\BistumRepository
+	 */
+	protected $bistumRepository;
+
+	/**
 	 * @var array
 	 */
 	protected $supportedMediaTypes = array('text/html', 'application/json');
@@ -46,6 +58,24 @@ class OrtController extends RestController {
 	}
 
 	/**
+	* Shows a form for creating a new ort object
+	*/
+	public function newAction() {
+		$this->landRepository->setDefaultOrderings(
+				array('land' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+		$this->bistumRepository->setDefaultOrderings(
+				array('bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+		if ($this->request->getFormat() === 'json') {
+			$this->view->setVariablesToRender(array('lands'));
+			$this->view->setVariablesToRender(array('bistums'));
+		}
+		$this->view->assign('lands', $this->landRepository->findAll());
+		$this->view->assign('bistums', $this->bistumRepository->findAll());
+	}
+
+	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $newOrt
 	 * @return void
 	 */
@@ -53,6 +83,7 @@ class OrtController extends RestController {
 		$this->ortRepository->add($newOrt);
 		$this->response->setStatus(201);
 	}
+
 
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort

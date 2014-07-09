@@ -56,12 +56,6 @@ class Ort {
 	protected $laenge;
 
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterstandort>
-	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
-	 */
-//	protected $klosterstandorts;
-
-	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Land
 	 * @ORM\ManyToOne(inversedBy="orts")
 	 * @ORM\JoinColumn(onDelete="NO ACTION")
@@ -218,10 +212,6 @@ class Ort {
 		$this->bistum = $bistum;
 	}
 
-
-
-
-
 //	/**
 //	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
 //	 */
@@ -242,14 +232,7 @@ class Ort {
 		$this->ortHasUrls = $ortHasUrls;
 	}
 
-
-
-
-
-
-
-	public function __toString()
-	{
+	public function __toString() {
 	  return $this->getOrt();
 	}
 
@@ -268,8 +251,7 @@ class Ort {
 		return $ortGemeindeKreis;
 	}
 
-	public function getUUID()
-    {
+	public function getUUID() {
         return $this->persistenceManager->getIdentifierByObject($this);
     }
 

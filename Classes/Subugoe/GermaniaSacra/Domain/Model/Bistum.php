@@ -36,12 +36,6 @@ class Bistum {
 	protected $ort;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Band
-	 * @ORM\OneToMany(mappedBy="bistum")
-	 */
-	protected $bands;
-
-	/**
 	 * @var string
 	 */
 	protected $bistum;
