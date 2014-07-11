@@ -738,8 +738,10 @@ class DataImportController extends ActionController {
 				$bearbeiter = $kloster['Bearbeiter'];
 				$bearbeiterObject = $this->bearbeiterRepository->findOneByUid($bearbeiter);
 				$bearbeitungsstatus = $kloster['Status'];
+				/** @var Bearbeitungsstatus $bearbeitungsstatusObject */
 				$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findOneByName($bearbeitungsstatus);
 				$personallistenstatus = $kloster['Personallisten'];
+				/** @var Personallistenstatus $personallistenstatusObject */
 				$personallistenstatusObject = $this->personallistenstatusRepository->findOneByName($personallistenstatus);
 				$band = $kloster['GermaniaSacraBandNr'];
 				$band_seite = $kloster['GSBandSeite'];
@@ -751,8 +753,13 @@ class DataImportController extends ActionController {
 				if (is_object($bearbeiterObject)) {
 					$klosterObject->setBearbeiter($bearbeiterObject);
 				}
-				if (is_object($bearbeitungsstatusObject)) {
+				if (is_object($bearbeitungsstatusObject) AND $bearbeitungsstatusObject->getName() !== NULL) {
 					$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
+				} else {
+					// @TODO add something reasonable here ...
+					$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findAll()->getFirst();
+					$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
+					$this->logger->log('Missing Bearbeitungsstatus in ' . $klosterObject->getUid());
 				}
 				if (is_object($personallistenstatusObject)) {
 					$klosterObject->setPersonallistenstatus($personallistenstatusObject);
@@ -762,6 +769,7 @@ class DataImportController extends ActionController {
 				$klosterObject->setPatrozinium($patrozinium);
 				$klosterObject->setBemerkung($bemerkung);
 				if (null !== $band) {
+					/** @var Band $bandObject */
 					$bandObject = $this->bandRepository->findOneByUid($band);
 					$klosterObject->setBand($bandObject);
 				}
@@ -785,14 +793,17 @@ class DataImportController extends ActionController {
 						$urlObject = new Url();
 						$urlObject->setUrl($parts[1]);
 						$urlObject->setBemerkung($parts[0]);
+						/** @var UrlTyp $urltypObject */
 						$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
 						$urlObject->setUrltyp($urltypObject);
 						$this->urlRepository->add($urlObject);
 						$this->persistenceManager->persistAll();
 						$urlUUID = $urlObject->getUUID();
 						$klosterhasurlObject = new Klosterhasurl();
+						/** @var Kloster $klosterObject */
 						$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
 						$klosterhasurlObject->setKloster($klosterObject);
+						/** @var Url $urlObject */
 						$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
 						$klosterhasurlObject->setUrl($urlObject);
 						$this->klosterHasUrlRepository->add($klosterhasurlObject);
@@ -818,6 +829,7 @@ class DataImportController extends ActionController {
 									$urlObject = new Url();
 									$urlObject->setUrl($gnd);
 									$urlObject->setBemerkung($gndbemerkung);
+									/** @var UrlTyp $gndurltypObject */
 									$gndurltypObject = $this->urltypRepository->findByIdentifier($gndurltypUUID);
 									$urlObject->setUrltyp($gndurltypObject);
 									$this->urlRepository->add($urlObject);
@@ -825,8 +837,10 @@ class DataImportController extends ActionController {
 									$gndurlUUID = $urlObject->getUUID();
 									$oldgnd = $gnd;
 									$klosterhasurlObject = new Klosterhasurl();
+									/** @var Kloster $klosterObject */
 									$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
 									$klosterhasurlObject->setKloster($klosterObject);
+									/** @var Url $gndurlObject */
 									$gndurlObject = $this->urlRepository->findByIdentifier($gndurlUUID);
 									$klosterhasurlObject->setUrl($gndurlObject);
 									$this->klosterHasUrlRepository->add($klosterhasurlObject);
@@ -1189,7 +1203,7 @@ class DataImportController extends ActionController {
 	public function citekeysAction() {
 		$file = "GS-citekeys.csv";
 		if (!file_exists($this->dumpDirectory . '/' . $file)) {
-			throw new \TYPO3\Flow\Resource\Exception(1398846324);
+			throw new \TYPO3\Flow\Resource\Exception(1398846324, 'File ' + $file + ' not present in ' . $this->dumpDirectory);
 		}
 		$csvArr = array();
 		$csv = array_map('str_getcsv', file($this->dumpDirectory . '/' . $file));
@@ -1224,7 +1238,7 @@ class DataImportController extends ActionController {
 				'TYPO3\Flow\Log\Logger',
 				'\TYPO3\Flow\Log\Backend\FileBackend',
 				array(
-						'logFileUrl' => FLOW_PATH_DATA . 'GermaniaSacra/Log/AccessImport.log',
+						'logFileUrl' => FLOW_PATH_DATA . 'Logs/GermaniaSacra/AccessImport.log',
 						'createParentDirectories' => TRUE
 				)
 		);

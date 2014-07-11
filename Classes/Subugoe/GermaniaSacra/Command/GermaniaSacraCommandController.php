@@ -6,6 +6,8 @@ namespace Subugoe\GermaniaSacra\Command;
  *                                                                        *
  *                                                                        */
 
+use Subugoe\GermaniaSacra\Controller\DataImportController;
+use Subugoe\GermaniaSacra\Controller\DataExportController;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Log\LoggerFactory;
 /**
@@ -29,6 +31,9 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 */
 	protected $settings;
 
+	/**
+	 * @param $settings
+	 */
 	public function injectSettings($settings) {
 		$this->settings = $settings;
 	}
@@ -39,13 +44,19 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$this->logger = $log->create('GermaniaSacra', 'TYPO3\Flow\Log\Logger', '\TYPO3\Flow\Log\Backend\ConsoleBackend');
 	}
 
+	/**
+	 * @return void
+	 */
 	public  function alisImportExportCommand() {
 		$this->alisImportCommand();
 		$this->alisExportCommand();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function alisImportCommand() {
-		$importer = new \Subugoe\GermaniaSacra\Controller\DataImportController($this->logger);
+		$importer = new DataImportController($this->logger);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -70,8 +81,12 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$sqlConnection->executeUpdate($sql);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function alisExportCommand() {
-		$exporter = new \Subugoe\GermaniaSacra\Controller\DataExportController($this->logger);
+		/** @var DataExportController $exporter */
+		$exporter = new DataExportController($this->logger);
 		$exporter->injectSettings($this->settings);
 		$exporter->initializeAction();
 		$exporter->mysql2solrExportAction();
