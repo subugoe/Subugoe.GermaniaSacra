@@ -42,20 +42,13 @@ class DataExportController extends ActionController {
 	 */
 	protected $configuration = array();
 
-	/**
-	 * @var int
-	 */
-	protected $distantPast = -10000;
+	const DISTANT_PAST = -10000;
+	const DISTANT_FUTURE = 10000;
+	const MIN_YEAR = 700;
+	const MAX_YEAR = 1810;
+	CONST YEAR_STEP = 10;
 
-	/**
-	 * @var int
-	 */
-	protected $distantFuture = 10000;
-
-	/**
-	 * @var string
-	 */
-	protected $personenURL = 'http://personendatenbank.germania-sacra.de/export/export.json';
+	const PERSONEN_URL = 'http://personendatenbank.germania-sacra.de/export/export.json';
 
 	/**
 	 * @var mixed
@@ -92,13 +85,23 @@ class DataExportController extends ActionController {
 								'host' => $this->settings['solr']['host'],
 								'port' => $this->settings['solr']['port'],
 								'path' => $this->settings['solr']['path'],
+								'core' => $this->settings['solr']['core'],
+								'timeout' => $this->settings['solr']['timeout']
 						)
 				),
 		);
 
 		$this->client = new \Solarium\Client($this->configuration);
 
-		$this->personen = json_decode(file_get_contents($this->personenURL), true);
+		$personenFile = FLOW_PATH_DATA . 'GermaniaSacra/personen.json';
+
+		try {
+			file_put_contents($personenFile, fopen(self::PERSONEN_URL, 'r'));
+		} catch (\Exception $e) {
+			$this->logger->logException($e);
+		}
+
+		$this->personen = json_decode(file_get_contents($personenFile), true);
 
 		if (!$this->logger) {
 			$log = new \TYPO3\Flow\Log\LoggerFactory();
@@ -108,7 +111,7 @@ class DataExportController extends ActionController {
 					'TYPO3\Flow\Log\Logger',
 					'\TYPO3\Flow\Log\Backend\FileBackend',
 					array(
-							'logFileUrl' => FLOW_PATH_DATA . 'GermaniaSacra/Log/Mysql2Solr.log',
+							'logFileUrl' => FLOW_PATH_DATA . 'Logs/GermaniaSacra/Mysql2Solr.log',
 							'createParentDirectories' => TRUE
 					)
 			);
@@ -188,7 +191,7 @@ class DataExportController extends ActionController {
 		$update->addCommit();
 		$result = $this->client->update($update);
 
-		$this->logger->log('Data export done. Export time: ' . round($result->getQueryTime() / 100) . ' seconds');
+		$this->logger->log('Data export completed in ' . round($result->getQueryTime() / 100) . ' seconds.');
 
 		return;
 	}
@@ -337,17 +340,14 @@ class DataExportController extends ActionController {
 			$koordinatenArr = array();
 			$koordinaten_institutionengenauArr = array();
 			$gruenderArr = array();
-
 			$von_vonArr = array();
 			$von_bisArr = array();
 			$von_verbalArr = array();
 			$vonArr = array();
-
 			$bis_vonArr = array();
 			$bis_bisArr = array();
 			$bis_verbalArr = array();
 			$bisArr = array();
-
 			$ortArr = array();
 			$ortuidArr = array();
 			$kreisArr = array();
@@ -355,14 +355,17 @@ class DataExportController extends ActionController {
 			$wuestungArr = array();
 			$landArr = array();
 			$ist_in_deutschlandArr = array();
-
 			$bistumuidArr = array();
 			$bistumArr = array();
 			$kirchenprovinzArr = array();
 			$ist_erzbistumArr = array();
 
+			$kloster_standort_jahr50 = array();
+			$start = self::MIN_YEAR;
+
 			$klosterstandorts = $kloster->getKlosterstandorts();
 			foreach ($klosterstandorts as $i => $klosterstandort) {
+
 				$ortObj = $klosterstandort->getOrt();
 				if (is_object($ortObj)) {
 					$standortuid = $klosterstandort->getUid();
@@ -412,9 +415,9 @@ class DataExportController extends ActionController {
 							$von_bisArr[] = $von_von;
 							$von_bis = $von_von;
 						} else {
-							$von_vonArr[] = $this->distantPast;
-							$von_bisArr[] = $this->distantPast;
-							$von_bis = $this->distantPast;
+							$von_vonArr[] = self::DISTANT_PAST;
+							$von_bisArr[] = self::DISTANT_PAST;
+							$von_bis = self::DISTANT_PAST;
 						}
 					}
 
@@ -423,7 +426,7 @@ class DataExportController extends ActionController {
 						$von_verbalArr[] = $von_verbal;
 					} else {
 						if (!empty($von_von)) {
-							if ($von_von != $this->distantPast && $von_von != $this->distantFuture) {
+							if ($von_von != self::DISTANT_PAST && $von_von != self::DISTANT_FUTURE) {
 								$von_verbalArr[] = (string)$von_von;
 								$von_verbal = (string)$von_von;
 							}
@@ -451,11 +454,11 @@ class DataExportController extends ActionController {
 							$bis_vonArr[] = $von_von;
 							$bis_von = $von_von;
 						} else {
-							$bis_vonArr[] = $this->distantPast;
-							$bis_bisArr[] = $this->distantFuture;
+							$bis_vonArr[] = self::DISTANT_PAST;
+							$bis_bisArr[] = self::DISTANT_FUTURE;
 
-							$bis_von = $this->distantPast;
-							$bis_bis = $this->distantFuture;
+							$bis_von = self::DISTANT_PAST;
+							$bis_bis = self::DISTANT_FUTURE;
 						}
 					}
 
@@ -464,7 +467,7 @@ class DataExportController extends ActionController {
 						$bis_verbalArr[] = $bis_verbal;
 					} else {
 						if (!empty($bis_von)) {
-							if ($bis_von != $this->distantPast && $bis_von != $this->distantFuture) {
+							if ($bis_von != self::DISTANT_PAST && $bis_von != self::DISTANT_FUTURE) {
 								$bis_verbalArr[] = (string)$bis_von;
 								$bis_verbal = (string)$bis_von;
 							}
@@ -580,6 +583,24 @@ class DataExportController extends ActionController {
 							}
 						}
 					}
+
+					$klosterstandort_von = intval($klosterstandorte[$k][$i]['standort_von_von']);
+					$klosterstandort_bis = intval($klosterstandorte[$k][$i]['standort_bis_bis']);
+					$standort_jahr50 = array();
+					$start = self::MIN_YEAR;
+					while ($start < self::MAX_YEAR) {
+						if ($klosterstandort_von < ($start + self::YEAR_STEP) && $start <= $klosterstandort_bis) {
+							$standort_jahr50[$start] = True;
+							$kloster_standort_jahr50[] = $start;
+						}
+						$start += self::YEAR_STEP;
+					}
+
+					if (is_array($standort_jahr50) && !empty($standort_jahr50)) {
+						$klosterstandorte[$k][$i]['standort_jahr50'] = array_keys($standort_jahr50);
+						$klosterstandorte[$k][$i]['jahr50'] = array_keys($standort_jahr50);
+					}
+					unset($standort_jahr50);
 				}
 			}
 
@@ -597,6 +618,9 @@ class DataExportController extends ActionController {
 			$ko_bis_vonArr = array();
 			$ko_bis_bisArr = array();
 			$ko_bis_verbalArr = array();
+
+			$kloster_orden_jahr50 = array();
+			$start = self::MIN_YEAR;
 
 			$klosterordens = $kloster->getKlosterordens();
 			foreach ($klosterordens as $i => $ko) {
@@ -661,9 +685,9 @@ class DataExportController extends ActionController {
 						$ko_von_bisArr[] = $ko_von_von;
 						$ko_von_bis = $ko_von_von;
 					} else {
-						$ko_von_vonArr[] = $this->distantPast;
-						$ko_von_bisArr[] = $this->distantPast;
-						$ko_von_bis = $this->distantPast;
+						$ko_von_vonArr[] = self::DISTANT_PAST;
+						$ko_von_bisArr[] = self::DISTANT_PAST;
+						$ko_von_bis = self::DISTANT_PAST;
 					}
 				}
 
@@ -672,7 +696,7 @@ class DataExportController extends ActionController {
 					$ko_von_verbalArr[] = $ko_von_verbal;
 				} else {
 					if (!empty($ko_von_von)) {
-						if ($ko_von_von != $this->distantPast && $ko_von_von != $this->distantFuture) {
+						if ($ko_von_von != self::DISTANT_PAST && $ko_von_von != self::DISTANT_FUTURE) {
 							$ko_von_verbalArr[] = (string)$ko_von_von;
 							$ko_von_verbal = (string)$ko_von_von;
 						}
@@ -698,11 +722,11 @@ class DataExportController extends ActionController {
 						$ko_bis_vonArr[] = $ko_von_von;
 						$ko_bis_von = $ko_von_von;
 					} else {
-						$ko_bis_vonArr[] = $this->distantPast;
-						$ko_bis_bisArr[] = $this->distantFuture;
+						$ko_bis_vonArr[] = self::DISTANT_PAST;
+						$ko_bis_bisArr[] = self::DISTANT_FUTURE;
 
-						$ko_bis_von = $this->distantPast;
-						$ko_bis_bis = $this->distantFuture;
+						$ko_bis_von = self::DISTANT_PAST;
+						$ko_bis_bis = self::DISTANT_FUTURE;
 					}
 				}
 
@@ -711,7 +735,7 @@ class DataExportController extends ActionController {
 					$ko_bis_verbalArr[] = $ko_bis_verbal;
 				} else {
 					if (!empty($ko_bis_von)) {
-						if ($ko_bis_von != $this->distantPast && $ko_bis_von != $this->distantFuture) {
+						if ($ko_bis_von != self::DISTANT_PAST && $ko_bis_von != self::DISTANT_FUTURE) {
 							$ko_bis_verbalArr[] = (string)$ko_bis_von;
 							$ko_bis_verbal = (string)$ko_bis_von;
 						}
@@ -741,6 +765,25 @@ class DataExportController extends ActionController {
 						}
 					}
 				}
+
+				$klosterorden_von = intval($klosterorden[$k][$i]['orden_von_von']);
+				$klosterorden_bis = intval($klosterorden[$k][$i]['orden_bis_bis']);
+				$orden_jahr50 = array();
+				$start = self::MIN_YEAR;
+				while ($start < self::MAX_YEAR) {
+					if ($klosterorden_von < ($start + self::YEAR_STEP) && $start <= $klosterorden_bis) {
+						$orden_jahr50[$start] = True;
+						$kloster_orden_jahr50[] = $start;
+					}
+					$start += self::YEAR_STEP;
+				}
+
+				if (is_array($orden_jahr50) && !empty($orden_jahr50)) {
+					$klosterorden[$k][$i]['orden_jahr50'] = array_keys($orden_jahr50);
+					$klosterorden[$k][$i]['jahr50'] = array_keys($orden_jahr50);
+				}
+
+				unset($orden_jahr50);
 			}
 
 			if (array_key_exists($sql_uid, $this->personen)) {
@@ -916,6 +959,48 @@ class DataExportController extends ActionController {
 
 								$standort_ordenArr[$k][$m][$n]['orden_standort_von'] = max($myorden['orden_von_von'], $mystandort['standort_von_von']);
 								$standort_ordenArr[$k][$m][$n]['orden_standort_bis'] = min($myorden['orden_bis_bis'], $mystandort['standort_bis_bis']);
+
+								$orden_standort_jahr50 = array();
+								$start = self::MIN_YEAR;
+								while ($start < self::MAX_YEAR) {
+									if ($standort_ordenArr[$k][$m][$n]['orden_standort_von'] < ($start + self::YEAR_STEP) && $start <= $standort_ordenArr[$k][$m][$n]['orden_standort_bis']) {
+										$orden_standort_jahr50[$start] = True;
+									}
+									$start += self::YEAR_STEP;
+								}
+								if (is_array($orden_standort_jahr50) && !empty($orden_standort_jahr50)) {
+									$standort_ordenArr[$k][$m][$n]['orden_standort_jahr50'] = array_keys($orden_standort_jahr50);
+								}
+								unset($orden_standort_jahr50);
+
+								$orden_jahr50 = array();
+								$start = self::MIN_YEAR;
+								while ($start < self::MAX_YEAR) {
+									if ($myorden['orden_von_von'] < ($start + self::YEAR_STEP) && $start <= $myorden['orden_bis_bis']) {
+										$orden_jahr50[$start] = True;
+									}
+									$start += self::YEAR_STEP;
+								}
+								$standort_ordenArr[$k][$m][$n]['orden_jahr50'] = array_keys($orden_jahr50);
+
+								$standort_jahr50 = array();
+								$start = self::MIN_YEAR;
+								while ($start < self::MAX_YEAR) {
+									if ($mystandort['standort_von_von'] < ($start + self::YEAR_STEP) && $start <= $mystandort['standort_bis_bis']) {
+										$standort_jahr50[$start] = True;
+									}
+									$start += self::YEAR_STEP;
+								}
+
+								if (is_array($standort_jahr50) && !empty($standort_jahr50)) {
+									$standort_ordenArr[$k][$m][$n]['standort_jahr50'] = array_keys($standort_jahr50);
+								}
+
+								$standort_ordenArr[$k][$m][$n]['jahr50'] = array_merge(array_keys($orden_jahr50), array_keys($standort_jahr50));
+
+								unset($orden_jahr50);
+
+								unset($standort_jahr50);
 
 								$standortOrdenCount++;
 							}
@@ -1133,6 +1218,12 @@ class DataExportController extends ActionController {
 				$klosterArr[$k]['orden_wikipedia'] = (string)(implode(', ', array_unique($ordenwikipediaArr)));
 			}
 
+			$klosterArr[$k]['standort_jahr50'] = $kloster_standort_jahr50;
+
+			$klosterArr[$k]['orden_jahr50'] = $kloster_orden_jahr50;
+
+			$kloster_jahr50 = array_merge($kloster_standort_jahr50, $kloster_orden_jahr50);
+			$klosterArr[$k]['jahr50'] = $kloster_jahr50;
 		}
 
 		return array($klosterArr, $klosterstandorte, $klosterorden, $standort_ordenArr);

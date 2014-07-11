@@ -3,4 +3,6 @@ Subugoe:
     solr:
       host: '127.0.0.1'
       port: 8983
-      path: '/solr/germaniasacra'
+      path: '/solr/'
+      core: 'germaniasacra'
+      timeout: 60
