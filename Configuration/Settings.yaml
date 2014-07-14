@@ -6,3 +6,8 @@ Subugoe:
       path: '/solr/'
       core: 'germaniasacra'
       timeout: 60
+TYPO3:
+  Flow:
+    object:
+      excludeClasses:
+        'solarium.*': ['.*'] 
