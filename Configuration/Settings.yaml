@@ -3,11 +3,10 @@ Subugoe:
     solr:
       host: '127.0.0.1'
       port: 8983
-      path: '/solr/'
-      core: 'germaniasacra'
+      path: '/solr/germaniasacra'
       timeout: 60
 TYPO3:
   Flow:
     object:
       excludeClasses:
-        'solarium.*': ['.*'] 
+        'solarium.*': ['.*']

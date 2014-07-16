@@ -103,6 +103,7 @@ class SolrUpdateAspect {
 		);
 
 		$this->client = new \Solarium\Client($this->configuration);
+		$this->client->setAdapter('\Solarium\Core\Client\Adapter\Http');
 
 		$this->personen = json_decode(file_get_contents($this->personenURL), true);
 

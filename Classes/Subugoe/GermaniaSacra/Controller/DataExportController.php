@@ -92,6 +92,7 @@ class DataExportController extends ActionController {
 		);
 
 		$this->client = new \Solarium\Client($this->configuration);
+		$this->client->setAdapter('Solarium\Core\Client\Adapter\Http');
 
 		$personenFile = FLOW_PATH_DATA . 'GermaniaSacra/personen.json';
 

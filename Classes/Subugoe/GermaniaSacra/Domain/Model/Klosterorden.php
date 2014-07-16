@@ -13,6 +13,7 @@ class Klosterorden {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=TRUE)
 	 */
 	protected $uid;
 
