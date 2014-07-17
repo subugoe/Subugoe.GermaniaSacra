@@ -72,7 +72,6 @@ class DataExportController extends ActionController {
 		$this->settings = $settings;
 	}
 
-
 	public function __construct($logger = NULL) {
 		parent::__construct();
 		$this->logger = $logger;
@@ -85,7 +84,6 @@ class DataExportController extends ActionController {
 								'host' => $this->settings['solr']['host'],
 								'port' => $this->settings['solr']['port'],
 								'path' => $this->settings['solr']['path'],
-								'core' => $this->settings['solr']['core'],
 								'timeout' => $this->settings['solr']['timeout']
 						)
 				),

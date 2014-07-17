@@ -1,11 +1,11 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-use Subugoe\GermaniaSacra\Domain\Model\Klosterstatus;
-use Subugoe\GermaniaSacra\Domain\Model\Ordenstyp;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
+use Subugoe\GermaniaSacra\Domain\Model\Klosterstatus;
+use Subugoe\GermaniaSacra\Domain\Model\Ordenstyp;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeiter;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus;
 use Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus;
