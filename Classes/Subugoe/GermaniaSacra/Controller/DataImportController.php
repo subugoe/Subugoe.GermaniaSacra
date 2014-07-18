@@ -219,7 +219,8 @@ class DataImportController extends ActionController {
 				4 => 'Geprüft (bei Eingabe)',
 				5 => 'Redaktionell geprüft',
 				6 => 'Neuaufnahme, unvollständig',
-				7 => 'Online'
+				7 => 'Online',
+				8 => 'Dublette BW'
 		);
 		if (isset($bearbeitungsstatusArr) and is_array($bearbeitungsstatusArr)) {
 			foreach ($bearbeitungsstatusArr as $key => $name) {
