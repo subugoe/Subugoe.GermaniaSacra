@@ -5,6 +5,12 @@ Subugoe:
       port: 8983
       path: '/solr/germaniasacra'
       timeout: 60
+    mysql:
+      server: '127.0.0.1'
+      port: 3306
+      user: 'root'
+      password: 'vagrant'
+      database: 'germania'
 TYPO3:
   Flow:
     object:
