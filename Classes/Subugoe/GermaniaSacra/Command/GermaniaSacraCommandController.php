@@ -56,6 +56,7 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 * @return void
 	 */
 	public function alisImportCommand() {
+		$this->logger->log('Data import may take over 5 minutes. Do not exit.');
 		$importer = new DataImportController($this->logger);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
@@ -79,6 +80,8 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$importer->delAccessTabsAction();
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
+		$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+		$this->logger->log('Import completed in ' . round($time/60, 2) . ' minutes.');
 	}
 
 	/**

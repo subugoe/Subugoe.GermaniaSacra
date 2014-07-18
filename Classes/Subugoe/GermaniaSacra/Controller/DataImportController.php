@@ -1,11 +1,11 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-use Subugoe\GermaniaSacra\Domain\Model\Klosterstatus;
-use Subugoe\GermaniaSacra\Domain\Model\Ordenstyp;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
+use Subugoe\GermaniaSacra\Domain\Model\Klosterstatus;
+use Subugoe\GermaniaSacra\Domain\Model\Ordenstyp;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeiter;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus;
 use Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus;
@@ -230,7 +230,6 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		$this->logger->log("Tabelle subugoe_germaniasacra_domain_model_bearbeitungsstatus wurde erfolgreich angelegt.");
 	}
 
 	/**
@@ -252,7 +251,6 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		$this->logger->log("Mitarbeiter-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bearbeiter portiert.");
 	}
 
 	/**
@@ -273,7 +271,6 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		$this->logger->log("Tabelle subugoe_germaniasacra_domain_model_personallistenstatus wurde erfolgreich angelegt.");
 	}
 
 	/**
@@ -297,7 +294,6 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-		$this->logger->log("Land-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_land portiert.");
 	}
 
 	/**
@@ -376,7 +372,6 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		$this->logger->log("Ort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_ort portiert.");
 	}
 
 	/**
@@ -534,7 +529,6 @@ class DataImportController extends ActionController {
 
 			}
 		}
-		$this->logger->log("Bistum-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_bistum portiert.");
 	}
 
 	/**
@@ -674,7 +668,6 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		$this->logger->log("Band-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_band portiert.");
 	}
 
 	/**
@@ -885,7 +878,6 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		$this->logger->log("Kloster-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_kloster portiert.");
 	}
 
 	/**
@@ -1009,7 +1001,6 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		$this->logger->log("Klosterstandort-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterstandort portiert.");
 	}
 
 	/**
@@ -1132,8 +1123,6 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-
-		$this->logger->log("Orden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_orden portiert.");
 	}
 
 	/**
@@ -1193,7 +1182,6 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
-		$this->logger->log("Klosterorden-Tabelle wurde erfolgreich nach subugoe_germaniasacra_domain_model_klosterorden portiert.");
 	}
 
 	/**
@@ -1274,7 +1262,6 @@ class DataImportController extends ActionController {
 		$tbl = 'Band, Bearbeiter, Bistum, Kloster, Klosterstandort, Land, Ort, Orden, Klosterorden';
 		$sql = 'DROP TABLE IF EXISTS  ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabellen " . $tbl . " wurden entfernt.");
 	}
 
 	/**
@@ -1725,161 +1712,138 @@ class DataImportController extends ActionController {
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bearbeiter';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_personallistenstatus';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_land';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_ort';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_orthasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bistum';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bistumhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_band';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bandhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_kloster';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_url';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterstandort';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_bibitem';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_literatur';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterhasliteratur';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_orden';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_ordenstyp';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_ordenhasurl';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterorden';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 
 		$tbl = 'subugoe_germaniasacra_domain_model_klosterstatus';
 		$sql = 'DELETE FROM ' . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'ALTER TABLE ' . $tbl . ' AUTO_INCREMENT = 1';
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 	}
 
 	/**
@@ -1918,7 +1882,6 @@ class DataImportController extends ActionController {
 		$sql = str_replace('`OrdenszugehörigkeitVerbal_bis`', '`verbal_bis`', $sql);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sqlConnection->executeUpdate($sql);
-		$this->logger->log("Access Datenbank wurde importiert.");
 	}
 
 }
