@@ -4,7 +4,7 @@ $(function() {
 
 	$("#edit, #new").hide()
 
-	$("fieldset .multiple").append('<div class="large-2 columns text-right"><button class="remove">-</button><button class="add">+</button></div>')
+	$("fieldset .multiple").append('<div class="clearfix text-right"><button class="remove">-</button><button class="add">+</button></div>')
 	$("fieldset .multiple button").click(function(t) {
 		t.preventDefault()
 		var e = $(this).closest(".multiple"),
