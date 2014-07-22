@@ -25,3 +25,10 @@ Subugoe:
       host: '127.0.0.1'
       port: 8983
       path: '/solr/germaniasacra'
+
+Commit Message Format
+=====================
+
+[TASK|BUGFIX|FEATURE] ADWD-[0-9]+ Short description in english
+
+Also read hints from http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
