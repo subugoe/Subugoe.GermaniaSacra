@@ -13,6 +13,12 @@ define('MSX_APPEND', 3);
 
 class DumpController extends ActionController {
 
+	/**
+	 * @Flow\Inject
+	 * @var \Doctrine\Common\Persistence\ObjectManager
+	 */
+	protected $entityManager;
+
 	protected $server;
 	protected $port;
 	protected $username;
@@ -27,30 +33,30 @@ class DumpController extends ActionController {
 	protected $comments = true;
 	protected $fname_format = 'd_m_Y_H_i_s';
 	protected $error = '';
-	protected $null_values = array( '0000-00-00', '00:00:00', '0000-00-00 00:00:00');
+	protected $null_values = array('0000-00-00', '00:00:00', '0000-00-00 00:00:00');
 	protected $tables = array('subugoe_germaniasacra_domain_model_bearbeitungsstatus',
-							'subugoe_germaniasacra_domain_model_bearbeiter',
-							'subugoe_germaniasacra_domain_model_personallistenstatus',
-							'subugoe_germaniasacra_domain_model_land',
-							'subugoe_germaniasacra_domain_model_ort',
-							'subugoe_germaniasacra_domain_model_orthasurl',
-							'subugoe_germaniasacra_domain_model_bistum',
-							'subugoe_germaniasacra_domain_model_bistumhasurl',
-							'subugoe_germaniasacra_domain_model_band',
-							'subugoe_germaniasacra_domain_model_bandhasurl',
-							'subugoe_germaniasacra_domain_model_kloster',
-							'subugoe_germaniasacra_domain_model_klosterstatus',
-							'subugoe_germaniasacra_domain_model_klosterhasurl',
-							'subugoe_germaniasacra_domain_model_klosterhasliteratur',
-							'subugoe_germaniasacra_domain_model_klosterstandort',
-							'subugoe_germaniasacra_domain_model_orden',
-							'subugoe_germaniasacra_domain_model_orthasurl',
-							'subugoe_germaniasacra_domain_model_ordenstyp',
-							'subugoe_germaniasacra_domain_model_klosterorden',
-							'subugoe_germaniasacra_domain_model_literatur',
-							'subugoe_germaniasacra_domain_model_url',
-							'subugoe_germaniasacra_domain_model_urltyp',
-							);
+			'subugoe_germaniasacra_domain_model_bearbeiter',
+			'subugoe_germaniasacra_domain_model_personallistenstatus',
+			'subugoe_germaniasacra_domain_model_land',
+			'subugoe_germaniasacra_domain_model_ort',
+			'subugoe_germaniasacra_domain_model_orthasurl',
+			'subugoe_germaniasacra_domain_model_bistum',
+			'subugoe_germaniasacra_domain_model_bistumhasurl',
+			'subugoe_germaniasacra_domain_model_band',
+			'subugoe_germaniasacra_domain_model_bandhasurl',
+			'subugoe_germaniasacra_domain_model_kloster',
+			'subugoe_germaniasacra_domain_model_klosterstatus',
+			'subugoe_germaniasacra_domain_model_klosterhasurl',
+			'subugoe_germaniasacra_domain_model_klosterhasliteratur',
+			'subugoe_germaniasacra_domain_model_klosterstandort',
+			'subugoe_germaniasacra_domain_model_orden',
+			'subugoe_germaniasacra_domain_model_orthasurl',
+			'subugoe_germaniasacra_domain_model_ordenstyp',
+			'subugoe_germaniasacra_domain_model_klosterorden',
+			'subugoe_germaniasacra_domain_model_literatur',
+			'subugoe_germaniasacra_domain_model_url',
+			'subugoe_germaniasacra_domain_model_urltyp',
+	);
 
 	/**
 	 * @var string
@@ -78,8 +84,11 @@ class DumpController extends ActionController {
 	}
 
 	public function __construct() {
-			parent::__construct();
-			$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/';
+		parent::__construct();
+		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/';
+		if (!file_exists($this->dumpDirectory)) {
+			mkdir($this->dumpDirectory, 0777, true);
+		}
 	}
 
 	public function dumpAction() {
@@ -102,17 +111,16 @@ class DumpController extends ActionController {
 
 		if (!$result_bk[0]) {
 			$output = "Es ist ein Fehler eingetreten. Der Dump konnte nicht angelegt werden.";
-		}
-		else {
+		} else {
 			$output = 'DB-Backup Vorgang erfolgreich beendet am: <b>' . date('g:i:s A') . '</b><i> ( Local Server Time )</i>';
 			if ($task == MSX_STRING) {
-				$output.= '\n' . $result_bk;
+				$output .= '\n' . $result_bk;
 			}
 		}
 		if ($task != MSX_DOWNLOAD) {
 			echo $output;
 		}
-			exit;
+		exit;
 	}
 
 	public function Execute($task = MSX_STRING, $dname = '', $compress = false) {
@@ -128,7 +136,7 @@ class DumpController extends ActionController {
 					$dname = $tmp_name;
 				}
 			}
-			$fname = $this->dumpDirectory.$tmp_name;
+			$fname = $this->dumpDirectory . $tmp_name;
 
 			if (!($fp = $this->_OpenFile($fname, $task, $compress))) {
 				return false;
@@ -142,60 +150,39 @@ class DumpController extends ActionController {
 		if ($task == MSX_DOWNLOAD) {
 			$this->_CloseFile($fp, $compress);
 			return $this->_DownloadFile($fname, $dname);
-		}
-		else if ($task == MSX_APPEND || $task == MSX_SAVE) {
+		} else if ($task == MSX_APPEND || $task == MSX_SAVE) {
 			$this->_CloseFile($fp, $compress);
 
 			$path = $this->dumpDirectory . $tmp_name;
 			$anhang = array();
 			$anhang["name"] = basename($path);
 			$anhang["size"] = filesize($path);
-			$anhang["data"] = implode("",file($path));
+			$anhang["data"] = implode("", file($path));
 
-			if(function_exists("mime_content_type"))
+			if (function_exists("mime_content_type"))
 				$anhang["type"] = mime_content_type($path);
 			else
 				$anhang["type"] = "application/octet-stream";
 
 			$status = true;
 			// return true;
-			return array ($status, $path);
-		}
-		else {
+			return array($status, $path);
+		} else {
 			return $sql;
 		}
 	}
 
+	/**
+	 * @return mixed
+	 */
 	protected function _Connect() {
-		$value = false;
-		if (!$this->connected) {
-			if (!$this->server) $this->server = 'localhost';
-			$host = $this->server;
-			if ($this->port) $host .= ':' . $this->port;
-			$this->link_id = mysql_connect($host, $this->username, $this->password);
-		}
-		if ($this->link_id > 0) {
-			if (empty($this->database)) {
-				$value = true;
-			}
-			elseif ($this->link_id !== -1) {
-				$value = mysql_select_db($this->database, $this->link_id);
-			}
-			else {
-				$value = mysql_select_db($this->database);
-			}
-		}
-		if (!$value) {
-			$this->error = mysql_error();
-		}
-		return $value;
+		return $this->entityManager->getConnection();
 	}
 
 	protected function _Query($sql) {
 		if ($this->link_id !== -1) {
 			$result = mysql_query($sql, $this->link_id);
-		}
-		else {
+		} else {
 			$result = mysql_query($sql);
 		}
 		if (!$result) {
@@ -248,15 +235,15 @@ class DumpController extends ActionController {
 			}
 			if ($fp) {
 				if ($compress) gzwrite($fp, $value);
-				else fwrite ($fp, $value);
+				else fwrite($fp, $value);
 				$value = '';
 			}
-			$value .= $this->_GetInserts($table,$fp,$compress);
+			$value .= $this->_GetInserts($table, $fp, $compress);
 		}
 		$value .= MSX_NL . MSX_NL;
 		if ($fp) {
 			if ($compress) gzwrite($fp, $value);
-			else fwrite ($fp, $value);
+			else fwrite($fp, $value);
 			$value = true;
 		}
 		$this->_Query('UNLOCK TABLES');
@@ -286,78 +273,87 @@ class DumpController extends ActionController {
 		$value .= $insert;
 		if ($fp) {
 			if ($compress) gzwrite($fp, $value);
-			else fwrite ($fp, $value);
+			else fwrite($fp, $value);
 			$value = '';
 		}
 
-		$j=0;
+		$j = 0;
 		$size = 0;
 		while ($row = mysql_fetch_row($result)) {
 			if ($fp) {
 				$i = 0;
 				$value = true;
-				if ($compress) { $size += gzwrite($fp, '('); }
-				else { $size += fwrite ($fp, '('); }
-				for($x =0; $x < $fields; $x++) {
+				if ($compress) {
+					$size += gzwrite($fp, '(');
+				} else {
+					$size += fwrite($fp, '(');
+				}
+				for ($x = 0; $x < $fields; $x++) {
 					if (!isset($row[$x]) || in_array($row[$x], $this->null_values)) {
 						$row[$x] = 'NULL';
-					}
-					else {
-						$row[$x] = '\'' . str_replace("\n","\\n",addslashes($row[$x])) . '\'';
+					} else {
+						$row[$x] = '\'' . str_replace("\n", "\\n", addslashes($row[$x])) . '\'';
 					}
 					if ($i > 0) {
-						if ($compress) { $size += gzwrite($fp, ','); }
-						else { $size += fwrite ($fp, ','); }
+						if ($compress) {
+							$size += gzwrite($fp, ',');
+						} else {
+							$size += fwrite($fp, ',');
+						}
 					}
 
-					if ($compress) { $size += gzwrite($fp, $row[$x]); }
-					else { $size += fwrite ($fp,  $row[$x]); }
+					if ($compress) {
+						$size += gzwrite($fp, $row[$x]);
+					} else {
+						$size += fwrite($fp, $row[$x]);
+					}
 
 					$i++;
 				}
-				if ($compress) { $size += gzwrite($fp, ')'); }
-				else { $size += fwrite ($fp, ')'); }
-
-				if ($j+1 < $num_rows && $size < 900000 ) {
-					if ($compress) { $size += gzwrite($fp, ','); }
-					else { $size += fwrite ($fp, ','); }
+				if ($compress) {
+					$size += gzwrite($fp, ')');
+				} else {
+					$size += fwrite($fp, ')');
 				}
-				else {
+
+				if ($j + 1 < $num_rows && $size < 900000) {
+					if ($compress) {
+						$size += gzwrite($fp, ',');
+					} else {
+						$size += fwrite($fp, ',');
+					}
+				} else {
 					$size = 0;
 					if ($compress) gzwrite($fp, ';' . MSX_NL);
-					else fwrite ($fp, ';' . MSX_NL);
+					else fwrite($fp, ';' . MSX_NL);
 
-					if ($j+1 < $num_rows) {
+					if ($j + 1 < $num_rows) {
 						if ($compress) gzwrite($fp, $insert);
-						else fwrite ($fp, $insert);
-					}
-					else if ($this->locks) {
+						else fwrite($fp, $insert);
+					} else if ($this->locks) {
 						if ($compress) gzwrite($fp, 'UNLOCK TABLES;' . MSX_NL);
-						else fwrite ($fp, 'UNLOCK TABLES;' . MSX_NL);
+						else fwrite($fp, 'UNLOCK TABLES;' . MSX_NL);
 					}
 				}
 				unset ($value);
 				$value = '';
-			}
-			else {
+			} else {
 				$values = '(';
-				for($x =0; $x < $fields; $x++) {
+				for ($x = 0; $x < $fields; $x++) {
 					if (!isset($row[$x]) || in_array($row[$x], $this->null_values)) {
 						$row[$x] = 'NULL';
-					}
-					else {
-						$row[$x] = '\'' . str_replace("\n","\\n",addslashes($row[$x])) . '\'';
+					} else {
+						$row[$x] = '\'' . str_replace("\n", "\\n", addslashes($row[$x])) . '\'';
 					}
 					$values .= $row[$x] . ',';
 				}
-				$values = substr($values, 0, -1). '),';
-				if ($j+1 == $num_rows || ($j+1)%5000==0 ) {
+				$values = substr($values, 0, -1) . '),';
+				if ($j + 1 == $num_rows || ($j + 1) % 5000 == 0) {
 					$values = substr($values, 0, -1);
 					$values = $values . ';' . MSX_NL;
-					if ($j+1 < $num_rows) {
+					if ($j + 1 < $num_rows) {
 						$values .= $insert;
-					}
-					else {
+					} else {
 						if ($this->locks) {
 							$values .= 'UNLOCK TABLES;' . MSX_NL;
 						}
@@ -395,7 +391,7 @@ class DumpController extends ActionController {
 			$value .= 'SET foreign_key_checks = 0;' . MSX_NL . MSX_NL;
 			if ($fp) {
 				if ($compress) gzwrite($fp, $value);
-				else fwrite ($fp, $value);
+				else fwrite($fp, $value);
 				unset($value);
 				$value = '';
 			}
@@ -404,13 +400,12 @@ class DumpController extends ActionController {
 			return false;
 		}
 		foreach ($tables as $table) {
-			if (!($table_dump = $this->_DumpTable($table,$fp,$compress))) {
+			if (!($table_dump = $this->_DumpTable($table, $fp, $compress))) {
 				return false;
 			}
 			if ($fp) {
 				$value = true;
-			}
-			else {
+			} else {
 				$value .= $table_dump;
 			}
 		}
@@ -442,15 +437,14 @@ class DumpController extends ActionController {
 	protected function _CloseFile($fp, $compress) {
 		if ($compress) {
 			return gzclose($fp);
-		}
-		else {
+		} else {
 			return fclose($fp);
 		}
 	}
 
 	protected function _DownloadFile($fname, $dname) {
 		$fp = fopen($fname, 'rb');
-		if (!$fp){
+		if (!$fp) {
 			$this->error = 'Can\'t open temporary file.';
 			return false;
 		}
@@ -458,12 +452,12 @@ class DumpController extends ActionController {
 		header('Content-type: application/octetstream');
 		header('Pragma: no-cache');
 		header('Expires: 0');
-		while ($value = fread($fp,8192)) {
+		while ($value = fread($fp, 8192)) {
 			echo $value;
 			unset ($value);
 		}
 		fclose($fp);
-		unlink ($fname);
+		unlink($fname);
 
 		return true;
 	}
