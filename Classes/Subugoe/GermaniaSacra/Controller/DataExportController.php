@@ -4,6 +4,7 @@ namespace Subugoe\GermaniaSacra\Controller;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
+ini_set('memory_limit', '-1');
 
 class DataExportController extends ActionController {
 
@@ -46,7 +47,7 @@ class DataExportController extends ActionController {
 	const DISTANT_FUTURE = 10000;
 	const MIN_YEAR = 700;
 	const MAX_YEAR = 1810;
-	CONST YEAR_STEP = 10;
+	const YEAR_STEP = 10;
 
 	const PERSONEN_URL = 'http://personendatenbank.germania-sacra.de/export/export.json';
 
@@ -623,6 +624,8 @@ class DataExportController extends ActionController {
 				$ko_bis_bisArr = array();
 				$ko_bis_verbalArr = array();
 
+				$ordenFacetArr = array();
+
 				$kloster_orden_jahr50 = array();
 				$start = self::MIN_YEAR;
 
@@ -675,6 +678,11 @@ class DataExportController extends ActionController {
 					$klosterorden[$k][$i]['kloster_id'] = $kloster_id;
 					$klosterorden[$k][$i]['typ'] = 'kloster-orden';
 					$klosterorden[$k][$i]['sql_uid'] = $ordenuid;
+
+				if (isset($orden) && $orden != 'evangelisches Kloster/Stift' && $orden != 'Reformiertes Stift (calvinistisch)') {
+					$klosterorden[$k][$i]['orden_facet'] = $orden;
+					$ordenFacetArr[] = $orden;
+				}
 
 					$ko_von_von = $ko->getVon_von();
 					if (!empty($ko_von_von)) {
@@ -913,6 +921,9 @@ class DataExportController extends ActionController {
 										$standort_ordenArr[$k][$m][$n]['orden_ordo'] = $myorden['orden_ordo'];
 									}
 									$standort_ordenArr[$k][$m][$n]['orden_typ'] = $myorden['orden_typ'];
+									if (isset($myorden['orden_facet']) && !empty($myorden['orden_facet'])) {
+										$standort_ordenArr[$k][$m][$n]['orden_facet'] = $myorden['orden_facet'];
+									}
 									$standort_ordenArr[$k][$m][$n]['orden_von_von'] = $myorden['orden_von_von'];
 									$standort_ordenArr[$k][$m][$n]['orden_von_bis'] = $myorden['orden_von_bis'];
 									$standort_ordenArr[$k][$m][$n]['orden_von_verbal'] = $myorden['orden_von_verbal'];
@@ -1197,6 +1208,10 @@ class DataExportController extends ActionController {
 
 				if (isset($ordenstypArr) && !empty($ordenstypArr)) {
 					$klosterArr[$k]['orden_typ'] = $ordenstypArr;
+				}
+
+				if (isset($ordenstypArr) && !empty($ordenstypArr)) {
+					$klosterArr[$k]['orden_facet'] = $ordenFacetArr;
 				}
 
 				if (isset($ko_von_vonArr) && !empty($ko_von_vonArr)) {
