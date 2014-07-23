@@ -324,12 +324,10 @@ class DataExportController extends ActionController {
 				}
 
 				if (isset($citekey) && !empty($citekey)) {
-					$literatur_citekey = implode(', ', array_unique($citekey));
-					$klosterArr[$k]['literatur_citekey'] = $literatur_citekey;
+					$klosterArr[$k]['literatur_citekey'] = array_unique($citekey);
 				}
 				if (isset($beschreibung) && !empty($beschreibung)) {
-					$literatur_beschreibung = implode(', ', array_unique($beschreibung));
-					$klosterArr[$k]['literatur_beschreibung'] = $literatur_beschreibung;
+					$klosterArr[$k]['literatur_beschreibung'] = array_unique($beschreibung);
 				}
 
 				$standortuidArr = array();
