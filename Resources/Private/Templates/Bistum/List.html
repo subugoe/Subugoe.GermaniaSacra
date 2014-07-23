@@ -7,13 +7,30 @@
 </f:section>
 
 <f:section name="Content">
-	<div class="large-4 columns">
-	<div class="row">
-		<section ng-controller="bistumController">
-				<div class="data" ng-repeat="bistum in bistums">
-					<input type="text" ng-model="bistum.bistum" /> <a href="#">X</a>
-				</div>
-		</section>
-	</div>
+	<div class="large-8 columns">
+		<div class="row">
+			<section ng-controller="bistumController">
+				<table class="large-12 columns display" datatable="ng" id="entityList">
+					<thead>
+						<tr>
+							<td>Bistum</td>
+							<td>Bemerkung</td>
+							<td>Erzbistum</td>
+							<td>Kirchenprovinz</td>
+							<td>Shapefile</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data" dt-rows="" ng-repeat="bistum in bistums">
+							<td><input type="text" ng-model="bistum.bistum" /></td>
+							<td><textarea ng-model="bistum.bemerkung">{{bistum.bemerkung}}</textarea></td>
+							<td><input ng-model="bistum.ist_erzbistum" type="checkbox" ng-checked="bistum.ist_erzbistum" /></td>
+							<td><input type="text" ng-model="bistum.kirchenprovinz" /></td>
+							<td><input type="text" ng-model="bistum.shapefile" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
 	</div>
 </f:section>

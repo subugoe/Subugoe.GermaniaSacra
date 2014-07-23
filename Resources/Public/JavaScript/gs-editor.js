@@ -111,7 +111,9 @@ $(function() {
 		}
 	})
 
-	$("#list").populate_liste();
+	if ($('#UpdateList').length !== 0) {
+		$("#UpdateList #list").populate_liste();
+	}
 
 	// Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
 	$(window).bind('keydown', function(e) {

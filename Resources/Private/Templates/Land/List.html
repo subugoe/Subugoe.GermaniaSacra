@@ -3,11 +3,24 @@
 <f:section name="Title"><f:translate id="countries" /></f:section>
 
 <f:section name="Content">
-	<section ng-controller="landController">
-		<ul>
-			<li ng-repeat="land in laender">
-				{{land.land}}
-			</li>
-		</ul>
-	</section>
+	<div class="large-8 columns">
+		<div class="row">
+			<section ng-controller="landController">
+				<table class="large-12 columns display" datatable="ng" id="entityList">
+					<thead>
+						<tr>
+							<td>Land</td>
+							<td>In Deutschland</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data" dt-rows="" ng-repeat="land in laender">
+							<td><input type="text" ng-model="land.land" /></td>
+							<td><input ng-model="land.ist_in_deutschland" type="checkbox" ng-checked="land.ist_in_deutschland" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+	</div>
 </f:section>

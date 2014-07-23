@@ -1,1 +1,1 @@
-var germaniaSacra = angular.module('germaniaSacra', ['angular-loading-bar', 'ngResource']);
+var germaniaSacra = angular.module('germaniaSacra', ['angular-loading-bar', 'restangular', 'datatables']);

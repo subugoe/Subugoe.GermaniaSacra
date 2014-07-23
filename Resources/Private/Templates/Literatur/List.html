@@ -3,11 +3,24 @@
 <f:section name="Title"><f:translate id="literature" /></f:section>
 
 <f:section name="Content">
-	<section ng-controller="literaturController">
-		<ul>
-			<li ng-repeat="entry in literature">
-				{{entry.citekey}}
-			</li>
-		</ul>
-	</section>
+	<div class="large-8 columns">
+		<div class="row">
+			<section ng-controller="literaturController">
+				<table class="large-12 columns display" datatable="ng" id="entityList">
+					<thead>
+						<tr>
+							<td>Citekey</td>
+							<td>Beschreibung</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data" dt-rows="" ng-repeat="entry in literature">
+							<td><input type="text" ng-model="entry.citekey" /></td>
+							<td><input type="text" ng-model="entry.beschreibung" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+	</div>
 </f:section>

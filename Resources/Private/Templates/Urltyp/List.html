@@ -3,11 +3,22 @@
 <f:section name="Title"></f:section>
 
 <f:section name="Content">
-	<section ng-controller="urltypController">
-		<ul>
-			<li ng-repeat="typ in urltyp">
-				{{typ.name}}
-			</li>
-		</ul>
-	</section>
+	<div class="large-8 columns">
+		<div class="row">
+			<section ng-controller="urltypController">
+				<table class="large-12 columns display" datatable="ng" id="entityList">
+					<thead>
+						<tr>
+							<td>URL Typ</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data" dt-rows="" ng-repeat="typ in urltyp">
+							<td><input type="text" ng-model="typ.name" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+	</div>
 </f:section>

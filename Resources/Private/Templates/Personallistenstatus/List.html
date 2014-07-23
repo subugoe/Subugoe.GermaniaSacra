@@ -3,11 +3,22 @@
 <f:section name="Title"><f:translate id="personalliststatus" /></f:section>
 
 <f:section name="Content">
-	<section ng-controller="personallistenstatusController">
-		<ul>
-			<li ng-repeat="status in personallistenstatus">
-				{{status.name}}
-			</li>
-		</ul>
-	</section>
+	<div class="large-8 columns">
+		<div class="row">
+			<section ng-controller="personallistenstatusController">
+				<table class="large-12 columns display" datatable="ng" id="entityList">
+					<thead>
+						<tr>
+							<td>Status</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data" dt-rows="" ng-repeat="status in personallistenstatus">
+							<td><input type="text" ng-model="status.name" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+	</div>
 </f:section>

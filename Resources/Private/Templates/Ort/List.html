@@ -3,11 +3,30 @@
 <f:section name="Title"><f:translate id="orte" /></f:section>
 
 <f:section name="Content">
-	<section ng-controller="ortController">
-		<ul>
-			<li ng-repeat="ort in orts">
-				{{ort.ort}}
-			</li>
-		</ul>
-	</section>
+	<div class="large-8 columns">
+		<div class="row">
+			<section ng-controller="ortController">
+				<table class="large-12 columns display" datatable="ng" id="entityList">
+					<thead>
+						<tr>
+							<td>Ort</td>
+							<td>Gemeinde</td>
+							<td>Kreis</td>
+							<td>Wüstung</td>
+							<td>Koordinaten</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data" dt-rows="" ng-repeat="ort in orts">
+							<td><input type="text" ng-model="ort.ort" /></td>
+							<td><input type="text" ng-model="ort.gemeinde" /></td>
+							<td><input type="text" ng-model="ort.kreis" /></td>
+							<td><input type="checkbox" ng-model="ort.wuestung" /></td>
+							<td><input type="text" ng-model="ort.laenge" /> <input type="text" ng-model="ort.breite" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+	</div>
 </f:section>
