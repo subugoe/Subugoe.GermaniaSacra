@@ -1,7 +1,6 @@
 $(function() {
 
 	$("#edit textarea, #new textarea").autosize()
-
 	$("#edit, #new").hide()
 
 	$("fieldset .multiple").append('<div class="clearfix text-right"><button class="remove">-</button><button class="add">+</button></div>')
@@ -46,9 +45,7 @@ $(function() {
 		t.preventDefault()
 		$("#new").new_kloster()
 		$("#new").slideDown()
-		$("html, body").animate({
-			scrollTop: $("#new").position().top
-		})
+		$("#browse").slideUp()
 	})
 
 	$(".delete").click(function(t) {

@@ -404,6 +404,8 @@ $.fn.extend({
 				})
 			}
 
+			$('#edit textarea').trigger('autosize.resize');
+
 		})
 	},
 
