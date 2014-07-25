@@ -12,10 +12,9 @@ $(function() {
 		$('#map-container').prepend($('<div id="map"></div>').css({width: $container.width()})).slideDown()
 
 		// Close button trigger
-		$('#map-container .close').hide().click(function() {
-			$('#map-container').slideUp(null, function() {
-				$(this).remove()
-			})
+		$('#map-container .close').hide().click( function(e) {
+			e.preventDefault()
+			$('#map-container').slideUp(null, function() { $(this).remove() })
 		});
 		// Close map when close button is or another element outside container is clicked
 		$('html').click(function() {

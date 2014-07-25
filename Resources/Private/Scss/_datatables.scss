@@ -1,11 +1,13 @@
 #list_wrapper {
-	input, select {
-		margin-top: rem-calc(-3);
-		width: auto;
-	}
 	div + div {
 		margin-left: rem-calc(24);
 	}
+}
+
+#list_length select,
+#list_filter input {
+	margin-top: rem-calc(-3);
+	width: auto;
 }
 
 .dataTables_filter {

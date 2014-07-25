@@ -4,70 +4,67 @@
 
 <f:section name="Content">
 
-<form>
-  <fieldset>
-    <label class="large-1 column">Kloster-Nr. <input name="kloster_nr" type="text"></label>
-    <label class="large-2 column">Status <input name="status" type="text"></label>
-    <label class="large-2 column">Klostername <input name="kloster" type="text"></label>
-    <label class="large-2 column">Ort <input name="ort" type="text"></label>
-    <label class="large-2 column">Suche über alle Felder <input name="alle" type="text"></label>
-    <div class="large-3 columns text-right margin-top"><button class="toggle" data-text="ausblenden">Erweiterte Suche einblenden</button></div>
-  </fieldset>
-  <fieldset class="togglable">
-    <legend>Erweiterte Suche</legend>
-    <div class="multiple">
-      <label class="large-2 column">
-        <select name="filter">
-          <option value="band.nummer">band.nummer</option>
-          <option value="bearbeitungsstatus.name">bearbeitungsstatus.name</option>
-          <option value="bistum.bistum">bistum.bistum</option>
-          <option value="bundesland.bundesland">bundesland.bundesland</option>
-          <option value="kloster.kloster_id">kloster.kloster_id</option>
-          <option value="kloster.kloster">kloster.kloster</option>
-          <option value="kloster.patrozinium">kloster.patrozinium</option>
-          <option value="klosterstatus.status">klosterstatus.status</option>
-          <option value="kloster.breite">kloster.breite</option>
-          <option value="kloster.laenge">kloster.laenge</option>
-          <option value="land.land">land.land</option>
-          <option value="orden.orden">orden.orden</option>
-          <option value="ort.ort">ort.ort</option>
-          <option value="personallistenstatus.name">personallistenstatus.name</option>
-          <option value="url.url">url.url</option>
-          <option value="zeitraum.von_von">zeitraum.von_von</option>
-          <option value="zeitraum.bis_bis">zeitraum.bis_bis</option>
-        </select>
-      </label>
-      <label class="large-2 column">
-        <select name="operator">
-          <option value="ist gleich">ist gleich</option>
-          <option value="ist gleich (inkl. Schreibweise)">ist gleich (inkl. Schreibweise)</option>
-          <option value="ist nicht">ist nicht</option>
-          <option value="enthält">enthält</option>
-          <option value="enthält nicht">enthält nicht</option>
-          <option value="beginnt mit">beginnt mit</option>
-          <option value="endet mit">endet mit</option>
-          <option value="ist kleiner als">ist kleiner als</option>
-          <option value="ist größer als">ist größer als</option>
-          <option value="entspricht regex">entspricht regex</option>
-          <option value="entspricht nicht regex">entspricht nicht regex</option>
-          <option value="fehlt">fehlt</option>
-        </select>
-      </label>
-      <label class="large-4 column"><input name="value" type="text"></label>
-      <label class="large-2 column">
-        <select name="concat">
-          <option value="und">und</option>
-          <option value="oder">oder</option>
-          <option value="und nicht">und nicht</option>
-        </select>
-      </label>
-    </div>
-  </fieldset>
-</form>
-
-
 <div id="browse" ng-controller="monasteryController">
-	<h1><f:render section="Title" /></h1>
+	<form>
+		<fieldset>
+			<label class="large-1 column">Kloster-Nr. <input name="kloster_nr" type="text"></label>
+			<label class="large-2 column">Status <input name="status" type="text"></label>
+			<label class="large-2 column">Klostername <input name="kloster" type="text"></label>
+			<label class="large-2 column">Ort <input name="ort" type="text"></label>
+			<label class="large-2 column">Suche über alle Felder <input name="alle" type="text"></label>
+			<div class="large-3 columns text-right margin-top"><button class="toggle" data-text="ausblenden">Erweiterte Suche einblenden</button></div>
+		</fieldset>
+		<fieldset class="togglable">
+			<legend>Erweiterte Suche</legend>
+			<div class="multiple">
+				<label class="large-2 column">
+					<select name="filter">
+						<option value="band.nummer">band.nummer</option>
+						<option value="bearbeitungsstatus.name">bearbeitungsstatus.name</option>
+						<option value="bistum.bistum">bistum.bistum</option>
+						<option value="bundesland.bundesland">bundesland.bundesland</option>
+						<option value="kloster.kloster_id">kloster.kloster_id</option>
+						<option value="kloster.kloster">kloster.kloster</option>
+						<option value="kloster.patrozinium">kloster.patrozinium</option>
+						<option value="klosterstatus.status">klosterstatus.status</option>
+						<option value="kloster.breite">kloster.breite</option>
+						<option value="kloster.laenge">kloster.laenge</option>
+						<option value="land.land">land.land</option>
+						<option value="orden.orden">orden.orden</option>
+						<option value="ort.ort">ort.ort</option>
+						<option value="personallistenstatus.name">personallistenstatus.name</option>
+						<option value="url.url">url.url</option>
+						<option value="zeitraum.von_von">zeitraum.von_von</option>
+						<option value="zeitraum.bis_bis">zeitraum.bis_bis</option>
+					</select>
+				</label>
+				<label class="large-2 column">
+					<select name="operator">
+						<option value="ist gleich">ist gleich</option>
+						<option value="ist gleich (inkl. Schreibweise)">ist gleich (inkl. Schreibweise)</option>
+						<option value="ist nicht">ist nicht</option>
+						<option value="enthält">enthält</option>
+						<option value="enthält nicht">enthält nicht</option>
+						<option value="beginnt mit">beginnt mit</option>
+						<option value="endet mit">endet mit</option>
+						<option value="ist kleiner als">ist kleiner als</option>
+						<option value="ist größer als">ist größer als</option>
+						<option value="entspricht regex">entspricht regex</option>
+						<option value="entspricht nicht regex">entspricht nicht regex</option>
+						<option value="fehlt">fehlt</option>
+					</select>
+				</label>
+				<label class="large-4 column"><input name="value" type="text"></label>
+				<label class="large-2 column">
+					<select name="concat">
+						<option value="und">und</option>
+						<option value="oder">oder</option>
+						<option value="und nicht">und nicht</option>
+					</select>
+				</label>
+			</div>
+		</fieldset>
+	</form>
 	<form id="UpdateList" name="UpdateList" action="updateList">
 		<table class="large-12 columns display" id="list">
 			<thead>
@@ -118,7 +115,7 @@
 					<td>
 						<a href="" class="edit">Edit</a>
 						<a href="" class="delete">Del</a>
-						<input class="csrf" type="hidden" name="__csrfToken"  value="{f:security.csrfToken()}">
+						<input class="csrf" type="hidden" name="__csrfToken"	value="{f:security.csrfToken()}">
 					</td>
 				</tr>
 			</tbody>
@@ -130,53 +127,50 @@
 <a href="" id="newLink"><button class="new">Neu</button></a>
 
 <div id="edit">
-	<h1>
-		Kloster bearbeiten
-	</h1>
 	<button class="close">Schließen</button>
 	<form id="EditKloster" action="">
-		<fieldset>
+		<fieldset id="kloster">
 			<legend>Kloster</legend>
-			<label class="large-6 columns">Klostername
+			<label class="large-9 columns bold">Name
+				<!-- TODO: Bigger text size -->
 				<textarea name="kloster_name" required="required"></textarea>
 			</label>
 			<label class="large-3 columns">Kloster-Nr.
 				<input disabled="disabled" name="kloster_id" required="required" type="text">
 			</label>
-			<label class="large-3 columns">Datensatz erzeugt am
-				<input disabled="disabled" name="creationdate" required="required" type="date">
-			</label>
-			<label class="large-4 columns">Status
-				<select name="bearbeitungsstatus" required="required"></select>
-			</label>
-			<label class="large-4 columns">Bearbeiter
-				<select name="bearbeiter" required="required"></select>
-			</label>
-			<label class="large-4 columns">Zuletzt bearbeitet
-				<input disabled="disabled" name="changeddate" type="text">
-			</label>
-			<label class="large-12 columns">Bearbeitungsstand
-				<textarea name="bearbeitungsstand"></textarea>
-			</label>
-			<label class="large-4 columns">Patrozinium
+			<fieldset class="highlight">
+				<label class="large-4 columns">Status
+					<select name="bearbeitungsstatus" required="required"></select>
+				</label>
+				<span class="large-5 columns">
+					Zuletzt bearbeitet von <i class="bearbeiter">?</i> am <i class="changeddate">?</i>
+				</span>
+				<label class="large-3 columns">Datensatz erzeugt am
+					<input disabled="disabled" name="creationdate" required="required" type="text">
+				</label>
+				<label class="large-12 columns">Bearbeitungsstand
+					<textarea name="bearbeitungsstand"></textarea>
+				</label>
+			</fieldset>
+			<label class="large-12 columns">Patrozinium
 				<textarea name="patrozinium" required="required"></textarea>
-			</label>
-			<label class="large-4 columns">GS-Band
-				<select name="band"></select>
-			</label>
-			<label class="large-4 columns">Seitenangabe GS-Band
-				<input name="band_seite" type="text">
 			</label>
 			<label class="large-12 columns">Kommentar online
 				<textarea name="bemerkung"></textarea>
+			</label>
+			<label class="large-9 columns">GS-Band
+				<select name="band"></select>
+			</label>
+			<label class="large-3 columns">Seitenangabe GS-Band
+				<input name="band_seite" type="text">
 			</label>
 			<label class="large-12 columns">Inhalt GS-Band
 				<textarea name="text_gs_band"></textarea>
 			</label>
 		</fieldset>
-		<fieldset>
+		<fieldset id="klosterstandorte">
 			<legend>Orte</legend>
-			<div class="multiple">
+			<div class="multiple separator">
 				<label class="large-7 columns">Ort
 					<input id="searchOrtEdit" type="text" name="ort[]" tabindex="20">
 				</label>
@@ -215,17 +209,17 @@
 				<label class="large-12 columns">Gründer
 					<textarea name="gruender[]"></textarea>
 				</label>
-				<label class="large-12 columns">Bemerkung
+				<label class="large-12 columns">Bemerkung Standort
 					<textarea name="bemerkung_standort[]"></textarea>
 				</label>
-				<label class="large-12 columns">Interne Bemerkung
+				<label class="large-11 columns">Bemerkung (Kloster)<!-- TODO: Move to Kloser -->
 					<textarea name="standort_interne_bemerkung[]"></textarea>
 				</label>
 			</div>
 		</fieldset>
-		<fieldset>
+		<fieldset id="klosterorden">
 			<legend>Ordenszugehörigkeit</legend>
-			<div class="multiple">
+			<div class="multiple separator">
 				<label class="large-6 columns">Orden
 					<select name="orden[]"></select>
 				</label>
@@ -250,38 +244,53 @@
 				<label class="large-2 columns none">
 					<input name="orden_bis_verbal[]" type="text">
 				</label>
-				<label class="large-12 columns">
+				<label class="large-11 columns">
 					Interne Anmerkungen<textarea name="bemerkung_orden[]"></textarea>
 				</label>
 			</div>
 		</fieldset>
-		<fieldset>
+		<fieldset id="links">
 			<legend>Links</legend>
 			<div class="clearfix">
-				<label class="large-8 columns">Wikipedia
-					<input name="wikipedia" type="url">
-				</label><span class="link large-4 columns"></span>
+				<input type="hidden" name="url_typ[]" value="Wikipedia">
+				<label class="large-6 columns">Wikipedia
+					<input id="wikipedia" name="url[]" type="url">
+				</label>
+				<label class="large-5 columns">Darstellung
+					<input name="links_label[]" type="text">
+				</label>
+				<span class="link large-1 columns">{{link}}</span>
 			</div>
 			<div class="clearfix">
-				<label class="large-8 columns">GND
-					<input name="gnd" type="url">
-				</label><span class="link large-4 columns"></span>
-			</div>
-			<div class="clearfix">
-				<label class="large-8 columns">Externe
-					Datenquelle<input name="externe_datenquelle_url" type="url"></label>
-				<span class="link large-4 columns"></span>
+				<input type="hidden" name="url_typ[]" value="GND">
+				<label class="large-6 columns">GND
+					<input id="gnd" name="url[]" type="url">
+				</label>
+				<label class="large-5 columns">Darstellung
+					<input name="links_label[]" type="text">
+				</label>
+				<span class="link large-1 columns">{{link}}</span>
 			</div>
 			<div class="multiple">
-				<label class="large-8 columns">Weitere Links<input name="links[]" type="url"></label>
-				<span class="link large-4 columns"></span>
+				<label class="large-2 columns none">
+					<select name="url_typ[]"></select>
+				</label>
+				<label class="large-4 columns none">
+					<input name="url[]" type="url">
+					<i class="link large-1 columns">{{link}}</i>
+				</label>
+				<label class="large-5 columns">Darstellung
+					<input name="links_label[]" type="url">
+				</label>
 			</div>
 		</fieldset>
-		<fieldset>
+		<fieldset id="literatur">
 			<legend>Literatur</legend>
-			<label class="large-12 columns">Literatur<select name="literatur[]" multiple size="3"></select></label>
-			<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
+			<div class="multiple">
+				<label class="large-11 columns">Bezeichnung<select name="literatur[]"></select></label>
+			</div>
 		</fieldset>
+		<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 		<input class="button" type="submit" value="Speichern">
 	</form>
 </div>

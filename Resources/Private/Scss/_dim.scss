@@ -7,8 +7,15 @@ body {
 }
 
 button {
-	min-width: 4rem;
+	min-width: 2.5rem;
 	padding: 0.6rem;
+}
+
+form {
+	span {
+		font-size: $form-label-font-size;
+		padding: $microformat-padding;
+	}
 }
 
 textarea {
@@ -20,14 +27,20 @@ fieldset {
 	border: 0;
 	border-top: 1px solid;
 	margin-bottom: 0;
+	&.highlight {
+		background: rgba(#000, .1);
+		border: 0;
+		box-shadow: 0 1px 6px rgba(#000, .2) inset;
+		margin: $fieldset-padding (-$fieldset-padding);
+		padding-bottom: $fieldset-padding/2;
+		border-radius: $global-radius;
+	}
 	legend {
 		background: none;
 	}
-}
-
-h1 + button {
-	float: right;
-	margin-top: -3.5em;
+	.add-remove-buttons {
+		float: right
+	}
 }
 
 label {
@@ -88,7 +101,7 @@ button {
 }
 
 input[type="checkbox"] {
-	height: $base-font-size * 2;
+	height: $form-label-font-size * 2;
 	margin-left: .5rem;
 }
 
@@ -99,21 +112,22 @@ textarea {
 	label.none & {
 		width: 100% !important;
 	}
+	#edit .large-2 > & {
+		margin-left: 1em;
+		width: 50%;
+	}
 	@for $i from 3 through $total-columns {
 		#edit .large-#{$i} > & {
 			margin-left: 1em;
 			width: percentage(($i - 2) / $i);
 		}
-		#edit .large-#{$i}.wide-label > & {
-			width: percentage(($i - 3) / $i);
-		}
 	}
 }
 
 input.year {
-	background: adjust_hue($background-color, 270);
+	background: lighten($info-color, 15);
 	&:focus {
-		background: lighten( adjust_hue($background-color, 270), 5 )
+		background: lighten( $info-color, 20);
 	}
 }
 
@@ -145,10 +159,24 @@ button,
 	clear: both;
 }
 
+.multiple.separator + .multiple {
+	border-top: 1px dotted;
+	padding-top: $fieldset-padding;
+}
+
+.bold {
+	&,
+	input,
+	select,
+	textarea {
+		font-weight: bold;
+	}
+}
+
 #content {
-	padding: rem-calc(15)
+	padding: rem-calc(15);
 }
 
 #browse {
-	@include clearfix
+	@include clearfix;
 }

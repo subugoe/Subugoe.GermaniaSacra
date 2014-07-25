@@ -3,19 +3,23 @@ $(function() {
 	$("#edit textarea, #new textarea").autosize()
 	$("#edit, #new").hide()
 
-	$("fieldset .multiple").append('<div class="clearfix text-right"><button class="remove">-</button><button class="add">+</button></div>')
-	$("fieldset .multiple button").click(function(t) {
-		t.preventDefault()
-		var e = $(this).closest(".multiple"),
-			i = e.closest("fieldset")
-		if ($(this).hasClass("remove")) i.find(".multiple").length > 1 && e.addClass("dying").slideUp(null, this.remove);
-		else
-			if ($(this).hasClass("add")) {
-				var n = e.clone(!0)
-				n.find(":input").val(""), n.css("display", "none").insertAfter(e).slideDown()
-			}
-		i.find("button.remove").prop("disabled", 1 === i.find(".multiple:not(.dying)").length)
+	$("fieldset .multiple").append('<div class="add-remove-buttons"><button class="remove">-</button><button class="add">+</button></div>')
+	$("fieldset .multiple button").click(function(e) {
+		e.preventDefault()
+		var div = $(this).closest('.multiple')
+		if ($(this).hasClass("remove")) {
+			div.removeInputs(250)
+		} else if ($(this).hasClass("add")) {
+			div.addInputs(250)
+		}
 	})
+
+	function add_or_remove_inputs($action, $time) {
+		var div = $(this).closest(".multiple"),
+			fieldset = div.closest("fieldset")
+		if ( typeof $time === undefined ) $time = 0
+
+	}
 
 	$("input[type=url]").keyup(function() {
 		$(this).parent().next(".link").html('<a href="' + $(this).val() + '">' + $(this).val() + "</a>")
@@ -128,3 +132,24 @@ $(function() {
 	});
 
 });
+
+jQuery.fn.extend({
+	addInputs: function(slideTime) {
+		if ( typeof slideTime === undefined ) slideTime = 0
+		return this.each(function() {
+			var $fieldset = $(this).closest('fieldset')
+			var $clone = $(this).clone(true)
+			$clone.find(':input').val('')
+			$clone.insertAfter( $(this) ).hide().slideDown(slideTime)
+			$fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1)
+		})
+	},
+	removeInputs: function(slideTime) {
+		if ( typeof slideTime === undefined ) slideTime = 0
+		return this.each(function() {
+			var $fieldset = $(this).closest('fieldset')
+			$fieldset.find(".multiple").length > 1 && $(this).addClass("dying").slideUp(slideTime, this.remove)
+			$fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1)
+		})
+	}
+})

@@ -711,13 +711,8 @@ class KlosterController extends ActionController {
 		$personallistenstatus = $kloster->getPersonallistenstatus();
 		$klosterArr['personallistenstatus'] = $personallistenstatus->getUUID();
 		$bearbeiter = $kloster->getBearbeiter();
-		$klosterArr['bearbeiter'] = $bearbeiter->getUUID();
-		$changeddate = $kloster->getChangedDate();
-		$klosterArr['changeddate'] = "von " . $bearbeiter->getBearbeiter();
-		if (isset($changeddate) && !empty($changeddate)) {
-			$changeddate = $changeddate->format('d.m.Y H:i:s');
-			$klosterArr['changeddate'] .= " am " . $changeddate;
-		}
+		$klosterArr['bearbeiter'] = $bearbeiter->getBearbeiter();
+		$klosterArr['changeddate'] = $kloster->getChangedDate();
 
 		// Klosterstandort data
 		$klosterstandorte = array();
@@ -789,7 +784,7 @@ class KlosterController extends ActionController {
 			$url = rawurldecode($urlObj->getUrl());
 			$urlTypObj = $urlObj->getUrltyp();
 			$urlTyp = $urlTypObj->getName();
-			$Urls[$k] = array('urlTyp' => $urlTyp, 'url' => $url);
+			$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url);
 		}
 		$klosterArr['url'] = $Urls;
 

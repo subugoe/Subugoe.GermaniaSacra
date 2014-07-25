@@ -129,282 +129,114 @@ $.fn.extend({
 
 		$.getJSON(url, function(response) {
 
-			var bearbeitungsstatusArray = response[1]
-			var $inputBearbeitungsstatus = $("select[name='bearbeitungsstatus']")
-			$inputBearbeitungsstatus.empty()
-			$.each(bearbeitungsstatusArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputBearbeitungsstatus.append($("<option>", { value: v1, html: k1 }))
+			// Fill select fields with available options
+			// TODO: Fill "URL Typ" selects
+			var options = {}
+			options.bearbeitungsstatus = response[1]
+			options.personallistenstatus = response[2]
+			options.band = response[3]
+			options.literatur = response[4]
+			options.bistum = response[5]
+			options.orden = response[6]
+			options.klosterstatus = response[7]
+			options.bearbeiter = response[8]
+
+			$.each( options, function(name, values) {
+				var $select = $('select[name="' + name + '"], select[name="' + name + '[]"]')
+				$select.empty().append( $("<option>", { value: '', text: '' }) )
+				$.each(values, function(index, object) {
+					$.each(object, function(value, uuid) {
+						$select.append( $("<option>", { value: uuid, text: value }) )
+					})
 				})
+				$select.val( response[0][name] )
 			})
 
-			var personallistenstatusArray = response[2]
-			var $inputPersonallistenstatus = $("select[name='personallistenstatus']")
-			$inputPersonallistenstatus.empty()
-			$.each(personallistenstatusArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputPersonallistenstatus.append($("<option>", { value: v1, html: k1 }))
-				})
-			})
+			var kloster = response[0]
+			var klosterstandorte = kloster.klosterstandorte
+			var klosterorden = kloster.klosterorden
+			var klosterurl = kloster.url
+			var klosterliteratur = kloster.literatur
 
-			var bandArray = response[3]
-			var $inputBand = $("select[name='band']")
-			$inputBand.empty()
-			$inputBand.append($("<option>", { value: '', html: 'Kein Band' }))
-			$.each(bandArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputBand.append($("<option>", { value: v1, html: k1 }))
-				})
-			})
-
-			var literaturArray = response[4]
-			var $inputLiteratur = $("select[name='literatur[]']")
-			$inputLiteratur.empty()
-
-			$inputLiteratur.append($("<option>", { value: "", html: "Keine Literatur" }))
-
-			$.each(literaturArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputLiteratur.append($("<option>", { value: v1, html: k1 }))
-				})
-			})
-
-			var bistumArray = response[5]
-			var $inputBistum = $("select[name='bistum[]']")
-			$inputBistum.empty()
-			$.each(bistumArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputBistum.append($("<option>", { value: v1, html: k1 }))
-				})
-			})
-
-			var ordenArray = response[6]
-			var $inputOrden = $("select[name='orden[]']")
-			$inputOrden.empty()
-			$.each(ordenArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputOrden.append($("<option>", { value: v1, html: k1 }))
-				})
-			})
-
-			var klosterstatusArray = response[7]
-			var $inputKlosterstatus = $("select[name='klosterstatus[]']")
-			$inputKlosterstatus.empty()
-			$.each(klosterstatusArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputKlosterstatus.append($("<option>", { value: v1, html: k1 }))
-				})
-			})
-
-			var bearbeiterArray = response[8]
-			var $inputBearbeiter = $("select[name='bearbeiter']")
-			$inputBearbeiter.empty()
-			$.each(bearbeiterArray, function(k, v) {
-				$.each(v, function(k1, v1) {
-					$inputBearbeiter.append($("<option>", { value: v1, html: k1 }))
-				})
-			})
-
-			var klosterstandorte = response[0].klosterstandorte
-			var klosterorden = response[0].klosterorden
-			var klosterurl = response[0].url
-			var klosterliteratur = response[0].literatur
-
-			var uuid = response[0].uuid
+			var uuid = kloster.uuid
 			var update_url = "update/" + uuid
 			$('#EditKloster').attr("action", update_url)
 
-			var fieldset = $this.find('fieldset:eq(0)')
-			fieldset.find('label :input').each(function() {
+			var $fieldset = $('#kloster')
+			$fieldset.find('label :input').each(function() {
 				var name = $(this).attr('name')
 				if (typeof name === 'undefined') return
 				name = name.replace('[]', '')
-				var val = response[0][name]
-				if ($(this).is('[type=checkbox]')) {
-					return
-				}
-				else
-					if ($(this).is('select')) {
+				var val = kloster[name]
+				$(this).val(val)
+			})
+			$fieldset.find('.bearbeiter').text(kloster.bearbeiter || '?')
+			$fieldset.find('.changeddate').text(kloster.changeddate || '?')
 
-						if (name == "bearbeitungsstatus") {
-							fieldset.find("select[name='bearbeitungsstatus'] option").each(function(i, opt) {
-								if (opt.value == val) {
-									$(opt).attr('selected', 'selected')
-								}
-							})
-						}
-						else
-							if (name == "bearbeiter") {
-								fieldset.find("select[name='bearbeiter'] option").each(function(i, opt) {
-									if (opt.value == val) {
-										$(opt).attr('selected', 'selected')
-									}
-								})
-							}
-							else
-								if (name == "personallistenstatus") {
-									fieldset.find("select[name='personallistenstatus'] option").each(function(i, opt) {
-										if (opt.value == val) {
-											$(opt).attr('selected', 'selected')
-										}
-									})
-								}
-								else
-									if (name == "band") {
-										fieldset.find("select[name='band'] option").each(function(i, opt) {
-											if (opt.value == val) {
-												$(opt).attr('selected', 'selected')
-											}
-										})
-									}
-									else {
-										$(this).find('option').remove()
-										if (val) $(this).append('<option>' + val + '</option>')
-									}
-					}
-					else {
-						$(this).val(val)
-					}
+			var $fieldset = $('#klosterorden')
+			$fieldset.find('.multiple:gt(0)').removeInputs(0)
+			$.each(klosterorden, function(index, value) {
+				if (index > 0) $fieldset.find('.multiple:last()').addInputs(0)
+				$fieldset.find('.multiple:last() label :input').each(function() {
+					var name = $(this).attr('name')
+					if (typeof name === 'undefined') return;
+					name = name.replace('[]', '')
+					$(this).val( value[name] )
+				})
 			})
 
-			$this.find("input[type=url]").keyup()
-
-			$.each(klosterorden, function(key, value) {
-
-				if (key == 0) {
-					var fieldset = $this.find('fieldset:eq(2)')
-				}
-				else {
-					var fieldset = $this.find('div.multiple:eq(1)').clone(true)
-				}
-
-				fieldset.find('label :input').each(function() {
+			var $fieldset = $('#klosterstandorte')
+			$fieldset.find('.multiple:gt(0)').removeInputs(0)
+			$.each(klosterstandorte, function(index, value) {
+				if (index > 0) $fieldset.find('.multiple:last()').addInputs(0)
+				$fieldset.find('.multiple:last() label :input').each(function() {
 					var name = $(this).attr('name')
 					if (typeof name === 'undefined') return;
 					name = name.replace('[]', '')
 					var val = value[name];
-					if ($(this).is('[type=checkbox]')) {
-						return;
-					}
-					else
-						if ($(this).is('select')) {
-
-							if (name == "orden") {
-								$this.find("select[name='orden[]'] option").each(function(i, opt) {
-									if (opt.value == val) {
-										$(opt).attr('selected', true)
-									}
-								})
-							}
-							else
-								if (name == "klosterstatus") {
-									$this.find("select[name='klosterstatus[]'] option").each(function(i, opt) {
-										if (opt.value == val) {
-											$(opt).attr('selected', 'selected')
-										}
-									})
-								}
-
-						} else {
-							$(this).val(val)
+					if ( name == "wuestung" ) {
+						if ( name == "wuestung" ) {
+							$(this).prop('checked', value[name] == 1)
 						}
+					} else {
+						$(this).val( value[name] )
+					}
 				})
-
-				if (key > 0) {
-					$this.find('fieldset:eq(2)').append(fieldset)
-				}
-				$this.find("textarea").autosize()
-				$this.find("input[type=url]").keyup()
 			})
 
-			$.each(klosterstandorte, function(key, value) {
-				if (key == 0) {
-					var fieldset = $this.find('fieldset:eq(1)')
+			var $fieldset = $('#links')
+			$fieldset.find('.multiple:gt(0)').removeInputs(0)
+			$.each(klosterurl, function(index, value) {
+				if (value.url_typ == 'GND') {
+					$('#gnd').val(value.url)
+				} else if (value.url_typ == 'Wikipedia') {
+					$('#wikipedia').val(value.url)
+				} else {
+					$fieldset.find('.multiple:last()').addInputs(0)
+					$fieldset.find('.multiple:last() label :input').each(function() {
+						var name = $(this).attr('name')
+						if (typeof name === 'undefined') return;
+						name = name.replace('[]', '')
+						$(this).val( value[name] )
+					})
 				}
-				else {
-					var fieldset = $this.find('div.multiple:eq(0)').clone(true)
-				}
+			})
+			$fieldset.find('.multiple:eq(0)').removeInputs(0)
 
-				fieldset.find('label :input').each(function() {
+			var $fieldset = $('#literatur')
+			$fieldset.find('.multiple:gt(0)').remove()
+			$.each(klosterliteratur, function(index, value) {
+				if (index > 0) $fieldset.addInputs(0)
+				$fieldset.find('.multiple:last() label :input').each(function() {
 					var name = $(this).attr('name')
 					if (typeof name === 'undefined') return;
 					name = name.replace('[]', '')
-					var val = value[name];
-					if ($(this).is('[type=checkbox]')) {
-						if (name == "wuestung" && val == 1) {
-							$(this).prop('checked', true)
-						}
-						if (name == "wuestung" && val == 0) {
-							$(this).prop('checked', false)
-						}
-						else {
-							return;
-						}
-					} else
-						if ($(this).is('select')) {
-							if (name == "bistum") {
-								$this.find("select[name='bistum[]'] option").each(function(i, opt) {
-									if (opt.value == val) {
-										$(opt).attr('selected', 'selected')
-									}
-								})
-							}
-
-						} else {
-							$(this).val(val)
-						}
-				})
-
-				if (key > 0) {
-					$this.find('div.multiple:eq(0)').append(fieldset)
-				}
-				$this.find("textarea").autosize()
-				$this.find("input[type=url]").keyup()
-			})
-
-			$.each(klosterurl, function(key, value) {
-				$.each(value, function(key1, value1) {
-					if (key1 == "GND") {
-						var gnd = value1;
-					}
-					else
-						if (key1 == "Wikipedia") {
-							var wikipedia = value1;
-						}
-
-					if (gnd) {
-						//$("input[name=gnd]").val("")
-						$("input[name=gnd]").val(gnd)
-					}
-					if (wikipedia) {
-						$("input[name=wikipedia]").val(wikipedia)
-					}
-
+					$(this).val( value )
 				})
 			})
-
-			if (klosterliteratur && klosterliteratur != "") {
-				$.each(klosterliteratur, function(key, value) {
-					if ($.isArray(value)) {
-						$.each(value, function(literaturkey, literaturvalue) {
-							$this.find("select[name='literatur[]'] option").each(function(i, opt) {
-								if (opt.value == literaturvalue) {
-									$(opt).attr('selected', 'selected')
-								}
-							})
-						})
-					}
-					else {
-						$this.find("select[name='literatur[]'] option").each(function(i, opt) {
-							if (opt.value == value) {
-								$(opt).attr('selected', 'selected')
-							}
-						})
-					}
-				})
-			}
 
 			$('#edit textarea').trigger('autosize.resize');
+			$('#edit input[type=url]').keyup()
 
 		})
 	},

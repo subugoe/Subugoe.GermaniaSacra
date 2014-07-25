@@ -63,7 +63,7 @@ $primary-color: #c90230;
 // $alert-color: #f04124;
 // $success-color: #43AC6A;
 // $warning-color: #f08a24;
-// $info-color: #a0d3e8;
+$info-color: #a0d3e8;
 
 // We use these to make sure border radius matches unless we want it different.
 // $global-radius: 3px;
@@ -212,7 +212,7 @@ $h1-font-size: rem-calc(23); //rem-calc(44);
 // $acronym-underline: 1px dotted #ddd;
 
 // We use these to control padding and margin
-// $microformat-padding: rem-calc(10 12);
+$microformat-padding: rem-calc(10 12);
 // $microformat-margin: rem-calc(0 0 20 0);
 
 // We use these to control the border styles
@@ -518,14 +518,14 @@ $h1-font-size: rem-calc(23); //rem-calc(44);
 
 // We use these to style the labels in different ways
 // $form-label-pointer: pointer;
-// $form-label-font-size: rem-calc(14);
+$form-label-font-size: rem-calc(14);
 // $form-label-font-weight: $font-weight-normal;
 // $form-label-line-height: 1.5;
 // $form-label-font-color: scale-color(#000, $lightness: 30%);
 // $form-label-small-transform: capitalize;
 // $form-label-bottom-margin: 0;
 // $input-font-family: inherit;
-// $input-font-color: rgba(0,0,0,0.75);
+$input-font-color: rgba(0,0,0,0.75);
 // $input-font-size: rem-calc(14);
 // $input-bg-color: #fff;
 // $input-focus-bg-color: scale-color(#fff, $lightness: -2%);
@@ -542,8 +542,8 @@ $h1-font-size: rem-calc(23); //rem-calc(44);
 // $fieldset-border-style: solid;
 // $fieldset-border-width: 1px;
 // $fieldset-border-color: #ddd;
-// $fieldset-padding: rem-calc(20);
-// $fieldset-margin: rem-calc(18 0);
+$fieldset-padding: rem-calc(10);
+$fieldset-margin: rem-calc(9 0);
 
 // We use these to style the legends when you use them
 // $legend-bg: #fff;
@@ -657,7 +657,7 @@ $h1-font-size: rem-calc(23); //rem-calc(44);
 // $include-html-label-classes: $include-html-classes;
 
 // We use these to style the labels
-// $label-padding: rem-calc(4 8 6);
+$label-padding: rem-calc(4 8 6);
 // $label-radius: $global-radius;
 
 // We use these to style the label text
