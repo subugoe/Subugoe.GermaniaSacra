@@ -38,6 +38,12 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$this->settings = $settings;
 	}
 
+	public function initializeAction() {
+		$this->gitUserToken = $this->settings['git']['token'];
+		$this->accessDumpHash = $this->settings['git']['accessDumpHash'];
+		$this->citekeysHash = $this->settings['git']['citekeysHash'];
+	}
+
 	public function __construct() {
 		parent::__construct();
 		$log = new LoggerFactory();
@@ -57,12 +63,13 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 */
 	public function alisImportCommand() {
 		$this->logger->log('Data import may take over 5 minutes. Do not exit.');
-		$importer = new DataImportController($this->logger);
+		$importer = new DataImportController($this->logger, $this->settings);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
+		$importer->importDumpFromGithubAction();
 		$importer->delAccessTabsAction();
 		$importer->importAccessAction();
 		$importer->emptyTabsAction();
