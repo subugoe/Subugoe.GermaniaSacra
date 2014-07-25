@@ -6,6 +6,8 @@ Subugoe:
       user: 'root'
       password: 'vagrant'
       database: 'germania'
+    data:
+      geoJson: 'http://adw-goe.de/typo3conf/ext/tmpl_adw/Resources/Public/Images/GermaniaSacra/Bistumsgrenzen/GSBistumsgrenzenGEOJSON.geojson'
 TYPO3:
   Flow:
     object:
