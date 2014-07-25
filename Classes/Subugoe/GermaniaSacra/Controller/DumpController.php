@@ -54,17 +54,17 @@ class DumpController extends ActionController {
 
 	/**
 	 * @var string
-	 */
+	*/
 	protected $dumpDirectory;
 
 	/**
 	 * @var array
-	 */
+	*/
 	protected $settings;
 
 	/**
 	 * @param array $settings
-	 */
+	*/
 	public function injectSettings(array $settings) {
 		$this->settings = $settings;
 	}
@@ -78,8 +78,8 @@ class DumpController extends ActionController {
 	}
 
 	public function __construct() {
-			parent::__construct();
-			$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/';
+		parent::__construct();
+		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/';
 	}
 
 	public function dumpAction() {
@@ -158,7 +158,6 @@ class DumpController extends ActionController {
 				$anhang["type"] = "application/octet-stream";
 
 			$status = true;
-			// return true;
 			return array ($status, $path);
 		}
 		else {
