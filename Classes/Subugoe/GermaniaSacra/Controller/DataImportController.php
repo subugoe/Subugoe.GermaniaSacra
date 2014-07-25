@@ -202,10 +202,37 @@ class DataImportController extends ActionController {
 	 */
 	protected $logger;
 
-	public function __construct($logger = NULL) {
+	/**
+	 * @var \Gitonomy\Git\Repository
+	 */
+	protected $Repository;
+
+	/**
+	 * @var array
+	 */
+	protected $settings;
+
+	/**
+	 * @var string
+	 */
+	protected $accessDumpFilenamePath;
+
+	/**
+	 * @var string
+	 */
+	protected $citekeysFilenamePath;
+
+	const accessDumpFilename = 'klosterdatenbankdump.sql';
+
+	const citekeysFilename = 'GS-citekeys.csv';
+
+	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
-		$this->dumpDirectory = FLOW_PATH_ROOT . '/Data/GermaniaSacra/Access';
+		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump';
+		$this->accessDumpFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::accessDumpFilename;
+		$this->citekeysFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::citekeysFilename;
 		$this->logger = $logger;
+		$this->settings = $settings;
 	}
 
 	/**
@@ -751,9 +778,18 @@ class DataImportController extends ActionController {
 					$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
 				} else {
 					// @TODO add something reasonable here ...
-					$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findAll()->getFirst();
+					$lastBearbeitungsstatusEntry = $this->bearbeitungsstatusRepository->findLastEntry();
+					$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry['uid'] + 1;
+					$bearbeitungsstatusObject = new Bearbeitungsstatus();
+					$bearbeitungsstatusObject->setUid($bearbeitungsstatusUid);
+					$bearbeitungsstatusObject->setName($bearbeitungsstatus);
+					$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObject);
+					$this->persistenceManager->persistAll();
+					$bearbeitungsstatusUUID = $bearbeitungsstatusObject->getUUID();
+					$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatusUUID);
 					$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
-					$this->logger->log('Missing Bearbeitungsstatus in ' . $klosterObject->getUid());
+					$this->logger->log('Bearbeitungsstatus "' . $bearbeitungsstatus . '" was missing in Bearbeitungsstatus table. It is added now. Kloster entry: ' . $klosterObject->getUid());
+
 				}
 				if (is_object($personallistenstatusObject)) {
 					$klosterObject->setPersonallistenstatus($personallistenstatusObject);
@@ -1192,7 +1228,7 @@ class DataImportController extends ActionController {
 	public function citekeysAction() {
 		$file = "GS-citekeys.csv";
 		if (!file_exists($this->dumpDirectory . '/' . $file)) {
-			throw new \TYPO3\Flow\Resource\Exception(1398846324, 'File ' + $file + ' not present in ' . $this->dumpDirectory);
+			throw new \TYPO3\Flow\Resource\Exception('File ' . $file . ' not present in ' . $this->dumpDirectory, 1398846324);
 		}
 		$csvArr = array();
 		$csv = array_map('str_getcsv', file($this->dumpDirectory . '/' . $file));
@@ -1883,6 +1919,49 @@ class DataImportController extends ActionController {
 		$sql = str_replace('`OrdenszugehörigkeitVerbal_bis`', '`verbal_bis`', $sql);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sqlConnection->executeUpdate($sql);
+	}
+
+	public function importDumpFromGithubAction() {
+
+		$client = new \Github\Client();
+
+		$method = \Github\Client::AUTH_URL_TOKEN;
+
+		$client->authenticate($this->settings['git']['token'], $password='', $method);
+
+		$accessDumpBlob = $client->api('git_data')->blobs()->show($this->settings['git']['user'], $this->settings['git']['repository'], $this->settings['git']['accessDumpHash']);
+		$accessDumpBlob = base64_decode($accessDumpBlob['content']);
+
+		$citekeysBlob = $client->api('git_data')->blobs()->show($this->settings['git']['user'], $this->settings['git']['repository'], $this->settings['git']['citekeysHash']);
+		$citekeysBlob = base64_decode($citekeysBlob['content']);
+
+		if (!is_dir($this->dumpDirectory)) {
+			mkdir($this->dumpDirectory, 0755);
+		}
+		if (is_file($this->accessDumpFilenamePath)) {
+			unlink($this->accessDumpFilenamePath);
+		}
+
+		$mode = 'w';
+		$fp = fopen($this->accessDumpFilenamePath, $mode);
+		if (!$fp) {
+			echo 'Can\'t create the access dump file.';
+			return false;
+		}
+		else {
+			fwrite ($fp, $accessDumpBlob);
+			fclose($fp);
+		}
+
+		$fp = fopen($this->citekeysFilenamePath, $mode);
+		if (!$fp) {
+			echo 'Can\'t create the citekeys csv file.';
+			return false;
+		}
+		else {
+			fwrite ($fp, $citekeysBlob);
+			fclose($fp);
+		}
 	}
 
 }

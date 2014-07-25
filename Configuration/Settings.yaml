@@ -12,4 +12,5 @@ TYPO3:
   Flow:
     object:
       excludeClasses:
-        'solarium.*': ['.*']
+        'solarium.*': ['.*']        'solarium.*': ['.*']
+        'knplabs.*': ['.*']

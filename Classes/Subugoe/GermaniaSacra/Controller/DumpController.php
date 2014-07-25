@@ -60,17 +60,17 @@ class DumpController extends ActionController {
 
 	/**
 	 * @var string
-	 */
+	*/
 	protected $dumpDirectory;
 
 	/**
 	 * @var array
-	 */
+	*/
 	protected $settings;
 
 	/**
 	 * @param array $settings
-	 */
+	*/
 	public function injectSettings(array $settings) {
 		$this->settings = $settings;
 	}
