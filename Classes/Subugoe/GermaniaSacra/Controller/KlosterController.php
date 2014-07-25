@@ -789,7 +789,7 @@ class KlosterController extends ActionController {
 			$url = rawurldecode($urlObj->getUrl());
 			$urlTypObj = $urlObj->getUrltyp();
 			$urlTyp = $urlTypObj->getName();
-			$Urls[$k] = array($urlTyp => $url);
+			$Urls[$k] = array('urlTyp' => $urlTyp, 'url' => $url);
 		}
 		$klosterArr['url'] = $Urls;
 
