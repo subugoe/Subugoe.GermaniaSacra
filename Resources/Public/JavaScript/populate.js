@@ -51,10 +51,24 @@ $.fn.extend({
 			})
 
 			var klosters = response[0];
+
+			var $trTemplate = $('#list tbody tr:first')
+
+			var table = $('#list').DataTable({
+				'dom': 'lifpt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
+				"language": {
+					"url": "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json"
+				},
+				'fnDrawCallback': function() {
+					// Since only visible textareas can be autosized, this has to be called after every page render
+					$("#list textarea").autosize()
+				}
+			})
+
 			$.each(klosters, function(index, kloster) {
 
 				// Clone with triggers for edit and delete
-				var $tr = $this.find('tbody tr:first').clone(true)
+				var $tr = $trTemplate.clone(true)
 
 				$tr.find(':input').each(function() {
 					var name = $(this).attr('name')
@@ -83,36 +97,23 @@ $.fn.extend({
 						}
 					if (name !== "__csrfToken" && name !== "auswahl") {
 						$(this).attr('name', name + '[' + kloster.uuid + ']')
-						// WORKAROUND: DataTables 1.10.0 has a bug that prevents sorting of :input elements, so we use plain text for sorting
+						// WORKAROUND: DataTables 1.10.1 has a bug that prevents sorting of :input elements, so we use plain text for sorting
 						$('<span class="val">' + $(this).val() + '</span>').hide().insertBefore($(this))
 					}
 
 				});
-
-				//$tr.find('input#searchOrt:eq(' + index + ')').attr('tabindex', index + 1)
-				//$tr.find('input#searchOrt:eq(' + (index + 1) + ')').attr('data-uuid', kloster.uuid)
 
 				$tr.find('.edit').attr('href', "edit/" + kloster.uuid)
 				$tr.find('.delete').attr('href', "delete/" + kloster.uuid)
 
 				$tr.find('input.csrf').attr('id', "csrf" + index)
 
-				$this.append($tr)
+				table.row.add($tr)
 
 			})
 
-			$this.find("tbody tr:first").remove()
-
-			$('#list').dataTable({
-				'dom': 'lifpt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
-				"language": {
-					"url": "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/German.json"
-				},
-				'fnDrawCallback': function() {
-					// Since only visible textareas can be autosized, this has to be called after every page render
-					$("#list textarea").autosize()
-				}
-			})
+			// Remove template row and draw table
+			table.row( $trTemplate ).remove().draw()
 
 		})
 
@@ -220,12 +221,7 @@ $.fn.extend({
 				name = name.replace('[]', '')
 				var val = response[0][name]
 				if ($(this).is('[type=checkbox]')) {
-//					if (name == "wuestung" && val==1) {
-//						$(this).prop('checked', true)
-//					}
-//					else {
 					return
-//					}
 				}
 				else
 					if ($(this).is('select')) {
@@ -407,6 +403,8 @@ $.fn.extend({
 					}
 				})
 			}
+
+			$('#edit textarea').trigger('autosize.resize');
 
 		})
 	},

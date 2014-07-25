@@ -1,5 +1,5 @@
 body {
-	background: lighten(#ddd8c3, 5);
+	background: $background-color;
 	overflow-y: scroll;
 	> section {
 		padding: 1rem;
@@ -34,7 +34,7 @@ label {
 	line-height: 2.33333em;
 	&.columns {
 		padding: 0;
-		text-indent: 1rem;
+		text-align: right;
 	}
 }
 
@@ -59,14 +59,37 @@ table {
 	}
 }
 
-td {
-	input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], select, textarea {
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+textarea,
+button {
+	margin-bottom: .5em;
+	td & {
 		background: none;
 		border: 0;
 		box-shadow: none;
 		float: none;
 		margin: -8px -10px;
 	}
+}
+
+input[type="checkbox"] {
+	height: $base-font-size * 2;
+	margin-left: .5rem;
 }
 
 input,
@@ -76,10 +99,21 @@ textarea {
 	label.none & {
 		width: 100% !important;
 	}
-	@for $i from 3 through 12 {
+	@for $i from 3 through $total-columns {
 		#edit .large-#{$i} > & {
+			margin-left: 1em;
 			width: percentage(($i - 2) / $i);
 		}
+		#edit .large-#{$i}.wide-label > & {
+			width: percentage(($i - 3) / $i);
+		}
+	}
+}
+
+input.year {
+	background: adjust_hue($background-color, 270);
+	&:focus {
+		background: lighten( adjust_hue($background-color, 270), 5 )
 	}
 }
 
@@ -117,8 +151,4 @@ button,
 
 #browse {
 	@include clearfix
-}
-
-#edit {
-	clear: both;
 }

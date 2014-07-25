@@ -1,16 +1,13 @@
 Subugoe:
   GermaniaSacra:
-    solr:
-      host: '127.0.0.1'
-      port: 8983
-      path: '/solr/germaniasacra'
-      timeout: 600
     mysql:
       server: '127.0.0.1'
       port: 3306
       user: 'root'
       password: 'vagrant'
       database: 'germania'
+    data:
+      geoJson: 'http://adw-goe.de/typo3conf/ext/tmpl_adw/Resources/Public/Images/GermaniaSacra/Bistumsgrenzen/GSBistumsgrenzenGEOJSON.geojson'
 TYPO3:
   Flow:
     object:
