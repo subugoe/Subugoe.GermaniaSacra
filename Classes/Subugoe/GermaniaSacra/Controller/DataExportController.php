@@ -316,18 +316,17 @@ class DataExportController extends ActionController {
 					$ck = $literaturObj->getCitekey();
 					if (!empty($ck)) {
 						$citekey[] = $ck;
+						$klosterArr[$k]['literatur_citekey'][$l] = $ck;
+					} else {
+						$klosterArr[$k]['literatur_citekey'][$l] = '';
 					}
 					$be = $literaturObj->getBeschreibung();
 					if (!empty($be)) {
-						$beschreibung [] = $be;
+						$beschreibung[] = $be;
+						$klosterArr[$k]['literatur_beschreibung'][$l] = $be;
+					} else {
+						$klosterArr[$k]['literatur_beschreibung'][$l] = '';
 					}
-				}
-
-				if (isset($citekey) && !empty($citekey)) {
-					$klosterArr[$k]['literatur_citekey'] = array_unique($citekey);
-				}
-				if (isset($beschreibung) && !empty($beschreibung)) {
-					$klosterArr[$k]['literatur_beschreibung'] = array_unique($beschreibung);
 				}
 
 				$standortuidArr = array();
@@ -394,8 +393,7 @@ class DataExportController extends ActionController {
 						if (!empty($gruender)) {
 							$gruenderArr[] = $gruender;
 							$klosterstandorte[$k][$i]['gruender'] = $gruender;
-						}
-						else {
+						} else {
 							$klosterstandorte[$k][$i]['gruender'] = '';
 						}
 
@@ -520,8 +518,7 @@ class DataExportController extends ActionController {
 							if (!empty($wuestung)) {
 								$wuestungArr[] = $wuestung;
 								$klosterstandorte[$k][$i]['wuestung'] = $wuestung;
-							}
-							else {
+							} else {
 								$klosterstandorte[$k][$i]['wuestung'] = '';
 							}
 
@@ -572,8 +569,7 @@ class DataExportController extends ActionController {
 								if ($ist_erzbistum) {
 									$ist_erzbistumArr[] = $ist_erzbistum;
 									$klosterstandorte[$k][$i]['ist_erzbistum'] = $ist_erzbistum;
-								}
-								else {
+								} else {
 									$klosterstandorte[$k][$i]['ist_erzbistum'] = '';
 								}
 
@@ -687,10 +683,10 @@ class DataExportController extends ActionController {
 					$klosterorden[$k][$i]['typ'] = 'kloster-orden';
 					$klosterorden[$k][$i]['sql_uid'] = $ordenuid;
 
-				if (isset($orden) && $orden != 'evangelisches Kloster/Stift' && $orden != 'Reformiertes Stift (calvinistisch)') {
-					$klosterorden[$k][$i]['orden_facet'] = $orden;
-					$ordenFacetArr[] = $orden;
-				}
+					if (isset($orden) && $orden != 'evangelisches Kloster/Stift' && $orden != 'Reformiertes Stift (calvinistisch)') {
+						$klosterorden[$k][$i]['orden_facet'] = $orden;
+						$ordenFacetArr[] = $orden;
+					}
 
 					$ko_von_von = $ko->getVon_von();
 					if (!empty($ko_von_von)) {
@@ -928,8 +924,7 @@ class DataExportController extends ActionController {
 									}
 									if (!empty($mystandort['ist_erzbistum'])) {
 										$standort_ordenArr[$k][$m][$n]['ist_erzbistum'] = $mystandort['ist_erzbistum'];
-									}
-									else {
+									} else {
 										$standort_ordenArr[$k][$m][$n]['ist_erzbistum'] = '';
 									}
 									if (!empty($mystandort['bistum_gnd'])) {
@@ -993,9 +988,13 @@ class DataExportController extends ActionController {
 									}
 									if (!empty($literatur_citekey)) {
 										$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = $literatur_citekey;
+									} else {
+										$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = '';
 									}
 									if (!empty($literatur_beschreibung)) {
 										$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = $literatur_beschreibung;
+									} else {
+										$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = '';
 									}
 									if (!empty($url_wikipedia)) {
 										$standort_ordenArr[$k][$m][$n]['url_wikipedia'] = $url_wikipedia;
@@ -1131,8 +1130,7 @@ class DataExportController extends ActionController {
 
 				if (isset($gruenderArr) && !empty($gruenderArr)) {
 					$klosterArr[$k]['gruender'] = $gruenderArr;
-				}
-				else {
+				} else {
 					$klosterArr[$k]['gruender'] = '';
 				}
 
@@ -1193,8 +1191,7 @@ class DataExportController extends ActionController {
 
 				if (isset($wuestungArr) && !empty($wuestungArr)) {
 					$klosterArr[$k]['wuestung'] = $wuestungArr;
-				}
-				else {
+				} else {
 					$klosterArr[$k]['wuestung'] = '';
 				}
 
@@ -1224,8 +1221,7 @@ class DataExportController extends ActionController {
 
 				if (isset($ist_erzbistumArr) && !empty($ist_erzbistumArr)) {
 					$klosterArr[$k]['ist_erzbistum'] = $ist_erzbistumArr;
-				}
-				else {
+				} else {
 					$klosterArr[$k]['ist_erzbistum'] = '';
 				}
 
