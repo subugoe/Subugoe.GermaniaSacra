@@ -685,6 +685,7 @@ class DataExportController extends ActionController {
 
 					if (isset($orden) && $orden != 'evangelisches Kloster/Stift' && $orden != 'Reformiertes Stift (calvinistisch)') {
 						$klosterorden[$k][$i]['orden_facet'] = $orden;
+
 						$ordenFacetArr[] = $orden;
 					}
 
@@ -986,16 +987,19 @@ class DataExportController extends ActionController {
 									if (!empty($myorden['bemerkung_orden'])) {
 										$standort_ordenArr[$k][$m][$n]['bemerkung_orden'] = $myorden['bemerkung_orden'];
 									}
-									if (!empty($literatur_citekey)) {
-										$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = $literatur_citekey;
+
+									if (!empty($klosterArr[$k]['literatur_citekey'])) {
+										$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = $klosterArr[$k]['literatur_citekey'];
 									} else {
 										$standort_ordenArr[$k][$m][$n]['literatur_citekey'] = '';
 									}
-									if (!empty($literatur_beschreibung)) {
-										$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = $literatur_beschreibung;
+
+									if (!empty($klosterArr[$k]['literatur_beschreibung'])) {
+										$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = $klosterArr[$k]['literatur_beschreibung'];
 									} else {
 										$standort_ordenArr[$k][$m][$n]['literatur_beschreibung'] = '';
 									}
+
 									if (!empty($url_wikipedia)) {
 										$standort_ordenArr[$k][$m][$n]['url_wikipedia'] = $url_wikipedia;
 									}
