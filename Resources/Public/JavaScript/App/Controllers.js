@@ -6,81 +6,72 @@ germaniaSacra.controller('monasteryController', function($scope, $http) {
 	$scope.orderProp = 'kloster_id';
 });
 
-
-germaniaSacra.controller('bistumController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/bistum/list.json').success(function(data) {
+germaniaSacra.controller('bistumController', function($scope, Restangular) {
+	Restangular.allUrl('bistums', 'subugoe.germaniasacra/bistum/list.json').getList().then(function(data){
 		$scope.bistums = data;
 	});
 
-	$scope.orderProp = 'uid';
 });
 
-germaniaSacra.controller('ordenController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/orden/list.json').success(function(data) {
-		$scope.ordens = data;
-	});
-
-	$scope.orderProp = 'orden';
-});
-
-germaniaSacra.controller('ortController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/ort/list.json').success(function(data) {
-		$scope.orts = data;
-	});
-
-	$scope.orderProp = 'ort';
-});
-
-germaniaSacra.controller('bandController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/band/list.json').success(function(data) {
+germaniaSacra.controller('bandController', function($scope, Restangular) {
+	Restangular.allUrl('baende', 'subugoe.germaniasacra/band/list.json').getList().then(function(data){
 		$scope.baende = data;
 	});
 
-	$scope.orderProp = 'kurztitel';
 });
 
-germaniaSacra.controller('landController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/land/list.json').success(function(data) {
+germaniaSacra.controller('ortController', function($scope, Restangular) {
+	Restangular.allUrl('orts', 'subugoe.germaniasacra/ort/list.json').getList().then(function(data){
+		$scope.orts = data;
+	});
+
+});
+
+germaniaSacra.controller('ordenController', function($scope, Restangular) {
+	Restangular.allUrl('ordens', 'subugoe.germaniasacra/orden/list.json').getList().then(function(data){
+		$scope.ordens = data;
+	});
+});
+
+germaniaSacra.controller('landController', function($scope, Restangular) {
+	Restangular.allUrl('laender', 'subugoe.germaniasacra/land/list.json').getList().then(function(data){
 		$scope.laender = data;
 	});
-
-	$scope.orderProp = 'land';
 });
 
-germaniaSacra.controller('literaturController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/literatur/list.json').success(function(data) {
+germaniaSacra.controller('literaturController', function($scope, Restangular) {
+	Restangular.allUrl('laender', 'subugoe.germaniasacra/literatur/list.json').getList().then(function(data){
 		$scope.literature = data;
 	});
-
 	$scope.orderProp = 'citekey';
 });
 
-germaniaSacra.controller('bearbeitungsstatusController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/bearbeitungsstatus/list.json').success(function(data) {
+germaniaSacra.controller('bearbeitungsstatusController', function($scope, Restangular) {
+	Restangular.allUrl('bearbeitungsstatus', 'subugoe.germaniasacra/bearbeitungsstatus/list.json').getList().then(function(data){
 		$scope.bearbeitungsstatus = data;
 	});
 
 	$scope.orderProp = 'name';
 });
 
-germaniaSacra.controller('personallistenstatusController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/personallistenstatus/list.json').success(function(data) {
+germaniaSacra.controller('personallistenstatusController', function($scope, Restangular) {
+	Restangular.allUrl('personallistenstatus', 'subugoe.germaniasacra/personallistenstatus/list.json').getList().then(function(data){
 		$scope.personallistenstatus = data;
 	});
 
 	$scope.orderProp = 'name';
 });
 
-germaniaSacra.controller('ordenstypController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/ordenstyp/list.json').success(function(data) {
+germaniaSacra.controller('ordenstypController', function($scope, Restangular) {
+	Restangular.allUrl('ordenstyp', 'subugoe.germaniasacra/ordenstyp/list.json').getList().then(function(data){
 		$scope.ordenstyp = data;
 	});
 
 	$scope.orderProp = 'ordenstyp';
 });
 
-germaniaSacra.controller('urltypController', function($scope, $http) {
-	$http.get('subugoe.germaniasacra/urltyp/list.json').success(function(data) {
+germaniaSacra.controller('urltypController', function($scope, Restangular) {
+	Restangular.allUrl('urltyp', 'subugoe.germaniasacra/urltyp/list.json').getList().then(function(data){
 		$scope.urltyp = data;
 	});
 
