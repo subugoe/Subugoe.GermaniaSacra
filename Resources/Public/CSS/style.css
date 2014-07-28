@@ -3145,8 +3145,8 @@ input[type="file"] {
 /* We add basic fieldset styling */
 fieldset {
   border: 1px solid #dddddd;
-  padding: 1.25rem;
-  margin: 1.125rem 0;
+  padding: 0.625rem;
+  margin: 0.5625rem 0;
 }
 fieldset legend {
   font-weight: bold;
@@ -6761,12 +6761,14 @@ th.hide-for-touch {
     display: table-cell !important;
   }
 }
-#list_wrapper input, #list_wrapper select {
-  margin-top: -0.1875rem;
-  width: auto;
-}
 #list_wrapper div + div {
   margin-left: 1.5rem;
+}
+
+#list_length select,
+#list_filter input {
+  margin-top: -0.1875rem;
+  width: auto;
 }
 
 .dataTables_filter {
@@ -7596,7 +7598,7 @@ table.dataTable th:active {
 }
 
 body {
-  background: #e6e3d3;
+  background: #efede4;
   overflow-y: scroll;
 }
 body > section {
@@ -7604,8 +7606,13 @@ body > section {
 }
 
 button {
-  min-width: 4rem;
+  min-width: 2.5rem;
   padding: 0.6rem;
+}
+
+form span {
+  font-size: 0.875rem;
+  padding: 0.625rem 0.75rem;
 }
 
 textarea {
@@ -7618,13 +7625,19 @@ fieldset {
   border-top: 1px solid;
   margin-bottom: 0;
 }
+fieldset.highlight {
+  background: rgba(0, 0, 0, 0.1);
+  border: 0;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
+  margin: 0.625rem -0.625rem;
+  padding-bottom: 0.3125rem;
+  border-radius: 3px;
+}
 fieldset legend {
   background: none;
 }
-
-h1 + button {
+fieldset .add-remove-buttons {
   float: right;
-  margin-top: -3.5em;
 }
 
 label, .dataTables_info {
@@ -7702,7 +7715,7 @@ button {
 }
 
 input[type="checkbox"] {
-  height: 32px;
+  height: 1.75rem;
   margin-left: .5rem;
 }
 
@@ -7718,16 +7731,17 @@ textarea, .none.dataTables_info
 textarea {
   width: 100% !important;
 }
+#edit .large-2 > input, #edit .large-2 >
+select, #edit .large-2 >
+textarea {
+  margin-left: 1em;
+  width: 50%;
+}
 #edit .large-3 > input, #edit .large-3 >
 select, #edit .large-3 >
 textarea {
   margin-left: 1em;
   width: 33.33333%;
-}
-#edit .large-3.wide-label > input, #edit .large-3.wide-label >
-select, #edit .large-3.wide-label >
-textarea {
-  width: 0%;
 }
 #edit .large-4 > input, #edit .large-4 >
 select, #edit .large-4 >
@@ -7735,21 +7749,11 @@ textarea {
   margin-left: 1em;
   width: 50%;
 }
-#edit .large-4.wide-label > input, #edit .large-4.wide-label >
-select, #edit .large-4.wide-label >
-textarea {
-  width: 25%;
-}
 #edit .large-5 > input, #edit .large-5 >
 select, #edit .large-5 >
 textarea {
   margin-left: 1em;
   width: 60%;
-}
-#edit .large-5.wide-label > input, #edit .large-5.wide-label >
-select, #edit .large-5.wide-label >
-textarea {
-  width: 40%;
 }
 #edit .large-6 > input, #edit .large-6 >
 select, #edit .large-6 >
@@ -7757,21 +7761,11 @@ textarea {
   margin-left: 1em;
   width: 66.66667%;
 }
-#edit .large-6.wide-label > input, #edit .large-6.wide-label >
-select, #edit .large-6.wide-label >
-textarea {
-  width: 50%;
-}
 #edit .large-7 > input, #edit .large-7 >
 select, #edit .large-7 >
 textarea {
   margin-left: 1em;
   width: 71.42857%;
-}
-#edit .large-7.wide-label > input, #edit .large-7.wide-label >
-select, #edit .large-7.wide-label >
-textarea {
-  width: 57.14286%;
 }
 #edit .large-8 > input, #edit .large-8 >
 select, #edit .large-8 >
@@ -7779,21 +7773,11 @@ textarea {
   margin-left: 1em;
   width: 75%;
 }
-#edit .large-8.wide-label > input, #edit .large-8.wide-label >
-select, #edit .large-8.wide-label >
-textarea {
-  width: 62.5%;
-}
 #edit .large-9 > input, #edit .large-9 >
 select, #edit .large-9 >
 textarea {
   margin-left: 1em;
   width: 77.77778%;
-}
-#edit .large-9.wide-label > input, #edit .large-9.wide-label >
-select, #edit .large-9.wide-label >
-textarea {
-  width: 66.66667%;
 }
 #edit .large-10 > input, #edit .large-10 >
 select, #edit .large-10 >
@@ -7801,21 +7785,11 @@ textarea {
   margin-left: 1em;
   width: 80%;
 }
-#edit .large-10.wide-label > input, #edit .large-10.wide-label >
-select, #edit .large-10.wide-label >
-textarea {
-  width: 70%;
-}
 #edit .large-11 > input, #edit .large-11 >
 select, #edit .large-11 >
 textarea {
   margin-left: 1em;
   width: 81.81818%;
-}
-#edit .large-11.wide-label > input, #edit .large-11.wide-label >
-select, #edit .large-11.wide-label >
-textarea {
-  width: 72.72727%;
 }
 #edit .large-12 > input, #edit .large-12 >
 select, #edit .large-12 >
@@ -7823,17 +7797,12 @@ textarea {
   margin-left: 1em;
   width: 83.33333%;
 }
-#edit .large-12.wide-label > input, #edit .large-12.wide-label >
-select, #edit .large-12.wide-label >
-textarea {
-  width: 75%;
-}
 
 input.year {
-  background: #e6d3e0;
+  background: #def0f7;
 }
 input.year:focus {
-  background: #efe4ec;
+  background: #f2f9fc;
 }
 
 input[type=submit]:not([disabled]):active, input[type=submit]:not([disabled]):focus, input[type=submit]:not([disabled]):hover,
@@ -7872,6 +7841,18 @@ button,
 .clear,
 .multiple {
   clear: both;
+}
+
+.multiple.separator + .multiple {
+  border-top: 1px dotted;
+  padding-top: 0.625rem;
+}
+
+.bold,
+.bold input,
+.bold select,
+.bold textarea {
+  font-weight: bold;
 }
 
 #content {
