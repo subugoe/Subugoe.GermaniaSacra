@@ -39,23 +39,41 @@ class ProxyController extends ActionController {
 	protected $geoJsonUrl;
 
 	/**
+	 * @var \Guzzle\Http\Client
+	 */
+	protected $client;
+
+	/**
 	 * Initializes defaults
 	 */
 	public function initializeAction() {
-		$this->geoJsonUrl = $this->settings['data']['geoJson'];
+		$this->client = new \Guzzle\Http\Client();
 	}
 
 	/**
 	 * @return \Guzzle\Http\EntityBodyInterface|string
 	 */
 	public function geoJsonAction() {
-		$client = new \Guzzle\Http\Client();
-		$request = $client->get($this->geoJsonUrl);
+		$geoJsonUrl = $this->settings['data']['geoJson'];
+		$request = $this->client->get($geoJsonUrl);
+		$response = $request->send();
+		if ($response->getBody()) {
+			$geoJson = $response->getBody();
+			return $geoJson;
+		}
+		return '';
+	}
+
+	/**
+	 * @return \Guzzle\Http\EntityBodyInterface|string
+	 */
+	public function literatureAction() {
+		$literatureUrl = $this->settings['data']['literature'];
+		$request = $this->client->get($literatureUrl);
 		$response = $request->send();
 		if ($response->getBody()) {
 			return $response->getBody();
-		} else {
-			return '';
 		}
+		return '';
 	}
 } 
