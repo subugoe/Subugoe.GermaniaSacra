@@ -425,6 +425,14 @@ class DataExportController extends ActionController {
 									$von_verbalArr[] = (string)$von_von;
 									$von_verbal = (string)$von_von;
 								}
+								else {
+									$von_verbalArr[] = '';
+									$von_verbal = '';
+								}
+							}
+							else {
+								$von_verbalArr[] = '';
+								$von_verbal = '';
 							}
 						}
 
@@ -472,6 +480,14 @@ class DataExportController extends ActionController {
 										$bis_verbal = (string)$bis_von;
 									}
 								}
+								else {
+									$bis_verbalArr[] = '';
+									$bis_verbal = '';
+								}
+							}
+							else {
+								$bis_verbalArr[] = '';
+								$bis_verbal = '';
 							}
 						}
 
@@ -515,10 +531,11 @@ class DataExportController extends ActionController {
 							}
 
 							$wuestung = $ortObj->getWuestung();
-							if (!empty($wuestung)) {
+							if ($wuestung) {
 								$wuestungArr[] = $wuestung;
 								$klosterstandorte[$k][$i]['wuestung'] = $wuestung;
 							} else {
+								$wuestungArr[] = '';
 								$klosterstandorte[$k][$i]['wuestung'] = '';
 							}
 
@@ -558,8 +575,15 @@ class DataExportController extends ActionController {
 								$klosterstandorte[$k][$i]['bistum_uid'] = $bistumuid;
 
 								$bistum = $bistumObj->getBistum();
-								$bistumArr[] = $bistum;
-								$klosterstandorte[$k][$i]['bistum'] = $bistum;
+
+								if (!empty($bistum)) {
+									$bistumArr[] = $bistum;
+									$klosterstandorte[$k][$i]['bistum'] = $bistum;
+								}
+								else {
+									$bistumArr[] = '';
+									$klosterstandorte[$k][$i]['bistum'] = '';
+								}
 
 								$kirchenprovinz = $bistumObj->getKirchenprovinz();
 								$kirchenprovinzArr[] = $kirchenprovinz;
@@ -570,6 +594,7 @@ class DataExportController extends ActionController {
 									$ist_erzbistumArr[] = $ist_erzbistum;
 									$klosterstandorte[$k][$i]['ist_erzbistum'] = $ist_erzbistum;
 								} else {
+									$ist_erzbistumArr[] = '';
 									$klosterstandorte[$k][$i]['ist_erzbistum'] = '';
 								}
 
@@ -590,6 +615,12 @@ class DataExportController extends ActionController {
 										}
 									}
 								}
+							}
+							else {
+								$bistumArr[] = '';
+								$klosterstandorte[$k][$i]['bistum'] = '';
+								$ist_erzbistumArr[] = '';
+								$klosterstandorte[$k][$i]['ist_erzbistum'] = '';
 							}
 						}
 
@@ -717,6 +748,14 @@ class DataExportController extends ActionController {
 								$ko_von_verbalArr[] = (string)$ko_von_von;
 								$ko_von_verbal = (string)$ko_von_von;
 							}
+							else {
+								$ko_von_verbalArr[] = '';
+								$ko_von_verbal = '';
+							}
+						}
+						else {
+							$ko_von_verbalArr[] = '';
+							$ko_von_verbal = '';
 						}
 					}
 
@@ -761,6 +800,14 @@ class DataExportController extends ActionController {
 								$ko_bis_verbalArr[] = (string)$ko_bis_von;
 								$ko_bis_verbal = (string)$ko_bis_von;
 							}
+							else {
+								$ko_bis_verbalArr[] = '';
+								$ko_bis_verbal = '';
+							}
+						}
+						else {
+							$ko_bis_verbalArr[] = '';
+							$ko_bis_verbal = '';
 						}
 					}
 
@@ -1076,52 +1123,76 @@ class DataExportController extends ActionController {
 					$klosterArr[$k]['person_name'] = $person_nameArr;
 				}
 
+				unset($person_nameArr);
+
 				if (isset($person_namensalternativenArr) && !empty($person_namensalternativenArr)) {
 					$klosterArr[$k]['person_namensalternativen'] = $person_namensalternativenArr;
 				}
+
+				unset($person_namensalternativenArr);
 
 				if (isset($person_gsoArr) && !empty($person_gsoArr)) {
 					$klosterArr[$k]['person_gso'] = $person_gsoArr;
 				}
 
+				unset($person_gsoArr);
+
 				if (isset($person_gndArr) && !empty($person_gndArr)) {
 					$klosterArr[$k]['person_gnd'] = $person_gndArr;
 				}
+
+				unset($person_gndArr);
 
 				if (isset($person_bezeichnungArr) && !empty($person_bezeichnungArr)) {
 					$klosterArr[$k]['person_bezeichnung'] = $person_bezeichnungArr;
 				}
 
+				unset($person_bezeichnungArr);
+
 				if (isset($person_bezeichnung_pluralArr) && !empty($person_bezeichnung_pluralArr)) {
 					$klosterArr[$k]['person_bezeichnung_plural'] = $person_bezeichnung_pluralArr;
 				}
+
+				unset($person_bezeichnung_pluralArr);
 
 				if (isset($person_anmerkungArr) && !empty($person_anmerkungArr)) {
 					$klosterArr[$k]['person_anmerkung'] = $person_anmerkungArr;
 				}
 
+				unset($person_anmerkungArr);
+
 				if (isset($person_von_verbalArr) && !empty($person_von_verbalArr)) {
 					$klosterArr[$k]['person_von_verbal'] = $person_von_verbalArr;
 				}
+
+				unset($person_von_verbalArr);
 
 				if (isset($person_vonArr) && !empty($person_vonArr)) {
 					$klosterArr[$k]['person_von'] = $person_vonArr;
 				}
 
+				unset($person_vonArr);
+
 				if (isset($person_bis_verbalArr) && !empty($person_bis_verbalArr)) {
 					$klosterArr[$k]['person_bis_verbal'] = $person_bis_verbalArr;
 				}
+
+				unset($person_bis_verbalArr);
 
 				if (isset($person_bisArr) && !empty($person_bisArr)) {
 					$klosterArr[$k]['person_bis'] = $person_bisArr;
 				}
 
+				unset($person_bisArr);
+
 				if (isset($person_office_idArr) && !empty($person_office_idArr)) {
 					$klosterArr[$k]['person_office_id'] = $person_office_idArr;
 				}
 
+				unset($person_office_idArr);
+
 				if (isset($standortuidArr) && !empty($standortuidArr)) {
-					$klosterArr[$k]['standort_uid'] = array_unique($standortuidArr);
+					$klosterArr[$k]['standort_uid'] = $standortuidArr;
 				}
 
 				if (isset($koordinatenArr) && !empty($koordinatenArr)) {
@@ -1182,7 +1253,7 @@ class DataExportController extends ActionController {
 				}
 
 				if (isset($ortuidArr) && !empty($ortuidArr)) {
-					$klosterArr[$k]['ort_uid'] = array_unique($ortuidArr);
+					$klosterArr[$k]['ort_uid'] = $ortuidArr;
 				}
 
 				if (isset($kreisArr) && !empty($kreisArr)) {
@@ -1212,11 +1283,14 @@ class DataExportController extends ActionController {
 				}
 
 				if (isset($bistumuidArr) && !empty($bistumuidArr)) {
-					$klosterArr[$k]['bistum_uid'] = array_unique($bistumuidArr);
+					$klosterArr[$k]['bistum_uid'] = $bistumuidArr;
 				}
 
 				if (isset($bistumArr) && !empty($bistumArr)) {
 					$klosterArr[$k]['bistum'] = $bistumArr;
+				}
+				else {
+					$klosterArr[$k]['bistum'] = '';
 				}
 
 				if (isset($kirchenprovinzArr) && !empty($kirchenprovinzArr)) {
