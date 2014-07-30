@@ -222,17 +222,79 @@ class DataImportController extends ActionController {
 	 */
 	protected $citekeysFilenamePath;
 
+	/**
+	 * @var string
+	 */
+	protected $inkKlosterDumpFilenamePath;
+
+	/**
+	 * @var string
+	 */
+	protected $cacertFilenamePath;
+
+	/**
+	 * @var string
+	 */
+	protected $cacertSourcePath;
+
+	/**
+	 * @var string
+	 */
+	protected $cacertDestPath;
+
+	/**
+	 * @var \Github\Client
+	 */
+	protected $client;
+
+	/**
+	 * @var \Github\Client
+	 */
+	protected $method;
+
 	const accessDumpFilename = 'klosterdatenbankdump.sql';
 
 	const citekeysFilename = 'GS-citekeys.csv';
+
+	const cacertFilename = 'cacert.pem';
+
+	const inkKlosterDumpFilename = 'inkKlosterDump.sql';
+
+	const cacertSource = 'Packages/Libraries/guzzle/guzzle/src/Guzzle/Http/Resources/cacert.pem';
+
+	const cacertDest = 'Data/GermaniaSacra/Dump/cacert.pem';
+
+	const  githubUser = 'subugoe';
+
+	const githubRepository = 'GermaniaSacra-dumps';
 
 	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
 		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump';
 		$this->accessDumpFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::accessDumpFilename;
 		$this->citekeysFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::citekeysFilename;
+		$this->inkKlosterDumpFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::inkKlosterDumpFilename;
+		$this->cacertFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::cacertFilename;
+		$this->cacertSourcePath = FLOW_PATH_ROOT . self::cacertSource;
+		$this->cacertDestPath = FLOW_PATH_ROOT . self::cacertDest;
 		$this->logger = $logger;
 		$this->settings = $settings;
+		$this->client = new \Github\Client();
+		$this->method = \Github\Client::AUTH_URL_TOKEN;
+
+		if (!$this->logger) {
+					$log = new \TYPO3\Flow\Log\LoggerFactory();
+
+					$this->logger = $log->create(
+							'GermaniaSacra',
+							'TYPO3\Flow\Log\Logger',
+							'\TYPO3\Flow\Log\Backend\FileBackend',
+							array(
+									'logFileUrl' => FLOW_PATH_DATA . 'GermaniaSacra/Log/inkKlosterDump.log',
+									'createParentDirectories' => TRUE
+							)
+					);
+				}
 	}
 
 	/**
@@ -757,160 +819,194 @@ class DataImportController extends ActionController {
 				$creationdate = $kloster['Datensatz_angelegt'];
 				$uid = $kloster['Klosternummer'];
 				$bearbeiter = $kloster['Bearbeiter'];
-				$bearbeiterObject = $this->bearbeiterRepository->findOneByUid($bearbeiter);
 				$bearbeitungsstatus = $kloster['Status'];
-				/** @var Bearbeitungsstatus $bearbeitungsstatusObject */
-				$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findOneByName($bearbeitungsstatus);
-				$personallistenstatus = $kloster['Personallisten'];
-				/** @var Personallistenstatus $personallistenstatusObject */
-				$personallistenstatusObject = $this->personallistenstatusRepository->findOneByName($personallistenstatus);
-				$band = $kloster['GermaniaSacraBandNr'];
-				$band_seite = $kloster['GSBandSeite'];
-				$text_gs_band = $kloster['TextGSBand'];
-				$kloster_id = $kloster['Klosternummer'];
-				$kloster = $kloster['Klostername'];
-				$klosterObject = new Kloster();
-				$klosterObject->setUid($uid);
-				if (is_object($bearbeiterObject)) {
-					$klosterObject->setBearbeiter($bearbeiterObject);
-				}
-				if (is_object($bearbeitungsstatusObject) AND $bearbeitungsstatusObject->getName() !== NULL) {
-					$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
-				} else {
-					// @TODO add something reasonable here ...
-					$lastBearbeitungsstatusEntry = $this->bearbeitungsstatusRepository->findLastEntry();
-					$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry['uid'] + 1;
-					$bearbeitungsstatusObject = new Bearbeitungsstatus();
-					$bearbeitungsstatusObject->setUid($bearbeitungsstatusUid);
-					$bearbeitungsstatusObject->setName($bearbeitungsstatus);
-					$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObject);
-					$this->persistenceManager->persistAll();
-					$bearbeitungsstatusUUID = $bearbeitungsstatusObject->getUUID();
-					$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatusUUID);
-					$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
-					$this->logger->log('Bearbeitungsstatus "' . $bearbeitungsstatus . '" was missing in Bearbeitungsstatus table. It is added now. Kloster entry: ' . $klosterObject->getUid());
+				$personallistenstatus = trim($kloster['Personallisten']);
 
-				}
-				if (is_object($personallistenstatusObject)) {
-					$klosterObject->setPersonallistenstatus($personallistenstatusObject);
-				}
-				$klosterObject->setKloster_id($uid);
-				$klosterObject->setKloster($kloster);
-				$klosterObject->setPatrozinium($patrozinium);
-				$klosterObject->setBemerkung($bemerkung);
-				if (null !== $band) {
-					/** @var Band $bandObject */
-					$bandObject = $this->bandRepository->findOneByUid($band);
-					$klosterObject->setBand($bandObject);
-				}
-				$klosterObject->setBand_seite($band_seite);
-				$klosterObject->setText_gs_band($text_gs_band);
-				$klosterObject->setBearbeitungsstand($bearbeitungsstand);
-				$klosterObject->setcreationDate(new \DateTime($creationdate));
-				$this->klosterRepository->add($klosterObject);
-				$this->persistenceManager->persistAll();
-				$klosterUUID = $klosterObject->getUUID();
-				if ($hauptRessource) {
-					$parts = explode("#", $hauptRessource);
-					if (count($parts) > 1) {
-						$urlTypeName = "Quelle";
-						if (!isset($urltypUUID)) {
-							$urltypObject = new Urltyp();
-							$urltypObject->setName($urlTypeName);
-							$this->urltypRepository->add($urltypObject);
-							$this->persistenceManager->persistAll();
-						}
-						$urlObject = new Url();
-						$urlObject->setUrl($parts[1]);
-						$urlObject->setBemerkung($parts[0]);
-						/** @var UrlTyp $urltypObject */
-						$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
-						$urlObject->setUrltyp($urltypObject);
-						$this->urlRepository->add($urlObject);
-						$this->persistenceManager->persistAll();
-						$urlUUID = $urlObject->getUUID();
-						$klosterhasurlObject = new Klosterhasurl();
-						/** @var Kloster $klosterObject */
-						$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
-						$klosterhasurlObject->setKloster($klosterObject);
-						/** @var Url $urlObject */
-						$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
-						$klosterhasurlObject->setUrl($urlObject);
-						$this->klosterHasUrlRepository->add($klosterhasurlObject);
-						$this->persistenceManager->persistAll();
-					}
-				}
+				if (!empty($bearbeiter)) {
+					/** @var Bearbeiter $bearbeiterObject */
+					$bearbeiterObject = $this->bearbeiterRepository->findOneByUid($bearbeiter);
 
-				if (isset($gnd) && !empty($gnd)) {
-					$gnd = str_replace("\t", " ", $gnd);
-					$gnd = str_replace("http:// ", " ", $gnd);
-					$gnd = str_replace(" http", ";http", $gnd);
-					$gnd = str_replace(";", "#", $gnd);
-					$gnds = explode("#", $gnd);
-					if (isset($gnds) && is_array($gnds)) {
-						$oldgnd = "";
-						foreach ($gnds as $gnd) {
-							if (isset($gnd) && !empty($gnd)) {
-								if ($gnd != $oldgnd) {
-									$gnd = str_replace(" ", "", $gnd);
-									$gnd = str_replace("# ", "", $gnd);
-									$gndid = str_replace("http://d-nb.info/gnd/", "", $gnd);
-									$gndbemerkung = $kloster . " [" . $gndid . "]";
-									$urlObject = new Url();
-									$urlObject->setUrl($gnd);
-									$urlObject->setBemerkung($gndbemerkung);
-									/** @var UrlTyp $gndurltypObject */
-									$gndurltypObject = $this->urltypRepository->findByIdentifier($gndurltypUUID);
-									$urlObject->setUrltyp($gndurltypObject);
-									$this->urlRepository->add($urlObject);
-									$this->persistenceManager->persistAll();
-									$gndurlUUID = $urlObject->getUUID();
-									$oldgnd = $gnd;
-									$klosterhasurlObject = new Klosterhasurl();
-									/** @var Kloster $klosterObject */
-									$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
-									$klosterhasurlObject->setKloster($klosterObject);
-									/** @var Url $gndurlObject */
-									$gndurlObject = $this->urlRepository->findByIdentifier($gndurlUUID);
-									$klosterhasurlObject->setUrl($gndurlObject);
-									$this->klosterHasUrlRepository->add($klosterhasurlObject);
-									$this->persistenceManager->persistAll();
+					if (!empty($bearbeitungsstatus)) {
+						/** @var Bearbeitungsstatus $bearbeitungsstatusObject */
+						$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findOneByName($bearbeitungsstatus);
+
+							if (!empty($personallistenstatus)) {
+								/** @var Personallistenstatus $personallistenstatusObject */
+								$personallistenstatusObject = $this->personallistenstatusRepository->findOneByName($personallistenstatus);
+								$band = $kloster['GermaniaSacraBandNr'];
+								$band_seite = $kloster['GSBandSeite'];
+								$text_gs_band = $kloster['TextGSBand'];
+								$kloster_id = $kloster['Klosternummer'];
+								$kloster = $kloster['Klostername'];
+								$klosterObject = new Kloster();
+								$klosterObject->setUid($uid);
+								if (is_object($bearbeiterObject)) {
+									$klosterObject->setBearbeiter($bearbeiterObject);
 								}
+								if (is_object($bearbeitungsstatusObject) AND $bearbeitungsstatusObject->getName() !== NULL) {
+									$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
+								} else {
+									// @TODO add something reasonable here ...
+									$lastBearbeitungsstatusEntry = $this->bearbeitungsstatusRepository->findLastEntry();
+									$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry['uid'] + 1;
+									$bearbeitungsstatusObject = new Bearbeitungsstatus();
+									$bearbeitungsstatusObject->setUid($bearbeitungsstatusUid);
+									$bearbeitungsstatusObject->setName($bearbeitungsstatus);
+									$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObject);
+									$this->persistenceManager->persistAll();
+									$bearbeitungsstatusUUID = $bearbeitungsstatusObject->getUUID();
+									$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatusUUID);
+									$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
+									$this->logger->log('Bearbeitungsstatus "' . $bearbeitungsstatus . '" was missing in Bearbeitungsstatus table. It is added now. Kloster entry: ' . $klosterObject->getUid());
+
+								}
+								if (is_object($personallistenstatusObject)) {
+									$klosterObject->setPersonallistenstatus($personallistenstatusObject);
+								}
+								$klosterObject->setKloster_id($uid);
+								$klosterObject->setKloster($kloster);
+								$klosterObject->setPatrozinium($patrozinium);
+								$klosterObject->setBemerkung($bemerkung);
+								if (null !== $band) {
+									/** @var Band $bandObject */
+									$bandObject = $this->bandRepository->findOneByUid($band);
+									$klosterObject->setBand($bandObject);
+								}
+								$klosterObject->setBand_seite($band_seite);
+								$klosterObject->setText_gs_band($text_gs_band);
+								$klosterObject->setBearbeitungsstand($bearbeitungsstand);
+								$klosterObject->setcreationDate(new \DateTime($creationdate));
+								$this->klosterRepository->add($klosterObject);
+								$this->persistenceManager->persistAll();
+								$klosterUUID = $klosterObject->getUUID();
+								if ($hauptRessource) {
+									$parts = explode("#", $hauptRessource);
+									if (count($parts) > 1) {
+										$urlTypeName = "Quelle";
+										if (!isset($urltypUUID)) {
+											$urltypObject = new Urltyp();
+											$urltypObject->setName($urlTypeName);
+											$this->urltypRepository->add($urltypObject);
+											$this->persistenceManager->persistAll();
+										}
+										$urlObject = new Url();
+										$urlObject->setUrl($parts[1]);
+										$urlObject->setBemerkung($parts[0]);
+										/** @var UrlTyp $urltypObject */
+										$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
+										$urlObject->setUrltyp($urltypObject);
+										$this->urlRepository->add($urlObject);
+										$this->persistenceManager->persistAll();
+										$urlUUID = $urlObject->getUUID();
+										$klosterhasurlObject = new Klosterhasurl();
+										/** @var Kloster $klosterObject */
+										$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
+										$klosterhasurlObject->setKloster($klosterObject);
+										/** @var Url $urlObject */
+										$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
+										$klosterhasurlObject->setUrl($urlObject);
+										$this->klosterHasUrlRepository->add($klosterhasurlObject);
+										$this->persistenceManager->persistAll();
+									}
+								}
+
+								if (isset($gnd) && !empty($gnd)) {
+									$gnd = str_replace("\t", " ", $gnd);
+									$gnd = str_replace("http:// ", " ", $gnd);
+									$gnd = str_replace(" http", ";http", $gnd);
+									$gnd = str_replace(";", "#", $gnd);
+									$gnds = explode("#", $gnd);
+									if (isset($gnds) && is_array($gnds)) {
+										$oldgnd = "";
+										foreach ($gnds as $gnd) {
+											if (isset($gnd) && !empty($gnd)) {
+												if ($gnd != $oldgnd) {
+													$gnd = str_replace(" ", "", $gnd);
+													$gnd = str_replace("# ", "", $gnd);
+													$gndid = str_replace("http://d-nb.info/gnd/", "", $gnd);
+													$gndbemerkung = $kloster . " [" . $gndid . "]";
+													$urlObject = new Url();
+													$urlObject->setUrl($gnd);
+													$urlObject->setBemerkung($gndbemerkung);
+													/** @var UrlTyp $gndurltypObject */
+													$gndurltypObject = $this->urltypRepository->findByIdentifier($gndurltypUUID);
+													$urlObject->setUrltyp($gndurltypObject);
+													$this->urlRepository->add($urlObject);
+													$this->persistenceManager->persistAll();
+													$gndurlUUID = $urlObject->getUUID();
+													$oldgnd = $gnd;
+													$klosterhasurlObject = new Klosterhasurl();
+													/** @var Kloster $klosterObject */
+													$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
+													$klosterhasurlObject->setKloster($klosterObject);
+													/** @var Url $gndurlObject */
+													$gndurlObject = $this->urlRepository->findByIdentifier($gndurlUUID);
+													$klosterhasurlObject->setUrl($gndurlObject);
+													$this->klosterHasUrlRepository->add($klosterhasurlObject);
+													$this->persistenceManager->persistAll();
+												}
+											}
+										}
+									}
+								}
+								if (isset($wikipedia) && !empty($wikipedia)) {
+									$wikipedia = str_replace("http:// ", " ", $wikipedia);
+									$wikipedia = str_replace(";", "#", $wikipedia);
+									$wikipedias = explode("#", $wikipedia);
+									if (isset($wikipedias) && is_array($wikipedias)) {
+										$oldwikipedia = "";
+										foreach ($wikipedias as $wikipedia) {
+											if (isset($wikipedia) && !empty($wikipedia)) {
+												if ($wikipedia != $oldwikipedia) {
+													$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
+													$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
+													$wikipediabemerkung = rawurldecode($wikipediabemerkung);
+													$urlObject = new Url();
+													$urlObject->setUrl($wikipedia);
+													$urlObject->setBemerkung($wikipediabemerkung);
+													$wikiurltypObject = $this->urltypRepository->findByIdentifier($wikiurltypUUID);
+													$urlObject->setUrltyp($wikiurltypObject);
+													$this->urlRepository->add($urlObject);
+													$this->persistenceManager->persistAll();
+													$wikiurlUUID = $urlObject->getUUID();
+													$oldwikipedia = $wikipedia;
+													$klosterhasurlObject = new Klosterhasurl();
+													$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
+													$klosterhasurlObject->setKloster($klosterObject);
+													$wikiurlObject = $this->urlRepository->findByIdentifier($wikiurlUUID);
+													$klosterhasurlObject->setUrl($wikiurlObject);
+													$this->klosterHasUrlRepository->add($klosterhasurlObject);
+													$this->persistenceManager->persistAll();
+												}
+											}
+										}
+									}
+								}
+							}
+							else {
+								echo 'Personallistenstatus zum Kloster ' . $uid . 'fehlt.<br>';
+								$this->logger->log('Personallistenstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+							}
+						}
+						else {
+							echo 'Bearbeitunsstatus zum Kloster ' . $uid . 'fehlt.<br>';
+							$this->logger->log('Bearbeitungsstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+							if (empty($personallistenstatus)) {
+								echo 'Personallistenstatus zum Kloster ' . $uid . 'fehlt.<br>';
+								$this->logger->log('Personallistenstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
 							}
 						}
 					}
-				}
-				if (isset($wikipedia) && !empty($wikipedia)) {
-					$wikipedia = str_replace("http:// ", " ", $wikipedia);
-					$wikipedia = str_replace(";", "#", $wikipedia);
-					$wikipedias = explode("#", $wikipedia);
-					if (isset($wikipedias) && is_array($wikipedias)) {
-						$oldwikipedia = "";
-						foreach ($wikipedias as $wikipedia) {
-							if (isset($wikipedia) && !empty($wikipedia)) {
-								if ($wikipedia != $oldwikipedia) {
-									$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
-									$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
-									$wikipediabemerkung = rawurldecode($wikipediabemerkung);
-									$urlObject = new Url();
-									$urlObject->setUrl($wikipedia);
-									$urlObject->setBemerkung($wikipediabemerkung);
-									$wikiurltypObject = $this->urltypRepository->findByIdentifier($wikiurltypUUID);
-									$urlObject->setUrltyp($wikiurltypObject);
-									$this->urlRepository->add($urlObject);
-									$this->persistenceManager->persistAll();
-									$wikiurlUUID = $urlObject->getUUID();
-									$oldwikipedia = $wikipedia;
-									$klosterhasurlObject = new Klosterhasurl();
-									$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
-									$klosterhasurlObject->setKloster($klosterObject);
-									$wikiurlObject = $this->urlRepository->findByIdentifier($wikiurlUUID);
-									$klosterhasurlObject->setUrl($wikiurlObject);
-									$this->klosterHasUrlRepository->add($klosterhasurlObject);
-									$this->persistenceManager->persistAll();
-								}
-							}
-						}
+				else {
+					echo 'Bearbeiter zum Kloster ' . $uid . ' fehlt.<br>';
+					$this->logger->log('Bearbeiter zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+					if (empty($bearbeitungsstatus)) {
+						echo 'Bearbeitunsstatus zum Kloster ' . $uid . ' fehlt.<br>';
+						$this->logger->log('Bearbeitungsstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+					}
+					if (empty($personallistenstatus)) {
+						echo 'Personallistenstatus zum Kloster ' . $uid . ' fehlt.<br>';
+						$this->logger->log('Personallistenstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
 					}
 				}
 			}
@@ -1526,7 +1622,6 @@ class DataImportController extends ActionController {
 		$this->logger->log("Die Tabelle " . $tbl . " wurde entleert.");
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
-		exit;
 	}
 
 	/**
@@ -1923,30 +2018,42 @@ class DataImportController extends ActionController {
 
 	public function importDumpFromGithubAction() {
 
-		$client = new \Github\Client();
-
-		$method = \Github\Client::AUTH_URL_TOKEN;
-
-		$client->authenticate($this->settings['git']['token'], $password='', $method);
-
-		$accessDumpBlob = $client->api('git_data')->blobs()->show($this->settings['git']['user'], $this->settings['git']['repository'], $this->settings['git']['accessDumpHash']);
-		$accessDumpBlob = base64_decode($accessDumpBlob['content']);
-
-		$citekeysBlob = $client->api('git_data')->blobs()->show($this->settings['git']['user'], $this->settings['git']['repository'], $this->settings['git']['citekeysHash']);
-		$citekeysBlob = base64_decode($citekeysBlob['content']);
-
 		if (!is_dir($this->dumpDirectory)) {
-			mkdir($this->dumpDirectory, 0755);
+			if (!mkdir($this->dumpDirectory, 0755)) {
+				throw new \TYPO3\Flow\Resource\Exception('Can\'t create the dump directory.', 1406720986);
+			}
 		}
+
 		if (is_file($this->accessDumpFilenamePath)) {
-			unlink($this->accessDumpFilenamePath);
+			if (!unlink($this->accessDumpFilenamePath)) {
+				throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the access dump file.', 1406721004);
+			}
 		}
+
+		if (is_file($this->citekeysFilenamePath)) {
+			if (!unlink($this->citekeysFilenamePath)) {
+				throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the citekeys file.', 1406721013);
+			}
+		}
+
+		if (!is_file($this->cacertFilenamePath)) {
+			if (!copy($this->cacertSourcePath, $this->cacertDestPath)) {
+				throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
+			}
+		}
+
+		$this->client->authenticate($this->settings['git']['token'], $password='', $this->method);
+		$accessDumpHash = $this->getFileHashAction($this->client, self::accessDumpFilename);
+		$accessDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $accessDumpHash);
+		$accessDumpBlob = base64_decode($accessDumpBlob['content']);
+		$citekeysHash = $this->getFileHashAction($this->client, self::citekeysFilename);
+		$citekeysBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $citekeysHash);
+		$citekeysBlob = base64_decode($citekeysBlob['content']);
 
 		$mode = 'w';
 		$fp = fopen($this->accessDumpFilenamePath, $mode);
 		if (!$fp) {
-			echo 'Can\'t create the access dump file.';
-			return false;
+			throw new \TYPO3\Flow\Resource\Exception('Can\'t create the access dump file.', 1406721039);
 		}
 		else {
 			fwrite ($fp, $accessDumpBlob);
@@ -1955,15 +2062,102 @@ class DataImportController extends ActionController {
 
 		$fp = fopen($this->citekeysFilenamePath, $mode);
 		if (!$fp) {
-			echo 'Can\'t create the citekeys csv file.';
-			return false;
+			throw new \TYPO3\Flow\Resource\Exception('Can\'t create the citekeys csv file.', 1406721048);
 		}
 		else {
 			fwrite ($fp, $citekeysBlob);
 			fclose($fp);
 		}
+
+		return true;
+	}
+
+	/**
+	 * import incremental kloster data from within FLOW into db kloster table
+	 * @return void
+	 */
+	public function importInkKlosterDataDumpAction() {
+		$this->client->authenticate($this->settings['git']['token'], $password='', $this->method);
+		$inkKlosterDumpHash = $this->getFileHashAction($this->client, self::inkKlosterDumpFilename);
+		$inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
+		$inkKlosterDumpBlob = base64_decode($inkKlosterDumpBlob['content']);
+		if (!is_dir($this->dumpDirectory)) {
+			if (!mkdir($this->dumpDirectory, 0755)) {
+				throw new \TYPO3\Flow\Resource\Exception('Can\'t create the dump directory.', 1406721061);
+			}
+		}
+		if (is_file($this->inkKlosterDumpFilenamePath)) {
+			if (!unlink($this->inkKlosterDumpFilenamePath)) {
+				throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the incremental kloster dump file.', 1406721073);
+			}
+		}
+
+		$mode = 'w';
+		$fp = fopen($this->inkKlosterDumpFilenamePath, $mode);
+		if (!$fp) {
+			throw new \TYPO3\Flow\Resource\Exception('Can\'t create the incremental kloster dump file.', 1406721082);
+		}
+		else {
+			fwrite ($fp, $inkKlosterDumpBlob);
+			fclose($fp);
+		}
+
+		$this->delAccessKlosterTabAction();
+		$this->importAccessInkKlosterDataAction();
+		$this->importKlosterAction();
+		$this->delAccessKlosterTabAction();
+
+		echo "Inkrementelle Kloster-Dump wurde importiert.";
+		exit;
+
+	}
+
+	/**
+	 * import access incremental kloster data dump
+	 * @return void
+	 */
+	public function importAccessInkKlosterDataAction() {
+		$logger = new \TYPO3\Flow\Log\Logger();
+		$dumpFileName = 'inkKlosterDump.sql';
+		if (!is_dir($this->dumpDirectory)) {
+			throw new \TYPO3\Flow\Resource\Exception;
+		}
+		if (!file_exists($this->dumpDirectory . '/' . $dumpFileName)) {
+			throw new \TYPO3\Flow\Resource\Exception(1398846324);
+		}
+		$sql = file_get_contents($this->dumpDirectory . '/' . $dumpFileName);
+		$sql = str_replace('tblKlosterStammblatt', 'Kloster', $sql);
+		$sql = str_replace('`Datensatz angelegt`', '`Datensatz_angelegt`', $sql);
+		$sqlConnection = $this->entityManager->getConnection();
+		$sqlConnection->executeUpdate($sql);
+	}
+
+	public function delAccessKlosterTabAction() {
+		$sqlConnection = $this->entityManager->getConnection();
+		$tbl = 'Kloster';
+		$sql = 'DROP TABLE IF EXISTS  ' . $tbl;
+		$sqlConnection->executeUpdate($sql);
+	}
+
+	/**
+	 * get file hash from Github for getting the corresponding blob
+	 * @return string $inkKlosterDumHash
+	 */
+
+	private function getFileHashAction($client, $filename) {
+		$refs = $client->api('git_data')->references()->branches(self::githubUser, self::githubRepository);
+		$masterSha = $refs[0]['object']['sha'];
+		$trees = $this->client->api('git_data')->trees()->show(self::githubUser, self::githubRepository, $masterSha);
+
+		foreach ($trees['tree'] as $k => $tree) {
+			if ($tree['path'] == $filename) {
+				$inkKlosterDumHash = $tree['sha'];
+			}
+		}
+
+		return $inkKlosterDumHash;
+
 	}
 
 }
-
 ?>
