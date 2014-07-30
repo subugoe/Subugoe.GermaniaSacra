@@ -63,6 +63,7 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 */
 	public function alisImportCommand() {
 		$this->logger->log('Data import may take over 5 minutes. Do not exit.');
+		/** @var DataImportController $importer */
 		$importer = new DataImportController($this->logger, $this->settings);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
@@ -100,6 +101,26 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$exporter->injectSettings($this->settings);
 		$exporter->initializeAction();
 		$exporter->mysql2solrExportAction();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function alisInkKlosterImportCommand() {
+		/** @var DataImportController $importer */
+		$importer = new DataImportController($this->logger, $this->settings);
+		$sqlConnection = $this->entityManager->getConnection();
+		$sql = 'SET unique_checks = 0';
+		$sqlConnection->executeUpdate($sql);
+		$sql = 'SET foreign_key_checks = 0';
+		$sqlConnection->executeUpdate($sql);
+		$importer->delAccessKlosterTabAction();
+		$importer->importAccessInkKlosterDataAction();
+		$importer->importKlosterAction();
+		$sql = 'SET foreign_key_checks = 1';
+		$sqlConnection->executeUpdate($sql);
+		$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+		$this->logger->log('Import completed in ' . $time . ' seconds.');
 	}
 
 }
