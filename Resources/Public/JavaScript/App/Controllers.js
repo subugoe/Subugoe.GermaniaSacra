@@ -47,13 +47,6 @@ germaniaSacra.controller('landController', function($scope, Restangular, DTOptio
 		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
 });
 
-<<<<<<< Updated upstream
-germaniaSacra.controller('literaturController', function($scope, Restangular) {
-	Restangular.allUrl('laender', 'subugoe.germaniasacra/literatur/list.json').getList().then(function(data){
-		$scope.literature = data;
-	});
-	$scope.orderProp = 'citekey';
-=======
 germaniaSacra.controller('literaturController', function($scope, Restangular, DTOptionsBuilder) {
 	Restangular.allUrl('literature', 'subugoe.germaniasacra/proxy/literature').getList().then(function(data) {
 		$scope.literature = data;
@@ -62,7 +55,6 @@ germaniaSacra.controller('literaturController', function($scope, Restangular, DT
 		.withDOM('lifpt')
 		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
 	$scope.orderProp = 'citeid';
->>>>>>> Stashed changes
 });
 
 germaniaSacra.controller('bearbeitungsstatusController', function($scope, Restangular, DTOptionsBuilder) {
