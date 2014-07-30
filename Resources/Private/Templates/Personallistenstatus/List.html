@@ -3,22 +3,20 @@
 <f:section name="Title"><f:translate id="personalliststatus" /></f:section>
 
 <f:section name="Content">
-	<div class="large-8 columns">
-		<div class="row">
-			<section ng-controller="personallistenstatusController">
-				<table class="large-12 columns display" datatable="ng" id="entityList">
-					<thead>
-						<tr>
-							<td>Status</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="data" dt-rows="" ng-repeat="status in personallistenstatus">
-							<td><input type="text" ng-model="status.name" /></td>
-						</tr>
-					</tbody>
-				</table>
-			</section>
-		</div>
-	</div>
+	<section ng-controller="personallistenstatusController" dt-options="dtOptions">
+		<table class="large-12 columns display" datatable="ng" id="entityList">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="data" dt-rows="" ng-repeat="status in personallistenstatus">
+					<td><input type="checkbox" /></td>
+					<td><input type="text" ng-model="status.name" /></td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
 </f:section>

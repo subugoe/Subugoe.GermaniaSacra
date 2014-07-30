@@ -3,6 +3,7 @@
 <f:section name="Title"><f:translate id="literature" /></f:section>
 
 <f:section name="Content">
+<<<<<<< Updated upstream
 	<div class="large-8 columns">
 		<div class="row">
 			<section ng-controller="literaturController">
@@ -23,4 +24,24 @@
 			</section>
 		</div>
 	</div>
+=======
+	<section ng-controller="literaturController">
+		<table class="large-12 columns display" dt-options="dtOptions" datatable="ng" id="entityList">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Titel</th>
+					<th>Cite Id</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="data" dt-rows="" ng-repeat="entry in literature">
+					<td><input type="checkbox" /></td>
+					<td ng-model="entry.title">{{entry.title}}</td>
+					<td ng-model="entry.citeid">{{entry.citeid}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+>>>>>>> Stashed changes
 </f:section>

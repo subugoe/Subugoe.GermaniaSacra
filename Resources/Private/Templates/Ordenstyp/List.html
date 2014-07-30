@@ -3,22 +3,20 @@
 <f:section name="Title"><f:translate id="ordentype" /></f:section>
 
 <f:section name="Content">
-	<div class="large-8 columns">
-		<div class="row">
-			<section ng-controller="ordenstypController">
-				<table class="large-12 columns display" datatable="ng" id="entityList">
-					<thead>
-						<tr>
-							<td>Ordenstyp</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="data" dt-rows="" ng-repeat="typ in ordenstyp">
-							<td><input type="text" ng-model="typ.ordenstyp" /></td>
-						</tr>
-					</tbody>
-				</table>
-			</section>
-		</div>
-	</div>
+	<section ng-controller="ordenstypController">
+		<table class="large-12 columns display" datatable="ng" id="entityList" dt-options="dtOptions">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Ordenstyp</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="data" dt-rows="" ng-repeat="typ in ordenstyp">
+					<td><input type="checkbox" /></td>
+					<td><input type="text" ng-model="typ.ordenstyp" /></td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
 </f:section>
