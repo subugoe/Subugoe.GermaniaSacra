@@ -15,3 +15,67 @@ TYPO3:
       excludeClasses:
         'solarium.*': ['.*']
         'knplabs.*': ['.*']
+
+    security:
+      authentication:
+        authenticationStrategy: 'oneToken'
+        providers:
+          DefaultProvider:
+           provider: 'PersistedUsernamePasswordProvider'
+           entryPoint: 'WebRedirect'
+           entryPointOptions:
+             routeValues:
+               '@package': 'Flow.Login'
+               '@controller': 'Login'
+               '@action': 'index'
+
+      cryptography:
+
+        hashingStrategies:
+
+          # The default strategy will be used to hash or validate passwords if no specific strategy is given
+          default: 'pbkdf2'
+
+          # If a fallback strategy is configured, it will be used to validate passwords without a strategy identifier.
+          # This should be configured to the hashing strategy that was used before strategy identifiers were introduced
+          # with Flow 1.1 (pbkdf2 by default) to allow for a seamless migration.
+          fallback: 'bcrypt'
+
+          pbkdf2: 'TYPO3\Flow\Security\Cryptography\Pbkdf2HashingStrategy'
+          bcrypt: 'TYPO3\Flow\Security\Cryptography\BCryptHashingStrategy'
+          saltedmd5: 'TYPO3\Flow\Security\Cryptography\SaltedMd5HashingStrategy'
+
+        Pbkdf2HashingStrategy:
+
+          # Length of the random, dynamic salt that will be stored with the hashed password
+          dynamicSaltLength: 8
+          # Iteration count, high enough to make brute-force attacks unfeasible, use a custom value!
+          iterationCount: 10000
+          # Length of the derived key (hashed password) in bytes
+          derivedKeyLength: 64
+          # Hash function to use for PBKDF2
+          algorithm: sha256
+
+        BCryptHashingStrategy:
+
+          # Cost of a BCrypt operation, can be between 4 and 31
+          # The faster your machine is, the higher this number should be
+          cost: 14
+
+        RSAWalletServicePHP:
+
+          # Path to the file where RSA keys shall be stored
+          # Note: This file must not be accessible by the public!
+          keystorePath: %FLOW_PATH_DATA%Persistent/RsaWalletData
+
+          # Defines the openSSL configuration used for key handling.
+          # See the PHP openSSL documentation for possible settings.
+          openSSLConfiguration: []
+
+      # "Cross-site request forgery" is an attack method to have authorized users trigger
+      # actions without them knowing it. This section is configuring the built-in CSRF
+      # protection in Flow.
+      csrf:
+        # The strategy to use for generating and using the CSRF protection token. Available are
+        # onePerSession, onePerUri and onePerRequest.
+        csrfStrategy: onePerSession
