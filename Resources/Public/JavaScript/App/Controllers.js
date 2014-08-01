@@ -6,28 +6,28 @@ germaniaSacra.controller('monasteryController', function($scope, $http) {
 });
 
 germaniaSacra.controller('bistumController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('bistums', Restangular.configuration.baseUrl + '/bistum/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('bistums', Restangular.configuration.baseUrl + '/bistum/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.bistums = data;
 	});
 	$scope.dtOptions = datatables;
 });
 
 germaniaSacra.controller('bandController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('baende', Restangular.configuration.baseUrl + '/band/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('baende', Restangular.configuration.baseUrl + '/band/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.baende = data;
 	});
 	$scope.dtOptions = datatables;
 });
 
 germaniaSacra.controller('ortController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('orts', Restangular.configuration.baseUrl + '/ort/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('orts', Restangular.configuration.baseUrl + '/ort/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.orts = data;
 	});
 	$scope.dtOptions = datatables;
 });
 
 germaniaSacra.controller('ordenController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('ordens', Restangular.configuration.baseUrl + '/orden/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('ordens', Restangular.configuration.baseUrl + '/orden/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.ordens = data;
 	});
 	$scope.dtOptions = datatables;
@@ -38,13 +38,13 @@ germaniaSacra.controller('landController', function($scope, Restangular, datatab
 		$scope.laender = data;
 	});
 	$scope.update = function(land) {
-		land.save();
+		Restangular.oneUrl('land', Restangular.configuration.baseUrl + '/land/update' + Restangular.configuration.suffix).save();
 	}
 	$scope.dtOptions = datatables;
 });
 
 germaniaSacra.controller('literaturController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('literature', Restangular.configuration.baseUrl + '/proxy/literature/').getList().then(function(data) {
+	Restangular.allUrl('literature', Restangular.configuration.baseUrl + '/proxy/literature').getList().then(function(data) {
 		$scope.literature = data;
 	});
 	$scope.dtOptions = datatables;
@@ -52,7 +52,7 @@ germaniaSacra.controller('literaturController', function($scope, Restangular, da
 });
 
 germaniaSacra.controller('bearbeitungsstatusController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('bearbeitungsstatus', Restangular.configuration.baseUrl + '/bearbeitungsstatus/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('bearbeitungsstatus', Restangular.configuration.baseUrl + '/bearbeitungsstatus/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.bearbeitungsstatus = data;
 	});
 	$scope.dtOptions = datatables;
@@ -60,7 +60,7 @@ germaniaSacra.controller('bearbeitungsstatusController', function($scope, Restan
 });
 
 germaniaSacra.controller('personallistenstatusController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('personallistenstatus', Restangular.configuration.baseUrl + '/personallistenstatus/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('personallistenstatus', Restangular.configuration.baseUrl + '/personallistenstatus/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.personallistenstatus = data;
 	});
 	$scope.dtOptions = datatables;
@@ -68,7 +68,7 @@ germaniaSacra.controller('personallistenstatusController', function($scope, Rest
 });
 
 germaniaSacra.controller('ordenstypController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('ordenstyp', Restangular.configuration.baseUrl + '/ordenstyp/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('ordenstyp', Restangular.configuration.baseUrl + '/ordenstyp/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.ordenstyp = data;
 	});
 	$scope.dtOptions = datatables;
@@ -76,7 +76,7 @@ germaniaSacra.controller('ordenstypController', function($scope, Restangular, da
 });
 
 germaniaSacra.controller('urltypController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('urltyp', Restangular.configuration.baseUrl + '/urltyp/' + Restangular.configuration.suffix).getList().then(function(data) {
+	Restangular.allUrl('urltyp', Restangular.configuration.baseUrl + '/urltyp/list' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.urltyp = data;
 	});
 	$scope.dtOptions = datatables;
