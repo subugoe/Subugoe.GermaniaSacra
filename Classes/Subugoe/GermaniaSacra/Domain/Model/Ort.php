@@ -100,6 +100,20 @@ class Ort {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getFullOrt() {
+		$fullOrt = $this->ort;
+		$ortDetails = array();
+		$ortDetails[] = $this->gemeinde;
+		$ortDetails[] = $this->kreis;
+		if ( $ortDetails ) {
+			$fullOrt .= ' (' . join(', ', $ortDetails) . ')';
+		}
+		return $fullOrt;
+	}
+
+	/**
 	 * @param string $ort
 	 * @return void
 	 */

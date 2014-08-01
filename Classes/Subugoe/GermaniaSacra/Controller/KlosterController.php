@@ -725,7 +725,8 @@ class KlosterController extends ActionController {
 			$klosterstandorte[$i]['standort_interne_bemerkung'] = $klosterstandort->getBemerkung();
 
 			$ort = $klosterstandort->getOrt();
-			$klosterstandorte[$i]['ort'] = $ort->getUUID();
+			$klosterstandorte[$i]['uuid'] = $ort->getUUID();
+			$klosterstandorte[$i]['ort'] = $ort->getFullOrt();
 			$klosterstandorte[$i]['wuestung'] = $ort->getWuestung();
 
 			$bistumObject = $ort->getBistum();
@@ -1189,7 +1190,10 @@ class KlosterController extends ActionController {
 			$searchResult = $this->ortRepository->findOrtBySearchString($searchString);
 			$orte = array();
 			foreach ($searchResult as $res) {
-				$orte[] = array($res->getUUID(), $res->getOrt());
+				$orte[] = array(
+						'uuid' => $res->getUUID(),
+						'name' => $res->getFullOrt()
+				);
 			}
 			return json_encode($orte);
 		}

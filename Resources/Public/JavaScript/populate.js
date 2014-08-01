@@ -124,9 +124,6 @@ $.fn.extend({
 
 		var $this = $(this)
 
-		var ort1 = $('select[tabindex=20]')
-		ort1.replaceWith('<input id="searchOrtEdit" type="text" name="ort[]" tabindex="20">')
-
 		$.getJSON(url, function(response) {
 
 			// Fill select fields with available options
@@ -151,6 +148,7 @@ $.fn.extend({
 				})
 				$select.val( response[0][name] )
 			})
+
 
 			var kloster = response[0]
 			var klosterstandorte = kloster.klosterstandorte
@@ -198,6 +196,10 @@ $.fn.extend({
 						if ( name == "wuestung" ) {
 							$(this).prop('checked', value[name] == 1)
 						}
+					} else if ( name ==  "uuid" ) {
+						console.dir(value);
+						$(this).append( $("<option />", { value: value['uuid'], text: value['ort'] }).attr('selected', true) );
+						$(this).autocomplete()
 					} else {
 						$(this).val( value[name] )
 					}
@@ -413,53 +415,5 @@ $.fn.extend({
 				})
 		}
 	},
-
-	find_ort: function(ort, tabindex, kloster_uuid) {
-		var url = "searchOrt";
-		$.getJSON(url, { searchString: ort }, function(response) {
-			var ort = $('input[tabindex=' + tabindex + ']')
-			if (response.length > 0) {
-				ort.replaceWith('<select name="ort[' + kloster_uuid + '][]" multiple id="ort' + tabindex + '" required="required"></select>')
-				$.each(response, function(k, v) {
-					$('#ort' + tabindex).append($("<option>", { value: v[0], html: v[1] }))
-				})
-			}
-			else {
-				ort.val("Keinen Eintrag vorhanden")
-			}
-		})
-	},
-
-	find_ortEdit: function(ort, tabindex) {
-		var url = "searchOrt"
-		$.getJSON(url, { searchString: ort }, function(response) {
-			var ort = $('input[tabindex=' + tabindex + ']')
-			if (response.length > 0) {
-				ort.replaceWith('<select name="ort[]" multiple id="ort' + tabindex + '"></select>')
-				$.each(response, function(k, v) {
-					$('#ort' + tabindex).append($("<option>", { value: v[0], html: v[1] }))
-				})
-			}
-			else {
-				ort.val("Keinen Eintrag vorhanden")
-			}
-		})
-	},
-
-	find_ortNew: function(ort, tabindex) {
-		var url = "searchOrt"
-		$.getJSON(url, { searchString: ort }, function(response) {
-			var ort = $('input[tabindex=' + tabindex + ']')
-			if (response.length > 0) {
-				ort.replaceWith('<select name="new_ort[]" multiple id="ort' + tabindex + '"></select>')
-				$.each(response, function(k, v) {
-					$('#ort' + tabindex).append($("<option>", { value: v[0], html: v[1] }))
-				})
-			}
-			else {
-				ort.val("Keinen Eintrag vorhanden")
-			}
-		})
-	}
 
 })

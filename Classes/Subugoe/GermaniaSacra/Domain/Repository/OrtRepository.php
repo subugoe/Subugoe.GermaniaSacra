@@ -20,6 +20,7 @@ class OrtRepository extends Repository {
 		$query = $this->createQuery();
 		return $query->matching($query->like('ort', $searchString))
 				->setOrderings(array('ort' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING))
+				->setLimit(20)
 				->execute();
 	}
 

@@ -81,40 +81,6 @@ $(function() {
 		$("#NewKloster").create_kloster()
 	})
 
-	$("select[name='ort[]']").on("click", function(t) {
-		t.preventDefault()
-		var index = $(this).index("select[name='ort[]']")
-		$("select[name='ort[]']:eq(" + index + ")").replaceWith('<input id="searchOrt" type="text" name="ort">')
-	})
-
-	$("#searchOrt").keyup(function(t) {
-		t.preventDefault()
-		var tabindex = $(this).prop("tabindex")
-		var kloster_uuid = $(this).data("uuid")
-		var ort = $(this).val()
-		if (ort.length > 3) {
-			$("#searchOrt").find_ort(ort, tabindex, kloster_uuid)
-		}
-	})
-
-	$("#searchOrtEdit").keyup(function(t) {
-		t.preventDefault()
-		var tabindex = ($(this).prop("tabindex"))
-		var ort = $(this).val()
-		if (ort.length > 3) {
-			$("#searchOrt").find_ortEdit(ort, tabindex);
-		}
-	})
-
-	$("#searchOrtNew").keyup(function(t) {
-		t.preventDefault();
-		var tabindex = ($(this).prop("tabindex"));
-		var ort = $(this).val();
-		if (ort.length > 3) {
-			$("#searchOrt").find_ortNew(ort, tabindex);
-		}
-	})
-
 	if ($('#UpdateList').length !== 0) {
 		$("#UpdateList #list").populate_liste();
 	}
