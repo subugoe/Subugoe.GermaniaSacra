@@ -3,9 +3,10 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use Subugoe\GermaniaSacra\Domain\Model\Land;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Mvc\Controller\ActionController;
 use TYPO3\Flow\Mvc\Controller\RestController;
 
-class LandController extends RestController {
+class LandController extends ActionController {
 
 	/**
 	 * @Flow\Inject

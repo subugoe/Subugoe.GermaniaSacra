@@ -5,94 +5,80 @@ germaniaSacra.controller('monasteryController', function($scope, $http) {
 	$scope.orderProp = 'kloster_id';
 });
 
-germaniaSacra.controller('bistumController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('bistums', 'subugoe.germaniasacra/bistum/list.json').getList().then(function(data) {
+germaniaSacra.controller('bistumController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('bistums', Restangular.configuration.baseUrl + '/bistum/' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.bistums = data;
 	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
+	$scope.dtOptions = datatables;
 });
 
-germaniaSacra.controller('bandController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('baende', 'subugoe.germaniasacra/band/list.json').getList().then(function(data) {
+germaniaSacra.controller('bandController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('baende', Restangular.configuration.baseUrl + '/band/' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.baende = data;
 	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});});
-
-germaniaSacra.controller('ortController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('orts', 'subugoe.germaniasacra/ort/list.json').getList().then(function(data) {
-		$scope.orts = data;
-	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});});
-
-germaniaSacra.controller('ordenController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('ordens', 'subugoe.germaniasacra/orden/list.json').getList().then(function(data) {
-		$scope.ordens = data;
-	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});});
-
-germaniaSacra.controller('landController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('laender', 'subugoe.germaniasacra/land/list.json').getList().then(function(data) {
-		$scope.laender = data;
-	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
+	$scope.dtOptions = datatables;
 });
 
-germaniaSacra.controller('literaturController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('literature', 'subugoe.germaniasacra/proxy/literature').getList().then(function(data) {
+germaniaSacra.controller('ortController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('orts', Restangular.configuration.baseUrl + '/ort/' + Restangular.configuration.suffix).getList().then(function(data) {
+		$scope.orts = data;
+	});
+	$scope.dtOptions = datatables;
+});
+
+germaniaSacra.controller('ordenController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('ordens', Restangular.configuration.baseUrl + '/orden/' + Restangular.configuration.suffix).getList().then(function(data) {
+		$scope.ordens = data;
+	});
+	$scope.dtOptions = datatables;
+});
+
+germaniaSacra.controller('landController', function($scope, Restangular, datatables) {
+	Restangular.oneUrl('laender', Restangular.configuration.baseUrl + '/land/list' + Restangular.configuration.suffix).getList().then(function(data) {
+		$scope.laender = data;
+	});
+	$scope.update = function(land) {
+		Restangular.oneUrl('land', Restangular.configuration.baseUrl + '/land/update' + Restangular.configuration.suffix).save();
+	}
+	$scope.dtOptions = datatables;
+});
+
+germaniaSacra.controller('literaturController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('literature', Restangular.configuration.baseUrl + '/proxy/literature').getList().then(function(data) {
 		$scope.literature = data;
 	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
+	$scope.dtOptions = datatables;
 	$scope.orderProp = 'citeid';
 });
 
-germaniaSacra.controller('bearbeitungsstatusController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('bearbeitungsstatus', 'subugoe.germaniasacra/bearbeitungsstatus/list.json').getList().then(function(data) {
+germaniaSacra.controller('bearbeitungsstatusController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('bearbeitungsstatus', Restangular.configuration.baseUrl + '/bearbeitungsstatus/' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.bearbeitungsstatus = data;
 	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
+	$scope.dtOptions = datatables;
 	$scope.orderProp = 'name';
 });
 
-germaniaSacra.controller('personallistenstatusController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('personallistenstatus', 'subugoe.germaniasacra/personallistenstatus/list.json').getList().then(function(data) {
+germaniaSacra.controller('personallistenstatusController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('personallistenstatus', Restangular.configuration.baseUrl + '/personallistenstatus/' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.personallistenstatus = data;
 	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
+	$scope.dtOptions = datatables;
 	$scope.orderProp = 'name';
 });
 
-germaniaSacra.controller('ordenstypController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('ordenstyp', 'subugoe.germaniasacra/ordenstyp/list.json').getList().then(function(data) {
+germaniaSacra.controller('ordenstypController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('ordenstyp', Restangular.configuration.baseUrl + '/ordenstyp/' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.ordenstyp = data;
 	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
+	$scope.dtOptions = datatables;
 	$scope.orderProp = 'ordenstyp';
 });
 
-germaniaSacra.controller('urltypController', function($scope, Restangular, DTOptionsBuilder) {
-	Restangular.allUrl('urltyp', 'subugoe.germaniasacra/urltyp/list.json').getList().then(function(data) {
+germaniaSacra.controller('urltypController', function($scope, Restangular, datatables) {
+	Restangular.allUrl('urltyp', Restangular.configuration.baseUrl + '/urltyp/' + Restangular.configuration.suffix).getList().then(function(data) {
 		$scope.urltyp = data;
 	});
-	$scope.dtOptions = DTOptionsBuilder.newOptions()
-		.withDOM('lifpt')
-		.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
+	$scope.dtOptions = datatables;
 	$scope.orderProp = 'name';
 });

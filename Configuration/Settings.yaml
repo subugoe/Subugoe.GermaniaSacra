@@ -8,7 +8,7 @@ Subugoe:
       database: 'germania'
     data:
       geoJson: 'http://adw-goe.de/typo3conf/ext/tmpl_adw/Resources/Public/Images/GermaniaSacra/Bistumsgrenzen/GSBistumsgrenzenGEOJSON.geojson'
-      literature: 'http://dev.adw-goe.de/api/germania-sacra/klosterdatenbank/rest/bibliography/520/'
+      literature: 'http://adw-goe.de/api/forschung/forschungsprojekte-akademienprogramm/germania-sacra/klosterdatenbank/bibliographieinterface/bibliography/588/'
 TYPO3:
   Flow:
     object:
