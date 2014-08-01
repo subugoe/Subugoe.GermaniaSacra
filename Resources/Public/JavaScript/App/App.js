@@ -1,3 +1,4 @@
+
 var germaniaSacra = angular.module('germaniaSacra', ['angular-loading-bar', 'restangular', 'datatables']);
 
 germaniaSacra.config(function(RestangularProvider) {
@@ -13,8 +14,5 @@ germaniaSacra.factory('datatables', function(DTOptionsBuilder) {
 	var dtOptions = DTOptionsBuilder.newOptions()
 			.withDOM('lifpt')
 			.withLanguage({sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'});
-
-
-
-    return dtOptions;
+	return dtOptions;
 });

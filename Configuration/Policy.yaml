@@ -1,0 +1,23 @@
+resources:
+  methods:
+    Flow_LoginSignedInMethods: 'method(Flow\Login\Controller\LoginController->signedInAction())'
+    TYPO3_AccountManagementProfileMethods: 'method(TYPO3\AccountManagement\Controller\ProfileController->.*())'
+    TYPO3_AccountManagementAccountMethods: 'method(TYPO3\AccountManagement\Controller\AccountController->.*())'
+    TYPO3_AccountManagementRoleMethods: 'method(TYPO3\AccountManagement\Controller\RoleController->.*())'
+    Kloster_Methods: 'method(Subugoe\GermaniaSacra\Controller\KlosterController->.*())'
+roles:
+  Administrator: []
+  Editor: []
+
+acls:
+  Administrator:
+    methods:
+      Flow_LoginSignedInMethods: GRANT
+      TYPO3_AccountManagementProfileMethods: GRANT
+      TYPO3_AccountManagementAccountMethods: GRANT
+      TYPO3_AccountManagementRoleMethods: GRANT
+      Kloster_Methods: GRANT
+  HIWI:
+    methods:
+      Flow_LoginSignedInMethods: GRANT
+      Kloster_Methods: GRANT

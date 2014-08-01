@@ -38,13 +38,13 @@ germaniaSacra.controller('landController', function($scope, Restangular, datatab
 		$scope.laender = data;
 	});
 	$scope.update = function(land) {
-		Restangular.oneUrl('land', Restangular.configuration.baseUrl + '/land/update' + Restangular.configuration.suffix).save();
+		land.save();
 	}
 	$scope.dtOptions = datatables;
 });
 
 germaniaSacra.controller('literaturController', function($scope, Restangular, datatables) {
-	Restangular.allUrl('literature', Restangular.configuration.baseUrl + '/proxy/literature').getList().then(function(data) {
+	Restangular.allUrl('literature', Restangular.configuration.baseUrl + '/proxy/literature/').getList().then(function(data) {
 		$scope.literature = data;
 	});
 	$scope.dtOptions = datatables;
