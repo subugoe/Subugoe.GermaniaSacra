@@ -36,15 +36,6 @@
     '@action': 'searchOrt'
 
 -
-  name: 'Search'
-  uriPattern: 'search'
-  defaults:
-    package: 'Subugoe.GermaniaSacra'
-    '@controller': 'Kloster'
-    '@action': 'search'
-    '@format': 'json'
-
--
   name: 'Edit Kloster URI'
   uriPattern: 'edit/{kloster.__identity}'
   defaults:
@@ -105,12 +96,3 @@
     '@controller': 'Ort'
     '@action': 'new'
     '@format': 'html'
-
--
-  name: 'Authentication'
-  uriPattern: 'login(/{@action}.{@format})'
-  defaults:
-    '@package':    'Flow.Login'
-    '@controller': 'Login'
-    '@action':     'index'
-    '@format':     'html'
