@@ -13,7 +13,6 @@ $.fn.extend({
     return this.each(function() {
       var $input, $list, $overlay, $select;
       $select = $(this);
-      console.dir($select);
       $input = $('<input type="text">').val($select.find(':selected').text());
       $input.click(function() {
         return this.select();

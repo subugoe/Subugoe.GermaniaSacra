@@ -197,7 +197,6 @@ $.fn.extend({
 							$(this).prop('checked', value[name] == 1)
 						}
 					} else if ( name ==  "uuid" ) {
-						console.dir(value);
 						$(this).append( $("<option />", { value: value['uuid'], text: value['ort'] }).attr('selected', true) );
 						$(this).autocomplete()
 					} else {

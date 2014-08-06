@@ -131,6 +131,10 @@ input.year {
 	}
 }
 
+input div {
+	padding-right: 1em;
+}
+
 input[type=submit],
 button {
 	&:not([disabled]) {

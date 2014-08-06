@@ -11,7 +11,6 @@ $.fn.extend
 	autocomplete: () ->
 		return this.each ->
 			$select = $(this)
-			console.dir($select)
 			$input = $('<input type="text">').val( $select.find(':selected').text() )
 			$input.click ->
 				this.select()

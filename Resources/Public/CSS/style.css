@@ -8914,19 +8914,19 @@ table.dataTable th:active {
 /* Fancy blur effect */
 /*
 #loading-bar .peg {
-  position: absolute;
-  width: 70px;
-  right: 0;
-  top: 0;
-  height: 2px;
-  opacity: .45;
-  -moz-box-shadow: #29d 1px 0 6px 1px;
-  -ms-box-shadow: #29d 1px 0 6px 1px;
-  -webkit-box-shadow: #29d 1px 0 6px 1px;
-  box-shadow: #29d 1px 0 6px 1px;
-  -moz-border-radius: 100%;
-  -webkit-border-radius: 100%;
-  border-radius: 100%;
+	position: absolute;
+	width: 70px;
+	right: 0;
+	top: 0;
+	height: 2px;
+	opacity: .45;
+	-moz-box-shadow: #29d 1px 0 6px 1px;
+	-ms-box-shadow: #29d 1px 0 6px 1px;
+	-webkit-box-shadow: #29d 1px 0 6px 1px;
+	box-shadow: #29d 1px 0 6px 1px;
+	-moz-border-radius: 100%;
+	-webkit-border-radius: 100%;
+	border-radius: 100%;
 }
 */
 /* line 63, ../../Private/Scss/_loading-bar.scss */
@@ -8939,11 +8939,11 @@ table.dataTable th:active {
 }
 
 /* line 71, ../../Private/Scss/_loading-bar.scss */
-#loading-bar-spinner .spinner-icon {
+.spinner-icon {
   width: 14px;
   height: 14px;
   border: solid 2px transparent;
-  border-top-color: #fff;
+  border-top-color: #222222;
   border-left-color: #fff;
   border-radius: 10px;
   -webkit-animation: loading-bar-spinner 400ms linear infinite;
@@ -8952,15 +8952,19 @@ table.dataTable th:active {
   -o-animation: loading-bar-spinner 400ms linear infinite;
   animation: loading-bar-spinner 400ms linear infinite;
 }
+/* line 85, ../../Private/Scss/_loading-bar.scss */
+label .spinner-icon, .dataTables_info .spinner-icon {
+  border-color: rgba(0, 0, 0, 0.75);
+}
 
 @-webkit-keyframes loading-bar-spinner {
-  /* line 88, ../../Private/Scss/_loading-bar.scss */
+  /* line 91, ../../Private/Scss/_loading-bar.scss */
   0% {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
   }
 
-  /* line 89, ../../Private/Scss/_loading-bar.scss */
+  /* line 92, ../../Private/Scss/_loading-bar.scss */
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
@@ -8968,13 +8972,13 @@ table.dataTable th:active {
 }
 
 @-moz-keyframes loading-bar-spinner {
-  /* line 92, ../../Private/Scss/_loading-bar.scss */
+  /* line 95, ../../Private/Scss/_loading-bar.scss */
   0% {
     -moz-transform: rotate(0deg);
     transform: rotate(0deg);
   }
 
-  /* line 93, ../../Private/Scss/_loading-bar.scss */
+  /* line 96, ../../Private/Scss/_loading-bar.scss */
   100% {
     -moz-transform: rotate(360deg);
     transform: rotate(360deg);
@@ -8982,13 +8986,13 @@ table.dataTable th:active {
 }
 
 @-o-keyframes loading-bar-spinner {
-  /* line 96, ../../Private/Scss/_loading-bar.scss */
+  /* line 99, ../../Private/Scss/_loading-bar.scss */
   0% {
     -o-transform: rotate(0deg);
     transform: rotate(0deg);
   }
 
-  /* line 97, ../../Private/Scss/_loading-bar.scss */
+  /* line 100, ../../Private/Scss/_loading-bar.scss */
   100% {
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
@@ -8996,13 +9000,13 @@ table.dataTable th:active {
 }
 
 @-ms-keyframes loading-bar-spinner {
-  /* line 100, ../../Private/Scss/_loading-bar.scss */
+  /* line 103, ../../Private/Scss/_loading-bar.scss */
   0% {
     -ms-transform: rotate(0deg);
     transform: rotate(0deg);
   }
 
-  /* line 101, ../../Private/Scss/_loading-bar.scss */
+  /* line 104, ../../Private/Scss/_loading-bar.scss */
   100% {
     -ms-transform: rotate(360deg);
     transform: rotate(360deg);
@@ -9010,13 +9014,13 @@ table.dataTable th:active {
 }
 
 @keyframes loading-bar-spinner {
-  /* line 104, ../../Private/Scss/_loading-bar.scss */
+  /* line 107, ../../Private/Scss/_loading-bar.scss */
   0% {
     transform: rotate(0deg);
     transform: rotate(0deg);
   }
 
-  /* line 105, ../../Private/Scss/_loading-bar.scss */
+  /* line 108, ../../Private/Scss/_loading-bar.scss */
   100% {
     transform: rotate(360deg);
     transform: rotate(360deg);
@@ -9265,7 +9269,12 @@ input.year:focus {
   background: #f2f9fc;
 }
 
-/* line 137, ../../Private/Scss/_dim.scss */
+/* line 134, ../../Private/Scss/_dim.scss */
+input div {
+  padding-right: 1em;
+}
+
+/* line 141, ../../Private/Scss/_dim.scss */
 input[type=submit]:not([disabled]):active, input[type=submit]:not([disabled]):focus, input[type=submit]:not([disabled]):hover,
 button:not([disabled]):active,
 button:not([disabled]):focus,
@@ -9277,12 +9286,12 @@ button:not([disabled]):hover {
   background: linear-gradient(top, #970124 0%, #790015 95%, #6f0011 100%);
 }
 
-/* line 143, ../../Private/Scss/_dim.scss */
+/* line 147, ../../Private/Scss/_dim.scss */
 input[name="kloster_nr[]"] {
   max-width: 5rem;
 }
 
-/* line 149, ../../Private/Scss/_dim.scss */
+/* line 153, ../../Private/Scss/_dim.scss */
 input[type=submit],
 button,
 .top-bar {
@@ -9293,7 +9302,7 @@ button,
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
 }
 
-/* line 153, ../../Private/Scss/_dim.scss */
+/* line 157, ../../Private/Scss/_dim.scss */
 .top-bar-section a {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #c90230), color-stop(95%, #ac001e), color-stop(100%, #a20019)) !important;
   background: -webkit-linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
@@ -9302,19 +9311,19 @@ button,
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
 }
 
-/* line 158, ../../Private/Scss/_dim.scss */
+/* line 162, ../../Private/Scss/_dim.scss */
 .clear,
 .multiple {
   clear: both;
 }
 
-/* line 162, ../../Private/Scss/_dim.scss */
+/* line 166, ../../Private/Scss/_dim.scss */
 .multiple.separator + .multiple {
   border-top: 1px dotted;
   padding-top: 0.625rem;
 }
 
-/* line 171, ../../Private/Scss/_dim.scss */
+/* line 175, ../../Private/Scss/_dim.scss */
 .bold,
 .bold input,
 .bold select,
@@ -9322,7 +9331,7 @@ button,
   font-weight: bold;
 }
 
-/* line 176, ../../Private/Scss/_dim.scss */
+/* line 180, ../../Private/Scss/_dim.scss */
 #content {
   padding: 0.9375rem;
 }
@@ -9396,4 +9405,103 @@ button,
 /* line 17, ../../Private/Scss/_autocomplete.scss */
 .autocomplete .current {
   background: #eee;
+}
+
+/* line 23, ../../Private/Scss/_autocomplete.scss */
+.autocomplete {
+  float: right;
+  position: relative;
+  width: 70%;
+}
+/* line 27, ../../Private/Scss/_autocomplete.scss */
+#select .autocomplete {
+  width: 100%;
+}
+/* line 30, ../../Private/Scss/_autocomplete.scss */
+.autocomplete input {
+  width: 100%;
+}
+/* line 33, ../../Private/Scss/_autocomplete.scss */
+.autocomplete input:active + button, .autocomplete input:focus + button, .autocomplete input:hover + button {
+  background: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(60%, #ffffff));
+  background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #ffffff 60%);
+  background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #ffffff 60%);
+  background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #ffffff 60%);
+  background: linear-gradient(left, rgba(255, 255, 255, 0) 0%, #ffffff 60%);
+}
+/* line 38, ../../Private/Scss/_autocomplete.scss */
+.autocomplete button {
+  background: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, rgba(248, 248, 248, 0)), color-stop(60%, #f8f8f8));
+  background: -webkit-linear-gradient(left, rgba(248, 248, 248, 0) 0%, #f8f8f8 60%);
+  background: -moz-linear-gradient(left, rgba(248, 248, 248, 0) 0%, #f8f8f8 60%);
+  background: -o-linear-gradient(left, rgba(248, 248, 248, 0) 0%, #f8f8f8 60%);
+  background: linear-gradient(left, rgba(248, 248, 248, 0) 0%, #f8f8f8 60%);
+  border: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  color: rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  height: 0.0625rem;
+  width: 0.15625rem;
+}
+/* line 51, ../../Private/Scss/_autocomplete.scss */
+.autocomplete button:active, .autocomplete button:focus, .autocomplete button:hover {
+  color: #c90230;
+  background: none;
+}
+/* line 55, ../../Private/Scss/_autocomplete.scss */
+#select .autocomplete button {
+  background: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, rgba(226, 2, 54, 0)), color-stop(60%, #e20236));
+  background: -webkit-linear-gradient(left, rgba(226, 2, 54, 0) 0%, #e20236 60%);
+  background: -moz-linear-gradient(left, rgba(226, 2, 54, 0) 0%, #e20236 60%);
+  background: -o-linear-gradient(left, rgba(226, 2, 54, 0) 0%, #e20236 60%);
+  background: linear-gradient(left, rgba(226, 2, 54, 0) 0%, #e20236 60%);
+  color: white;
+  line-height: 0.125rem;
+  top: 0;
+  width: 0.15625rem;
+  height: 0.125rem;
+}
+/* line 64, ../../Private/Scss/_autocomplete.scss */
+.autocomplete ol {
+  background: #c90230;
+  color: white;
+  display: none;
+  margin: 0 0 0 0.03125rem;
+  max-height: 0.71094rem;
+  min-height: 0.09375rem;
+  overflow-y: auto;
+  position: absolute;
+  top: 0.09375rem;
+  width: 100%;
+  z-index: 999;
+}
+/* line 76, ../../Private/Scss/_autocomplete.scss */
+#select .autocomplete ol {
+  margin: 0.03125rem -0.03125rem;
+  max-height: 1.35938rem;
+}
+/* line 81, ../../Private/Scss/_autocomplete.scss */
+.autocomplete li {
+  cursor: pointer;
+  height: 0.09375rem;
+  line-height: 0.09375rem;
+  margin: 0;
+  overflow: hidden;
+  padding: 0 0.03125rem;
+  white-space: nowrap;
+}
+/* line 89, ../../Private/Scss/_autocomplete.scss */
+.autocomplete li.current {
+  background: #c90230;
+}
+/* line 92, ../../Private/Scss/_autocomplete.scss */
+.autocomplete li:hover, .autocomplete li:focus, .autocomplete li:active {
+  background: rgba(255, 255, 255, 0.2);
 }
