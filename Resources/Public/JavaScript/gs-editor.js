@@ -25,11 +25,12 @@ $(function() {
 		$(this).parent().next(".link").html('<a href="' + $(this).val() + '">' + $(this).val() + "</a>")
 	})
 
-	$("fieldset .multiple .remove").click(), $(".togglable").hide(), $(".toggle").click(function(t) {
-		t.preventDefault()
-		var e = $(this).text(),
-			i = e.substr(e.lastIndexOf(" "))
-		$(this).text(e.substring(0, e.lastIndexOf(" ") + 1) + $(this).data("text")), $(this).data("text", i), $(this).closest("fieldset").next(".togglable").slideToggle()
+	$("fieldset .multiple .remove").click()
+	$(".togglable + .togglable").hide()
+
+	$(".toggle").click( function(e) {
+		e.preventDefault()
+		$(this).closest('.togglable').siblings().addBack().slideToggle()
 	})
 
 	$(".edit").click(function(t) {
@@ -79,40 +80,6 @@ $(function() {
 	$("#NewKloster").submit(function(t) {
 		t.preventDefault()
 		$("#NewKloster").create_kloster()
-	})
-
-	$("select[name='ort[]']").on("click", function(t) {
-		t.preventDefault()
-		var index = $(this).index("select[name='ort[]']")
-		$("select[name='ort[]']:eq(" + index + ")").replaceWith('<input id="searchOrt" type="text" name="ort">')
-	})
-
-	$("#searchOrt").keyup(function(t) {
-		t.preventDefault()
-		var tabindex = $(this).prop("tabindex")
-		var kloster_uuid = $(this).data("uuid")
-		var ort = $(this).val()
-		if (ort.length > 3) {
-			$("#searchOrt").find_ort(ort, tabindex, kloster_uuid)
-		}
-	})
-
-	$("#searchOrtEdit").keyup(function(t) {
-		t.preventDefault()
-		var tabindex = ($(this).prop("tabindex"))
-		var ort = $(this).val()
-		if (ort.length > 3) {
-			$("#searchOrt").find_ortEdit(ort, tabindex);
-		}
-	})
-
-	$("#searchOrtNew").keyup(function(t) {
-		t.preventDefault();
-		var tabindex = ($(this).prop("tabindex"));
-		var ort = $(this).val();
-		if (ort.length > 3) {
-			$("#searchOrt").find_ortNew(ort, tabindex);
-		}
 	})
 
 	if ($('#UpdateList').length !== 0) {

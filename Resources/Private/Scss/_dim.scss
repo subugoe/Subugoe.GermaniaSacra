@@ -8,7 +8,7 @@ body {
 
 button {
 	min-width: 2.5rem;
-	padding: 0.6rem;
+	padding: rem-calc(9);
 }
 
 form {
@@ -27,12 +27,14 @@ fieldset {
 	border: 0;
 	border-top: 1px solid;
 	margin-bottom: 0;
+	padding-left: 0;
+	padding-right: 0;
 	&.highlight {
 		background: rgba(#000, .1);
 		border: 0;
 		box-shadow: 0 1px 6px rgba(#000, .2) inset;
 		margin: $fieldset-padding (-$fieldset-padding);
-		padding-bottom: $fieldset-padding/2;
+		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
 		border-radius: $global-radius;
 	}
 	legend {
@@ -105,6 +107,11 @@ input[type="checkbox"] {
 	margin-left: .5rem;
 }
 
+input[type="submit"] {
+	@extend button;
+	min-width: 5rem;
+}
+
 input,
 select,
 textarea {
@@ -112,12 +119,12 @@ textarea {
 	label.none & {
 		width: 100% !important;
 	}
-	#edit .large-2 > & {
+	.large-2 > & {
 		margin-left: 1em;
 		width: 50%;
 	}
 	@for $i from 3 through $total-columns {
-		#edit .large-#{$i} > & {
+		.large-#{$i} > & {
 			margin-left: 1em;
 			width: percentage(($i - 2) / $i);
 		}
@@ -129,6 +136,10 @@ input.year {
 	&:focus {
 		background: lighten( $info-color, 20);
 	}
+}
+
+th div {
+	padding-right: 1em;
 }
 
 input[type=submit],
@@ -174,7 +185,7 @@ button,
 }
 
 #content {
-	padding: rem-calc(15);
+	padding: rem-calc(20);
 }
 
 #advancedSearch,
