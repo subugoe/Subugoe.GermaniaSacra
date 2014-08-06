@@ -54,15 +54,40 @@ $.fn.extend({
 
 			var $trTemplate = $('#list tbody tr:first')
 
+			// Add a text input to each header cell used for search
+			$("#list thead th").not(':first').not(':last').each( function () {
+				$(this).append( '<div><input type="text"></div>' )
+			});
+
 			var table = $('#list').DataTable({
-				'dom': 'lifpt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
-				"language": {
+				autoWidth: false,
+				columnDefs: [
+					{ bSortable : false, aTargets : [ 'no-sorting' ] },
+					{ "width": "10%", "targets": 1 },
+				],
+				dom: 'lipt', // 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
+				language: {
 					"url": "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json"
 				},
-				'fnDrawCallback': function() {
+				order: [[ 3, "asc" ]],
+				fnDrawCallback: function() {
 					// Since only visible textareas can be autosized, this has to be called after every page render
 					$("#list textarea").autosize()
 				}
+			})
+
+			// Apply the search
+			table.columns().eq( 0 ).each( function ( colIdx ) {
+				$( 'input', table.column( colIdx ).header() )
+					.click( function(e) {
+						e.stopPropagation()
+					})
+					.on( 'keyup change', function () {
+					table
+						.column( colIdx )
+						.search( this.value )
+						.draw();
+					})
 			})
 
 			$.each(klosters, function(index, kloster) {

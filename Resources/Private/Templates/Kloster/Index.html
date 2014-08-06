@@ -6,18 +6,17 @@
 
 <div id="browse" ng-controller="monasteryController">
 	<form id="advancedSearch">
-		<fieldset>
-			<label class="large-1 column">Kloster-Nr. <input name="kloster_nr" type="text"></label>
-			<label class="large-2 column">Status <input name="status" type="text"></label>
-			<label class="large-2 column">Klostername <input name="kloster" type="text"></label>
-			<label class="large-2 column">Ort <input name="ort" type="text"></label>
-			<label class="large-2 column">Suche über alle Felder <input name="alle" type="text"></label>
-			<div class="large-3 columns text-right margin-top"><button class="toggle" data-text="ausblenden">Erweiterte Suche einblenden</button></div>
+		<fieldset class="togglable">
+			<legend>Suche über alle Felder</legend>
+			<label class="large-9 columns none"><input name="alle" type="text"></label>
+			<div class="large-1 columns"><input type="submit" value="Suchen"></div>
+			<div class="large-2 columns text-right"><button class="toggle">Erweiterte Suche</button></div>
 		</fieldset>
 		<fieldset class="togglable">
 			<legend>Erweiterte Suche</legend>
+			<div class="text-right"><button class="toggle">Suche über alle Felder</button></div>
 			<div class="multiple">
-				<label class="large-2 column">
+				<label class="large-3 column none">
 					<select name="filter">
 						<option value="band.nummer">band.nummer</option>
 						<option value="bearbeitungsstatus.name">bearbeitungsstatus.name</option>
@@ -38,7 +37,7 @@
 						<option value="zeitraum.bis_bis">zeitraum.bis_bis</option>
 					</select>
 				</label>
-				<label class="large-2 column">
+				<label class="large-2 column none">
 					<select name="operator">
 						<option value="ist gleich">ist gleich</option>
 						<option value="ist gleich (inkl. Schreibweise)">ist gleich (inkl. Schreibweise)</option>
@@ -54,8 +53,8 @@
 						<option value="fehlt">fehlt</option>
 					</select>
 				</label>
-				<label class="large-4 column"><input name="value" type="text"></label>
-				<label class="large-2 column">
+				<label class="large-4 column none"><input name="value" type="text"></label>
+				<label class="large-2 column none">
 					<select name="concat">
 						<option value="und">und</option>
 						<option value="oder">oder</option>
@@ -63,64 +62,67 @@
 					</select>
 				</label>
 			</div>
+			<div class="text-right"><input type="submit" value="Suchen"></div>
 		</fieldset>
-		<input class="button" type="submit" value="Suchen">
 	</form>
 	<form id="UpdateList" name="UpdateList" action="updateList">
-		<table class="large-12 columns display" id="list">
-			<thead>
-				<tr>
-					<th></th>
-					<th>
-						Kloster-Nr.
-					</th>
-					<th>
-						Status
-					</th>
-					<th>
-						Klostername
-					</th>
-					<th>
-						Ort
-					</th>
-					<th>
-						GND
-					</th>
-					<th>
-						Bearbeitungsstand
-					</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>
-						<input name="auswahl" type="checkbox">
-					</td>
-					<td>
-						<textarea name="kloster_id" disabled></textarea>
-					</td>
-					<td>
-						<select name="bearbeitungsstatus"></select>
-					</td>
-					<td><textarea name="kloster"></textarea></td>
-					<td>
-						<textarea name="ort"></textarea>
-					</td>
-					<td>
-						<textarea name="gnd"></textarea>
-					</td>
-					<td>
-						<textarea name="bearbeitungsstand"></textarea>
-					</td>
-					<td>
-						<a href="" class="edit">Edit</a>
-						<a href="" class="delete">Del</a>
-						<input class="csrf" type="hidden" name="__csrfToken"	value="{f:security.csrfToken()}">
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<fieldset>
+			<legend>Klosterliste</legend>
+			<table class="large-12 columns display" id="list">
+				<thead>
+					<tr>
+						<th class="no-sorting"></th>
+						<th>
+							Kloster-Nr.
+						</th>
+						<th>
+							Status
+						</th>
+						<th>
+							Klostername
+						</th>
+						<th>
+							Ort
+						</th>
+						<th>
+							GND
+						</th>
+						<th>
+							Bearbeitungsstand
+						</th>
+						<th class="no-sorting"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<input name="auswahl" type="checkbox">
+						</td>
+						<td>
+							<textarea name="kloster_id" disabled></textarea>
+						</td>
+						<td>
+							<select name="bearbeitungsstatus"></select>
+						</td>
+						<td><textarea name="kloster"></textarea></td>
+						<td>
+							<textarea name="ort"></textarea>
+						</td>
+						<td>
+							<textarea name="gnd"></textarea>
+						</td>
+						<td>
+							<textarea name="bearbeitungsstand"></textarea>
+						</td>
+						<td>
+							<a href="" class="edit">Edit</a>
+							<a href="" class="delete">Del</a>
+							<input class="csrf" type="hidden" name="__csrfToken"	value="{f:security.csrfToken()}">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</fieldset>
 		<input class="button" type="submit" value="Änderungen übernehmen">
 	</form>
 </div>

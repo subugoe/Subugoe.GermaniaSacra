@@ -73,18 +73,17 @@
 	height: 14px;
 
 	border:	solid 2px transparent;
-	border-top-color: $header-font-color;
-	border-left-color: #fff;
+	border-top-color: $primary-color;
+	border-left-color: $primary-color;
 	border-radius: 10px;
+
+	display: block;
 
 	-webkit-animation: loading-bar-spinner 400ms linear infinite;
 	-moz-animation:		loading-bar-spinner 400ms linear infinite;
 	-ms-animation:		 loading-bar-spinner 400ms linear infinite;
 	-o-animation:			loading-bar-spinner 400ms linear infinite;
 	animation:				 loading-bar-spinner 400ms linear infinite;
-	label & {
-		border-color: $input-font-color;
-	}
 }
 
 @-webkit-keyframes loading-bar-spinner {

@@ -25,11 +25,12 @@ $(function() {
 		$(this).parent().next(".link").html('<a href="' + $(this).val() + '">' + $(this).val() + "</a>")
 	})
 
-	$("fieldset .multiple .remove").click(), $(".togglable").hide(), $(".toggle").click(function(t) {
-		t.preventDefault()
-		var e = $(this).text(),
-			i = e.substr(e.lastIndexOf(" "))
-		$(this).text(e.substring(0, e.lastIndexOf(" ") + 1) + $(this).data("text")), $(this).data("text", i), $(this).closest("fieldset").next(".togglable").slideToggle()
+	$("fieldset .multiple .remove").click()
+	$(".togglable + .togglable").hide()
+
+	$(".toggle").click( function(e) {
+		e.preventDefault()
+		$(this).closest('.togglable').siblings().addBack().slideToggle()
 	})
 
 	$(".edit").click(function(t) {

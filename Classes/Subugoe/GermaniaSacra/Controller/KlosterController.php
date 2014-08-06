@@ -1191,8 +1191,8 @@ class KlosterController extends ActionController {
 			$orte = array();
 			foreach ($searchResult as $res) {
 				$orte[] = array(
-						'uuid' => $res->getUUID(),
-						'name' => $res->getFullOrt()
+					'uuid' => $res->getUUID(),
+					'name' => $res->getFullOrt()
 				);
 			}
 			return json_encode($orte);
