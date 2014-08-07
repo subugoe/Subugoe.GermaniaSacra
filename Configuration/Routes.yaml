@@ -36,6 +36,13 @@
     '@action': 'searchOrt'
 
 -
+  name: 'Search'
+  uriPattern: 'search'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'search'
+
+-
   name: 'Edit Kloster URI'
   uriPattern: 'edit/{kloster.__identity}'
   defaults:
