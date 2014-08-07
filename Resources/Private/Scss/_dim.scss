@@ -67,11 +67,14 @@ table {
 	td {
 		vertical-align: top;
 	}
-	button,
 	select,
 	textarea {
 		margin: 0;
 	}
+}
+
+button {
+	margin: 0;
 }
 
 input[type="text"],
@@ -90,8 +93,7 @@ input[type="url"],
 input[type="checkbox"],
 input[type="radio"],
 select,
-textarea,
-button {
+textarea {
 	margin-bottom: .5em;
 	td & {
 		background: none;
@@ -99,6 +101,13 @@ button {
 		box-shadow: none;
 		float: none;
 		margin: -8px -10px;
+	}
+}
+
+button {
+	margin-bottom: .5em;
+	td & {
+		margin: 0;
 	}
 }
 
@@ -165,6 +174,15 @@ button,
 	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
 }
 
+.bold {
+	&,
+	input,
+	select,
+	textarea {
+		font-weight: bold;
+	}
+}
+
 .clear,
 .multiple {
 	clear: both;
@@ -175,12 +193,15 @@ button,
 	padding-top: $fieldset-padding;
 }
 
-.bold {
-	&,
-	input,
-	select,
-	textarea {
-		font-weight: bold;
+.no-wrap {
+	white-space: nowrap;
+}
+
+.show-only-on-hover * {
+	opacity: 0;
+	transition: opacity .5s;
+	tr:hover & {
+		opacity: 1;
 	}
 }
 

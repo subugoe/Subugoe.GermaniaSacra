@@ -5,16 +5,19 @@
 <f:section name="Content">
 
 <div id="browse" ng-controller="monasteryController">
-	<form id="advancedSearch">
-		<fieldset class="togglable">
+	<form action="" id="search" class="togglable">
+		<fieldset>
 			<legend>Suche über alle Felder</legend>
-			<label class="large-9 columns none"><input name="alle" type="text"></label>
-			<div class="large-1 columns"><input type="submit" value="Suchen"></div>
+			<label class="large-6 columns none"><input name="alle" type="text"></label>
+			<div class="large-2 columns"><input type="submit" value="Suchen" class="left"></div>
+			<div class="large-2 columns"><button class="reset">Zurücksetzen</div>
 			<div class="large-2 columns text-right"><button class="toggle">Erweiterte Suche</button></div>
 		</fieldset>
-		<fieldset class="togglable">
+	</form>
+	<form action="" id="advancedSearch" class="togglable">
+		<fieldset>
 			<legend>Erweiterte Suche</legend>
-			<div class="text-right"><button class="toggle">Suche über alle Felder</button></div>
+			<div class="text-right clear"><button class="toggle">Suche über alle Felder</button></div>
 			<div class="multiple">
 				<label class="large-3 column none">
 					<select name="filter">
@@ -62,7 +65,7 @@
 					</select>
 				</label>
 			</div>
-			<div class="text-right"><input type="submit" value="Suchen"></div>
+			<div class="text-right clear"><input type="submit" value="Suchen"></div>
 		</fieldset>
 	</form>
 	<form id="UpdateList" name="UpdateList" action="updateList">
@@ -114,9 +117,9 @@
 						<td>
 							<textarea name="bearbeitungsstand"></textarea>
 						</td>
-						<td>
-							<a href="" class="edit">Edit</a>
-							<a href="" class="delete">Del</a>
+						<td class="no-wrap show-only-on-hover">
+							<button class="edit icon-pencil" title="Bearbeiten"></button>
+							<button class="delete icon-trash" title="Löschen"></button>
 							<input class="csrf" type="hidden" name="__csrfToken"	value="{f:security.csrfToken()}">
 						</td>
 					</tr>
@@ -130,7 +133,7 @@
 <a href="" id="newLink"><button class="new">Neu</button></a>
 
 <div id="edit">
-	<button class="close">Schließen</button>
+	<div class="text-right clear"><button class="close">Zurück zur Klosterliste</button></div>
 	<form id="EditKloster" action="">
 		<fieldset id="kloster">
 			<legend>Kloster</legend>
@@ -174,7 +177,7 @@
 			<legend>Orte</legend>
 			<div class="multiple separator">
 				<label class="large-7 columns">Ort
-					<select name="uuid[]"></select>
+					<select class="autocomplete" name="ort[]"></select>
 				</label>
 				<label class="large-1 columns">Wüstung
 					<input name="wuestung[]" type="checkbox">
