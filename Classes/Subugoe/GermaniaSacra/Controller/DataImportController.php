@@ -616,9 +616,23 @@ class DataImportController extends ActionController {
 						}
 					}
 				}
-
 			}
 		}
+
+		// Added to prevent wrong search result
+		$ortBistum = $this->bistumRepository->findOneByBistum('keine Angabe');
+		$ortTbl = 'subugoe_germaniasacra_domain_model_ort';
+		$sql = 'SELECT * FROM ' . $ortTbl . ' WHERE bistum IS Null';
+		$orts = $sqlConnection->fetchAll($sql);
+		if (!empty($orts)) {
+			foreach ($orts as $ort) {
+				$ortObject = $this->ortRepository->findOneByUid($ort['uid']);
+				$ortObject->setBistum($ortBistum);
+				$this->ortRepository->update($ortObject);
+				$this->persistenceManager->persistAll();
+			}
+		}
+
 	}
 
 	/**
@@ -758,6 +772,22 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
+
+		// This is added to prevent wrong search result
+		$uid = $Band['ID_GSBand'] + 1;
+		$nummer = 'keine Angabe';
+		$sortierung = $Band['Sortierung'] + 1;
+		$titel = 'keine Angabe';
+		$kurztitel = 'keine Angabe';
+		$bandObject = new Band();
+		$bandObject->setUid($uid);
+		$bandObject->setNummer($nummer);
+		$bandObject->setSortierung($sortierung);
+		$bandObject->setTitel($titel);
+		$bandObject->setKurztitel($kurztitel);
+		$this->bandRepository->add($bandObject);
+		$this->persistenceManager->persistAll();
+
 	}
 
 	/**
@@ -806,6 +836,23 @@ class DataImportController extends ActionController {
 			$this->persistenceManager->persistAll();
 			$wikiurltypUUID = $urltypObject->getUUID();
 		}
+
+		// Added to prevent wrong search result
+		$defaultUrlTypeName = "keine Angabe";
+		$defaultUrltypObject = new Urltyp();
+		$defaultUrltypObject->setName($defaultUrlTypeName);
+		$this->urltypRepository->add($defaultUrltypObject);
+		$this->persistenceManager->persistAll();
+
+
+		$defaultUrl = "keine Angabe";
+		$defaultUrlObject = new Url();
+		$defaultUrlObject->setUrl($defaultUrl);
+		$defaultUrlObject->setUrltyp($defaultUrltypObject);
+		$this->urlRepository->add($defaultUrlObject);
+		$this->persistenceManager->persistAll();
+
+
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
 		if (isset($klosters) and is_array($klosters)) {
@@ -846,7 +893,6 @@ class DataImportController extends ActionController {
 								if (is_object($bearbeitungsstatusObject) AND $bearbeitungsstatusObject->getName() !== NULL) {
 									$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
 								} else {
-									// @TODO add something reasonable here ...
 									$lastBearbeitungsstatusEntry = $this->bearbeitungsstatusRepository->findLastEntry();
 									$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry['uid'] + 1;
 									$bearbeitungsstatusObject = new Bearbeitungsstatus();
@@ -870,6 +916,14 @@ class DataImportController extends ActionController {
 								if (null !== $band) {
 									/** @var Band $bandObject */
 									$bandObject = $this->bandRepository->findOneByUid($band);
+									$klosterObject->setBand($bandObject);
+								}
+								// Added to prevent wrong search result
+								else {
+									$this->bandRepository->setDefaultOrderings(
+											array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
+									);
+									$bandObject = $this->bandRepository->findAll()->getFirst();
 									$klosterObject->setBand($bandObject);
 								}
 								$klosterObject->setBand_seite($band_seite);
@@ -1010,6 +1064,23 @@ class DataImportController extends ActionController {
 					}
 				}
 			}
+
+			// Added to prevent wrong search result
+			$checkForKlosterHasUrlObject = $this->klosterHasUrlRepository->findByIdentifier($klosterUUID);
+			if (!is_object($checkForKlosterHasUrlObject)) {
+
+				echo $klosterUUID . '\n';
+
+				$klosterHasUrlObject = new KlosterHasUrl();
+				$klosterHasUrlObject->setKloster($checkForKlosterHasUrlObject);
+				$klosterHasUrlObject->setUrl($defaultUrlObject);
+				$this->urlRepository->add($klosterHasUrlObject);
+				$this->persistenceManager->persistAll();
+			}
+			else {
+				echo 'kein Object' . $klosterUUID . '\n';
+			}
+
 		}
 	}
 

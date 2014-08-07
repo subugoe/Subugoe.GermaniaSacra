@@ -244,7 +244,7 @@ class DataExportController extends ActionController {
 				$klosterArr[$k]['id'] = (string)$kloster->getKloster_id();
 
 				$band = $kloster->getBand();
-				if (is_object($band)) {
+				if (is_object($band) && $band->getNummer() !== 'Keine Angabe') {
 					$klosterArr[$k]['band_id'] = $band->getUid();
 					$klosterArr[$k]['band_nummer'] = $band->getNummer();
 					$klosterArr[$k]['band_titel'] = $band->getTitel();

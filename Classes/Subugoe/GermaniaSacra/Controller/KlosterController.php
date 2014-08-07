@@ -1210,6 +1210,30 @@ class KlosterController extends ActionController {
 
 		return $new_kloster_id;
 	}
+
+	/** Gets and returns the list of Klosters as per search string
+	 * @param void
+	 * @return array $reponse
+	 * @FLOW\SkipCsrfProtection
+	 */
+	public function searchAction() {
+
+		if ($this->request->hasArgument('alle')) {
+			$alle = $this->request->getArgument('alle');
+		}
+
+		if (isset($alle) && !empty($alle)) {
+			$searchResult = $this->klosterRepository->findKlosterByWildCard($alle);
+			$resultArr = array();
+			foreach ($searchResult as $v) {
+				$resultArr[] = $v['Persistence_Object_Identifier'];
+			}
+
+			return json_encode($resultArr);
+		}
+
+	}
+
 }
 
 ?>
