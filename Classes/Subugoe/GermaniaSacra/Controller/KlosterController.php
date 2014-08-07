@@ -1236,8 +1236,7 @@ class KlosterController extends ActionController {
 				$resultArr[] = $v['Persistence_Object_Identifier'];
 			}
 
-			echo count($resultArr); exit;
-//			return json_encod<!--e($resultArr);-->
+			return json_encode($resultArr);
 		}
 
 	}
