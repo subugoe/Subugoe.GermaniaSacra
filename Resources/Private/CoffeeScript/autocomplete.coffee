@@ -1,33 +1,28 @@
 ###
-
 Autocomplete for select fields
 
 Overlaying input field, data AJAXed on type
 Requires returned JSON to contain $uuid and $name for each item
-
 ###
 
 $.fn.extend
 	autocomplete: () ->
+
 		@each ->
+
+			if $(this).siblings('.autocomplete').length # Already is autocomplete-enabled
+				$(this).siblings('.autocomplete').find('input').val $(this).find(':selected').text()
+				return
+
 			$select = $(this).css
 				opacity: 0
 			$input = $('<input type="text">').val $select.find(':selected').text()
-			$input.click ->
-				this.select()
-			$button = $ '<button>&#9660;</button>'
 			$spinner = $ '<i class="spinner-icon"/>'
 			$spinner.hide()
-			$button.click ->
-				if ol.is(":visible")
-					$input.blur()
-				else
-					$input.focus()
-				false # prevents html click trigger from firing
 			$list = $ '<ol/>'
 			$list.css
 				top: $select.outerHeight()
-			$overlay = $('<div class="autocomplete"/>').append $input, $button, $spinner, $list
+			$overlay = $('<div class="autocomplete"/>').append $input, $spinner, $list
 			$overlay.css
 				width: $select.outerWidth()
 				height: $select.outerHeight()
@@ -35,6 +30,11 @@ $.fn.extend
 				right: 0
 				top: 0
 			$overlay.insertAfter $select
+
+			$input.click ->
+				this.select()
+				$list.slideDown().scrollTop(0).find('li').first().addClass('current')
+
 			$input.on 'input', ->
 				if $input.val().length > 0
 					delay (->
@@ -57,9 +57,11 @@ $.fn.extend
 									$select.setSelected $(this)
 									$list.slideUp()
 					), 500
+
 			$input.on 'blur', ->
 				$list.slideUp()
 				$input.val $select.find(':selected').text()
+
 			$input.on 'keydown', (e) ->
 				if $list.is ':visible'
 					$lis = $list.children()
@@ -84,6 +86,7 @@ $.fn.extend
 							false
 						when 35, 36, 27 # sec
 							$input.blur()
+
 	setSelected: ($data) ->
 		@each ->
 			$(this).empty().append('<option value="' + $data.data('uuid') + '" selected>' + $data.text() + '</option>')

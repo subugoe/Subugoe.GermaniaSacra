@@ -2,8 +2,12 @@
 	float: right;
 	position: relative;
 	width: 70%;
-	#select & {
-		width: 100%;
+	&:after {
+		content: "\25BC";
+		pointer-events: none;
+		position: absolute;
+		right: .5em;
+		top: 5%;
 	}
 	input {
 		width: 100%;
@@ -11,32 +15,6 @@
 			+ button {
 				@include background(linear-gradient(left, rgba($input-focus-bg-color, 0) 0%, rgba($input-focus-bg-color, 1) 60%));
 			}
-		}
-	}
-	button {
-		@include background(linear-gradient(left, rgba($input-bg-color, 0) 0%, rgba($input-bg-color, 1) 60%));
-		border: none;
-		@include box-shadow(none);
-		color: $input-font-color;
-		cursor: pointer;
-		margin: 0;
-		padding: 0;
-		position: absolute;
-		right: .5em;
-		text-align: right;
-		top: 10%;
-		height: 80%;
-		&:active, &:focus, &:hover {
-			color: $primary-color;
-			background: none;
-		}
-		#select & {
-			@include background(linear-gradient(left, rgba(lighten($primary-color, 5), 0) 0%, rgba(lighten($primary-color, 5), 1) 60%));
-			color: white;
-			line-height: rem-calc(20);
-			top: 0;
-			width: rem-calc(25);
-			height: rem-calc(20);
 		}
 	}
 	ol {
@@ -59,12 +37,13 @@
 		overflow: hidden;
 		padding: rem-calc(5);
 		white-space: nowrap;
-		&.current {
+		&.current, {
 			background: $primary-color;
 			color: white;
 		}
 		&:hover, &:focus, &:active {
-			background: rgba(white, .2);
+			background: rgba($primary-color, .8);
+			color: white;
 		}
 	}
 	.spinner-icon {

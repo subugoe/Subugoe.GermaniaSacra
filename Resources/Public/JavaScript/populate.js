@@ -8,7 +8,7 @@ $.fn.extend({
 				if (status == "success") {
 					$('#confirm').modal({
 						closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
-						position: ["20%", ],
+						position: ["20%"],
 						overlayId: 'confirm-overlay',
 						containerId: 'confirm-container',
 						onShow: function(dialog) {
@@ -83,13 +83,23 @@ $.fn.extend({
 						e.stopPropagation()
 					})
 					.on( 'keyup change', function () {
-					table
-						.column( colIdx )
-						.search( this.value )
-						.draw();
+						table
+							.column( colIdx )
+							.search( this.value )
+							.draw()
 					})
 			})
 
+			// Filter table by "search all" return values
+			$('body').append('<input id="uuidFilter" type="hidden">');
+			$('#uuidFilter').change( function() {
+				table
+					.column(0)
+					.search( this.value, true, false ) // enable regex, disable smart search (enabling both will not work)
+					.draw()
+			})
+
+			// Fill the table
 			$.each(klosters, function(index, kloster) {
 
 				// Clone with triggers for edit and delete
@@ -123,7 +133,7 @@ $.fn.extend({
 					if (name !== "__csrfToken" && name !== "auswahl") {
 						$(this).attr('name', name + '[' + kloster.uuid + ']')
 						// WORKAROUND: DataTables 1.10.1 has a bug that prevents sorting of :input elements, so we use plain text for sorting
-						$('<span class="val">' + $(this).val() + '</span>').hide().insertBefore($(this))
+						$('<span class="val"/>').text( $(this).is('select') ? $(this).find(':selected').text() : $(this).val() ).hide().insertBefore($(this))
 					}
 
 				});
@@ -221,9 +231,8 @@ $.fn.extend({
 						if ( name == "wuestung" ) {
 							$(this).prop('checked', value[name] == 1)
 						}
-					} else if ( name ==  "uuid" ) {
-						$(this).append( $("<option />", { value: value['uuid'], text: value['ort'] }).attr('selected', true) );
-						$(this).autocomplete()
+					} else if ( name ==  "ort" ) {
+						$(this).html( $("<option />", { value: value['uuid'], text: value['ort'] }).attr('selected', true) )
 					} else {
 						$(this).val( value[name] )
 					}
@@ -261,6 +270,9 @@ $.fn.extend({
 				})
 			})
 
+			$("#browse").slideUp()
+			$('#edit').slideDown()
+			$('#edit .autocomplete').autocomplete()
 			$('#edit textarea').trigger('autosize.resize');
 			$('#edit input[type=url]').keyup()
 

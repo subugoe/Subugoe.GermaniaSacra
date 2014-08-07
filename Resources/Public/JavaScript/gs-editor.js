@@ -1,5 +1,9 @@
 $(function() {
 
+	$('button').click( function(e) {
+		e.preventDefault()
+	})
+
 	$("#edit textarea, #new textarea").autosize()
 	$("#edit, #new").hide()
 
@@ -30,19 +34,17 @@ $(function() {
 
 	$(".toggle").click( function(e) {
 		e.preventDefault()
-		$(this).closest('.togglable').siblings().addBack().slideToggle()
+		$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
 	})
 
 	$(".edit").click(function(t) {
 		t.preventDefault()
 		$("#edit").populate_kloster($(this).attr("href"))
-		$("#edit").slideDown()
-		$("#browse").slideUp()
 	})
 
 	$(".close").click(function(t) {
 		t.preventDefault()
-		$(this).parent().slideUp()
+		$(this).parent().closest('div[id]').slideUp()
 		$('#browse').slideDown()
 	})
 
