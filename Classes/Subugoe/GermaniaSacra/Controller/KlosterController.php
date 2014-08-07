@@ -820,7 +820,14 @@ class KlosterController extends ActionController {
 		);
 		$bands = $this->bandRepository->findAll();
 		foreach ($bands as $p => $band) {
-			$bandArr[$p] = array($band->getTitel() => $band->getUUID());
+
+			if ($band->getTitel() != 'keine Angabe') {
+				$bandNummerTitel = $band->getNummer() . '-' . $band->getTitel();
+			}
+			else {
+				$bandNummerTitel = $band->getTitel();
+			}
+			$bandArr[$p] = array($bandNummerTitel => $band->getUUID());
 		}
 
 		// Literature data for select box
@@ -1229,7 +1236,8 @@ class KlosterController extends ActionController {
 				$resultArr[] = $v['Persistence_Object_Identifier'];
 			}
 
-			return json_encode($resultArr);
+			echo count($resultArr); exit;
+//			return json_encod<!--e($resultArr);-->
 		}
 
 	}
