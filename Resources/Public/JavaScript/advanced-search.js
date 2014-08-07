@@ -1,14 +1,17 @@
 $(function() {
-  return $('#advancedSearch').submit(function(e) {
+  $('#advancedSearch').submit(function(e) {
     var json, search;
     e.preventDefault();
-    json = JSON.stringify($('#advancedSearch').serializeArray());
+    json = $('#advancedSearch').serializeArray();
+
     search = $.post('/search', json);
     search.done(function(data) {
-      return console.dir(data);
+	    alert(data);
+      console.dir(data);
     });
-    return search.fail(function(data) {
-      return console.dir(data);
+    search.fail(function(data) {
+	    alert($.parseJSON(data.status));
+      console.dir(data);
     });
   });
 });
