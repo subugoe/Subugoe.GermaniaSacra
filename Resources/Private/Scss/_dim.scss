@@ -147,6 +147,10 @@ input.year {
 	}
 }
 
+td.dirty {
+	background: lighten($warning-color, 30);
+}
+
 th div {
 	padding-right: 1em;
 }
