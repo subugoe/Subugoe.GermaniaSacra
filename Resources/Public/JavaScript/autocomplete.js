@@ -77,7 +77,7 @@ $.fn.autocomplete = function() {
       $this = $(this);
       $list = $this.siblings('.list');
       $list.slideUp();
-      return $this.val($this.closest('select').find(':selected').text());
+      return $this.val($this.closest('.autocomplete').siblings('select').find(':selected').text());
     });
     return $input.on('keydown', function(e) {
       var $current, $lis, $this, index, li_height;

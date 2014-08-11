@@ -64,7 +64,7 @@ $.fn.autocomplete = () ->
 			$this = $(this)
 			$list = $this.siblings('.list')
 			$list.slideUp()
-			$this.val $this.closest('select').find(':selected').text()
+			$this.val $this.closest('.autocomplete').siblings('select').find(':selected').text()
 
 		$input.on 'keydown', (e) ->
 			$this = $(this)
