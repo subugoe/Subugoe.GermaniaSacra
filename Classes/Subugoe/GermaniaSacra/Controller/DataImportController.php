@@ -837,6 +837,22 @@ class DataImportController extends ActionController {
 			$wikiurltypUUID = $urltypObject->getUUID();
 		}
 
+		// Added to prevent wrong search result
+		$defaultUrlTypeName = "keine Angabe";
+		$defaultUrltypObject = new Urltyp();
+		$defaultUrltypObject->setName($defaultUrlTypeName);
+		$this->urltypRepository->add($defaultUrltypObject);
+		$this->persistenceManager->persistAll();
+
+
+		$defaultUrl = "keine Angabe";
+		$defaultUrlObject = new Url();
+		$defaultUrlObject->setUrl($defaultUrl);
+		$defaultUrlObject->setUrltyp($defaultUrltypObject);
+		$this->urlRepository->add($defaultUrlObject);
+		$this->persistenceManager->persistAll();
+
+
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
 		if (isset($klosters) and is_array($klosters)) {
@@ -1048,6 +1064,23 @@ class DataImportController extends ActionController {
 					}
 				}
 			}
+
+			// Added to prevent wrong search result
+			$checkForKlosterHasUrlObject = $this->klosterHasUrlRepository->findByIdentifier($klosterUUID);
+			if (!is_object($checkForKlosterHasUrlObject)) {
+
+				echo $klosterUUID . '\n';
+
+				$klosterHasUrlObject = new KlosterHasUrl();
+				$klosterHasUrlObject->setKloster($checkForKlosterHasUrlObject);
+				$klosterHasUrlObject->setUrl($defaultUrlObject);
+				$this->urlRepository->add($klosterHasUrlObject);
+				$this->persistenceManager->persistAll();
+			}
+			else {
+				echo 'kein Object' . $klosterUUID . '\n';
+			}
+
 		}
 	}
 
