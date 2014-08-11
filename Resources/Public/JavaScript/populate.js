@@ -239,6 +239,10 @@ $.fn.extend({
 						}
 					} else if ( name ==  "ort" ) {
 						$(this).html( $("<option />", { value: value['uuid'], text: value['ort'] }).attr('selected', true) )
+					} else if ( name == "bistum" ) {
+						if ( typeof value[name] !== 'undefined' ) {
+							$(this).val( value[name] ).prop('disabled', true)
+						}
 					} else {
 						$(this).val( value[name] )
 					}
