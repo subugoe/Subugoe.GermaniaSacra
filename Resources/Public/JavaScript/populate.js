@@ -72,7 +72,13 @@ $.fn.extend({
 				order: [[ 3, "asc" ]],
 				fnDrawCallback: function() {
 					// Since only visible textareas can be autosized, this has to be called after every page render
-					$("#list textarea").autosize()
+					$('#list textarea').autosize()
+					// Mark row as dirty when changed
+					$('#list :input:not(:checkbox)').change( function() {
+						$(this)
+							.closest('td').addClass('dirty')
+								.closest('tr').find(':checkbox:eq(0)').prop('checked', true)
+					})
 				}
 			})
 
