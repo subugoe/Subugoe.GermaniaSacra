@@ -66,7 +66,7 @@ $(function() {
 	$("#UpdateList").submit(function(t) {
 		t.preventDefault()
 		if ($("input[name='auswahl[]']:checked").length == 0) {
-			alert("Wählen Sie bitte mindestens einen Eintrag aus.")
+			alert('Wählen Sie bitte mindestens einen Eintrag aus.')
 			return false
 		}
 		var url = $('#UpdateList').attr("action")
@@ -109,16 +109,17 @@ jQuery.fn.extend({
 			var $fieldset = $(this).closest('fieldset')
 			var $clone = $(this).clone(true)
 			$clone.find(':input').val('')
+			$clone.find('select.autocomplete').empty()
 			$clone.insertAfter( $(this) ).hide().slideDown(slideTime)
-			$fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1)
+			$fieldset.find('button.remove').prop('disabled', $fieldset.find('.multiple:not(.dying)').length === 1)
 		})
 	},
 	removeInputs: function(slideTime) {
 		if ( typeof slideTime === undefined ) slideTime = 0
 		return this.each(function() {
 			var $fieldset = $(this).closest('fieldset')
-			$fieldset.find(".multiple").length > 1 && $(this).addClass("dying").slideUp(slideTime, this.remove)
-			$fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1)
+			$fieldset.find('.multiple').length > 1 && $(this).addClass('dying').slideUp(slideTime, this.remove)
+			$fieldset.find('button.remove').prop('disabled', $fieldset.find('.multiple:not(.dying)').length === 1)
 		})
 	}
 })
