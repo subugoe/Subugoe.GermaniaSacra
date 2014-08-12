@@ -1083,7 +1083,6 @@ class DataImportController extends ActionController {
 		$defaultUrlObject->setUrltyp($defaultUrltypObject);
 		$this->urlRepository->add($defaultUrlObject);
 		$this->persistenceManager->persistAll();
-
 		$klosters = $this->klosterRepository->findAll();
 		foreach ($klosters as $kloster) {
 			$urls = $kloster->getKlosterHasUrls();
