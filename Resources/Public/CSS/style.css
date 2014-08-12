@@ -7737,79 +7737,93 @@ input[type="submit"] {
 
 input,
 select,
-textarea {
+textarea,
+div.autocomplete {
   float: right;
 }
 label.none input, .none.dataTables_info input, label.none
 select, .none.dataTables_info
 select, label.none
 textarea, .none.dataTables_info
-textarea {
+textarea, label.none
+div.autocomplete, .none.dataTables_info
+div.autocomplete {
   width: 100% !important;
 }
 .large-2 > input, .large-2 >
 select, .large-2 >
-textarea {
+textarea, .large-2 >
+div.autocomplete {
   margin-left: 1em;
   width: 50%;
 }
 .large-3 > input, .large-3 >
 select, .large-3 >
-textarea {
+textarea, .large-3 >
+div.autocomplete {
   margin-left: 1em;
   width: 33.33333%;
 }
 .large-4 > input, .large-4 >
 select, .large-4 >
-textarea {
+textarea, .large-4 >
+div.autocomplete {
   margin-left: 1em;
   width: 50%;
 }
 .large-5 > input, .large-5 >
 select, .large-5 >
-textarea {
+textarea, .large-5 >
+div.autocomplete {
   margin-left: 1em;
   width: 60%;
 }
 .large-6 > input, .large-6 >
 select, .large-6 >
-textarea {
+textarea, .large-6 >
+div.autocomplete {
   margin-left: 1em;
   width: 66.66667%;
 }
 .large-7 > input, .large-7 >
 select, .large-7 >
-textarea {
+textarea, .large-7 >
+div.autocomplete {
   margin-left: 1em;
   width: 71.42857%;
 }
 .large-8 > input, .large-8 >
 select, .large-8 >
-textarea {
+textarea, .large-8 >
+div.autocomplete {
   margin-left: 1em;
   width: 75%;
 }
 .large-9 > input, .large-9 >
 select, .large-9 >
-textarea {
+textarea, .large-9 >
+div.autocomplete {
   margin-left: 1em;
   width: 77.77778%;
 }
 .large-10 > input, .large-10 >
 select, .large-10 >
-textarea {
+textarea, .large-10 >
+div.autocomplete {
   margin-left: 1em;
   width: 80%;
 }
 .large-11 > input, .large-11 >
 select, .large-11 >
-textarea {
+textarea, .large-11 >
+div.autocomplete {
   margin-left: 1em;
   width: 81.81818%;
 }
 .large-12 > input, .large-12 >
 select, .large-12 >
-textarea {
+textarea, .large-12 >
+div.autocomplete {
   margin-left: 1em;
   width: 83.33333%;
 }
@@ -7943,9 +7957,7 @@ tr:hover .show-only-on-hover * {
 }
 
 .autocomplete {
-  float: right;
   position: relative;
-  width: 70%;
 }
 .autocomplete:after {
   content: "\25BC";

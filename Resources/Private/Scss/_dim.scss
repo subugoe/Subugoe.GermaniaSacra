@@ -123,7 +123,8 @@ input[type="submit"] {
 
 input,
 select,
-textarea {
+textarea,
+div.autocomplete {
 	float: right;
 	label.none & {
 		width: 100% !important;

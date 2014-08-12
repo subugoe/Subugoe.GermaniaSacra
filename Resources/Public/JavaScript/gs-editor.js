@@ -109,7 +109,7 @@ jQuery.fn.extend({
 			var $fieldset = $(this).closest('fieldset')
 			var $clone = $(this).clone(true)
 			$clone.find(':input').val('')
-			$clone.find('select.autocomplete').empty()
+			$clone.find('select.autocomplete').autocomplete()
 			$clone.insertAfter( $(this) ).hide().slideDown(slideTime)
 			$fieldset.find('button.remove').prop('disabled', $fieldset.find('.multiple:not(.dying)').length === 1)
 		})
