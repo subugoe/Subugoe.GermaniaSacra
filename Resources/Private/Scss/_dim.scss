@@ -15,6 +15,11 @@ form {
 	span {
 		font-size: $form-label-font-size;
 		padding: $microformat-padding;
+		&.link {
+			font-size: 1.2em;
+			position: absolute;
+			z-index: 9;
+		}
 	}
 }
 

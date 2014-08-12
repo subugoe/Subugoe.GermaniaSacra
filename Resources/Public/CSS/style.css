@@ -7616,6 +7616,11 @@ form span {
   font-size: 0.875rem;
   padding: 0.625rem 0.75rem;
 }
+form span.link {
+  font-size: 1.2em;
+  position: absolute;
+  z-index: 9;
+}
 
 textarea {
   min-height: 0;

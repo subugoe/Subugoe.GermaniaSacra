@@ -130,7 +130,7 @@
 	</form>
 </div>
 
-<a href="" id="newLink"><button class="new">Neu</button></a>
+<a href="" id="newLink"><button class="new">Neues Kloster anlegen</button></a>
 
 <div id="edit">
 	<div class="text-right clear"><button class="close">Zurück zur Klosterliste</button></div>
@@ -141,7 +141,7 @@
 				<textarea name="kloster_name" required="required"></textarea>
 			</label>
 			<label class="large-3 columns">Kloster-Nr.
-				<input disabled="disabled" name="kloster_id" required="required" type="text">
+				<input readonly name="kloster_id" type="text">
 			</label>
 			<fieldset class="highlight">
 				<label class="large-4 columns">Status
@@ -257,24 +257,22 @@
 		<fieldset id="links">
 			<legend>Links</legend>
 			<div class="clearfix">
-				<input type="hidden" name="url_typ[]" value="Wikipedia">
 				<label class="large-6 columns">Wikipedia
-					<input id="wikipedia" name="url[]" type="url">
+					<input id="wikipedia" name="wikipedia" type="url">
 				</label>
+				<span class="link"></span>
 				<label class="large-5 columns">Darstellung
-					<input name="links_label[]" type="text">
+					<input name="wikipedia_label" type="text">
 				</label>
-				<span class="link large-1 columns">{{link}}</span>
 			</div>
 			<div class="clearfix">
-				<input type="hidden" name="url_typ[]" value="GND">
 				<label class="large-6 columns">GND
-					<input id="gnd" name="url[]" type="url">
+					<input id="gnd" name="gnd" type="url">
 				</label>
+				<span class="link"></span>
 				<label class="large-5 columns">Darstellung
-					<input name="links_label[]" type="text">
+					<input name="gnd_label" type="text">
 				</label>
-				<span class="link large-1 columns">{{link}}</span>
 			</div>
 			<div class="multiple">
 				<label class="large-2 columns none">
@@ -284,6 +282,7 @@
 					<input name="url[]" type="url">
 					<i class="link large-1 columns">{{link}}</i>
 				</label>
+				<span class="link"></span>
 				<label class="large-5 columns">Darstellung
 					<input name="links_label[]" type="url">
 				</label>
@@ -297,17 +296,6 @@
 		</fieldset>
 		<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 		<input class="button" type="submit" value="Speichern">
-	</form>
-</div>
-
-
-<div id="new">
-	<h1>
-		Kloster anlegen
-	</h1>
-	<button class="close">Schließen</button>
-	<form id="NewKloster" action="">
-		<!-- TODO -->
 	</form>
 </div>
 

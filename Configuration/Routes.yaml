@@ -50,6 +50,13 @@
     '@action': 'edit'
 
 -
+  name: 'Get Kloster Options URI'
+  uriPattern: 'getOptions'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'getOptions'
+
+-
   name: 'Update Kloster URI'
   uriPattern: 'update/{kloster.__identity}'
   defaults:
