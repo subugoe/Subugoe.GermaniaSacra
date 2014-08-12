@@ -6864,7 +6864,7 @@ table.dataTable th:active {
   height: 30px;
   line-height: 30px;
   width: 100%;
-  background: url(../../Public/Images/header.gif) repeat-x;
+  background: #c90230;
   color: #fff;
   font-weight: bold;
 }
