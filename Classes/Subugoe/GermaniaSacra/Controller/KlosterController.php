@@ -460,12 +460,12 @@ class KlosterController extends ActionController {
 		$kloster->setUid($this->getLastKlosterIdAction());
 
 		// Add Kloster
-		$kloster_name = $this->request->getArgument('new_kloster_name');
-		$patrozinium = $this->request->getArgument('new_patrozinium');
-		$bemerkung = $this->request->getArgument('new_bemerkung');
-		$band_seite = $this->request->getArgument('new_band_seite');
-		$text_gs_band = $this->request->getArgument('new_text_gs_band');
-		$bearbeitungsstand = $this->request->getArgument('new_bearbeitungsstand');
+		$kloster_name = $this->request->getArgument('kloster_name');
+		$patrozinium = $this->request->getArgument('patrozinium');
+		$bemerkung = $this->request->getArgument('bemerkung');
+		$band_seite = $this->request->getArgument('band_seite');
+		$text_gs_band = $this->request->getArgument('text_gs_band');
+		$bearbeitungsstand = $this->request->getArgument('bearbeitungsstand');
 		$kloster->setKloster($kloster_name);
 		$kloster->setPatrozinium($patrozinium);
 		$kloster->setBemerkung($bemerkung);
@@ -473,19 +473,19 @@ class KlosterController extends ActionController {
 		$kloster->setText_gs_band($text_gs_band);
 		$kloster->setBearbeitungsstand($bearbeitungsstand);
 
-		$bearbeitungsstatus_uuid = $this->request->getArgument('new_bearbeitungsstatus');
+		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
 
-		$bearbeiter_uuid = $this->request->getArgument('new_bearbeiter');
+		$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
 		$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
 		$kloster->setBearbeiter($bearbeiter);
 
-		$personallistenstatus_uuid = $this->request->getArgument('new_personallistenstatus');
+		$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
 		$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
 		$kloster->setPersonallistenstatus($personallistenstatus);
 
-		$band_uuid = $this->request->getArgument('new_band');
+		$band_uuid = $this->request->getArgument('band');
 
 		if (isset($band_uuid) && !empty($band_uuid)) {
 			$band = $this->bandRepository->findByIdentifier($band_uuid);
@@ -495,14 +495,14 @@ class KlosterController extends ActionController {
 		$uuid = $kloster->getUUID();
 
 		// Add Klosterstandort
-		$ortArr = $this->request->getArgument('new_ort');
-		$bistumArr = $this->request->getArgument('new_bistum');
-		$gruenderArr = $this->request->getArgument('new_gruender');
-		$breiteArr = $this->request->getArgument('new_breite');
-		$laengeArr = $this->request->getArgument('new_laenge');
-		$bemerkungArr = $this->request->getArgument('new_standortbemerkung');
-		$bemerkung_standortArr = $this->request->getArgument('new_bemerkung_standort');
-		$temp_literatur_altArr = $this->request->getArgument('new_temp_literatur_alt');
+		$ortArr = $this->request->getArgument('ort');
+		$bistumArr = $this->request->getArgument('bistum');
+		$gruenderArr = $this->request->getArgument('gruender');
+		$breiteArr = $this->request->getArgument('breite');
+		$laengeArr = $this->request->getArgument('laenge');
+		$bemerkungArr = $this->request->getArgument('standortbemerkung');
+		$bemerkung_standortArr = $this->request->getArgument('bemerkung_standort');
+		$temp_literatur_altArr = $this->request->getArgument('temp_literatur_alt');
 		$von_vonArr = $this->request->getArgument('von_von');
 		$von_bisArr = $this->request->getArgument('von_bis');
 		$von_verbalArr = $this->request->getArgument('von_verbal');
@@ -570,15 +570,15 @@ class KlosterController extends ActionController {
 		}
 
 		// Add Orden
-		$ordenArr = $this->request->getArgument('new_orden');
+		$ordenArr = $this->request->getArgument('orden');
 		$orden_von_vonArr = $this->request->getArgument('orden_von_von');
 		$orden_von_bisArr = $this->request->getArgument('orden_von_bis');
 		$orden_von_verbalArr = $this->request->getArgument('orden_von_verbal');
 		$orden_bis_vonArr = $this->request->getArgument('orden_bis_von');
 		$orden_bis_bisArr = $this->request->getArgument('orden_bis_bis');
 		$orden_bis_verbalArr = $this->request->getArgument('orden_bis_verbal');
-		$klosterstatusArr = $this->request->getArgument('new_klosterstatus');
-		$bemerkung_ordenArr = $this->request->getArgument('new_bemerkung_orden');
+		$klosterstatusArr = $this->request->getArgument('klosterstatus');
+		$bemerkung_ordenArr = $this->request->getArgument('bemerkung_orden');
 		$klosterordenNumber = count($ordenArr);
 		$klosterordenArr = array();
 		for ($i = 0; $i < $klosterordenNumber; $i++) {
@@ -799,6 +799,17 @@ class KlosterController extends ActionController {
 		}
 		$klosterArr['literatur'] = $Literaturs;
 
+		return json_encode($klosterArr);
+
+	}
+
+	/**
+	 * Return the options to fill the select fields in Kloster edit form
+	 * @FLOW\SkipCsrfProtection
+	 * @return array $response select options as JSON
+	 */
+	public function getOptionsAction() {
+
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
@@ -883,7 +894,6 @@ class KlosterController extends ActionController {
 		}
 
 		$response = array();
-		$response[] = $klosterArr;
 		$response[] = $bearbeitungsstatusArr;
 		$response[] = $personallistenstatusArr;
 		$response[] = $bandArr;
@@ -892,8 +902,8 @@ class KlosterController extends ActionController {
 		$response[] = $ordenArr;
 		$response[] = $klosterstatusArr;
 		$response[] = $bearbeiterArr;
-
 		return json_encode($response);
+
 	}
 
 	/** Update data of a selected Kloster
@@ -920,12 +930,12 @@ class KlosterController extends ActionController {
 		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
-		$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
-		$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
-		$kloster->setBearbeiter($bearbeiter);
-		$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
-		$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
-		$kloster->setPersonallistenstatus($personallistenstatus);
+		//$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
+		//$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
+		//$kloster->setBearbeiter($bearbeiter);
+		//$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
+		//$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
+		//$kloster->setPersonallistenstatus($personallistenstatus);
 		$band_uuid = $this->request->getArgument('band');
 		$band = $this->bandRepository->findByIdentifier($band_uuid);
 		$kloster->setBand($band);
