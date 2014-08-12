@@ -1064,23 +1064,35 @@ class DataImportController extends ActionController {
 					}
 				}
 			}
+		}
+	}
 
-			// Added to prevent wrong search result
-			$checkForKlosterHasUrlObject = $this->klosterHasUrlRepository->findByIdentifier($klosterUUID);
-			if (!is_object($checkForKlosterHasUrlObject)) {
-
-				echo $klosterUUID . '\n';
-
+	/**
+	* Adds a default URL for to prevent wrong search result
+	* @return void
+	*/
+	public function addDefaultUrlAction() {
+		$defaultUrlTypeName = "keine Angabe";
+		$defaultUrltypObject = new Urltyp();
+		$defaultUrltypObject->setName($defaultUrlTypeName);
+		$this->urltypRepository->add($defaultUrltypObject);
+		$this->persistenceManager->persistAll();
+		$defaultUrl = "keine Angabe";
+		$defaultUrlObject = new Url();
+		$defaultUrlObject->setUrl($defaultUrl);
+		$defaultUrlObject->setUrltyp($defaultUrltypObject);
+		$this->urlRepository->add($defaultUrlObject);
+		$this->persistenceManager->persistAll();
+		$klosters = $this->klosterRepository->findAll();
+		foreach ($klosters as $kloster) {
+			$urls = $kloster->getKlosterHasUrls();
+			if (count($urls) == 0) {
 				$klosterHasUrlObject = new KlosterHasUrl();
-				$klosterHasUrlObject->setKloster($checkForKlosterHasUrlObject);
+				$klosterHasUrlObject->setKloster($kloster);
 				$klosterHasUrlObject->setUrl($defaultUrlObject);
-				$this->urlRepository->add($klosterHasUrlObject);
+				$this->klosterHasUrlRepository->add($klosterHasUrlObject);
 				$this->persistenceManager->persistAll();
 			}
-			else {
-				echo 'kein Object' . $klosterUUID . '\n';
-			}
-
 		}
 	}
 
