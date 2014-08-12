@@ -11,44 +11,30 @@ var delay;
 $.fn.autocomplete = function() {
   return this.each(function() {
     var $input, $list, $overlay, $select, $spinner;
-    if ($(this).siblings('.autocomplete').length) {
-      $(this).siblings('.autocomplete').find('input').val($(this).find(':selected').text());
-      return;
-    }
-    $select = $(this).css({
-      opacity: 0
-    });
+    $(this).siblings('.autocomplete').remove();
+    $select = $(this).hide();
     $input = $('<input type="text">').val($select.find(':selected').text());
     $spinner = $('<i class="spinner spinner-icon"/>');
     $spinner.hide();
     $list = $('<ol class="list"/>');
     $list.css({
-      top: $select.outerHeight()
+      top: $('select:eq(0)').outerHeight()
     });
     $overlay = $('<div class="overlay autocomplete"/>').append($input, $spinner, $list);
-    $overlay.css({
-      width: $select.outerWidth(),
-      height: $select.outerHeight(),
-      position: 'absolute',
-      right: 0,
-      top: 0
-    });
     $overlay.insertAfter($select);
     $input.click(function() {
       this.select();
-      return $(this).siblings('.list').slideDown().scrollTop(0).find('li:eq(0)').addClass('current');
+      return $list.slideDown().scrollTop(0).find('li:eq(0)').addClass('current');
     });
     $input.on('input', function() {
-      var $this;
-      $this = $(this);
-      if ($this.val().length > 0) {
+      if ($input.val().length > 0) {
         return delay((function() {
-          $this.siblings('.spinner').show();
+          $spinner.show();
           return $.ajax({
-            url: '/searchOrt?searchString=' + encodeURIComponent($this.val()),
+            url: '/searchOrt?searchString=' + encodeURIComponent($input.val()),
             type: 'GET',
             complete: function() {
-              return $this.siblings('.spinner').hide();
+              return $spinner.hide();
             },
             error: function() {
               return console.log('autocomplete ajax error');
@@ -56,15 +42,14 @@ $.fn.autocomplete = function() {
             success: function(data) {
               var json;
               json = $.parseJSON(data);
-              $list = $this.siblings('.list');
               $list.empty();
               $.each(json, function(index, element) {
                 return $list.append('<li data-uuid="' + element.uuid + '">' + element.name + '</li>');
               });
               $list.slideDown().scrollTop(0).find('li').first().addClass('current');
               return $list.find('li').click(function() {
-                $this.val($(this).text());
-                $this.closest('.autocomplete').siblings('select').setSelected($(this));
+                $input.val($(this).text());
+                $select.setSelected($(this));
                 return $list.slideUp();
               });
             }
@@ -72,17 +57,12 @@ $.fn.autocomplete = function() {
         }), 500);
       }
     });
-    $input.on('blur', function() {
-      var $this;
-      $this = $(this);
-      $list = $this.siblings('.list');
+    $input.blur(function() {
       $list.slideUp();
-      return $this.val($this.closest('.autocomplete').siblings('select').find(':selected').text());
+      return $select.find(':selected').text();
     });
     return $input.on('keydown', function(e) {
-      var $current, $lis, $this, index, li_height;
-      $this = $(this);
-      $list = $this.siblings('.list');
+      var $current, $lis, index, li_height;
       if ($list.is(':visible')) {
         $lis = $list.children();
         li_height = $list.children(':eq(0)').outerHeight();
@@ -91,8 +71,8 @@ $.fn.autocomplete = function() {
         switch (e.which) {
           case 13:
             e.preventDefault();
-            $this.val($current.text());
-            $this.closest('.autocomplete').siblings('select').setSelected($current);
+            $input.val($current.text());
+            $select.setSelected($current);
             return $list.slideUp();
           case 38:
             if (--index < 0) {
@@ -112,7 +92,7 @@ $.fn.autocomplete = function() {
           case 35:
           case 36:
           case 27:
-            return $this.blur();
+            return $input.blur();
         }
       }
     });

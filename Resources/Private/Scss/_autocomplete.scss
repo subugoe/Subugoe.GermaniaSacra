@@ -1,7 +1,5 @@
 .autocomplete {
-	float: right;
 	position: relative;
-	width: 70%;
 	&:after {
 		content: "\25BC";
 		pointer-events: none;
