@@ -55,10 +55,6 @@ $(function() {
     L.control.layers(baseMaps, overlayMaps).addTo(map);
     L.control.scale().addTo(map);
     map.invalidateSize();
-    geoJsonFile = "/subugoe.germaniasacra/proxy/geojson";
-    $.getJSON(geoJsonFile).success(function(data) {
-      return L.geoJson(data).addTo(map);
-    });
     resourcePath = '_Resources/Static/Packages/Subugoe.GermaniaSacra/';
     greenIcon = L.icon({
       iconUrl: resourcePath + 'Images/marker-icon.png',
@@ -68,6 +64,22 @@ $(function() {
     marker = L.marker([$('input[name$="breite[]"]').val(), $('input[name$="laenge[]"]').val()], {
       icon: greenIcon
     }).addTo(map);
+    geoJsonFile = "/subugoe.germaniasacra/proxy/geojson";
+    $.getJSON(geoJsonFile).success(function(data) {
+      var borders, style;
+      style = {
+        clickable: false,
+        color: "#000",
+        fillColor: "#000",
+        weight: 1.5,
+        opacity: 0.3,
+        fillOpacity: 0.05
+      };
+      borders = L.geoJson(data, {
+        style: style
+      });
+      return borders.addTo(map);
+    });
     $("#map .leaflet-control-layers-base input:eq(0)").click();
     return map.on("click", onMapClick = function(e) {
       var lat, lng;
