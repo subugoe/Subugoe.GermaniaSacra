@@ -151,11 +151,12 @@
 					Zuletzt bearbeitet von <i class="autofill bearbeiter">?</i> am <i class="autofill changeddate">?</i>
 				</span>
 				<label class="large-3 columns">Datensatz erzeugt am
-					<input disabled="disabled" name="creationdate" required="required" type="text">
+					<input name="creationdate" type="text" readonly>
 				</label>
 				<label class="large-12 columns">Bearbeitungsstand
 					<textarea name="bearbeitungsstand"></textarea>
 				</label>
+				<input type="hidden" name="personallistenstatus">
 			</fieldset>
 			<label class="large-12 columns">Patrozinium
 				<textarea name="patrozinium" required="required"></textarea>
