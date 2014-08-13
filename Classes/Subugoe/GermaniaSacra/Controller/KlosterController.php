@@ -455,23 +455,17 @@ class KlosterController extends ActionController {
 	 * @return void
 	 */
 	public function createAction() {
-		$kloster = new Kloster();
 
+		$kloster = new Kloster();
 		$kloster->setUid($this->getLastKlosterIdAction());
 
 		// Add Kloster
-		$kloster_name = $this->request->getArgument('kloster_name');
-		$patrozinium = $this->request->getArgument('patrozinium');
-		$bemerkung = $this->request->getArgument('bemerkung');
-		$band_seite = $this->request->getArgument('band_seite');
-		$text_gs_band = $this->request->getArgument('text_gs_band');
-		$bearbeitungsstand = $this->request->getArgument('bearbeitungsstand');
-		$kloster->setKloster($kloster_name);
-		$kloster->setPatrozinium($patrozinium);
-		$kloster->setBemerkung($bemerkung);
-		$kloster->setBand_seite($band_seite);
-		$kloster->setText_gs_band($text_gs_band);
-		$kloster->setBearbeitungsstand($bearbeitungsstand);
+		$kloster->setKloster( $this->request->getArgument('kloster_name') );
+		$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
+		$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
+		$kloster->setBand_seite( $this->request->getArgument('band_seite') );
+		$kloster->setText_gs_band( $this->request->getArgument('text_gs_band') );
+		$kloster->setBearbeitungsstand( $this->request->getArgument('bearbeitungsstand') );
 
 		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
@@ -911,22 +905,17 @@ class KlosterController extends ActionController {
 	 * @return integer The http status
 	 **/
 	public function updateAction(Kloster $kloster) {
+
 		// Update Kloster
 		$param = $this->request->getArguments();
 		$id = $param['kloster']['__identity'];
 		$kloster = $this->klosterRepository->findByIdentifier($id);
-		$kloster_name = $this->request->getArgument('kloster_name');
-		$patrozinium = $this->request->getArgument('patrozinium');
-		$bemerkung = $this->request->getArgument('bemerkung');
-		$band_seite = $this->request->getArgument('band_seite');
-		$text_gs_band = $this->request->getArgument('text_gs_band');
-		$bearbeitungsstand = $this->request->getArgument('bearbeitungsstand');
-		$kloster->setKloster($kloster_name);
-		$kloster->setPatrozinium($patrozinium);
-		$kloster->setBemerkung($bemerkung);
-		$kloster->setBand_seite($band_seite);
-		$kloster->setText_gs_band($text_gs_band);
-		$kloster->setBearbeitungsstand($bearbeitungsstand);
+		$kloster->setKloster( $this->request->getArgument('kloster_name') );
+		$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
+		$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
+		$kloster->setBand_seite( $this->request->getArgument('band_seite') );
+		$kloster->setText_gs_band( $this->request->getArgument('text_gs_band') );
+		$kloster->setBearbeitungsstand( $this->request->getArgument('bearbeitungsstand') );
 		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
@@ -1158,6 +1147,7 @@ class KlosterController extends ActionController {
 
 		$status = 200;
 		return json_encode(array($status));
+
 	}
 
 	/**
