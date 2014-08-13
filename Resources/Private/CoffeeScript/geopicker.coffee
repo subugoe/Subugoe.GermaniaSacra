@@ -63,8 +63,9 @@ $ ->
 			shadowUrl: resourcePath + 'Images/marker-shadow.png'
 			iconAnchor: [13, 41]
 
-		marker = L.marker([$('input[name$="breite[]"]').val(), $('input[name$="laenge[]"]').val()], {icon: greenIcon}).addTo(map)
-
+		lat = $('input[name$="breite[]"]').val() or 0
+		lng = $('input[name$="laenge[]"]').val() or 0
+		marker = L.marker([lat, lng], {icon: greenIcon}).addTo(map)
 
 		# AJAX load GeoJSON data
 		geoJsonFile = "/subugoe.germaniasacra/proxy/geojson"
