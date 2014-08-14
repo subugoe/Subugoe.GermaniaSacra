@@ -705,7 +705,7 @@ class KlosterController extends ActionController {
 		$personallistenstatus = $kloster->getPersonallistenstatus();
 		$klosterArr['personallistenstatus'] = $personallistenstatus->getUUID();
 		$bearbeiter = $kloster->getBearbeiter();
-		$klosterArr['bearbeiter'] = $bearbeiter->getBearbeiter();
+		$klosterArr['bearbeiter'] = $bearbeiter->getUUID();
 		$klosterArr['changeddate'] = $kloster->getChangedDate();
 
 		// Klosterstandort data

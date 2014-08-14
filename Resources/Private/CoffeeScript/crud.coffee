@@ -1,32 +1,10 @@
-# Save the Kloster list
-$.fn.update_list = (url) ->
-	$.post(url, $("#UpdateList").serialize()).done((respond, status, jqXHR) ->
-		if status is "success"
-			$("#confirm").modal
-				closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-				position: [ "20%" ]
-				overlayId: "confirm-overlay"
-				containerId: "confirm-container"
-				onShow: (dialog) ->
-					$(".message").append "Der Eintrag wurde erfolgreich bearbeitet."
-
-			setTimeout (->
-				window.location.href = ""
-			), 1000
-	).fail (jqXHR, textStatus) ->
-		$("#confirm").modal
-			closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-			position: [ "20%" ]
-			overlayId: "confirm-overlay"
-			containerId: "confirm-container"
-			onShow: (dialog) ->
-				$(".message").append jqXHR.responseText
-
 # Fill the Kloster list
-$.fn.populate_liste = (page) ->
+$.fn.populate_list = ->
+
 	$this = $(this)
+
 	$.getJSON "klosterListAll", (response) ->
-		
+
 		# Fill "Status" select fields
 		bearbeitungsstatusArray = response[1]
 		$inputBearbeitungsstatus = $("select[name='bearbeitungsstatus']")
@@ -39,13 +17,15 @@ $.fn.populate_liste = (page) ->
 				)
 
 		klosters = response[0]
-		$trTemplate = $("#list tbody tr:first")
-		
+
+		$table = $this.find("table:eq(0)")
+		$trTemplate = $table.find("tbody tr:first")
+
 		# Add a text input to each header cell used for search
-		$("#list thead th").not(":first").not(":last").each ->
+		$table.find("thead th").not(":first").not(":last").each ->
 			$(this).append "<div><input type=\"text\"></div>"
 
-		table = $("#list").DataTable(
+		dataTable = $table.DataTable(
 			autoWidth: false
 			columnDefs: [
 				bSortable: false
@@ -59,31 +39,29 @@ $.fn.populate_liste = (page) ->
 				url: "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json"
 			order: [ [ 3, "asc" ] ]
 			fnDrawCallback: ->
-				
 				# Since only visible textareas can be autosized, this has to be called after every page render
-				$("#list textarea").autosize()
-				
-				# Mark row as dirty when changed
-				$("#list :input:not(:checkbox)").change ->
+				$table.find("textarea").autosize()
+				# Mark row as dirty on change
+				$table.find(":input:not(:checkbox)").change ->
 					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
 		)
-		
+
 		# Apply the search
-		table.columns().eq(0).each (colIdx) ->
-			$("input", table.column(colIdx).header()).click((e) ->
+		dataTable.columns().eq(0).each (colIdx) ->
+			$("input", dataTable.column(colIdx).header()).click((e) ->
 				e.stopPropagation()
 			).on "keyup change", ->
-				table.column(colIdx).search(@value).draw()
+				dataTable.column(colIdx).search(@value).draw()
 
 		# Filter table by "search all" return values
-		$("body").append "<input id=\"uuidFilter\" type=\"hidden\">"
-		$("#uuidFilter").change ->
+		$("body").append '<input id="uuid_filter" type="hidden">'
+		$("#uuid_filter").change ->
 			# enable regex, disable smart search (enabling both will not work)
-			table.column(0).search(@value, true, false).draw()
+			dataTable.column(0).search(@value, true, false).draw()
 
-		# Fill the table
+		# Fill the DataTable
 		$.each klosters, (index, kloster) ->
-			
+
 			# Clone with triggers for edit and delete
 			$tr = $trTemplate.clone(true)
 			$tr.find(":input").each ->
@@ -106,23 +84,34 @@ $.fn.populate_liste = (page) ->
 						$(this).val val
 				if name isnt "__csrfToken" and name isnt "auswahl"
 					$(this).attr "name", name + "[" + kloster.uuid + "]"
-					
+
 					# WORKAROUND: DataTables 1.10.1 has a bug that prevents sorting of :input elements, so we use plain text for sorting
 					$("<span class=\"val\"/>").text((if $(this).is("select") then $(this).find(":selected").text() else $(this).val())).hide().insertBefore $(this)
 
 			$tr.find(".edit").attr "href", "edit/" + kloster.uuid
 			$tr.find(".delete").attr "href", "delete/" + kloster.uuid
 			$tr.find("input.csrf").attr "id", "csrf" + index
-			table.row.add $tr
+			dataTable.row.add $tr
 
 		# Remove template row and draw table
-		table.row($trTemplate).remove().draw()
+		dataTable.row($trTemplate).remove().draw()
+
+# Save the Kloster list
+$.fn.update_list =  ->
+	$this = $(this)
+	url = $this.attr "action"
+	$.post(url, $this.serialize()).done((respond, status, jqXHR) ->
+		if status is "success"
+			$this.message 'Ihre Änderungen wurden gespeichert.'
+	).fail (jqXHR, textStatus) ->
+		$this.message 'Error'
+		console.dir jqXHR.responseText
 
 # Fill the select fields with options
 $.fn.populate_selects = ->
 	url = "getOptions"
 	$.getJSON url, (response) ->
-		
+
 		# Fill select fields with available options
 		# TODO: Fill "URL Typ" selects
 		options = {}
@@ -149,24 +138,34 @@ $.fn.populate_selects = ->
 
 # Clear the edit form for a new Kloster
 $.fn.new_kloster = ->
-	$("#edit").clear_form()
 	$("#browse").slideUp()
 	$("#edit").slideDown()
-	$("#edit .autocomplete").autocomplete()
-	$("#edit textarea").trigger "autosize.resize"
-	$("#edit input[type=url]").keyup()
+	$(this).clear_form()
+	$(this).find(".autocomplete").autocomplete()
+	$(this).find("textarea").trigger "autosize.resize"
+	$(this).find("input[type=url]").keyup()
+
+# Create a new Kloster
+$.fn.create_kloster = ->
+	$this = $(this)
+	$.post("create", $this.serialize()).done((respond, status, jqXHR) ->
+		$this.message 'Ein neuer Eintrag wurde angelegt.'
+	).fail (jqXHR, textStatus) ->
+		$this.message 'Error'
+		console.dir jqXHR.responseText
 
 # Load a single Kloster into the edit form
-$.fn.populate_kloster = (url) ->
+$.fn.read_kloster = (url) ->
 
 	$this = $(this)
-
-	$("#edit").clear_form()
+	$this.clear_form()
 
 	$.getJSON url, (kloster) ->
+
 		uuid = kloster.uuid
 		update_url = "update/" + uuid
-		$("#EditKloster").attr "action", update_url
+		$this.attr "action", update_url
+
 		$fieldset = $("#kloster")
 		$fieldset.find("label :input").each ->
 			name = $(this).attr("name")
@@ -175,8 +174,8 @@ $.fn.populate_kloster = (url) ->
 			val = kloster[name]
 			$(this).val val
 
-		$fieldset.find(".bearbeiter").text kloster.bearbeiter or "?"
-		$fieldset.find(".changeddate").text (if kloster.changeddate then kloster.changeddate.date.substr(0, kloster.changeddate.date.indexOf(".")) else "?")
+		$fieldset.find("[name=changeddate]").val( if kloster.changeddate then kloster.changeddate.date.substr(0, kloster.changeddate.date.indexOf(".")) else '' )
+
 		$fieldset = $("#klosterorden")
 		$.each kloster.klosterorden, (index, value) ->
 			if index > 0
@@ -206,7 +205,7 @@ $.fn.populate_kloster = (url) ->
 						text: value["ort"]
 					).attr("selected", true)
 				else if name is "bistum"
-					$(this).val(value[name]).prop "disabled", typeof value[name] isnt "undefined"
+					$(this).val(value[name]).prop "disabled", typeof value[name] isnt "undefined" and $(this).text isnt "keine Angabe"
 				else
 					$(this).val value[name]
 
@@ -239,79 +238,33 @@ $.fn.populate_kloster = (url) ->
 
 		$("#browse").slideUp()
 		$("#edit").slideDown()
-		$("#edit .autocomplete").autocomplete()
-		$("#edit textarea").trigger "autosize.resize"
-		$("#edit input[type=url]").keyup()
+		$this.find(".autocomplete").autocomplete()
+		$this.find("textarea").trigger "autosize.resize"
+		$this.find("input[type=url]").keyup()
 
 # Update a single Kloster
-$.fn.update_kloster = (url) ->
-	$.post(url, $("#EditKloster").serialize()).done((respond, status, jqXHR) ->
+$.fn.update_kloster = ->
+	$this = $(this)
+	url = $this.attr "action"
+	$.post(url, $this.serialize()).done((respond, status, jqXHR) ->
 		if status is "success"
-			$("#confirm").modal
-				closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-				position: [ "20%" ]
-				overlayId: "confirm-overlay"
-				containerId: "confirm-container"
-				onShow: (dialog) ->
-					$(".message").append "Der Eintrag wurde erfolgreich bearbeitet."
+			$this.message 'Ihre Änderungen wurden gespeichert.'
 	).fail (jqXHR, textStatus) ->
-		$("#confirm").modal
-			closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-			position: [ "20%" ]
-			overlayId: "confirm-overlay"
-			containerId: "confirm-container"
-			onShow: (dialog) ->
-				$(".message").append jqXHR.responseText
-
-# Create a new Kloster
-$.fn.create_kloster = ->
-	$.post("create", $("#EditKloster").serialize()).done((respond, status, jqXHR) ->
-		if status is "success"
-			dataArray = $.parseJSON(respond)
-			uuid = dataArray[0]
-			addKlosterId_url = "addKlosterId"
-			$.get addKlosterId_url,
-				uuid: uuid
-			$("#confirm").modal
-				closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-				position: [ "20%" ]
-				overlayId: "confirm-overlay"
-				containerId: "confirm-container"
-				onShow: (dialog) ->
-					$(".message").append "Der Eintrag wurde erfolgreich gespeichert."
-	).fail (jqXHR, textStatus) ->
-		$("#confirm").modal
-			closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-			position: [ "20%" ]
-			overlayId: "confirm-overlay"
-			containerId: "confirm-container"
-			onShow: (dialog) ->
-				$(".message").append jqXHR.responseText
+		$this.message 'Error'
+		console.dir jqXHR.responseText
 
 # Delete a single Kloster
 $.fn.delete_kloster = (url, csrf) ->
-	check = confirm("Wollen Sie diesen Eintrag wirklich löschen?")
+	$this = $(this)
+	check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
 	if check is true
+		csrf = $('#csrf').val()
 		$.post(url,
 			__csrfToken: csrf
 		).done((respond, status, jqXHR) ->
 			if status is "success"
-				$("#confirm").modal
-					closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>"
-					position: [ "20%" ]
-					overlayId: "confirm-overlay"
-					containerId: "confirm-container"
-					onShow: (dialog) ->
-						$(".message").append "Der Eintrag wurde erfolgreich gelöscht."
-				setTimeout (->
-					window.location.href = ""
-				), 1000
+				$this.message 'Der Eintrag wurde gelöscht.'
 		).fail (jqXHR, textStatus) ->
-			alert jqXHR.responseText
+			$this.message 'Error'
+			console.dir jqXHR.responseText
 
-$.fn.clear_form = ->
-	$(this).find(":input").prop "disabled", false
-	$(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("")
-	$(this).find(":checkbox, :radio").prop "checked", false
-	$(this).find(".multiple:gt(0)").removeInputs 0
-	$(this).find(".autofill").text "?"
