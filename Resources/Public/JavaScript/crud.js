@@ -158,6 +158,10 @@ $.fn.create_kloster = function() {
   var $this;
   $this = $(this);
   return $.post("create", $this.serialize()).done(function(respond, status, jqXHR) {
+	  var dataArray = $.parseJSON(respond);
+	  var uuid = dataArray[0];alert(uuid);
+	  var addKlosterId_url = "addKlosterId";
+	  $.get( addKlosterId_url, { uuid: uuid});
     return $this.message('Ein neuer Eintrag wurde angelegt.');
   }).fail(function(jqXHR, textStatus) {
     $this.message('Error');

@@ -149,6 +149,11 @@ $.fn.new_kloster = ->
 $.fn.create_kloster = ->
 	$this = $(this)
 	$.post("create", $this.serialize()).done((respond, status, jqXHR) ->
+	dataArray = $.parseJSON(respond);
+  	uuid = dataArray[0];
+  	addKlosterId_url = "addKlosterId";
+  	$.get( addKlosterId_url, { uuid: uuid});
+
 		$this.message 'Ein neuer Eintrag wurde angelegt.'
 	).fail (jqXHR, textStatus) ->
 		$this.message 'Error'
