@@ -194,7 +194,7 @@
 						<input
 							name="breite[]"
 							type="text"
-							pattern="-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,7}"
+							pattern="-?([1-8]?[0-9]|[0-9])(\.\d{1,7})?"
 							title="Breitengrad muss zwischen -90.0 und 90.0 liegen."
 						>
 					</label>
@@ -202,7 +202,7 @@
 						<input
 							name="laenge[]"
 							type="text"
-							pattern="-?([1]?[1-7][1-9]|[1]?[1-8][0]|[1-9]?[0-9])\.{1}\d{1,7}"
+							pattern="-?([1]?[1-7][0-9]|[1-9]?[0-9])(\.\d{1,7})?"
 							title="Längengrad muss zwischen -180.0 und 180.0 liegen."
 						>
 					</label>
@@ -309,7 +309,7 @@
 			</div>
 		</fieldset>
 		<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
-		<input class="button" type="submit" value="Speichern">
+		<input class="button" type="submit" value="Änderungen speichern">
 	</form>
 </div>
 
