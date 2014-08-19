@@ -6762,12 +6762,12 @@ th.hide-for-touch {
     display: table-cell !important;
   }
 }
-#list_wrapper div + div {
+.dataTables_wrapper div + div {
   margin-left: 1.5rem;
 }
 
-#list_length select,
-#list_filter input {
+.dataTables_length select,
+.dataTables_filter input {
   margin-top: -0.1875rem;
   width: auto;
 }
@@ -7833,6 +7833,12 @@ div.autocomplete {
   width: 83.33333%;
 }
 
+input:invalid,
+select:invalid,
+textarea:invalid {
+  background: #fabdb3 !important;
+}
+
 input.year {
   background: #def0f7;
 }
@@ -7918,15 +7924,27 @@ tr:hover .show-only-on-hover * {
   padding: 1.25rem;
 }
 
-#advancedSearch:before, #advancedSearch:after,
-#browse:before,
-#browse:after {
+#browse:before, #browse:after {
   content: " ";
   display: table;
 }
-#advancedSearch:after,
 #browse:after {
   clear: both;
+}
+
+#message {
+  background: #eee;
+  border: 1px solid #ccc;
+  clear: both;
+  margin: 1.25rem 0;
+  padding: 0.75rem;
+}
+#message .timestamp {
+  background: #ccc;
+  float: left;
+  margin: -0.75rem;
+  margin-right: 0.75rem;
+  padding: 0.75rem;
 }
 
 #map-container,

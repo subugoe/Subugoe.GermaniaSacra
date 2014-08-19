@@ -1388,6 +1388,6 @@ class DataExportController extends ActionController {
 			exit;
 		}
 	}
-}
 
+}
 ?>

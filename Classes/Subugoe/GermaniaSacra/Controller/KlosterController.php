@@ -458,6 +458,7 @@ class KlosterController extends ActionController {
 
 		$kloster = new Kloster();
 		$kloster->setUid($this->getLastKlosterIdAction());
+//		$kloster->setKloster_id($this->getLastKlosterIdAction());
 
 		// Add Kloster
 		$kloster->setKloster( $this->request->getArgument('kloster_name') );
@@ -471,11 +472,18 @@ class KlosterController extends ActionController {
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
 
-		$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
+		if ($this->request->hasArgument('bearbeiter')) {
+			$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
+		}
 		$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
 		$kloster->setBearbeiter($bearbeiter);
 
-		$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
+		if ($this->request->hasArgument('personallistenstatus')) {
+			$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
+		}
+		if (empty($personallistenstatus_uuid)) {
+			$personallistenstatus_uuid = '599d5495-32a6-354b-848a-a89d8931a7f5';
+		}
 		$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
 		$kloster->setPersonallistenstatus($personallistenstatus);
 
@@ -494,9 +502,11 @@ class KlosterController extends ActionController {
 		$gruenderArr = $this->request->getArgument('gruender');
 		$breiteArr = $this->request->getArgument('breite');
 		$laengeArr = $this->request->getArgument('laenge');
-		$bemerkungArr = $this->request->getArgument('standortbemerkung');
+		$bemerkungArr = $this->request->getArgument('bemerkung_standort');
 		$bemerkung_standortArr = $this->request->getArgument('bemerkung_standort');
-		$temp_literatur_altArr = $this->request->getArgument('temp_literatur_alt');
+		if ($this->request->hasArgument('temp_literatur_alt')) {
+			$temp_literatur_altArr = $this->request->getArgument('temp_literatur_alt');
+		}
 		$von_vonArr = $this->request->getArgument('von_von');
 		$von_bisArr = $this->request->getArgument('von_bis');
 		$von_verbalArr = $this->request->getArgument('von_verbal');
@@ -518,7 +528,9 @@ class KlosterController extends ActionController {
 			$klosterstandortArr[$i]['laenge'] = $laengeArr[$i];
 			$klosterstandortArr[$i]['bemerkung'] = $bemerkungArr[$i];
 			$klosterstandortArr[$i]['bemerkung_standort'] = $bemerkung_standortArr[$i];
-			$klosterstandortArr[$i]['temp_literatur_alt'] = $temp_literatur_altArr[$i];
+			if (isset($klosterstandortArr[$i]['temp_literatur_alt']) && !empty($klosterstandortArr[$i]['temp_literatur_alt'])) {
+				$klosterstandortArr[$i]['temp_literatur_alt'] = $temp_literatur_altArr[$i];
+			}
 			$klosterstandortArr[$i]['von_von'] = $von_vonArr[$i];
 			$klosterstandortArr[$i]['von_bis'] = $von_bisArr[$i];
 			$klosterstandortArr[$i]['von_verbal'] = $von_verbalArr[$i];
@@ -532,10 +544,14 @@ class KlosterController extends ActionController {
 			}
 		}
 
+		$lastKlosterstandortId = $this->getLastKlosterstandortIdAction();
 		foreach ($klosterstandortArr as $ko) {
 			$klosterstandort = new Klosterstandort();
 			$kloster_uuid = $ko['kloster'];
 			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+
+			$klosterstandort->setUid(++$lastKlosterstandortId);
+
 			$klosterstandort->setKloster($kloster);
 			$ort_uuid = $ko['ort'];
 			$ort = $this->ortRepository->findByIdentifier($ort_uuid);
@@ -545,7 +561,10 @@ class KlosterController extends ActionController {
 			$klosterstandort->setLaenge($ko['laenge']);
 			$klosterstandort->setBemerkung($ko['bemerkung']);
 			$klosterstandort->setBemerkung_standort($ko['bemerkung_standort']);
-			$klosterstandort->setTemp_literatur_alt($ko['temp_literatur_alt']);
+
+			if (isset($ko['temp_literatur_alt']) && !empty($ko['temp_literatur_alt'])) {
+				$klosterstandort->setTemp_literatur_alt($ko['temp_literatur_alt']);
+			}
 			$klosterstandort->setVon_von($ko['von_von']);
 			$klosterstandort->setVon_bis($ko['von_bis']);
 			$klosterstandort->setVon_verbal($ko['von_verbal']);
@@ -588,10 +607,12 @@ class KlosterController extends ActionController {
 			$klosterordenArr[$i]['orden_bis_verbal'] = $orden_bis_verbalArr[$i];
 		}
 
+		$lastKlosterordentId = $this->getLastKlosterordenIdAction();
 		foreach ($klosterordenArr as $ko) {
 			$klosterorden = new Klosterorden();
 			$kloster_uuid = $ko['kloster'];
 			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+			$klosterorden->setUid(++$lastKlosterordentId);
 			$klosterorden->setKloster($kloster);
 			$klosterorden->setVon_von($ko['orden_von_von']);
 			$klosterorden->setVon_bis($ko['orden_von_bis']);
@@ -612,13 +633,16 @@ class KlosterController extends ActionController {
 		if ($this->request->hasArgument('literatur')) {
 			$kloster_uuid = $uuid;
 			$literaturArr = $this->request->getArgument('literatur');
-			foreach ($literaturArr as $lit) {
-				$klosterHasLiteratur = new KlosterHasLiteratur();
-				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
-				$literatur = $this->literaturRepository->findByIdentifier($lit);
-				$klosterHasLiteratur->setKloster($kloster);
-				$klosterHasLiteratur->setLiteratur($literatur);
-				$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+
+			if (is_array(($laengeArr) && !empty($literaturArr))) {
+				foreach ($literaturArr as $lit) {
+					$klosterHasLiteratur = new KlosterHasLiteratur();
+					$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+					$literatur = $this->literaturRepository->findByIdentifier($lit);
+					$klosterHasLiteratur->setKloster($kloster);
+					$klosterHasLiteratur->setLiteratur($literatur);
+					$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+				}
 			}
 		}
 
@@ -658,6 +682,8 @@ class KlosterController extends ActionController {
 			}
 		}
 
+		$this->persistenceManager->persistAll();
+
 		$status = 201;
 		return json_encode(array($uuid));
 	}
@@ -674,7 +700,6 @@ class KlosterController extends ActionController {
 		$this->klosterRepository->update($klosterObject);
 		$this->persistenceManager->persistAll();
 		return json_encode(array($uuid));
-//		return json_encode(array($kloster_uid));
 	}
 
 	/**
@@ -705,7 +730,7 @@ class KlosterController extends ActionController {
 		$personallistenstatus = $kloster->getPersonallistenstatus();
 		$klosterArr['personallistenstatus'] = $personallistenstatus->getUUID();
 		$bearbeiter = $kloster->getBearbeiter();
-		$klosterArr['bearbeiter'] = $bearbeiter->getBearbeiter();
+		$klosterArr['bearbeiter'] = $bearbeiter->getUUID();
 		$klosterArr['changeddate'] = $kloster->getChangedDate();
 
 		// Klosterstandort data
@@ -777,9 +802,11 @@ class KlosterController extends ActionController {
 		foreach ($klosterHasUrls as $k => $klosterHasUrl) {
 			$urlObj = $klosterHasUrl->getUrl();
 			$url = rawurldecode($urlObj->getUrl());
-			$urlTypObj = $urlObj->getUrltyp();
-			$urlTyp = $urlTypObj->getName();
-			$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url);
+			if (!empty($url) && $url !== 'keine Angabe') {
+				$urlTypObj = $urlObj->getUrltyp();
+				$urlTyp = $urlTypObj->getName();
+				$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url);
+			}
 		}
 		$klosterArr['url'] = $Urls;
 
@@ -919,12 +946,9 @@ class KlosterController extends ActionController {
 		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
-		//$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
-		//$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
-		//$kloster->setBearbeiter($bearbeiter);
-		//$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
-		//$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
-		//$kloster->setPersonallistenstatus($personallistenstatus);
+		$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
+		$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
+		$kloster->setBearbeiter($bearbeiter);
 		$band_uuid = $this->request->getArgument('band');
 		$band = $this->bandRepository->findByIdentifier($band_uuid);
 		$kloster->setBand($band);
@@ -976,10 +1000,12 @@ class KlosterController extends ActionController {
 			foreach ($klosterstandorts as $i => $klosterstandort) {
 				$this->klosterstandortRepository->remove($klosterstandort);
 			}
+			$lastKlosterstandortId = $this->getLastKlosterstandortIdAction();
 			foreach ($klosterstandortArr as $ko) {
 				$klosterstandort = new Klosterstandort();
 				$kloster_uuid = $ko['kloster'];
 				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+				$klosterstandort->setUid(++$lastKlosterstandortId);
 				$klosterstandort->setKloster($kloster);
 				$ort_uuid = $ko['ort'];
 				$ort = $this->ortRepository->findByIdentifier($ort_uuid);
@@ -1034,10 +1060,12 @@ class KlosterController extends ActionController {
 			foreach ($klosterordens as $i => $klosterorden) {
 				$this->klosterordenRepository->remove($klosterorden);
 			}
+			$lastKlosterordentId = $this->getLastKlosterordenIdAction();
 			foreach ($klosterordenArr as $ko) {
 				$klosterorden = new Klosterorden();
 				$kloster_uuid = $ko['kloster'];
 				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+				$klosterorden->setUid(++$lastKlosterordentId);
 				$klosterorden->setKloster($kloster);
 				$klosterorden->setVon_von($ko['orden_von_von']);
 				$klosterorden->setVon_bis($ko['orden_von_bis']);
@@ -1209,12 +1237,32 @@ class KlosterController extends ActionController {
 		$result = $this->klosterRepository->findLastEntry();
 
 		foreach ($result as $res) {
-			$last_kloster_id = $res->kloster_id;
+			$lastKlosterId = $res->getKloster_id();
 		}
 
-		$new_kloster_id = $last_kloster_id + 1;
+		$lastKlosterId = $lastKlosterId + 1;
 
-		return $new_kloster_id;
+		return $lastKlosterId;
+	}
+
+	public function getLastKlosterstandortIdAction() {
+		$result = $this->klosterstandortRepository->findLastEntry();
+
+		foreach ($result as $res) {
+			$lastKlosterstandortId = $res->getUid();
+		}
+
+		return $lastKlosterstandortId;
+	}
+
+	public function getLastKlosterordenIdAction() {
+		$result = $this->klosterordenRepository->findLastEntry();
+
+		foreach ($result as $res) {
+			$lastKlosterordenId = $res->getUid();
+		}
+
+		return $lastKlosterordenId;
 	}
 
 	/** Gets and returns the list of Klosters as per search string

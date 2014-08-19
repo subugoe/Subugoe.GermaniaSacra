@@ -146,10 +146,18 @@ div.autocomplete {
 	}
 }
 
+input,
+select,
+textarea {
+	&:invalid {
+		background: lighten($alert-color, 30) !important;
+	}
+}
+
 input.year {
 	background: lighten($info-color, 15);
 	&:focus {
-		background: lighten( $info-color, 20);
+		background: lighten($info-color, 20);
 	}
 }
 
@@ -219,7 +227,21 @@ button,
 	padding: rem-calc(20);
 }
 
-#advancedSearch,
 #browse {
 	@include clearfix;
+}
+
+#message {
+	background: #eee;
+	border: 1px solid #ccc;
+	clear: both;
+	margin: rem-calc(20) 0;
+	padding: $tooltip-padding;
+	.timestamp {
+		background: #ccc;
+		float: left;
+		margin: -$tooltip-padding;
+		margin-right: $tooltip-padding;
+		padding: $tooltip-padding;
+	}
 }

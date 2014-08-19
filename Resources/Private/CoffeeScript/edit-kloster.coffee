@@ -1,7 +1,10 @@
 $ ->
-	
-	$("#edit textarea").autosize()
+
+	$("#list_form").populate_list()
+
 	$("#edit").hide().populate_selects()
+	$("#edit textarea").autosize()
+
 	$("fieldset .multiple").append "<div class=\"add-remove-buttons\"><button class=\"remove\">-</button><button class=\"add\">+</button></div>"
 	$("fieldset .multiple button").click (e) ->
 		e.preventDefault()
@@ -9,7 +12,7 @@ $ ->
 		if $(this).hasClass("remove")
 			div.removeInputs 250
 		else if $(this).hasClass("add")
-			div.addInputs 250 
+			div.addInputs 250
 
 	$("input[type=url]").keyup ->
 		$(this).parent().next(".link").html( if $(this).val() then '<a class="icon-link" href="' + $(this).val() + '" target="_blank"></a>' else '' )
@@ -20,46 +23,39 @@ $ ->
 		e.preventDefault()
 		$(this).closest(".togglable").siblings(".togglable").addBack().slideToggle()
 
-	$(".edit").click (e) ->
-		e.preventDefault()
-		$("#edit").populate_kloster $(this).attr("href")
-
 	$(".new").click (e) ->
 		e.preventDefault()
-		$("#edit").new_kloster()
+		$("#edit_form").new_kloster()
+
+	$(".edit").click (e) ->
+		e.preventDefault()
+		$("#edit_form").read_kloster $(this).attr("href")
+
+	$(".delete").click (e) ->
+		e.preventDefault()
+		$("#delete").delete_kloster $(this).attr("href")
 
 	$(".close").click (e) ->
 		e.preventDefault()
 		$(this).parent().closest("div[id]").slideUp()
 		$("#browse").slideDown()
 
-	$(".delete").click (e) ->
+	$("#list_form").submit (e) ->
 		e.preventDefault()
-		key = $(this).index(".delete")
-		csrfSelector = "input#csrf" + key
-		csrf = $(csrfSelector).val()
-		$("#delete").delete_kloster $(this).attr("href"), csrf
-
-	$("#UpdateList").submit (e) ->
-		e.preventDefault()
-		if $("input[name='auswahl[]']:checked").length is 0
+		if $("input[name='auswahl']:checked").length is 0
 			alert "Wählen Sie bitte mindestens einen Eintrag aus."
 			return false
-		url = $("#UpdateList").attr("action")
-		$("#UpdateList").update_list url
+		$(this).update_list()
 
-	$("#EditKloster").submit (e) ->
+	$("#edit_form").submit (e) ->
 		e.preventDefault()
 		$("select:disabled").prop("disabled", false).addClass "disabled"
 		unless $(this).find("[name=kloster_id]").val().length
-			$("#EditKloster").create_kloster()
+			$(this).create_kloster()
 		else
-			$("#EditKloster").update_kloster()
+			$(this).update_kloster()
 		$("select.disabled").prop "disabled", true
 
-	if $("#UpdateList").length isnt 0
-		$("#UpdateList #list").populate_liste()
-	
 	# Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
 	$(window).bind "keydown", (e) ->
 		if e.ctrlKey or e.metaKey
@@ -88,3 +84,11 @@ $.fn.removeInputs = (slideTime) ->
 		$fieldset = $(this).closest("fieldset")
 		$fieldset.find(".multiple").length > 1 and $(this).addClass("dying").slideUp(slideTime, @remove)
 		$fieldset.find("button.remove").prop "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
+
+$.fn.clear_form = ->
+	$(this).find(":input").prop "disabled", false
+	$(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("")
+	$(this).find(":checkbox, :radio").prop "checked", false
+	$(this).find(".multiple:gt(0)").removeInputs 0
+	$(this).find(".autofill").text "?"
+
