@@ -7833,6 +7833,12 @@ div.autocomplete {
   width: 83.33333%;
 }
 
+input:invalid,
+select:invalid,
+textarea:invalid {
+  background: #fabdb3 !important;
+}
+
 input.year {
   background: #def0f7;
 }

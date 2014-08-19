@@ -23,7 +23,7 @@ $.fn.populate_list = ->
 
 		# Add a text input to each header cell used for search
 		$table.find("thead th").not(":first").not(":last").each ->
-			$(this).append "<div><input type=\"text\"></div>"
+			$(this).append '<div><input type="text"></div>'
 
 		dataTable = $table.DataTable(
 			autoWidth: false
@@ -149,11 +149,11 @@ $.fn.new_kloster = ->
 $.fn.create_kloster = ->
 	$this = $(this)
 	$.post("create", $this.serialize()).done((respond, status, jqXHR) ->
-	dataArray = $.parseJSON(respond);
-  	uuid = dataArray[0];
-  	addKlosterId_url = "addKlosterId";
-  	$.get( addKlosterId_url, { uuid: uuid});
-
+		dataArray = $.parseJSON respond
+		uuid = dataArray[0]
+		$.get("addKlosterId",
+			uuid: uuid
+		)
 		$this.message 'Ein neuer Eintrag wurde angelegt.'
 	).fail (jqXHR, textStatus) ->
 		$this.message 'Error'
@@ -203,14 +203,18 @@ $.fn.read_kloster = (url) ->
 				val = value[name]
 				if name is "wuestung"
 					if name is "wuestung"
-						$(this).prop "checked", value[name] is 1
+						checkedCondition = value[name] is 1
+						$(this).prop "checked", checkedCondition
 				else if name is "ort"
 					$(this).html $("<option />",
 						value: value["uuid"]
 						text: value["ort"]
 					).attr("selected", true)
 				else if name is "bistum"
-					$(this).val(value[name]).prop "disabled", typeof value[name] isnt "undefined" and $(this).text isnt "keine Angabe"
+					$(this).val(value[name])
+					text = $(this).find(':selected')
+					disabledCondition = text isnt "keine Angabe" and text isnt ""
+					$(this).prop "disabled", disabledCondition
 				else
 					$(this).val value[name]
 

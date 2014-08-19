@@ -92,8 +92,3 @@ $.fn.clear_form = ->
 	$(this).find(".multiple:gt(0)").removeInputs 0
 	$(this).find(".autofill").text "?"
 
-$.fn.message = (text) ->
-	$('#message').remove()
-	date = new Date()
-	$message = $('<div id="message"><span class="timestamp">' + date.toLocaleString() + '</span>' + text + '</div>')
-	$message.insertAfter($(this)).hide().slideDown()

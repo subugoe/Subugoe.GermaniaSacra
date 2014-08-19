@@ -19,7 +19,7 @@ $.fn.populate_list = function() {
     $table = $this.find("table:eq(0)");
     $trTemplate = $table.find("tbody tr:first");
     $table.find("thead th").not(":first").not(":last").each(function() {
-      return $(this).append("<div><input type=\"text\"></div>");
+      return $(this).append('<div><input type="text"></div>');
     });
     dataTable = $table.DataTable({
       autoWidth: false,
@@ -158,10 +158,12 @@ $.fn.create_kloster = function() {
   var $this;
   $this = $(this);
   return $.post("create", $this.serialize()).done(function(respond, status, jqXHR) {
-	  var dataArray = $.parseJSON(respond);
-	  var uuid = dataArray[0];alert(uuid);
-	  var addKlosterId_url = "addKlosterId";
-	  $.get( addKlosterId_url, { uuid: uuid});
+    var dataArray, uuid;
+    dataArray = $.parseJSON(respond);
+    uuid = dataArray[0];
+    $.get("addKlosterId", {
+      uuid: uuid
+    });
     return $this.message('Ein neuer Eintrag wurde angelegt.');
   }).fail(function(jqXHR, textStatus) {
     $this.message('Error');
@@ -210,7 +212,7 @@ $.fn.read_kloster = function(url) {
         $fieldset.find(".multiple:last()").addInputs(0);
       }
       return $fieldset.find(".multiple:last() label :input").each(function() {
-        var name, val;
+        var checkedCondition, disabledCondition, name, text, val;
         name = $(this).attr("name");
         if (typeof name === "undefined") {
           return;
@@ -219,7 +221,8 @@ $.fn.read_kloster = function(url) {
         val = value[name];
         if (name === "wuestung") {
           if (name === "wuestung") {
-            return $(this).prop("checked", value[name] === 1);
+            checkedCondition = value[name] === 1;
+            return $(this).prop("checked", checkedCondition);
           }
         } else if (name === "ort") {
           return $(this).html($("<option />", {
@@ -227,7 +230,10 @@ $.fn.read_kloster = function(url) {
             text: value["ort"]
           }).attr("selected", true));
         } else if (name === "bistum") {
-          return $(this).val(value[name]).prop("disabled", typeof value[name] !== "undefined" && $(this).text !== "keine Angabe");
+          $(this).val(value[name]);
+          text = $(this).find(':selected');
+          disabledCondition = text !== "keine Angabe" && text !== "";
+          return $(this).prop("disabled", disabledCondition);
         } else {
           return $(this).val(value[name]);
         }

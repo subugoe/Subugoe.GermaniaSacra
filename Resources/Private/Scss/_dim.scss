@@ -146,10 +146,18 @@ div.autocomplete {
 	}
 }
 
+input,
+select,
+textarea {
+	&:invalid {
+		background: lighten($alert-color, 30) !important;
+	}
+}
+
 input.year {
 	background: lighten($info-color, 15);
 	&:focus {
-		background: lighten( $info-color, 20);
+		background: lighten($info-color, 20);
 	}
 }
 

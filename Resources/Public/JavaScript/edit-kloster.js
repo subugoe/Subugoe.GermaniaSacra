@@ -103,11 +103,3 @@ $.fn.clear_form = function() {
   $(this).find(".multiple:gt(0)").removeInputs(0);
   return $(this).find(".autofill").text("?");
 };
-
-$.fn.message = function(text) {
-  var $message, date;
-  $('#message').remove();
-  date = new Date();
-  $message = $('<div id="message"><span class="timestamp">' + date.toLocaleString() + '</span>' + text + '</div>');
-  return $message.insertAfter($(this)).hide().slideDown();
-};

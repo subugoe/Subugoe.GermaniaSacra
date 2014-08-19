@@ -191,26 +191,36 @@
 				</label>
 				<div class="coordinates">
 					<label class="large-6 columns">Breite
-						<input name="breite[]" type="text">
+						<input
+							name="breite[]"
+							type="text"
+							pattern="-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,7}"
+							title="Breitengrad muss zwischen -90.0 und 90.0 liegen."
+						>
 					</label>
 					<label class="large-6 columns">Länge
-						<input name="laenge[]" type="text">
+						<input
+							name="laenge[]"
+							type="text"
+							pattern="-?([1]?[1-7][1-9]|[1]?[1-8][0]|[1-9]?[0-9])\.{1}\d{1,7}"
+							title="Längengrad muss zwischen -180.0 und 180.0 liegen."
+						>
 					</label>
 				</div>
 				<label class="large-3 columns">Standort von
-					<input class="year" name="von_von[]" type="text">
+					<input class="year" name="von_von[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-1 columns none">
-					<input class="year" name="von_bis[]" type="text">
+					<input class="year" name="von_bis[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-2 columns none">
 					<input name="von_verbal[]" type="text">
 				</label>
 				<label class="large-3 columns">Standort bis
-					<input class="year" name="bis_von[]" type="text">
+					<input class="year" name="bis_von[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-1 columns none">
-					<input class="year" name="bis_bis[]" type="text">
+					<input class="year" name="bis_bis[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-2 columns none">
 					<input name="bis_verbal[]" type="text">
@@ -236,19 +246,19 @@
 					<select name="klosterstatus[]"></select>
 				</label>
 				<label class="large-3 columns">Ordenszugehörigkeit von
-					<input class="year" name="orden_von_von[]" type="text">
+					<input class="year" name="orden_von_von[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-1 columns none">
-					<input class="year" name="orden_von_bis[]" type="text">
+					<input class="year" name="orden_von_bis[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-2 columns none">
 					<input name="orden_von_verbal[]" type="text">
 				</label>
 				<label class="large-3 columns">Ordenszugehörigkeit bis
-					<input class="year" name="orden_bis_von[]" type="text">
+					<input class="year" name="orden_bis_von[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-1 columns none">
-					<input class="year" name="orden_bis_bis[]" type="text">
+					<input class="year" name="orden_bis_bis[]" type="text" pattern="\d{2,4}">
 				</label>
 				<label class="large-2 columns none">
 					<input name="orden_bis_verbal[]" type="text">
