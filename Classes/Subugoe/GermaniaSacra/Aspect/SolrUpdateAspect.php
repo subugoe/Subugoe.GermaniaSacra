@@ -86,7 +86,7 @@ class SolrUpdateAspect {
 
 	public function initializeAction() {
 		$this->configuration = array(
-				'adapteroptions' => array(
+				'endpoint' => array(
 						'localhost' => array(
 							'host' => $this->settings['solr']['host'],
 							'port' => $this->settings['solr']['port'],
@@ -227,7 +227,7 @@ class SolrUpdateAspect {
 		$klosterArr['id'] = (string)$kloster->getKloster_id();
 
 		$band = $kloster->getBand();
-		if (is_object($band) && $band->getNummer() !== 'Keine Angabe') {
+		if (is_object($band) && $band->getNummer() !== 'keine Angabe') {
 			$klosterArr['band_id'] = $band->getUid();
 			$klosterArr['band_nummer'] = $band->getNummer();
 			$klosterArr['band_titel'] = $band->getTitel();
@@ -259,33 +259,35 @@ class SolrUpdateAspect {
 			foreach ($klosterHasUrls as $klosterHasUrl) {
 				$urlObj = $klosterHasUrl->getUrl();
 				$klosterUrl = $urlObj->getUrl();
-				$urlTypObj = $urlObj->getUrltyp();
-				$urlTyp = $urlTypObj->getName();
-				if ($urlTyp == "Wikipedia") {
-					$url_wikipedia = rawurldecode($klosterUrl);
-					$klosterArr['url_wikipedia'] = $url_wikipedia;
-				} elseif ($urlTyp == "Quelle") {
-					$url_quelle = rawurldecode($klosterUrl);
-					$klosterArr['url_quelle'] = $url_quelle;
+				if ($klosterUrl !== 'keine Angabe') {
+					$urlTypObj = $urlObj->getUrltyp();
+					$urlTyp = $urlTypObj->getName();
+					if ($urlTyp == "Wikipedia") {
+						$url_wikipedia = rawurldecode($klosterUrl);
+						$klosterArr['url_wikipedia'] = $url_wikipedia;
+					} elseif ($urlTyp == "Quelle") {
+						$url_quelle = rawurldecode($klosterUrl);
+						$klosterArr['url_quelle'] = $url_quelle;
 
-					$url_quelle_titel = $urlObj->getBemerkung();
-					$klosterArr['url_quelle_titel'] = $url_quelle_titel;
-				} else {
-					$url = rawurldecode($klosterUrl);
-					$klosterArr['url'] = $url;
+						$url_quelle_titel = $urlObj->getBemerkung();
+						$klosterArr['url_quelle_titel'] = $url_quelle_titel;
+					} else {
+						$url = rawurldecode($klosterUrl);
+						$klosterArr['url'] = $url;
 
-					$url_bemerkung = $urlObj->getBemerkung();
-					$klosterArr['url_bemerkung'] = $url_bemerkung;
-					$klosterArr['url_typ'] = $urlTyp;
-					$url_relation = 'kloster';
-					$klosterArr['url_relation'] = $url_relation;
-				}
+						$url_bemerkung = $urlObj->getBemerkung();
+						$klosterArr['url_bemerkung'] = $url_bemerkung;
+						$klosterArr['url_typ'] = $urlTyp;
+						$url_relation = 'kloster';
+						$klosterArr['url_relation'] = $url_relation;
+					}
 
-				if ($urlTyp == "GND") {
-					$components = explode("/gnd/", $klosterUrl);
-					if (count($components) > 1) {
-						$gnd = $components[1];
-						$klosterArr['gnd'] = $gnd;
+					if ($urlTyp == "GND") {
+						$components = explode("/gnd/", $klosterUrl);
+						if (count($components) > 1) {
+							$gnd = $components[1];
+							$klosterArr['gnd'] = $gnd;
+						}
 					}
 				}
 			}
