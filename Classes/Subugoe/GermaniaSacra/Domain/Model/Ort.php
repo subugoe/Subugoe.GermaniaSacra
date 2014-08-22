@@ -105,9 +105,13 @@ class Ort {
 	public function getFullOrt() {
 		$fullOrt = $this->ort;
 		$ortDetails = array();
-		$ortDetails[] = $this->gemeinde;
-		$ortDetails[] = $this->kreis;
-		if ( $ortDetails ) {
+		if (isset($this->gemeinde) && !empty($this->gemeinde)) {
+			$ortDetails[] = $this->gemeinde;
+		}
+		if (isset($this->kreis) && !empty($this->kreis)) {
+			$ortDetails[] = $this->kreis;
+		}
+		if ( !empty($ortDetails )) {
 			$fullOrt .= ' (' . join(', ', $ortDetails) . ')';
 		}
 		return $fullOrt;
@@ -226,17 +230,17 @@ class Ort {
 		$this->bistum = $bistum;
 	}
 
-//	/**
-//	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
-//	 */
+	/**
+	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
+	 */
 	public function getOrtHasUrls() {
 		return $this->ortHasUrls;
 	}
-//
-//	/**
-//	 * @param \Doctrine\Common\Collections\Collection $ortHasUrls
-//	 * @return void
-//	 */
+
+	/**
+	 * @param \Doctrine\Common\Collections\Collection $ortHasUrls
+	 * @return void
+	 */
 	public function setOrtHasUrls(\Doctrine\Common\Collections\Collection $ortHasUrls) {
 
 		foreach ($ortHasUrls as $ortHasUrl) {

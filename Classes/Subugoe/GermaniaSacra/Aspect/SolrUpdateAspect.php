@@ -86,11 +86,13 @@ class SolrUpdateAspect {
 
 	public function initializeAction() {
 		$this->configuration = array(
-				'endpoint' => array(
+				'adapteroptions' => array(
 						'localhost' => array(
-								'host' => $this->settings['solr']['host'],
-								'port' => $this->settings['solr']['port'],
-								'path' => $this->settings['solr']['path'],
+							'host' => $this->settings['solr']['host'],
+							'port' => $this->settings['solr']['port'],
+							'path' => $this->settings['solr']['path'],
+							'core' => $this->settings['solr']['core'],
+							'timeout' => $this->settings['solr']['timeout']
 						)
 				),
 		);
@@ -146,7 +148,7 @@ class SolrUpdateAspect {
 	 * Update Solr after an entry is updated
 	 *
 	 * @param \TYPO3\Flow\AOP\JoinPointInterface $joinPoint
-	 * @Flow\After("method(Subugoe\GermaniaSacra\Controller\KlosterController->updateAction())")
+	 * @Flow\AfterReturning("method(Subugoe\GermaniaSacra\Controller\KlosterController->updateAction())")
 	 *
 	 * @return void
 	 */
