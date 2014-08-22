@@ -201,6 +201,11 @@ class DataExportController extends ActionController {
 	 */
 	public function klosterListAllAction() {
 
+		if ($this->personen === Null) {
+			$this->logger->log('Personendatenbank ist nicht verfügbar.');
+			exit;
+		}
+
 		$this->klosterRepository->setDefaultOrderings(
 				array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
@@ -244,7 +249,7 @@ class DataExportController extends ActionController {
 				$klosterArr[$k]['id'] = (string)$kloster->getKloster_id();
 
 				$band = $kloster->getBand();
-				if (is_object($band) && $band->getNummer() !== 'Keine Angabe') {
+				if (is_object($band) && $band->getNummer() !== 'keine Angabe') {
 					$klosterArr[$k]['band_id'] = $band->getUid();
 					$klosterArr[$k]['band_nummer'] = $band->getNummer();
 					$klosterArr[$k]['band_titel'] = $band->getTitel();
@@ -276,33 +281,36 @@ class DataExportController extends ActionController {
 					foreach ($klosterHasUrls as $klosterHasUrl) {
 						$urlObj = $klosterHasUrl->getUrl();
 						$klosterUrl = $urlObj->getUrl();
-						$urlTypObj = $urlObj->getUrltyp();
-						$urlTyp = $urlTypObj->getName();
-						if ($urlTyp == "Wikipedia") {
-							$url_wikipedia = rawurldecode($klosterUrl);
-							$klosterArr[$k]['url_wikipedia'] = $url_wikipedia;
-						} elseif ($urlTyp == "Quelle") {
-							$url_quelle = rawurldecode($klosterUrl);
-							$klosterArr[$k]['url_quelle'] = $url_quelle;
 
-							$url_quelle_titel = $urlObj->getBemerkung();
-							$klosterArr[$k]['url_quelle_titel'] = $url_quelle_titel;
-						} else {
-							$url = rawurldecode($klosterUrl);
-							$klosterArr[$k]['url'] = $url;
+						if ($klosterUrl !== 'keine Angabe') {
+							$urlTypObj = $urlObj->getUrltyp();
+							$urlTyp = $urlTypObj->getName();
+							if ($urlTyp == "Wikipedia") {
+								$url_wikipedia = rawurldecode($klosterUrl);
+								$klosterArr[$k]['url_wikipedia'] = $url_wikipedia;
+							} elseif ($urlTyp == "Quelle") {
+								$url_quelle = rawurldecode($klosterUrl);
+								$klosterArr[$k]['url_quelle'] = $url_quelle;
 
-							$url_bemerkung = $urlObj->getBemerkung();
-							$klosterArr[$k]['url_bemerkung'] = $url_bemerkung;
-							$klosterArr[$k]['url_typ'] = $urlTyp;
-							$url_relation = 'kloster';
-							$klosterArr[$k]['url_relation'] = $url_relation;
-						}
+								$url_quelle_titel = $urlObj->getBemerkung();
+								$klosterArr[$k]['url_quelle_titel'] = $url_quelle_titel;
+							} else {
+								$url = rawurldecode($klosterUrl);
+								$klosterArr[$k]['url'] = $url;
 
-						if ($urlTyp == "GND") {
-							$components = explode("/gnd/", $klosterUrl);
-							if (count($components) > 1) {
-								$gnd = $components[1];
-								$klosterArr[$k]['gnd'] = $gnd;
+								$url_bemerkung = $urlObj->getBemerkung();
+								$klosterArr[$k]['url_bemerkung'] = $url_bemerkung;
+								$klosterArr[$k]['url_typ'] = $urlTyp;
+								$url_relation = 'kloster';
+								$klosterArr[$k]['url_relation'] = $url_relation;
+							}
+
+							if ($urlTyp == "GND") {
+								$components = explode("/gnd/", $klosterUrl);
+								if (count($components) > 1) {
+									$gnd = $components[1];
+									$klosterArr[$k]['gnd'] = $gnd;
+								}
 							}
 						}
 					}
@@ -568,7 +576,7 @@ class DataExportController extends ActionController {
 							}
 
 							$bistumObj = $ortObj->getBistum();
-							if (is_object($bistumObj)) {
+							if (is_object($bistumObj) && $bistumObj->getBistum() !== 'keine Angabe') {
 
 								$bistumuid = $bistumObj->getUid();
 								$bistumuidArr[] = $bistumuid;
@@ -1388,6 +1396,6 @@ class DataExportController extends ActionController {
 			exit;
 		}
 	}
-
 }
+
 ?>
