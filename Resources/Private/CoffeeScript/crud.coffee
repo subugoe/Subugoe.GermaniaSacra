@@ -1,140 +1,24 @@
-# Fill the Kloster list
-$.fn.populate_list = ->
-
-	$this = $(this)
-
-	$.getJSON "klosterListAll", (response) ->
-
-		# Fill "Status" select fields
-		bearbeitungsstatusArray = response[1]
-		$inputBearbeitungsstatus = $("select[name='bearbeitungsstatus']")
-		$inputBearbeitungsstatus.empty()
-		$.each bearbeitungsstatusArray, (k, v) ->
-			$.each v, (k1, v1) ->
-				$inputBearbeitungsstatus.append $("<option>",
-					value: v1
-					html: k1
-				)
-
-		klosters = response[0]
-
-		$table = $this.find("table:eq(0)")
-		$trTemplate = $table.find("tbody tr:first")
-
-		# Add a text input to each header cell used for search
-		$table.find("thead th").not(":first").not(":last").each ->
-			$(this).append '<div><input type="text"></div>'
-
-		dataTable = $table.DataTable(
-			autoWidth: false
-			columnDefs: [
-				bSortable: false
-				aTargets: [ "no-sorting" ]
-			,
-				width: "10%"
-				targets: 1
-			]
-			dom: "lipt" # 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
-			language:
-				url: "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json"
-			order: [ [ 3, "asc" ] ]
-			fnDrawCallback: ->
-				# Since only visible textareas can be autosized, this has to be called after every page render
-				$table.find("textarea").autosize()
-				# Mark row as dirty on change
-				$table.find(":input:not(:checkbox)").change ->
-					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
-		)
-
-		# Apply the search
-		dataTable.columns().eq(0).each (colIdx) ->
-			$("input", dataTable.column(colIdx).header()).click((e) ->
-				e.stopPropagation()
-			).on "keyup change", ->
-				dataTable.column(colIdx).search(@value).draw()
-
-		# Filter table by "search all" return values
-		$("body").append '<input id="uuid_filter" type="hidden">'
-		$("#uuid_filter").change ->
-			# enable regex, disable smart search (enabling both will not work)
-			dataTable.column(0).search(@value, true, false).draw()
-
-		# Fill the DataTable
-		$.each klosters, (index, kloster) ->
-
-			# Clone with triggers for edit and delete
-			$tr = $trTemplate.clone(true)
-			$tr.find(":input").each ->
-				name = $(this).attr("name")
-				if typeof name is "undefined"
-					return
-				val = kloster[name]
-				if $(this).is("[type=checkbox]")
-					if name is "auswahl"
-						$(this).val kloster.uuid
-				else if $(this).is("select")
-					if name is "bearbeitungsstatus"
-						$tr.find("select[name=bearbeitungsstatus] option").each (i, opt) ->
-							if opt.value is val
-								$(opt).attr "selected", "selected"
-					else
-						$(this).append "<option>" + val + "</option>"
-				else
-					if name isnt "__csrfToken"
-						$(this).val val
-				if name isnt "__csrfToken" and name isnt "auswahl"
-					$(this).attr "name", name + "[" + kloster.uuid + "]"
-
-					# WORKAROUND: DataTables 1.10.1 has a bug that prevents sorting of :input elements, so we use plain text for sorting
-					$("<span class=\"val\"/>").text((if $(this).is("select") then $(this).find(":selected").text() else $(this).val())).hide().insertBefore $(this)
-
-			$tr.find(".edit").attr "href", "edit/" + kloster.uuid
-			$tr.find(".delete").attr "href", "delete/" + kloster.uuid
-			$tr.find("input.csrf").attr "id", "csrf" + index
-			dataTable.row.add $tr
-
-		# Remove template row and draw table
-		dataTable.row($trTemplate).remove().draw()
-
 # Save the Kloster list
 $.fn.update_list =  ->
 	$this = $(this)
 	url = $this.attr "action"
-	$.post(url, $this.serialize()).done((respond, status, jqXHR) ->
+	$rows = dataTable.$('tr').has('input:checked')
+	formData = {}
+	$rows.each ->
+		uuid = $(this).find(':input[name=uuid]').val()
+		formData['klosters[' + uuid + ']'] = {}
+		$(this).find(':input:not([name=uuid])').each (i, input) ->
+			if input.name then formData['klosters[' + uuid + ']'][input.name] = input.value
+			return
+	formData.__csrfToken = $(this).find('input[name=__csrfToken]').val()
+	#formData = formData.serialize()
+	console.dir formData
+	$.post(url, formData).done((respond, status, jqXHR) ->
 		if status is "success"
 			$this.message 'Ihre Änderungen wurden gespeichert.'
 	).fail (jqXHR, textStatus) ->
 		$this.message 'Error'
 		console.dir jqXHR.responseText
-
-# Fill the select fields with options
-$.fn.populate_selects = ->
-	url = "getOptions"
-	$.getJSON url, (response) ->
-
-		# Fill select fields with available options
-		# TODO: Fill "URL Typ" selects
-		options = {}
-		options.bearbeitungsstatus = response[0]
-		options.personallistenstatus = response[1]
-		options.band = response[2]
-		options.literatur = response[3]
-		options.bistum = response[4]
-		options.orden = response[5]
-		options.klosterstatus = response[6]
-		options.bearbeiter = response[7]
-		$.each options, (name, values) ->
-			$select = $("select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]")
-			$select.empty().append $("<option>",
-				value: ""
-				text: ""
-			)
-			$.each values, (index, object) ->
-				$.each object, (value, uuid) ->
-					$select.append $("<option>",
-						value: uuid
-						text: value
-					)
 
 # Clear the edit form for a new Kloster
 $.fn.new_kloster = ->

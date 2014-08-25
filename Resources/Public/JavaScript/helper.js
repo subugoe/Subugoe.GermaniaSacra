@@ -4,5 +4,43 @@ $.fn.message = function(text) {
   $('#message').remove();
   date = new Date();
   $message = $('<div id="message"><span class="timestamp">' + date.toLocaleString() + '</span>' + text + '</div>');
-  return $message.insertBefore($(this)).hide().slideDown();
+  $message.insertBefore($(this)).hide().slideDown();
+  return $('html, body').animate({
+    scrollTop: $message.offset().top
+  });
+};
+
+$.fn.addInputs = function(slideTime) {
+  if (typeof slideTime === "undefined") {
+    slideTime = 0;
+  }
+  return this.each(function() {
+    var $clone, $fieldset;
+    $fieldset = $(this).closest("fieldset");
+    $clone = $(this).clone(true);
+    $clone.clear_form();
+    $clone.find("select.autocomplete").autocomplete();
+    $clone.insertAfter($(this)).hide().slideDown(slideTime);
+    return $fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1);
+  });
+};
+
+$.fn.removeInputs = function(slideTime) {
+  if (typeof slideTime === "undefined") {
+    slideTime = 0;
+  }
+  return this.each(function() {
+    var $fieldset;
+    $fieldset = $(this).closest("fieldset");
+    $fieldset.find(".multiple").length > 1 && $(this).addClass("dying").slideUp(slideTime, this.remove);
+    return $fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1);
+  });
+};
+
+$.fn.clear_form = function() {
+  $(this).find(":input").prop("disabled", false);
+  $(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("");
+  $(this).find(":checkbox, :radio").prop("checked", false);
+  $(this).find(".multiple:gt(0)").removeInputs(0);
+  return $(this).find(".autofill").text("?");
 };

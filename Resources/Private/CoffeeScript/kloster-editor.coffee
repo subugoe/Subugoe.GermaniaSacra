@@ -1,7 +1,5 @@
 $ ->
 
-	$("#list_form").populate_list()
-
 	$("#edit").hide().populate_selects()
 	$("#edit textarea").autosize()
 
@@ -27,25 +25,10 @@ $ ->
 		e.preventDefault()
 		$("#edit_form").new_kloster()
 
-	$(".edit").click (e) ->
-		e.preventDefault()
-		$("#edit_form").read_kloster $(this).attr("href")
-
-	$(".delete").click (e) ->
-		e.preventDefault()
-		$("#delete").delete_kloster $(this).attr("href")
-
 	$(".close").click (e) ->
 		e.preventDefault()
 		$(this).parent().closest("div[id]").slideUp()
 		$("#browse").slideDown()
-
-	$("#list_form").submit (e) ->
-		e.preventDefault()
-		if $("input[name='auswahl']:checked").length is 0
-			alert "Wählen Sie bitte mindestens einen Eintrag aus."
-			return false
-		$(this).update_list()
 
 	$("#edit_form").submit (e) ->
 		e.preventDefault()
@@ -66,29 +49,31 @@ $ ->
 	
 	return
 
-$.fn.addInputs = (slideTime) ->
-	if typeof slideTime is "undefined"
-		slideTime = 0
-	@each ->
-		$fieldset = $(this).closest("fieldset")
-		$clone = $(this).clone(true)
-		$clone.clear_form()
-		$clone.find("select.autocomplete").autocomplete()
-		$clone.insertAfter($(this)).hide().slideDown slideTime
-		$fieldset.find("button.remove").prop "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
+# Fill the select fields with options
+$.fn.populate_selects = ->
+	url = "getOptions"
+	$.getJSON url, (response) ->
 
-$.fn.removeInputs = (slideTime) ->
-	if typeof slideTime is "undefined"
-		slideTime = 0
-	@each ->
-		$fieldset = $(this).closest("fieldset")
-		$fieldset.find(".multiple").length > 1 and $(this).addClass("dying").slideUp(slideTime, @remove)
-		$fieldset.find("button.remove").prop "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
-
-$.fn.clear_form = ->
-	$(this).find(":input").prop "disabled", false
-	$(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("")
-	$(this).find(":checkbox, :radio").prop "checked", false
-	$(this).find(".multiple:gt(0)").removeInputs 0
-	$(this).find(".autofill").text "?"
-
+		# Fill select fields with available options
+		# TODO: Fill "URL Typ" selects
+		options = {}
+		options.bearbeitungsstatus = response[0]
+		options.personallistenstatus = response[1]
+		options.band = response[2]
+		options.literatur = response[3]
+		options.bistum = response[4]
+		options.orden = response[5]
+		options.klosterstatus = response[6]
+		options.bearbeiter = response[7]
+		$.each options, (name, values) ->
+			$select = $("select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]")
+			$select.empty().append $("<option>",
+				value: ""
+				text: ""
+			)
+			$.each values, (index, object) ->
+				$.each object, (value, uuid) ->
+					$select.append $("<option>",
+						value: uuid
+						text: value
+					)
