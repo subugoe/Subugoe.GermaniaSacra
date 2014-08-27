@@ -1,7 +1,6 @@
 # Save the Kloster list
 $.fn.update_list =  ->
 	$this = $(this)
-	url = $this.attr "action"
 	$rows = dataTable.$('tr').has('input:checked')
 	formData = {}
 	$rows.each ->
@@ -11,8 +10,7 @@ $.fn.update_list =  ->
 			if input.name then formData['klosters[' + uuid + ']'][input.name] = input.value
 			return
 	formData.__csrfToken = $(this).find('input[name=__csrfToken]').val()
-	console.dir formData
-	$.post(url, formData).done((respond, status, jqXHR) ->
+	$.post('updateList', formData).done((respond, status, jqXHR) ->
 		$.post("updateSolrAfterListUpdate", {uuids: respond}).done((respond, status, jqXHR) ->
 			if status is "success"
 				$this.message 'Ihre Änderungen wurden gespeichert.'

@@ -63,7 +63,7 @@
 			<div class="text-right clear"><input type="submit" value="Suchen"></div>
 		</fieldset>
 	</form>
-	<form action="updateList" id="list_form">
+	<form action="" id="list_form">
 		<fieldset>
 			<legend>Klosterliste</legend>
 			<table class="large-12 columns display">
@@ -115,12 +115,12 @@
 						<td class="no-wrap show-only-on-hover">
 							<button class="edit icon-pencil" title="Bearbeiten"></button>
 							<button class="delete icon-trash" title="Löschen"></button>
-							<input class="csrf" type="hidden" name="__csrfToken"	value="{f:security.csrfToken()}">
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</fieldset>
+		<input class="csrf" type="hidden" name="__csrfToken"	value="{f:security.csrfToken()}">
 		<input class="button" type="submit" value="Änderungen übernehmen">
 	</form>
 </div>
