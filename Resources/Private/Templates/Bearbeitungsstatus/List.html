@@ -14,7 +14,7 @@
 				</thead>
 				<tbody>
 					<tr class="data" dt-rows="" ng-repeat="status in entities">
-						<td><input type="checkbox" /></td>
+						<td><input type="checkbox" ng-model="status.selected"></td>
 						<td><input type="text" ng-model="status.name" /></td>
 					</tr>
 				</tbody>

@@ -14,7 +14,7 @@
 				</thead>
 				<tbody>
 					<tr class="data" dt-rows="" ng-repeat="typ in entities">
-						<td><input type="checkbox" /></td>
+						<td><input type="checkbox" ng-model="typ.selected"></td>
 						<td><input type="text" ng-model="typ.ordenstyp" /></td>
 					</tr>
 				</tbody>

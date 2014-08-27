@@ -10,18 +10,24 @@ germaniaSacra.controller('listController', function($scope, $http, Restangular, 
   var type;
   type = angular.element('section[ng-controller]').attr('id');
   Restangular.allUrl('entities', Restangular.configuration.baseUrl + '/' + type + '/list' + Restangular.configuration.suffix).getList().then(function(data) {
-    return $scope.entities = data;
+    $scope.entities = data;
+    return $scope.original = data;
   });
   $scope.dtOptions = dtOptions;
   return $scope.update = function() {
-    return $http.post(Restangular.configuration.baseUrl + '/' + type + '/update', $scope.entities).error(function(data) {
+    var changes, entity, _i, _len, _ref;
+    changes = {};
+    _ref = $scope.entities;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      entity = _ref[_i];
+      if (entity.selected) {
+        changes[entity.uUID] = entity;
+      }
+    }
+    return $http.post(Restangular.configuration.baseUrl + '/' + type + '/update', changes).error(function(data) {
       return $scope.message = 'ERROR';
     }).success(function(data) {
-      if (data.success) {
-        return $scope.message = data.message;
-      } else {
-        return $scope.message = data.message;
-      }
+      return $scope.message = 'Änderungen gespeichert.';
     });
   };
 });

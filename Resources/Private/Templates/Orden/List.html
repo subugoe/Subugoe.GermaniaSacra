@@ -16,12 +16,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr class="data" dt-rows="" ng-repeat="entity in entities">
-						<td><input type="checkbox" class="marker"></td>
-						<td><input type="text" ng-model="entity.orden" /></td>
-						<td><input type="text" ng-model="entity.graphik" /></td>
-						<td><input type="text" ng-model="entity.ordo" /></td>
-						<td><input type="text" ng-model="entity.symbol" /></td>
+					<tr class="data" dt-rows="" ng-repeat="orden in entities">
+						<td><input class="marker" type="checkbox" ng-model="orden.selected"></td>
+						<td><input type="text" ng-model="orden.orden" /></td>
+						<td><input type="text" ng-model="orden.graphik" /></td>
+						<td><input type="text" ng-model="orden.ordo" /></td>
+						<td><input type="text" ng-model="orden.symbol" /></td>
 					</tr>
 				</tbody>
 			</table>

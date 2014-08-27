@@ -18,7 +18,7 @@
 				</thead>
 				<tbody>
 					<tr class="data" dt-rows="" ng-repeat="ort in entities">
-						<td><input type="checkbox" class="marker"></td>
+						<td><input type="checkbox" ng-model="ort.selected"></td>
 						<td><input type="text" ng-model="ort.ort" /></td>
 						<td><input type="text" ng-model="ort.gemeinde" /></td>
 						<td><input type="text" ng-model="ort.kreis" /></td>

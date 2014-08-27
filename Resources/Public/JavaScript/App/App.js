@@ -16,12 +16,9 @@ germaniaSacra.factory('dtOptions', function(DTOptionsBuilder) {
   dtOptions = DTOptionsBuilder.newOptions().withDOM('lifpt').withLanguage({
     sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
   }).withOption('fnCreatedRow', function() {
-    angular.element(this).find(':input:not(.processed)').each(function() {
+    return angular.element(this).find(':input:not(.processed)').each(function() {
       angular.element('<span class="val"/>').text(angular.element(this).is("select") ? angular.element(this).find(":selected").text() : angular.element(this).val()).hide().insertBefore(angular.element(this));
       return angular.element(this).addClass('processed');
-    });
-    return angular.element(this).find(':input:not(.marker)').change(function() {
-      return angular.element(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop('checked', true);
     });
   });
   return dtOptions;
