@@ -2,23 +2,28 @@
 
 <f:section name="Title"><f:translate id="literature" /></f:section>
 
+<!-- BUG: Freezes Chrome. Why? -->
 <f:section name="Content">
-	<section ng-controller="literaturController">
-		<table class="large-12 columns display" dt-options="dtOptions" datatable="ng" id="entityList">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Titel</th>
-					<th>Cite Id</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="data" dt-rows="" ng-repeat="entry in literature">
-					<td><input type="checkbox" /></td>
-					<td ng-model="entry.title">{{entry.title}}</td>
-					<td ng-model="entry.citeid">{{entry.citeid}}</td>
-				</tr>
-			</tbody>
-		</table>
+	<section ng-controller="listController" id="literatur">
+		<form ng-submit="update()">
+			<table class="large-12 columns display" dt-options="dtOptions" datatable="ng">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Cite ID</th>
+						<th>Beschreibung</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="data" dt-rows="" ng-repeat="literatur in entities">
+						<td><input type="checkbox"></td>
+						<td><input type="text" ng-model="literatur.citekey"></td>
+						<td><input type="text" ng-model="literatur.beschreibung"></td>
+					</tr>
+				</tbody>
+			</table>
+			<div id="message" ng-show="message" ng-bind="message"></div>
+			<input type="submit" value="Änderungen speichern">
+		</form>
 	</section>
 </f:section>

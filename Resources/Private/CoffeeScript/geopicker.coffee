@@ -1,5 +1,6 @@
 $ ->
 	$(".coordinates :input").focus ->
+
 		$container = $(this).closest(".coordinates")
 		if $container.find("#map").length > 0 then return false
 		
