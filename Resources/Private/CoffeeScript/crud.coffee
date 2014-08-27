@@ -11,11 +11,14 @@ $.fn.update_list =  ->
 			if input.name then formData['klosters[' + uuid + ']'][input.name] = input.value
 			return
 	formData.__csrfToken = $(this).find('input[name=__csrfToken]').val()
-	#formData = formData.serialize()
 	console.dir formData
 	$.post(url, formData).done((respond, status, jqXHR) ->
-		if status is "success"
-			$this.message 'Ihre Änderungen wurden gespeichert.'
+		$.post("updateSolrAfterListUpdate", {uuids: respond}).done((respond, status, jqXHR) ->
+			if status is "success"
+				$this.message 'Ihre Änderungen wurden gespeichert.'
+		).fail (jqXHR, textStatus) ->
+			$this.message 'Error'
+			console.dir jqXHR.responseText
 	).fail (jqXHR, textStatus) ->
 		$this.message 'Error'
 		console.dir jqXHR.responseText

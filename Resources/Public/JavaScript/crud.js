@@ -18,9 +18,16 @@ $.fn.update_list = function() {
   formData.__csrfToken = $(this).find('input[name=__csrfToken]').val();
   console.dir(formData);
   return $.post(url, formData).done(function(respond, status, jqXHR) {
-    if (status === "success") {
-      return $this.message('Ihre Änderungen wurden gespeichert.');
-    }
+    return $.post("updateSolrAfterListUpdate", {
+      uuids: respond
+    }).done(function(respond, status, jqXHR) {
+      if (status === "success") {
+        return $this.message('Ihre Änderungen wurden gespeichert.');
+      }
+    }).fail(function(jqXHR, textStatus) {
+      $this.message('Error');
+      return console.dir(jqXHR.responseText);
+    });
   }).fail(function(jqXHR, textStatus) {
     $this.message('Error');
     return console.dir(jqXHR.responseText);

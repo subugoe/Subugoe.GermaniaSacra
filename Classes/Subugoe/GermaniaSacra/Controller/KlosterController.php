@@ -168,90 +168,72 @@ class KlosterController extends ActionController {
 	 * @return integer $status http status
 	 */
 	public function updateListAction() {
-		if ($this->request->hasArgument('auswahl')) {
-			$auswahlArr = $this->request->getArgument('auswahl');
+		if ($this->request->hasArgument('klosters')) {
+			$klosterlist = $this->request->getArgument('klosters');
 		}
 
-		if ($this->request->hasArgument('bearbeitungsstatus')) {
-			$bearbeitungsstatusArr = $this->request->getArgument('bearbeitungsstatus');
-		}
-
-		if ($this->request->hasArgument('kloster')) {
-			$klosterArr = $this->request->getArgument('kloster');
-		}
-
-		if ($this->request->hasArgument('ort')) {
-			$ortArr = $this->request->getArgument('ort');
-		}
-
-		if ($this->request->hasArgument('gnd')) {
-			$gndArr = $this->request->getArgument('gnd');
-		}
-
-		if ($this->request->hasArgument('bearbeitungsstand')) {
-			$bearbeitungsstandArr = $this->request->getArgument('bearbeitungsstand');
-		}
-
-		$list = array();
-		foreach ($auswahlArr as $auswahl) {
-			if (
-					(isset($klosterArr[$auswahl]) && !empty($klosterArr[$auswahl])) &&
-					(isset($bearbeitungsstatusArr[$auswahl]) && !empty($bearbeitungsstatusArr[$auswahl]))
-			) {
-				$list[$auswahl] = array("bearbeitungsstatus" => $bearbeitungsstatusArr[$auswahl][0],
-						"klostername" => $klosterArr[$auswahl][0],
-						"gnd" => $gndArr[$auswahl][0],
-						"bearbeitungsstand" => $bearbeitungsstandArr[$auswahl][0],
-						"ort" => $ortArr[$auswahl]);
-			}
-		}
-
-		if (isset($list) && !empty($list)) {
-			foreach ($list as $k => $v) {
-				$klosterObject = $this->klosterRepository->findByIdentifier($k);
-				$klosterObject->setKloster($v['klostername']);
+		$uuids = array();
+		if (is_array($klosterlist) && !empty($klosterlist)) {
+			foreach ($klosterlist as $k => $v) {
+				$uuids[] = (string)$k;
+				$klosterObject = $this->klosterRepository->findByIdentifier((string)$k);
+				$klosterObject->setKloster($v['kloster']);
 				$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($v['bearbeitungsstatus']);
 				$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
 				$klosterObject->setBearbeitungsstand($v['bearbeitungsstand']);
 				$this->klosterRepository->update($klosterObject);
 
+				$gndAlreadyExists = False;
 				$klosterHasUrls = $klosterObject->getKlosterHasUrls();
-				foreach ($klosterHasUrls as $klosterHasUrl) {
-					$urlObject = $klosterHasUrl->getUrl();
-					$urlTypObject = $urlObject->getUrltyp();
-					$urlTyp = $urlTypObject->getName();
-					if ($urlTyp == "GND") {
-						$urlObject->setUrl($v['gnd']);
-						$this->urlRepository->update($urlObject);
-						$this->persistenceManager->persistAll();
-					}
-				}
-
-				$klosterstandorts = $klosterObject->getKlosterstandorts();
-				if (is_object($klosterstandorts)) {
-					foreach ($klosterstandorts as $i => $klosterstandort) {
-						$this->klosterstandortRepository->remove($klosterstandort);
-					}
-				}
-
-				$ort = $v['ort'];
-				if (isset($ort) && !empty($ort) && is_array($ort)) {
-					foreach ($ort as $ort_uuid) {
-						$ortObject = $this->ortRepository->findByIdentifier($ort_uuid);
-						if (is_object($ortObject)) {
-							$klosterstandort = new Klosterstandort();
-							$klosterstandort->setKloster($klosterObject);
-							$klosterstandort->setOrt($ortObject);
-							$this->klosterstandortRepository->add($klosterstandort);
+				if (is_object($klosterHasUrls) && count($klosterHasUrls) > 0) {
+					foreach ($klosterHasUrls as $klosterHasUrl) {
+						$urlObject = $klosterHasUrl->getUrl();
+						$urlTypObject = $urlObject->getUrltyp();
+						$urlTyp = $urlTypObject->getName();
+						if ($urlTyp == "GND") {
+							if (!empty($v['gnd'])) {
+								$urlObject->setUrl($v['gnd']);
+								$this->urlRepository->update($urlObject);
+							}
+							elseif (isset($v['gnd']) && empty($v['gnd'])) {
+								$this->klosterHasUrlRepository->remove($klosterHasUrl);
+								$this->urlRepository->remove($urlObject);
+							}
+							$gndAlreadyExists = True;
 						}
 					}
+				}
+
+				if (!$gndAlreadyExists) {
+					$urlObject = new Url();
+					$urlObject->setUrl($v['gnd']);
+					$gndid = str_replace('http://d-nb.info/gnd/', '', $v['gnd']);
+					$gndbemerkung = $v['kloster'] . ' [' . $gndid . ']';
+					$urlObject->setBemerkung($gndbemerkung);
+					$urlTypObj = $this->urltypRepository->findOneByName('GND');
+					$urlObject->setUrltyp($urlTypObj);
+					$this->urlRepository->add($urlObject);
+					$klosterhasurl = new KlosterHasUrl();
+					$klosterhasurl->setKloster($klosterObject);
+					$klosterhasurl->setUrl($urlObject);
+					$this->klosterHasUrlRepository->add($klosterhasurl);
 				}
 			}
 			$this->persistenceManager->persistAll();
 		}
 
-		$status = 200;
-		return json_encode(array($status));
+		return json_encode($uuids);
+	}
+
+	/**
+	 * Updates the updated entries in Solr
+	 * @FLOW\SkipCsrfProtection
+	 */
+	public function updateSolrAfterListUpdateAction() {
+		if ($this->request->hasArgument('uuids')) {
+			$uuids = $this->request->getArgument('uuids');
+			return json_decode($uuids);
+		}
 	}
 
 	/**
@@ -498,8 +480,7 @@ class KlosterController extends ActionController {
 		$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
 		$kloster->setBearbeiter($bearbeiter);
 
-		$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
-		$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
+		$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier('2378f34a-e3fe-b431-30ef-2f2b9b414b5b');
 		$kloster->setPersonallistenstatus($personallistenstatus);
 
 		$band_uuid = $this->request->getArgument('band');

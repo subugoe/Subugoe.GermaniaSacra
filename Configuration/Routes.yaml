@@ -94,6 +94,13 @@
     '@action': 'addKlosterId'
 
 -
+  name: 'Update Solr after list update URI'
+  uriPattern: 'updateSolrAfterListUpdate'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'updateSolrAfterListUpdate'
+
+-
   name: 'Ort List URI'
   uriPattern: 'ort'
   defaults:
