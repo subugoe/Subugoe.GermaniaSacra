@@ -10,7 +10,7 @@ $.fn.update_list = function() {
     uuid = $(this).find(':input[name=uuid]').val();
     formData['klosters[' + uuid + ']'] = {};
     return $(this).find(':input:not([name=uuid])').each(function(i, input) {
-      if (input.name && input.name != 'ort') {
+      if (input.name) {
         formData['klosters[' + uuid + ']'][input.name] = input.value;
       }
     });
@@ -18,14 +18,16 @@ $.fn.update_list = function() {
   formData.__csrfToken = $(this).find('input[name=__csrfToken]').val();
   console.dir(formData);
   return $.post(url, formData).done(function(respond, status, jqXHR) {
-	  $.get("updateSolrAfterListUpdate", {uuids: respond}).done(function(respond, status, jqXHR) {
-	    if (status === "success") {
-          return $this.message('Ihre Änderungen wurden gespeichert.');
-        }
-	  }).fail(function(jqXHR, textStatus) {
-	    $this.message('Error');
-	    return console.dir(jqXHR.responseText);
-	  });
+    return $.post("updateSolrAfterListUpdate", {
+      uuids: respond
+    }).done(function(respond, status, jqXHR) {
+      if (status === "success") {
+        return $this.message('Ihre Änderungen wurden gespeichert.');
+      }
+    }).fail(function(jqXHR, textStatus) {
+      $this.message('Error');
+      return console.dir(jqXHR.responseText);
+    });
   }).fail(function(jqXHR, textStatus) {
     $this.message('Error');
     return console.dir(jqXHR.responseText);

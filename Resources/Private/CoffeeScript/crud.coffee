@@ -13,7 +13,7 @@ $.fn.update_list =  ->
 	formData.__csrfToken = $(this).find('input[name=__csrfToken]').val()
 	console.dir formData
 	$.post(url, formData).done((respond, status, jqXHR) ->
-		$.post("updateSolrAfterListUpdate", , {uuids: respond}).done((respond, status, jqXHR) ->
+		$.post("updateSolrAfterListUpdate", {uuids: respond}).done((respond, status, jqXHR) ->
 			if status is "success"
 				$this.message 'Ihre Änderungen wurden gespeichert.'
 		).fail (jqXHR, textStatus) ->
