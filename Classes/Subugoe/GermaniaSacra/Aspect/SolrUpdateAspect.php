@@ -129,6 +129,26 @@ class SolrUpdateAspect {
 	 * Update Solr after an entry is stored
 	 *
 	 * @param \TYPO3\Flow\AOP\JoinPointInterface $joinPoint
+	 * @Flow\AfterReturning("method(Subugoe\GermaniaSacra\Controller\KlosterController->updateSolrAfterListUpdateAction())")
+	 *
+	 * @return void
+	 */
+	public function solrUpdateWhenKlosterListUpdated(\TYPO3\Flow\AOP\JoinPointInterface $joinPoint) {
+		$this->injectSettings($this->settings);
+		$this->initializeAction();
+		$uuids = $joinPoint->getResult();
+		foreach ($uuids as $kloster_uuid) {
+			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+			$this->solrUpdate($kloster);
+			$kloster_id = $kloster->getKloster_id();
+			$this->logger->log('Record ' . $kloster_id . " is added to solr index.", LOG_INFO);
+		}
+	}
+
+	/**
+	 * Update Solr after an entry is stored
+	 *
+	 * @param \TYPO3\Flow\AOP\JoinPointInterface $joinPoint
 	 * @Flow\AfterReturning("method(Subugoe\GermaniaSacra\Controller\KlosterController->addKlosterIdAction())")
 	 *
 	 * @return void
@@ -199,9 +219,7 @@ class SolrUpdateAspect {
 	 * @return void
 	 */
 	private function solrUpdate($kloster) {
-
 		$update = $this->client->createUpdate();
-
 		$sql_uid = $kloster->getUid();
 		$klosterArr['sql_uid'] = $sql_uid;
 		$kloster_id = $kloster->getKloster_id();
@@ -234,7 +252,9 @@ class SolrUpdateAspect {
 			$klosterArr['band_kurztitel'] = $band->getKurztitel();
 			$klosterArr['band_sortierung'] = $band->getSortierung();
 			$bandSortName = str_pad($band->getSortierung(), 4, "0", STR_PAD_LEFT) . '####' . $band->getNummer() . ' ' . $band->getKurztitel();
-			$klosterArr['band_facet'] = $bandSortName . ", hat_band";
+			$klosterArr[$k]['band_facet'][] = $bandSortName;
+			$klosterArr[$k]['band_facet'][] = 'hat_band';
+			$band_facet = $klosterArr[$k]['band_facet'];
 
 			$bandHasUrls = $band->getBandHasUrls();
 			foreach ($bandHasUrls as $bandHasUrl) {
@@ -296,7 +316,7 @@ class SolrUpdateAspect {
 		$klosterHasLiteraturs = $kloster->getKlosterHasLiteraturs();
 		$citekey = array();
 		$beschreibung = array();
-		if (is_array($klosterHasLiteraturs) && !empty($klosterHasLiteraturs)) {
+		if (!empty($klosterHasLiteraturs)) {
 			foreach ($klosterHasLiteraturs as $l => $klosterHasLiteratur) {
 				$literaturObj = $klosterHasLiteratur->getLiteratur();
 				$ck = $literaturObj->getCitekey();
@@ -907,6 +927,9 @@ class SolrUpdateAspect {
 							$standort_ordenArr[$m][$n]['bemerkung_kloster'] = $bemerkung_kloster;
 							$standort_ordenArr[$m][$n]['text_gs_band'] = $text_gs_band;
 							$standort_ordenArr[$m][$n]['band_seite'] = $band_seite;
+							if (isset($band_facet) && !empty($band_facet)) {
+								$standort_ordenArr[$k][$m][$n]['band_facet'] = $band_facet;
+							}
 							$standort_ordenArr[$m][$n]['bearbeitungsstatus'] = $bearbeitungsstatus;
 							$standort_ordenArr[$m][$n]['koordinaten'] = $mystandort['koordinaten'];
 							$standort_ordenArr[$m][$n]['koordinaten_institutionengenau'] = $mystandort['koordinaten_institutionengenau'];
@@ -1105,6 +1128,8 @@ class SolrUpdateAspect {
 							unset($standort_jahr50);
 
 							$standortOrdenCount++;
+
+							if (isset($band_facet)) unset($band_facet);
 						}
 					}
 				}
