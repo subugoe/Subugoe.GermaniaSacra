@@ -256,7 +256,9 @@ class DataExportController extends ActionController {
 					$klosterArr[$k]['band_kurztitel'] = $band->getKurztitel();
 					$klosterArr[$k]['band_sortierung'] = $band->getSortierung();
 					$bandSortName = str_pad($band->getSortierung(), 4, "0", STR_PAD_LEFT) . '####' . $band->getNummer() . ' ' . $band->getKurztitel();
-					$klosterArr[$k]['band_facet'] = $bandSortName . ", hat_band";
+					$klosterArr[$k]['band_facet'][] = $bandSortName;
+					$klosterArr[$k]['band_facet'][] = 'hat_band';
+					$band_facet = $klosterArr[$k]['band_facet'];
 
 					$bandHasUrls = $band->getBandHasUrls();
 					foreach ($bandHasUrls as $bandHasUrl) {
@@ -922,6 +924,9 @@ class DataExportController extends ActionController {
 									$standort_ordenArr[$k][$m][$n]['bemerkung_kloster'] = $bemerkung_kloster;
 									$standort_ordenArr[$k][$m][$n]['text_gs_band'] = $text_gs_band;
 									$standort_ordenArr[$k][$m][$n]['band_seite'] = $band_seite;
+									if (isset($band_facet) && !empty($band_facet)) {
+										$standort_ordenArr[$k][$m][$n]['band_facet'] = $band_facet;
+									}
 									$standort_ordenArr[$k][$m][$n]['bearbeitungsstatus'] = $bearbeitungsstatus;
 									$standort_ordenArr[$k][$m][$n]['personallistenstatus'] = $personallistenstatus;
 									$standort_ordenArr[$k][$m][$n]['koordinaten'] = $mystandort['koordinaten'];
@@ -1121,6 +1126,8 @@ class DataExportController extends ActionController {
 									unset($standort_jahr50);
 
 									$standortOrdenCount++;
+
+									if (isset($band_facet)) unset($band_facet);
 								}
 							}
 						}
