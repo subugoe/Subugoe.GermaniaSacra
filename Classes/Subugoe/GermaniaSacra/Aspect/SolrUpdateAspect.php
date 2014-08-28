@@ -252,9 +252,9 @@ class SolrUpdateAspect {
 			$klosterArr['band_kurztitel'] = $band->getKurztitel();
 			$klosterArr['band_sortierung'] = $band->getSortierung();
 			$bandSortName = str_pad($band->getSortierung(), 4, "0", STR_PAD_LEFT) . '####' . $band->getNummer() . ' ' . $band->getKurztitel();
-			$klosterArr[$k]['band_facet'][] = $bandSortName;
-			$klosterArr[$k]['band_facet'][] = 'hat_band';
-			$band_facet = $klosterArr[$k]['band_facet'];
+			$klosterArr['band_facet'][] = $bandSortName;
+			$klosterArr['band_facet'][] = 'hat_band';
+			$band_facet = $klosterArr['band_facet'];
 
 			$bandHasUrls = $band->getBandHasUrls();
 			foreach ($bandHasUrls as $bandHasUrl) {
@@ -928,7 +928,7 @@ class SolrUpdateAspect {
 							$standort_ordenArr[$m][$n]['text_gs_band'] = $text_gs_band;
 							$standort_ordenArr[$m][$n]['band_seite'] = $band_seite;
 							if (isset($band_facet) && !empty($band_facet)) {
-								$standort_ordenArr[$k][$m][$n]['band_facet'] = $band_facet;
+								$standort_ordenArr[$m][$n]['band_facet'] = $band_facet;
 							}
 							$standort_ordenArr[$m][$n]['bearbeitungsstatus'] = $bearbeitungsstatus;
 							$standort_ordenArr[$m][$n]['koordinaten'] = $mystandort['koordinaten'];
