@@ -85,3 +85,158 @@ $.fn.populate_selects = function() {
     });
   });
 };
+
+$.fn.new_kloster = function() {
+  $("#browse").slideUp();
+  $("#edit").slideDown();
+  $(this).clear_form();
+  $(this).find(".autocomplete").autocomplete();
+  $(this).find("textarea").trigger("autosize.resize");
+  return $(this).find("input[type=url]").keyup();
+};
+
+$.fn.create_kloster = function() {
+  var $this;
+  $this = $(this);
+  return $.post("create", $this.serialize()).done(function(respond, status, jqXHR) {
+    var dataArray, uuid;
+    dataArray = $.parseJSON(respond);
+    uuid = dataArray[0];
+    $.get("addKlosterId", {
+      uuid: uuid
+    });
+    return $this.message('Ein neuer Eintrag wurde angelegt.');
+  }).fail(function(jqXHR, textStatus) {
+    $this.message('Error');
+    return console.dir(jqXHR.responseText);
+  });
+};
+
+$.fn.read_kloster = function(url) {
+  var $this;
+  $this = $(this);
+  $this.clear_form();
+  $("#browse").slideUp();
+  $('#loading').show();
+  return $.getJSON(url, function(kloster) {
+    var $fieldset, update_url, uuid;
+    uuid = kloster.uuid;
+    update_url = "update/" + uuid;
+    $this.attr("action", update_url);
+    $fieldset = $("#kloster");
+    $fieldset.find("label :input").each(function() {
+      var name, val;
+      name = $(this).attr("name");
+      if (typeof name === "undefined") {
+        return name = name.replace("[]", "");
+      }
+      val = kloster[name];
+      return $(this).val(val);
+    });
+    $fieldset.find("[name=changeddate]").val(kloster.changeddate ? kloster.changeddate.date.substr(0, kloster.changeddate.date.indexOf(".")) : '');
+    $fieldset = $("#klosterorden");
+    $.each(kloster.klosterorden, function(index, value) {
+      if (index > 0) {
+        $fieldset.find(".multiple:last()").addInputs(0);
+      }
+      return $fieldset.find(".multiple:last() label :input").each(function() {
+        var name;
+        name = $(this).attr("name");
+        if (typeof name === "undefined") {
+          return;
+        }
+        name = name.replace("[]", "");
+        return $(this).val(value[name]);
+      });
+    });
+    $fieldset = $("#klosterstandorte");
+    $.each(kloster.klosterstandorte, function(index, value) {
+      if (index > 0) {
+        $fieldset.find(".multiple:last()").addInputs(0);
+      }
+      return $fieldset.find(".multiple:last() label :input").each(function() {
+        var checkedCondition, disabledCondition, name, text, val;
+        name = $(this).attr("name");
+        if (typeof name === "undefined") {
+          return;
+        }
+        name = name.replace("[]", "");
+        val = value[name];
+        if (name === "wuestung") {
+          if (name === "wuestung") {
+            checkedCondition = value[name] === 1;
+            return $(this).prop("checked", checkedCondition);
+          }
+        } else if (name === "ort") {
+          return $(this).html($("<option />", {
+            value: value["uuid"],
+            text: value["ort"]
+          }).attr("selected", true));
+        } else if (name === "bistum") {
+          $(this).val(value[name]);
+          text = $(this).find(':selected');
+          disabledCondition = text !== "keine Angabe" && text !== "";
+          return $(this).prop("disabled", disabledCondition);
+        } else {
+          return $(this).val(value[name]);
+        }
+      });
+    });
+    $fieldset = $("#links");
+    $.each(kloster.url, function(index, value) {
+      if (value.url_typ_name === "GND") {
+        $(":input[name=gnd]").val(value.url);
+        return $(":input[name=gnd_label]").val(value.url_label);
+      } else if (value.url_typ_name === "Wikipedia") {
+        $(":input[name=wikipedia]").val(value.url);
+        return $(":input[name=wikipedia_label]").val(value.url_label);
+      } else {
+        $fieldset.find(".multiple:last()").addInputs(0);
+        return $fieldset.find(".multiple:last() label :input").each(function() {
+          var name;
+          name = $(this).attr("name");
+          if (typeof name === "undefined") {
+            return;
+          }
+          name = name.replace("[]", "");
+          return $(this).val(value[name]);
+        });
+      }
+    });
+    $fieldset.find(".multiple:eq(0)").removeInputs(0);
+    $fieldset = $("#literatur");
+    $.each(kloster.literatur, function(index, value) {
+      if (index > 0) {
+        $fieldset.addInputs(0);
+      }
+      return $fieldset.find(".multiple:last() label :input").each(function() {
+        var name;
+        name = $(this).attr("name");
+        if (typeof name === "undefined") {
+          return;
+        }
+        name = name.replace("[]", "");
+        return $(this).val(value);
+      });
+    });
+    $('#edit').slideDown();
+    $('#loading').hide();
+    $this.find(".autocomplete").autocomplete();
+    $this.find("textarea").trigger("autosize.resize");
+    return $this.find("input[type=url]").keyup();
+  });
+};
+
+$.fn.update_kloster = function() {
+  var $this, url;
+  $this = $(this);
+  url = $this.attr("action");
+  return $.post(url, $this.serialize()).done(function(respond, status, jqXHR) {
+    if (status === "success") {
+      return $this.message('Ihre Änderungen wurden gespeichert.');
+    }
+  }).fail(function(jqXHR, textStatus) {
+    $this.message('Error');
+    return console.dir(jqXHR.responseText);
+  });
+};

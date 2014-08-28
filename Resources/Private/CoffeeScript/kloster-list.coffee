@@ -29,7 +29,7 @@ $.fn.populate_list = ->
 	$this = $(this)
 
 	$this.hide()
-	$this.after('<div id="loading"><i class="spinner spinner-icon left"/> Klosterdaten werden geladen...</div>')
+	$('#loading').show()
 
 	$.getJSON "klosterListAll", (response) ->
 
@@ -125,3 +125,42 @@ $.fn.populate_list = ->
 		dataTable.row($trTemplate).remove().draw()
 
 	return
+
+# Save the Kloster list
+$.fn.update_list =  ->
+	$this = $(this)
+	$rows = dataTable.$('tr').has('input:checked')
+	formData = {}
+	$rows.each ->
+		uuid = $(this).find(':input[name=uuid]').val()
+		formData['klosters[' + uuid + ']'] = {}
+		$(this).find(':input:not([name=uuid])').each (i, input) ->
+			if input.name then formData['klosters[' + uuid + ']'][input.name] = input.value
+			return
+	formData.__csrfToken = $(this).find('input[name=__csrfToken]').val()
+	$.post('updateList', formData).done((respond, status, jqXHR) ->
+		$.post("updateSolrAfterListUpdate", {uuids: respond}).done((respond, status, jqXHR) ->
+			if status is "success"
+				$this.message 'Ihre Änderungen wurden gespeichert.'
+		).fail (jqXHR, textStatus) ->
+			$this.message 'Error'
+			console.dir jqXHR.responseText
+	).fail (jqXHR, textStatus) ->
+		$this.message 'Error'
+		console.dir jqXHR.responseText
+
+
+# Delete a single Kloster
+$.fn.delete_kloster = (url, csrf) ->
+	$this = $(this)
+	check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
+	if check is true
+		csrf = $('#csrf').val()
+		$.post(url,
+			__csrfToken: csrf
+		).done((respond, status, jqXHR) ->
+			if status is "success"
+				$this.message 'Der Eintrag wurde gelöscht.'
+		).fail (jqXHR, textStatus) ->
+			$this.message 'Error'
+			console.dir jqXHR.responseText

@@ -232,13 +232,13 @@ button,
 
 #loading,
 #message {
-	background: #eee;
-	border: 1px solid #ccc;
+	background: #fff;
+	box-shadow: $reveal-box-shadow;
 	clear: both;
 	margin: rem-calc(20) 0;
-	padding: $tooltip-padding;
+	padding: rem-calc(20);
 	.timestamp {
-		background: #ccc;
+		background: #eee;
 		float: left;
 		margin: -$tooltip-padding;
 		margin-right: $tooltip-padding;
