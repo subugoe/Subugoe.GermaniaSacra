@@ -917,7 +917,8 @@ class KlosterController extends ActionController {
 		);
 		$urltyps = $this->urltypRepository->findAll();
 		foreach ($urltyps as $q => $urltyp) {
-			$urltypArr[$q] = array($urltyp->getName() => $urltyp->getUUID());
+			if ( $urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND' )
+				$urltypArr[$q] = array($urltyp->getName() => $urltyp->getUUID());
 		}
 
 		$response = array();
