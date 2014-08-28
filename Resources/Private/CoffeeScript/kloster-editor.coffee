@@ -65,6 +65,7 @@ $.fn.populate_selects = ->
 		options.orden = response[5]
 		options.klosterstatus = response[6]
 		options.bearbeiter = response[7]
+		options.url_typ = response[8]
 		$.each options, (name, values) ->
 			$select = $("select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]")
 			$select.empty().append $("<option>",

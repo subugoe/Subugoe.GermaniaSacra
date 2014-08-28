@@ -28,7 +28,13 @@ $.fn.populate_list = ->
 
 	$this = $(this)
 
+	$this.hide()
+	$this.after('<div id="loading"><i class="spinner spinner-icon left"/> Klosterdaten werden geladen...</div>')
+
 	$.getJSON "klosterListAll", (response) ->
+
+		$this.show()
+		$('#loading').hide()
 
 		# Fill "Status" select fields
 		bearbeitungsstatusArray = response[1]

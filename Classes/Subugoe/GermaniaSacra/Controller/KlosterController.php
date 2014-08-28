@@ -909,6 +909,16 @@ class KlosterController extends ActionController {
 			$bearbeiterArr[$q] = array($bearbeiter->getBearbeiter() => $bearbeiter->getUUID());
 		}
 
+		// URL-Typ data for select box
+		$urltypArr = array();
+		$this->bearbeiterRepository->setDefaultOrderings(
+				array('urltyp' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+		$urltyps = $this->urltypRepository->findAll();
+		foreach ($urltyps as $q => $urltyp) {
+			$urltypArr[$q] = array($urltyp->getName() => $bearbeiter->getUUID());
+		}
+
 		$response = array();
 		$response[] = $bearbeitungsstatusArr;
 		$response[] = $personallistenstatusArr;
@@ -918,6 +928,7 @@ class KlosterController extends ActionController {
 		$response[] = $ordenArr;
 		$response[] = $klosterstatusArr;
 		$response[] = $bearbeiterArr;
+		$response[] = $urltypArr;
 		return json_encode($response);
 
 	}

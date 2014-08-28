@@ -28,8 +28,12 @@ $(function() {
 $.fn.populate_list = function() {
   var $this;
   $this = $(this);
+  $this.hide();
+  $this.after('<div id="loading"><i class="spinner spinner-icon left"/> Klosterdaten werden geladen...</div>');
   $.getJSON("klosterListAll", function(response) {
     var $inputBearbeitungsstatus, $table, $trTemplate, bearbeitungsstatusArray, klosters;
+    $this.show();
+    $('#loading').hide();
     bearbeitungsstatusArray = response[1];
     $inputBearbeitungsstatus = $("select[name='bearbeitungsstatus']");
     $inputBearbeitungsstatus.empty();

@@ -66,6 +66,7 @@ $.fn.populate_selects = function() {
     options.orden = response[5];
     options.klosterstatus = response[6];
     options.bearbeiter = response[7];
+    options.url_typ = response[8];
     return $.each(options, function(name, values) {
       var $select;
       $select = $("select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]");
