@@ -252,9 +252,9 @@ class SolrUpdateAspect {
 			$klosterArr['band_kurztitel'] = $band->getKurztitel();
 			$klosterArr['band_sortierung'] = $band->getSortierung();
 			$bandSortName = str_pad($band->getSortierung(), 4, "0", STR_PAD_LEFT) . '####' . $band->getNummer() . ' ' . $band->getKurztitel();
-			$klosterArr[$k]['band_facet'][] = $bandSortName;
-			$klosterArr[$k]['band_facet'][] = 'hat_band';
-			$band_facet = $klosterArr[$k]['band_facet'];
+			$klosterArr['band_facet'][] = $bandSortName;
+			$klosterArr['band_facet'][] = 'hat_band';
+			$band_facet = $klosterArr['band_facet'];
 
 			$bandHasUrls = $band->getBandHasUrls();
 			foreach ($bandHasUrls as $bandHasUrl) {
