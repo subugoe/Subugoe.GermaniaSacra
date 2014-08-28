@@ -97,19 +97,6 @@ class SolrUpdateAspect {
 				),
 		);
 
-		$this->client = new \Solarium\Client($this->configuration);
-		$this->client->setAdapter('\Solarium\Core\Client\Adapter\Http');
-
-		$personenFile = FLOW_PATH_DATA . 'GermaniaSacra/personen.json';
-
-		try {
-			file_put_contents($personenFile, fopen(self::PERSONEN_URL, 'r'));
-		} catch (\Exception $e) {
-			$this->logger->logException($e);
-		}
-
-		$this->personen = json_decode(file_get_contents($personenFile), true);
-
 		if (!$this->logger) {
 			$log = new \TYPO3\Flow\Log\LoggerFactory();
 
@@ -123,6 +110,19 @@ class SolrUpdateAspect {
 					)
 			);
 		}
+
+		$this->client = new \Solarium\Client($this->configuration);
+		$this->client->setAdapter('\Solarium\Core\Client\Adapter\Http');
+
+		$personenFile = FLOW_PATH_DATA . 'GermaniaSacra/personen.json';
+
+		try {
+			file_put_contents($personenFile, fopen(self::PERSONEN_URL, 'r'));
+		} catch (\Exception $e) {
+			$this->logger->logException($e);
+		}
+
+		$this->personen = json_decode(file_get_contents($personenFile), true);
 	}
 
 	/**
