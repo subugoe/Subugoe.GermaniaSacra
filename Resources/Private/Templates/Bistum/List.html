@@ -18,7 +18,7 @@
 				</thead>
 				<tbody>
 					<tr class="data" dt-rows="" ng-repeat="bistum in entities">
-						<td><input type="checkbox" class="marker"></td>
+						<td><input type="checkbox" ng-model="bistum.selected"></td>
 						<td><input type="text" ng-model="bistum.bistum"></td>
 						<td><textarea ng-model="bistum.bemerkung"></textarea></td>
 						<td><input ng-model="bistum.ist_erzbistum" type="checkbox" ng-checked="bistum.ist_erzbistum"></td>
@@ -28,6 +28,7 @@
 				</tbody>
 			</table>
 			<div id="message" ng-show="message" ng-bind="message"></div>
+			<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
 			<input type="submit" value="Änderungen speichern">
 		</form>
 	</section>

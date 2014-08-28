@@ -2,6 +2,7 @@
 
 <f:section name="Title"><f:translate id="orte" /></f:section>
 
+<!-- TODO: We most likely cannot load 40k+ Orte at once -->
 <f:section name="Content">
 	<section ng-controller="listController" id="ort">
 		<form ng-submit="update()">
@@ -28,6 +29,7 @@
 				</tbody>
 			</table>
 			<div id="message" ng-show="message" ng-bind="message"></div>
+			<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
 			<input type="submit" value="Änderungen speichern">
 		</form>
 	</section>

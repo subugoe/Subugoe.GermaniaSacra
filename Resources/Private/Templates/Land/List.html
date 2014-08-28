@@ -21,6 +21,8 @@
 					</tr>
 				</tbody>
 			</table>
+			<div id="message" ng-show="message" ng-bind="message"></div>
+			<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
 			<input type="submit" value="Änderungen übernehmen">
 		</form>
 	</section>

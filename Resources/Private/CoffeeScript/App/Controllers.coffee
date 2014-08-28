@@ -1,29 +1,43 @@
-germaniaSacra.controller 'monasteryController', ($scope, $http) ->
-	$http.get('subugoe.germaniasacra/kloster/list.json').success (data) ->
-		$scope.monasteries = data
+germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTColumnBuilder) ->
 
-	$scope.orderProp = 'kloster_id'
+	entityName = $('section[ng-controller]').attr('id')
 
-germaniaSacra.controller 'listController', ($scope, $http, Restangular, dtOptions) ->
-
-	type = angular.element('section[ng-controller]').attr('id')
-
-	Restangular.allUrl('entities', Restangular.configuration.baseUrl + '/' + type + '/list' + Restangular.configuration.suffix).getList().then (data) ->
+	$scope.entities = {}
+	responsePromise = $http.get('subugoe.germaniasacra/' + entityName + '/list.json')
+	responsePromise.success (data, status, headers, config) ->
 		$scope.entities = data
-		$scope.original = data
+	responsePromise.error (data, status, headers, config) ->
+		$scope.message = 'Daten konnten nicht geladen werden'
 
-	$scope.dtOptions = dtOptions
+	$scope.dtOptions = DTOptionsBuilder
+		.newOptions()
+		.withDOM('lifpt')
+		.withLanguage(sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json')
+		.withOption 'fnCreatedRow', ->
+			$(this).find(':input:not(.processed)').each ->
+				$('<span class="val"/>')
+					.text if $(this).is("select") then $(this).find(":selected").text() else $(this).val()
+					.hide()
+					.insertBefore $(this)
+				$(this).addClass('processed')
+		.withOption "rowCallback", (nRow, aData, iDisplayIndex, iDisplayIndexFull) ->
+			$(":input", nRow).bind "change", ->
+				$(this).closest('td').addClass('dirty')
+				$scope.$apply ->
+					$scope.entities[nRow._DT_RowIndex].selected = true
+			nRow
 
 	$scope.update = ->
 		# Only post selected rows
 		changes = {}
-		# TODO: Selected should be set on change of related inputs
 		for entity in $scope.entities
 			if entity.selected
 				changes[entity.uUID] = entity
-		$http.post(Restangular.configuration.baseUrl + '/' + type + '/update', changes)
+		changes.__csrfToken = $('#__csrfToken').val()
+		$http.post('subugoe.germaniasacra/' + entityName + '/update', changes)
 			.error (data) ->
-				# TODO
+				# TODO: Error handler
 				$scope.message = 'ERROR'
 			.success (data) ->
+				# TODO: Remove class dirty from saved rows
 				$scope.message = 'Änderungen gespeichert.'
