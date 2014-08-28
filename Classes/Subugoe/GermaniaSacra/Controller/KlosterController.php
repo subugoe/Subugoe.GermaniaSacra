@@ -799,8 +799,9 @@ class KlosterController extends ActionController {
 			$url_bemerkung = $urlObj->getBemerkung();
 			if ($url !== 'keine Angabe') {
 				$urlTypObj = $urlObj->getUrltyp();
-				$urlTyp = $urlTypObj->getName();
-				$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung);
+				$urlTyp = $urlTypObj->getUUID();
+				$urlTypName = $urlTypObj->getName();
+				$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
 			}
 		}
 		$klosterArr['url'] = $Urls;
@@ -916,7 +917,7 @@ class KlosterController extends ActionController {
 		);
 		$urltyps = $this->urltypRepository->findAll();
 		foreach ($urltyps as $q => $urltyp) {
-			$urltypArr[$q] = array($urltyp->getName() => $bearbeiter->getUUID());
+			$urltypArr[$q] = array($urltyp->getName() => $urltyp->getUUID());
 		}
 
 		$response = array();

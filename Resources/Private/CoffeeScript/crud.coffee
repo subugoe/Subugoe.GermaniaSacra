@@ -105,10 +105,12 @@ $.fn.read_kloster = (url) ->
 
 		$fieldset = $("#links")
 		$.each kloster.url, (index, value) ->
-			if value.url_typ is "GND"
-				$("#gnd").val value.url
-			else if value.url_typ is "Wikipedia"
-				$("#wikipedia").val value.url
+			if value.url_typ_name is "GND"
+				$(":input[name=gnd]").val value.url
+				$(":input[name=gnd_label]").val value.url_label
+			else if value.url_typ_name is "Wikipedia"
+				$(":input[name=wikipedia]").val value.url
+				$(":input[name=wikipedia_label]").val value.url_label
 			else
 				$fieldset.find(".multiple:last()").addInputs 0
 				$fieldset.find(".multiple:last() label :input").each ->
@@ -116,6 +118,7 @@ $.fn.read_kloster = (url) ->
 					if typeof name is "undefined"
 						return
 					name = name.replace("[]", "")
+					console.log name + ": " + value[name]
 					$(this).val value[name]
 
 		$fieldset.find(".multiple:eq(0)").removeInputs 0

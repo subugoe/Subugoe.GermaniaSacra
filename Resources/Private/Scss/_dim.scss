@@ -217,7 +217,6 @@ button,
 
 .show-only-on-hover * {
 	opacity: 0;
-	transition: opacity .5s;
 	tr:hover & {
 		opacity: 1;
 	}

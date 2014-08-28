@@ -7914,7 +7914,6 @@ input[type="submit"],
 
 .show-only-on-hover * {
   opacity: 0;
-  transition: opacity .5s;
 }
 tr:hover .show-only-on-hover * {
   opacity: 1;

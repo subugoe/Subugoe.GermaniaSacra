@@ -128,10 +128,12 @@ $.fn.read_kloster = function(url) {
     });
     $fieldset = $("#links");
     $.each(kloster.url, function(index, value) {
-      if (value.url_typ === "GND") {
-        return $("#gnd").val(value.url);
-      } else if (value.url_typ === "Wikipedia") {
-        return $("#wikipedia").val(value.url);
+      if (value.url_typ_name === "GND") {
+        $(":input[name=gnd]").val(value.url);
+        return $(":input[name=gnd_label]").val(value.url_label);
+      } else if (value.url_typ_name === "Wikipedia") {
+        $(":input[name=wikipedia]").val(value.url);
+        return $(":input[name=wikipedia_label]").val(value.url_label);
       } else {
         $fieldset.find(".multiple:last()").addInputs(0);
         return $fieldset.find(".multiple:last() label :input").each(function() {
@@ -141,6 +143,7 @@ $.fn.read_kloster = function(url) {
             return;
           }
           name = name.replace("[]", "");
+          console.log(name + ": " + value[name]);
           return $(this).val(value[name]);
         });
       }

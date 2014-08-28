@@ -55,7 +55,6 @@ $.fn.populate_selects = ->
 	$.getJSON url, (response) ->
 
 		# Fill select fields with available options
-		# TODO: Fill "URL Typ" selects
 		options = {}
 		options.bearbeitungsstatus = response[0]
 		options.personallistenstatus = response[1]
