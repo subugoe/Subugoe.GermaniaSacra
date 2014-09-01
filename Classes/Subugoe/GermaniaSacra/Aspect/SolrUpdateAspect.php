@@ -91,6 +91,7 @@ class SolrUpdateAspect {
 							'host' => $this->settings['solr']['host'],
 							'port' => $this->settings['solr']['port'],
 							'path' => $this->settings['solr']['path'],
+							'core' => $this->settings['solr']['core'],
 							'timeout' => $this->settings['solr']['timeout']
 						)
 				),

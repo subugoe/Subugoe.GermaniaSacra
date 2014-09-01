@@ -40,6 +40,13 @@ class Url {
 	protected $urltyp;
 
 	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl
+	 * @ORM\OneToMany(mappedBy="url", cascade={"all"})
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
+	 */
+	protected $klosterHasUrls;
+
+	/**
 	 * @return integer
 	 */
 	public function getuid() {
