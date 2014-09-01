@@ -85,7 +85,6 @@
     '@controller': 'Kloster'
     '@action': 'create'
 
-
 -
   name: 'Add Kloster Id URI'
   uriPattern: 'addKlosterId'
@@ -99,6 +98,20 @@
   defaults:
     '@controller': 'Kloster'
     '@action': 'updateSolrAfterListUpdate'
+
+-
+  name: 'Update Solr after kloster update URI'
+  uriPattern: 'updateSolrAfterKlosterUpdate'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'updateSolrAfterKlosterUpdate'
+
+-
+  name: 'Update Solr after kloster create URI'
+  uriPattern: 'solrUpdateWhenKlosterCreate'
+  defaults:
+    '@controller': 'Kloster'
+    '@action': 'solrUpdateWhenKlosterCreate'
 
 -
   name: 'Ort List URI'

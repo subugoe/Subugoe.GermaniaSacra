@@ -91,7 +91,6 @@ class SolrUpdateAspect {
 							'host' => $this->settings['solr']['host'],
 							'port' => $this->settings['solr']['port'],
 							'path' => $this->settings['solr']['path'],
-							'core' => $this->settings['solr']['core'],
 							'timeout' => $this->settings['solr']['timeout']
 						)
 				),
@@ -149,31 +148,32 @@ class SolrUpdateAspect {
 	 * Update Solr after an entry is stored
 	 *
 	 * @param \TYPO3\Flow\AOP\JoinPointInterface $joinPoint
-	 * @Flow\AfterReturning("method(Subugoe\GermaniaSacra\Controller\KlosterController->addKlosterIdAction())")
+	 * @Flow\AfterReturning("method(Subugoe\GermaniaSacra\Controller\KlosterController->solrUpdateWhenKlosterCreateAction())")
 	 *
 	 * @return void
 	 */
-	public function solrUpdateWhenKlosterStored(\TYPO3\Flow\AOP\JoinPointInterface $joinPoint) {
-		$json = json_decode($joinPoint->getResult(), true);
-		$kloster_uuid = $json[0];
+	public function solrUpdateWhenKlosterCreate(\TYPO3\Flow\AOP\JoinPointInterface $joinPoint) {
+		$kloster_uuid = $joinPoint->getResult();
 		$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+		$kloster_uid = $kloster->getUid();
 		$this->injectSettings($this->settings);
 		$this->initializeAction();
+		$this->solrDelete($kloster_uid);
 		$this->solrUpdate($kloster);
-		$kloster_id = $kloster->getKloster_id();
-		$this->logger->log('Record ' . $kloster_id . " is added to solr index.", LOG_INFO);
+		$this->logger->log('Record ' . $kloster_uid . " is updated in solr index.", LOG_INFO);
 	}
 
 	/**
 	 * Update Solr after an entry is updated
 	 *
 	 * @param \TYPO3\Flow\AOP\JoinPointInterface $joinPoint
-	 * @Flow\AfterReturning("method(Subugoe\GermaniaSacra\Controller\KlosterController->updateAction())")
+	 * @Flow\AfterReturning("method(Subugoe\GermaniaSacra\Controller\KlosterController->updateSolrAfterKlosterUpdateAction())")
 	 *
 	 * @return void
 	 */
 	public function solrUpdateWhenKlosterUpdated(\TYPO3\Flow\AOP\JoinPointInterface $joinPoint) {
-		$kloster = $joinPoint->getMethodArgument('kloster');
+		$kloster_uuid = $joinPoint->getResult();
+		$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 		$kloster_uid = $kloster->getUid();
 		$this->injectSettings($this->settings);
 		$this->initializeAction();
@@ -281,32 +281,32 @@ class SolrUpdateAspect {
 				$klosterUrl = $urlObj->getUrl();
 				if ($klosterUrl !== 'keine Angabe') {
 					$urlTypObj = $urlObj->getUrltyp();
-					$urlTyp = $urlTypObj->getName();
-					if ($urlTyp == "Wikipedia") {
-						$url_wikipedia = rawurldecode($klosterUrl);
-						$klosterArr['url_wikipedia'] = $url_wikipedia;
-					} elseif ($urlTyp == "Quelle") {
-						$url_quelle = rawurldecode($klosterUrl);
-						$klosterArr['url_quelle'] = $url_quelle;
+					if (is_object($urlTypObj)) {
+						$urlTyp = $urlTypObj->getName();
+						if ($urlTyp == "Wikipedia") {
+							$url_wikipedia = rawurldecode($klosterUrl);
+							$klosterArr['url_wikipedia'] = $url_wikipedia;
+						} elseif ($urlTyp == "Quelle") {
+							$url_quelle = rawurldecode($klosterUrl);
+							$klosterArr['url_quelle'] = $url_quelle;
+							$url_quelle_titel = $urlObj->getBemerkung();
+							$klosterArr['url_quelle_titel'] = $url_quelle_titel;
+						} else {
+							$url = rawurldecode($klosterUrl);
+							$klosterArr['url'] = $url;
+							$url_bemerkung = $urlObj->getBemerkung();
+							$klosterArr['url_bemerkung'] = $url_bemerkung;
+							$klosterArr['url_typ'] = $urlTyp;
+							$url_relation = 'kloster';
+							$klosterArr['url_relation'] = $url_relation;
+						}
 
-						$url_quelle_titel = $urlObj->getBemerkung();
-						$klosterArr['url_quelle_titel'] = $url_quelle_titel;
-					} else {
-						$url = rawurldecode($klosterUrl);
-						$klosterArr['url'] = $url;
-
-						$url_bemerkung = $urlObj->getBemerkung();
-						$klosterArr['url_bemerkung'] = $url_bemerkung;
-						$klosterArr['url_typ'] = $urlTyp;
-						$url_relation = 'kloster';
-						$klosterArr['url_relation'] = $url_relation;
-					}
-
-					if ($urlTyp == "GND") {
-						$components = explode("/gnd/", $klosterUrl);
-						if (count($components) > 1) {
-							$gnd = $components[1];
-							$klosterArr['gnd'] = $gnd;
+						if ($urlTyp == "GND") {
+							$components = explode("/gnd/", $klosterUrl);
+							if (count($components) > 1) {
+								$gnd = $components[1];
+								$klosterArr['gnd'] = $gnd;
+							}
 						}
 					}
 				}

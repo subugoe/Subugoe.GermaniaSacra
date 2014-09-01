@@ -91,10 +91,8 @@ $.fn.new_kloster = ->
 $.fn.create_kloster = ->
 	$this = $(this)
 	$.post("create", $this.serialize()).done((respond, status, jqXHR) ->
-		dataArray = $.parseJSON respond
-		uuid = dataArray[0]
-		$.get("addKlosterId",
-			uuid: uuid
+		$.get("solrUpdateWhenKlosterCreate",
+			uuid: respond
 		)
 		$this.message 'Ein neuer Eintrag wurde angelegt.'
 	).fail (jqXHR, textStatus) ->
@@ -203,8 +201,12 @@ $.fn.update_kloster = ->
 	$this = $(this)
 	url = $this.attr "action"
 	$.post(url, $this.serialize()).done((respond, status, jqXHR) ->
-		if status is "success"
-			$this.message 'Ihre Änderungen wurden gespeichert.'
+		$.post("updateSolrAfterKlosterUpdate", {uuid: respond}).done((respond, status, jqXHR) ->
+			if status is "success"
+				$this.message 'Ihre Änderungen wurden gespeichert.'
+		).fail (jqXHR, textStatus) ->
+			$this.message 'Error'
+			console.dir jqXHR.responseText
 	).fail (jqXHR, textStatus) ->
 		$this.message 'Error'
 		console.dir jqXHR.responseText

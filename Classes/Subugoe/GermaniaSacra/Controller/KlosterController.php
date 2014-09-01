@@ -337,9 +337,11 @@ class KlosterController extends ActionController {
 				$urlObj = $klosterHasUrl->getUrl();
 				$url = $urlObj->getUrl();
 				$urlTypObj = $urlObj->getUrltyp();
-				$urlTyp = $urlTypObj->getName();
-				if ($urlTyp == "GND") {
-					$klosterArr[$k]['gnd'] = $url;
+				if (is_object($urlTypObj)) {
+					$urlTyp = $urlTypObj->getName();
+					if ($urlTyp == "GND") {
+						$klosterArr[$k]['gnd'] = $url;
+					}
 				}
 			}
 		}
@@ -457,276 +459,306 @@ class KlosterController extends ActionController {
 	/**
 	 * Create a new Kloster with attached Klosterstandort/Klosterorden/Klosterliteratur/Klosterurl
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
-	 * @return void
+	 * @return string kloster uuid
 	 */
 	public function createAction() {
 
-		$kloster = new Kloster();
-		$kloster->setUid($this->getLastKlosterIdAction());
+		$lastKlosterId = $this->getLastKlosterIdAction();
 
-		// Add Kloster
-		$kloster->setKloster( $this->request->getArgument('kloster_name') );
-		$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
-		$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
-		$kloster->setBand_seite( $this->request->getArgument('band_seite') );
-		$kloster->setText_gs_band( $this->request->getArgument('text_gs_band') );
-		$kloster->setBearbeitungsstand( $this->request->getArgument('bearbeitungsstand') );
+		if (!empty($lastKlosterId)) {
 
-		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
-		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
-		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
+			$kloster = new Kloster();
 
-		$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
-		$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
-		$kloster->setBearbeiter($bearbeiter);
+			$kloster->setUid($lastKlosterId);
+			$kloster->setKloster_id($lastKlosterId);
 
-		$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier('2378f34a-e3fe-b431-30ef-2f2b9b414b5b');
-		$kloster->setPersonallistenstatus($personallistenstatus);
+			// Add Kloster
+			$kloster->setKloster( $this->request->getArgument('kloster_name') );
+			$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
+			$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
+			$kloster->setBand_seite( $this->request->getArgument('band_seite') );
+			$kloster->setText_gs_band( $this->request->getArgument('text_gs_band') );
+			$kloster->setBearbeitungsstand( $this->request->getArgument('bearbeitungsstand') );
 
-		$band_uuid = $this->request->getArgument('band');
+			$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
+			$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
+			$kloster->setBearbeitungsstatus($bearbeitungsstatus);
 
-		if (isset($band_uuid) && !empty($band_uuid)) {
-			$band = $this->bandRepository->findByIdentifier($band_uuid);
-			$kloster->setBand($band);
-		}
-		$this->klosterRepository->add($kloster);
-		$uuid = $kloster->getUUID();
+			$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
+			$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
+			$kloster->setBearbeiter($bearbeiter);
 
-		// Add Klosterstandort
-		$ortArr = $this->request->getArgument('ort');
-		$bistumArr = $this->request->getArgument('bistum');
-		$gruenderArr = $this->request->getArgument('gruender');
-		$breiteArr = $this->request->getArgument('breite');
-		$laengeArr = $this->request->getArgument('laenge');
-		$bemerkungArr = $this->request->getArgument('bemerkung_standort');
-		$bemerkung_standortArr = $this->request->getArgument('bemerkung_standort');
-		if ($this->request->hasArgument('temp_literatur_alt')) {
-			$temp_literatur_altArr = $this->request->getArgument('temp_literatur_alt');
-		}
-		$von_vonArr = $this->request->getArgument('von_von');
-		$von_bisArr = $this->request->getArgument('von_bis');
-		$von_verbalArr = $this->request->getArgument('von_verbal');
-		$bis_vonArr = $this->request->getArgument('bis_von');
-		$bis_bisArr = $this->request->getArgument('bis_bis');
-		$bis_verbalArr = $this->request->getArgument('bis_verbal');
-		if ($this->request->hasArgument('wuestung')) {
-			$wuestungArr = $this->request->getArgument('wuestung');
-		}
-		$klosterstandortNumber = count($ortArr);
-		$klosterstandortArr = array();
+			$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier('2378f34a-e3fe-b431-30ef-2f2b9b414b5b');
+			$kloster->setPersonallistenstatus($personallistenstatus);
 
-		for ($i = 0; $i < $klosterstandortNumber; $i++) {
-			$klosterstandortArr[$i]['kloster'] = $uuid;
-			$klosterstandortArr[$i]['ort'] = $ortArr[$i];
-			$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
-			$klosterstandortArr[$i]['gruender'] = $gruenderArr[$i];
-			$klosterstandortArr[$i]['breite'] = $breiteArr[$i];
-			$klosterstandortArr[$i]['laenge'] = $laengeArr[$i];
-			$klosterstandortArr[$i]['bemerkung'] = $bemerkungArr[$i];
-			$klosterstandortArr[$i]['bemerkung_standort'] = $bemerkung_standortArr[$i];
-			if (isset($klosterstandortArr[$i]['temp_literatur_alt']) && !empty($klosterstandortArr[$i]['temp_literatur_alt'])) {
-				$klosterstandortArr[$i]['temp_literatur_alt'] = $temp_literatur_altArr[$i];
+			$band_uuid = $this->request->getArgument('band');
+
+			if (isset($band_uuid) && !empty($band_uuid)) {
+				$band = $this->bandRepository->findByIdentifier($band_uuid);
+				$kloster->setBand($band);
 			}
-			$klosterstandortArr[$i]['von_von'] = $von_vonArr[$i];
-			$klosterstandortArr[$i]['von_bis'] = $von_bisArr[$i];
-			$klosterstandortArr[$i]['von_verbal'] = $von_verbalArr[$i];
-			$klosterstandortArr[$i]['bis_von'] = $bis_vonArr[$i];
-			$klosterstandortArr[$i]['bis_bis'] = $bis_bisArr[$i];
-			$klosterstandortArr[$i]['bis_verbal'] = $bis_verbalArr[$i];
-			if (isset($wuestungArr[$i]) && !empty($wuestungArr[$i])) {
-				$klosterstandortArr[$i]['wuestung'] = 1;
-			} else {
-				$klosterstandortArr[$i]['wuestung'] = 0;
+			$this->klosterRepository->add($kloster);
+			$uuid = $kloster->getUUID();
+
+			// Add Klosterstandort
+			$ortArr = $this->request->getArgument('ort');
+			$bistumArr = $this->request->getArgument('bistum');
+			$gruenderArr = $this->request->getArgument('gruender');
+			$breiteArr = $this->request->getArgument('breite');
+			$laengeArr = $this->request->getArgument('laenge');
+			$bemerkungArr = $this->request->getArgument('bemerkung_standort');
+			$bemerkung_standortArr = $this->request->getArgument('bemerkung_standort');
+			if ($this->request->hasArgument('temp_literatur_alt')) {
+				$temp_literatur_altArr = $this->request->getArgument('temp_literatur_alt');
 			}
-		}
-
-		$lastKlosterstandortId = $this->getLastKlosterstandortIdAction();
-		foreach ($klosterstandortArr as $ko) {
-			$klosterstandort = new Klosterstandort();
-			$kloster_uuid = $ko['kloster'];
-			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
-
-			$klosterstandort->setUid(++$lastKlosterstandortId);
-
-			$klosterstandort->setKloster($kloster);
-			$ort_uuid = $ko['ort'];
-			$ort = $this->ortRepository->findByIdentifier($ort_uuid);
-			$klosterstandort->setOrt($ort);
-			$klosterstandort->setGruender($ko['gruender']);
-			$klosterstandort->setBreite($ko['breite']);
-			$klosterstandort->setLaenge($ko['laenge']);
-			$klosterstandort->setBemerkung($ko['bemerkung']);
-			$klosterstandort->setBemerkung_standort($ko['bemerkung_standort']);
-
-			if (isset($ko['temp_literatur_alt']) && !empty($ko['temp_literatur_alt'])) {
-				$klosterstandort->setTemp_literatur_alt($ko['temp_literatur_alt']);
+			$von_vonArr = $this->request->getArgument('von_von');
+			$von_bisArr = $this->request->getArgument('von_bis');
+			$von_verbalArr = $this->request->getArgument('von_verbal');
+			$bis_vonArr = $this->request->getArgument('bis_von');
+			$bis_bisArr = $this->request->getArgument('bis_bis');
+			$bis_verbalArr = $this->request->getArgument('bis_verbal');
+			if ($this->request->hasArgument('wuestung')) {
+				$wuestungArr = $this->request->getArgument('wuestung');
 			}
-			$klosterstandort->setVon_von($ko['von_von']);
-			$klosterstandort->setVon_bis($ko['von_bis']);
-			$klosterstandort->setVon_verbal($ko['von_verbal']);
-			$klosterstandort->setBis_von($ko['bis_von']);
-			$klosterstandort->setBis_bis($ko['bis_bis']);
-			$klosterstandort->setBis_verbal($ko['bis_verbal']);
-			$this->klosterstandortRepository->add($klosterstandort);
-			$ort->setWuestung($ko['wuestung']);
+			$klosterstandortNumber = count($ortArr);
+			$klosterstandortArr = array();
 
-			$bistumObject = $this->bistumRepository->findByIdentifier($ko['bistum']);
-			if (is_object($bistumObject)) {
-				$ort->setBistum($bistumObject);
-			}
-
-			$this->ortRepository->update($ort);
-		}
-
-		// Add Orden
-		$ordenArr = $this->request->getArgument('orden');
-		$orden_von_vonArr = $this->request->getArgument('orden_von_von');
-		$orden_von_bisArr = $this->request->getArgument('orden_von_bis');
-		$orden_von_verbalArr = $this->request->getArgument('orden_von_verbal');
-		$orden_bis_vonArr = $this->request->getArgument('orden_bis_von');
-		$orden_bis_bisArr = $this->request->getArgument('orden_bis_bis');
-		$orden_bis_verbalArr = $this->request->getArgument('orden_bis_verbal');
-		$klosterstatusArr = $this->request->getArgument('klosterstatus');
-		$bemerkung_ordenArr = $this->request->getArgument('bemerkung_orden');
-		$klosterordenNumber = count($ordenArr);
-		$klosterordenArr = array();
-		for ($i = 0; $i < $klosterordenNumber; $i++) {
-			$klosterordenArr[$i]['kloster'] = $uuid;
-			$klosterordenArr[$i]['orden'] = $ordenArr[$i];
-			$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
-			$klosterordenArr[$i]['bemerkung_orden'] = $bemerkung_ordenArr[$i];
-			$klosterordenArr[$i]['orden_von_von'] = $orden_von_vonArr[$i];
-			$klosterordenArr[$i]['orden_von_bis'] = $orden_von_bisArr[$i];
-			$klosterordenArr[$i]['orden_von_verbal'] = $orden_von_verbalArr[$i];
-			$klosterordenArr[$i]['orden_bis_von'] = $orden_bis_vonArr[$i];
-			$klosterordenArr[$i]['orden_bis_bis'] = $orden_bis_bisArr[$i];
-			$klosterordenArr[$i]['orden_bis_verbal'] = $orden_bis_verbalArr[$i];
-		}
-
-		$lastKlosterordentId = $this->getLastKlosterordenIdAction();
-		foreach ($klosterordenArr as $ko) {
-			$klosterorden = new Klosterorden();
-			$kloster_uuid = $ko['kloster'];
-			$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
-			$klosterorden->setUid(++$lastKlosterordentId);
-			$klosterorden->setKloster($kloster);
-			$klosterorden->setVon_von($ko['orden_von_von']);
-			$klosterorden->setVon_bis($ko['orden_von_bis']);
-			$klosterorden->setVon_verbal($ko['orden_von_verbal']);
-			$klosterorden->setBis_von($ko['orden_bis_von']);
-			$klosterorden->setBis_bis($ko['orden_bis_bis']);
-			$klosterorden->setBis_verbal($ko['orden_bis_verbal']);
-			$orden_uuid = $ko['orden'];
-			$orden = $this->ordenRepository->findByIdentifier($orden_uuid);
-			$klosterorden->setOrden($orden);
-			$klosterstatus_uuid = $ko['klosterstatus'];
-			$klosterstatus = $this->klosterstatusRepository->findByIdentifier($klosterstatus_uuid);
-			$klosterorden->setKlosterstatus($klosterstatus);
-			$klosterorden->setBemerkung($ko['bemerkung_orden']);
-			$this->klosterordenRepository->add($klosterorden);
-		}
-
-		if ($this->request->hasArgument('literatur')) {
-			$kloster_uuid = $uuid;
-			$literaturArr = $this->request->getArgument('literatur');
-
-			if (is_array(($laengeArr) && !empty($literaturArr))) {
-				foreach ($literaturArr as $lit) {
-					$klosterHasLiteratur = new KlosterHasLiteratur();
-					$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
-					$literatur = $this->literaturRepository->findByIdentifier($lit);
-					$klosterHasLiteratur->setKloster($kloster);
-					$klosterHasLiteratur->setLiteratur($literatur);
-					$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+			for ($i = 0; $i < $klosterstandortNumber; $i++) {
+				$klosterstandortArr[$i]['kloster'] = $uuid;
+				$klosterstandortArr[$i]['ort'] = $ortArr[$i];
+				$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
+				$klosterstandortArr[$i]['gruender'] = $gruenderArr[$i];
+				$klosterstandortArr[$i]['breite'] = $breiteArr[$i];
+				$klosterstandortArr[$i]['laenge'] = $laengeArr[$i];
+				$klosterstandortArr[$i]['bemerkung'] = $bemerkungArr[$i];
+				$klosterstandortArr[$i]['bemerkung_standort'] = $bemerkung_standortArr[$i];
+				if (isset($klosterstandortArr[$i]['temp_literatur_alt']) && !empty($klosterstandortArr[$i]['temp_literatur_alt'])) {
+					$klosterstandortArr[$i]['temp_literatur_alt'] = $temp_literatur_altArr[$i];
+				}
+				$klosterstandortArr[$i]['von_von'] = $von_vonArr[$i];
+				$klosterstandortArr[$i]['von_bis'] = $von_bisArr[$i];
+				$klosterstandortArr[$i]['von_verbal'] = $von_verbalArr[$i];
+				$klosterstandortArr[$i]['bis_von'] = $bis_vonArr[$i];
+				$klosterstandortArr[$i]['bis_bis'] = $bis_bisArr[$i];
+				$klosterstandortArr[$i]['bis_verbal'] = $bis_verbalArr[$i];
+				if (isset($wuestungArr[$i]) && !empty($wuestungArr[$i])) {
+					$klosterstandortArr[$i]['wuestung'] = 1;
+				} else {
+					$klosterstandortArr[$i]['wuestung'] = 0;
 				}
 			}
-		}
 
-		// Add GND if set
-		if ($this->request->hasArgument('gnd')) {
-			$gnd = $this->request->getArgument('gnd');
-			if (isset($gnd) && !empty($gnd)) {
-				$url = new Url();
-				$url->setUrl($gnd);
-				$urlTypObj = $this->urltypRepository->findOneByName('GND');
-				$url->setUrltyp($urlTypObj);
-				$this->urlRepository->add($url);
-				$urlUUID = $url->getUUID();
-				$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
-				$klosterhasurl = new KlosterHasUrl();
-				$klosterhasurl->setKloster($kloster);
-				$klosterhasurl->setUrl($urlObj);
-				$this->klosterHasUrlRepository->add($klosterhasurl);
-			}
-		}
+			$lastKlosterstandortId = $this->getLastKlosterstandortIdAction();
+			foreach ($klosterstandortArr as $ko) {
+				$klosterstandort = new Klosterstandort();
+				$kloster_uuid = $ko['kloster'];
+				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 
-		// Add Wikipedia if set
-		if ($this->request->hasArgument('wikipedia')) {
-			$wikipedia = $this->request->getArgument('wikipedia');
-			if (isset($wikipedia) && !empty($wikipedia)) {
-				$url = new Url();
-				$url->setUrl($wikipedia);
-				$urlTypObj = $this->urltypRepository->findOneByName('Wikipedia');
-				$url->setUrltyp($urlTypObj);
-				$this->urlRepository->add($url);
-				$urlUUID = $url->getUUID();
-				$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
-				$klosterhasurl = new KlosterHasUrl();
-				$klosterhasurl->setKloster($kloster);
-				$klosterhasurl->setUrl($urlObj);
-				$this->klosterHasUrlRepository->add($klosterhasurl);
-			}
-		}
+				$klosterstandort->setUid(++$lastKlosterstandortId);
 
-		// Add Url if set
-		if ($this->request->hasArgument('url')) {
-			$urlArr = $this->request->getArgument('url');
-			if (isset($urlArr) && !empty($urlArr)) {
-				if ($this->request->hasArgument('url_typ')) {
-					$urlTypArr = $this->request->getArgument('url_typ');
+				$klosterstandort->setKloster($kloster);
+				$ort_uuid = $ko['ort'];
+				$ort = $this->ortRepository->findByIdentifier($ort_uuid);
+				$klosterstandort->setOrt($ort);
+				$klosterstandort->setGruender($ko['gruender']);
+				$klosterstandort->setBreite($ko['breite']);
+				$klosterstandort->setLaenge($ko['laenge']);
+				$klosterstandort->setBemerkung($ko['bemerkung']);
+				$klosterstandort->setBemerkung_standort($ko['bemerkung_standort']);
+
+				if (isset($ko['temp_literatur_alt']) && !empty($ko['temp_literatur_alt'])) {
+					$klosterstandort->setTemp_literatur_alt($ko['temp_literatur_alt']);
+				}
+				$klosterstandort->setVon_von($ko['von_von']);
+				$klosterstandort->setVon_bis($ko['von_bis']);
+				$klosterstandort->setVon_verbal($ko['von_verbal']);
+				$klosterstandort->setBis_von($ko['bis_von']);
+				$klosterstandort->setBis_bis($ko['bis_bis']);
+				$klosterstandort->setBis_verbal($ko['bis_verbal']);
+				$this->klosterstandortRepository->add($klosterstandort);
+				$ort->setWuestung($ko['wuestung']);
+
+				$bistumObject = $this->bistumRepository->findByIdentifier($ko['bistum']);
+				if (is_object($bistumObject)) {
+					$ort->setBistum($bistumObject);
 				}
 
-				if ($this->request->hasArgument('links_label')) {
-					$linksLabelArr = $this->request->getArgument('links_label');
-				}
+				$this->ortRepository->update($ort);
+			}
 
-				if ((isset($urlArr) && !empty($urlArr)) && (isset($urlTypArr) && !empty($urlTypArr))) {
-					foreach ($urlArr as $k => $url) {
-						$urlObj = new Url();
-						$urlObj->setUrl($url);
-						if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
-							$urlObj->setBemerkung($linksLabelArr[$k]);
-						}
-						$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
-						$urlObj->setUrltyp($urlTypObj);
-						$this->urlRepository->add($urlObj);
-						$klosterhasurlObj = new KlosterHasUrl();
-						$klosterhasurlObj->setKloster($kloster);
-						$klosterhasurlObj->setUrl($urlObj);
-						$this->klosterHasUrlRepository->add($klosterhasurlObj);
+			// Add Orden
+			$ordenArr = $this->request->getArgument('orden');
+			$orden_von_vonArr = $this->request->getArgument('orden_von_von');
+			$orden_von_bisArr = $this->request->getArgument('orden_von_bis');
+			$orden_von_verbalArr = $this->request->getArgument('orden_von_verbal');
+			$orden_bis_vonArr = $this->request->getArgument('orden_bis_von');
+			$orden_bis_bisArr = $this->request->getArgument('orden_bis_bis');
+			$orden_bis_verbalArr = $this->request->getArgument('orden_bis_verbal');
+			$klosterstatusArr = $this->request->getArgument('klosterstatus');
+			$bemerkung_ordenArr = $this->request->getArgument('bemerkung_orden');
+			$klosterordenNumber = count($ordenArr);
+			$klosterordenArr = array();
+			for ($i = 0; $i < $klosterordenNumber; $i++) {
+				$klosterordenArr[$i]['kloster'] = $uuid;
+				$klosterordenArr[$i]['orden'] = $ordenArr[$i];
+				$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
+				$klosterordenArr[$i]['bemerkung_orden'] = $bemerkung_ordenArr[$i];
+				$klosterordenArr[$i]['orden_von_von'] = $orden_von_vonArr[$i];
+				$klosterordenArr[$i]['orden_von_bis'] = $orden_von_bisArr[$i];
+				$klosterordenArr[$i]['orden_von_verbal'] = $orden_von_verbalArr[$i];
+				$klosterordenArr[$i]['orden_bis_von'] = $orden_bis_vonArr[$i];
+				$klosterordenArr[$i]['orden_bis_bis'] = $orden_bis_bisArr[$i];
+				$klosterordenArr[$i]['orden_bis_verbal'] = $orden_bis_verbalArr[$i];
+			}
+
+			$lastKlosterordentId = $this->getLastKlosterordenIdAction();
+			foreach ($klosterordenArr as $ko) {
+				$klosterorden = new Klosterorden();
+				$kloster_uuid = $ko['kloster'];
+				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+				$klosterorden->setUid(++$lastKlosterordentId);
+				$klosterorden->setKloster($kloster);
+				$klosterorden->setVon_von($ko['orden_von_von']);
+				$klosterorden->setVon_bis($ko['orden_von_bis']);
+				$klosterorden->setVon_verbal($ko['orden_von_verbal']);
+				$klosterorden->setBis_von($ko['orden_bis_von']);
+				$klosterorden->setBis_bis($ko['orden_bis_bis']);
+				$klosterorden->setBis_verbal($ko['orden_bis_verbal']);
+				$orden_uuid = $ko['orden'];
+				$orden = $this->ordenRepository->findByIdentifier($orden_uuid);
+				$klosterorden->setOrden($orden);
+				$klosterstatus_uuid = $ko['klosterstatus'];
+				$klosterstatus = $this->klosterstatusRepository->findByIdentifier($klosterstatus_uuid);
+				$klosterorden->setKlosterstatus($klosterstatus);
+				$klosterorden->setBemerkung($ko['bemerkung_orden']);
+				$this->klosterordenRepository->add($klosterorden);
+			}
+
+			if ($this->request->hasArgument('literatur')) {
+				$kloster_uuid = $uuid;
+				$literaturArr = $this->request->getArgument('literatur');
+
+				if (is_array(($laengeArr) && !empty($literaturArr))) {
+					foreach ($literaturArr as $lit) {
+						$klosterHasLiteratur = new KlosterHasLiteratur();
+						$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+						$literatur = $this->literaturRepository->findByIdentifier($lit);
+						$klosterHasLiteratur->setKloster($kloster);
+						$klosterHasLiteratur->setLiteratur($literatur);
+						$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
 					}
 				}
-
 			}
+
+			// Add GND if set
+			if ($this->request->hasArgument('gnd')) {
+				$gnd = $this->request->getArgument('gnd');
+				if (isset($gnd) && !empty($gnd)) {
+					$url = new Url();
+					$url->setUrl($gnd);
+					if ($this->request->hasArgument('gnd_label')) {
+						$gnd_label = $this->request->getArgument('gnd_label');
+					}
+					if (empty($gnd_label)) {
+						$gndid = str_replace('http://d-nb.info/gnd/', '', trim($gnd));
+						$gnd_label = $kloster . ' [' . $gndid . ']';
+					}
+					if (!empty($gnd_label)) {
+						$url->setBemerkung($gnd_label);
+					}
+					$urlTypObj = $this->urltypRepository->findOneByName('GND');
+					$url->setUrltyp($urlTypObj);
+					$this->urlRepository->add($url);
+					$urlUUID = $url->getUUID();
+					$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
+					$klosterhasurl = new KlosterHasUrl();
+					$klosterhasurl->setKloster($kloster);
+					$klosterhasurl->setUrl($urlObj);
+					$this->klosterHasUrlRepository->add($klosterhasurl);
+				}
+			}
+
+			// Add Wikipedia if set
+			if ($this->request->hasArgument('wikipedia')) {
+				$wikipedia = $this->request->getArgument('wikipedia');
+				if (isset($wikipedia) && !empty($wikipedia)) {
+					$url = new Url();
+					$url->setUrl($wikipedia);
+					if ($this->request->hasArgument('wikipedia_label')) {
+						$wikipedia_label = $this->request->getArgument('wikipedia_label');
+					}
+					if (empty($wikipedia_label)) {
+						$wikipedia_label = str_replace('http://de.wikipedia.org/wiki/', '', trim($wikipedia));
+						$wikipedia_label = str_replace('_', ' ', $wikipedia_label);
+						$wikipedia_label = rawurldecode($wikipedia_label);
+					}
+					if (!empty($wikipedia_label)) {
+						$url->setBemerkung($wikipedia_label);
+					}
+					$urlTypObj = $this->urltypRepository->findOneByName('Wikipedia');
+					$url->setUrltyp($urlTypObj);
+					$this->urlRepository->add($url);
+					$urlUUID = $url->getUUID();
+					$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
+					$klosterhasurl = new KlosterHasUrl();
+					$klosterhasurl->setKloster($kloster);
+					$klosterhasurl->setUrl($urlObj);
+					$this->klosterHasUrlRepository->add($klosterhasurl);
+				}
+			}
+
+			// Add Url if set
+			if ($this->request->hasArgument('url')) {
+				$urlArr = $this->request->getArgument('url');
+				if (isset($urlArr) && $urlArr !== array()) {
+					if ($this->request->hasArgument('url_typ')) {
+						$urlTypArr = $this->request->getArgument('url_typ');
+					}
+
+					if ($this->request->hasArgument('links_label')) {
+						$linksLabelArr = $this->request->getArgument('links_label');
+					}
+
+					if ((isset($urlArr) && !empty($urlArr)) && (isset($urlTypArr) && !empty($urlTypArr))) {
+						foreach ($urlArr as $k => $url) {
+							if (!empty($url)) {
+								$urlObj = new Url();
+								$urlObj->setUrl($url);
+								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
+									$urlObj->setBemerkung($linksLabelArr[$k]);
+								}
+								$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
+								$urlObj->setUrltyp($urlTypObj);
+								$this->urlRepository->add($urlObj);
+								$klosterhasurlObj = new KlosterHasUrl();
+								$klosterhasurlObj->setKloster($kloster);
+								$klosterhasurlObj->setUrl($urlObj);
+								$this->klosterHasUrlRepository->add($klosterhasurlObj);
+
+							}
+						}
+					}
+
+				}
+			}
+
+			return json_encode($uuid);
 		}
-
-
-		$status = 201;
-		return json_encode(array($uuid));
+		else {
+			$error = "Kloster id konnte nicht gesetzt werden.";
+			return $error;
+		}
 	}
 
 	/**
 	 * @FLOW\SkipCsrfProtection
 	 * @return $kloster_id The id of the kloster in json format
 	 */
-	public function addKlosterIdAction() {
-		$uuid = $this->request->getArgument('uuid');
-		$klosterObject = $this->klosterRepository->findByIdentifier($uuid);
-		$kloster_uid = $klosterObject->getUid();
-		$klosterObject->setKloster_id($kloster_uid);
-		$this->klosterRepository->update($klosterObject);
-		$this->persistenceManager->persistAll();
-		return json_encode(array($uuid));
+	public function solrUpdateWhenKlosterCreateAction() {
+		if ($this->request->hasArgument('uuid')) {
+			$uuid = $this->request->getArgument('uuid');
+			return json_decode($uuid);
+		}
 	}
 
 	/**
@@ -832,9 +864,16 @@ class KlosterController extends ActionController {
 			$url_bemerkung = $urlObj->getBemerkung();
 			if ($url !== 'keine Angabe') {
 				$urlTypObj = $urlObj->getUrltyp();
-				$urlTyp = $urlTypObj->getUUID();
-				$urlTypName = $urlTypObj->getName();
-				$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
+				if (is_object($urlTypObj)) {
+					$urlTyp = $urlTypObj->getUUID();
+					$urlTypName = $urlTypObj->getName();
+					if ($urlTypName == 'GND' || $urlTypName == 'Wikipedia') {
+						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
+					}
+					else {
+						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'links_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
+					}
+				}
 			}
 		}
 		$klosterArr['url'] = $Urls;
@@ -1159,6 +1198,11 @@ class KlosterController extends ActionController {
 				$gnd_label = $this->request->getArgument('gnd_label');
 			}
 
+			if (empty($gnd_label)) {
+				$gndid = str_replace('http://d-nb.info/gnd/', '', trim($gnd));
+				$gnd_label = $kloster . ' [' . $gndid . ']';
+			}
+
 			if (isset($gnd) && !empty($gnd)) {
 				foreach ($klosterHasUrls as $i => $klosterHasUrl) {
 					$urlObj = $klosterHasUrl->getUrl();
@@ -1197,6 +1241,17 @@ class KlosterController extends ActionController {
 		$klosterHasWiki = false;
 		if ($this->request->hasArgument('wikipedia')) {
 			$wikipedia = $this->request->getArgument('wikipedia');
+
+			if ($this->request->hasArgument('wikipedia_label')) {
+				$wikipedia_label = $this->request->getArgument('wikipedia_label');
+			}
+
+			if (empty($wikipedia_label)) {
+				$wikipedia_label = str_replace('http://de.wikipedia.org/wiki/', '', trim($wikipedia));
+				$wikipedia_label = str_replace('_', ' ', $wikipedia_label);
+				$wikipedia_label = rawurldecode($wikipedia_label);
+			}
+
 			if (isset($wikipedia) && !empty($wikipedia)) {
 				foreach ($klosterHasUrls as $i => $klosterHasUrl) {
 					$urlObj = $klosterHasUrl->getUrl();
@@ -1205,6 +1260,9 @@ class KlosterController extends ActionController {
 					$urlTyp = $urlTypObj->getName();
 					if ($urlTyp == "Wikipedia") {
 						$urlObj->setUrl($wikipedia);
+						if (!empty($wikipedia_label)) {
+							$urlObj->setBemerkung($wikipedia_label);
+						}
 						$this->urlRepository->update($urlObj);
 						$klosterHasWiki = true;
 					}
@@ -1212,6 +1270,9 @@ class KlosterController extends ActionController {
 				if (!$klosterHasWiki) {
 					$url = new Url();
 					$url->setUrl($wikipedia);
+					if (!empty($wikipedia_label)) {
+						$url->setBemerkung($wikipedia_label);
+					}
 					$urlTypObj = $this->urltypRepository->findOneByName('Wikipedia');
 					$url->setUrltyp($urlTypObj);
 					$this->urlRepository->add($url);
@@ -1244,33 +1305,43 @@ class KlosterController extends ActionController {
 						$urlTypObj = $urlObj->getUrltyp();
 						$urlTyp = $urlTypObj->getName();
 						if ($urlTyp != "Wikipedia" && $urlTyp != "GND") {
-							$this->urlRepository->remove($urlObj);
 							$this->klosterHasUrlRepository->remove($klosterHasUrl);
+							$this->urlRepository->remove($urlObj);
 						}
-				}
+					}
 
 					foreach ($urlArr as $k => $url) {
-						$urlObj = new Url();
-						$urlObj->setUrl($url);
-						if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
-							$urlObj->setBemerkung($linksLabelArr[$k]);
+						if (!empty($url)) {
+							$urlObj = new Url();
+							$urlObj->setUrl($url);
+							if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
+								$urlObj->setBemerkung($linksLabelArr[$k]);
+							}
+							$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
+							$urlObj->setUrltyp($urlTypObj);
+							$this->urlRepository->add($urlObj);
+							$klosterhasurlObj = new KlosterHasUrl();
+							$klosterhasurlObj->setKloster($kloster);
+							$klosterhasurlObj->setUrl($urlObj);
+							$this->klosterHasUrlRepository->add($klosterhasurlObj);
 						}
-						$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
-						$urlObj->setUrltyp($urlTypObj);
-						$this->urlRepository->add($urlObj);
-						$klosterhasurlObj = new KlosterHasUrl();
-						$klosterhasurlObj->setKloster($kloster);
-						$klosterhasurlObj->setUrl($urlObj);
-						$this->klosterHasUrlRepository->add($klosterhasurlObj);
 					}
 				}
-
 			}
 		}
 
-		$status = 200;
-		return json_encode(array($status));
+		return json_encode($id);
+	}
 
+	/**
+	* Updates the updated entries in Solr
+	* @FLOW\SkipCsrfProtection
+	*/
+	public function updateSolrAfterKlosterUpdateAction() {
+		if ($this->request->hasArgument('uuid')) {
+			$uuid = $this->request->getArgument('uuid');
+			return json_decode($uuid);
+		}
 	}
 
 	/**

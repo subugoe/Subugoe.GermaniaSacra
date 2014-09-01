@@ -152,7 +152,7 @@ $.fn.update_list = function() {
   });
 };
 
-$.fn.delete_kloster = function(url, csrf) {
+$.fn.delete_kloster = function(url) {
   var $this, check;
   $this = $(this);
   check = confirm('Wollen Sie diesen Eintrag wirklich löschen?');
