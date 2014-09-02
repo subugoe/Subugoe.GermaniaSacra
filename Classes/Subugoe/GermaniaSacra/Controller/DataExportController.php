@@ -85,23 +85,11 @@ class DataExportController extends ActionController {
 								'host' => $this->settings['solr']['host'],
 								'port' => $this->settings['solr']['port'],
 								'path' => $this->settings['solr']['path'],
+								'core' => $this->settings['solr']['core'],
 								'timeout' => $this->settings['solr']['timeout']
 						)
 				),
 		);
-
-		$this->client = new \Solarium\Client($this->configuration);
-		$this->client->setAdapter('Solarium\Core\Client\Adapter\Http');
-
-		$personenFile = FLOW_PATH_DATA . 'GermaniaSacra/personen.json';
-
-		try {
-			file_put_contents($personenFile, fopen(self::PERSONEN_URL, 'r'));
-		} catch (\Exception $e) {
-			$this->logger->logException($e);
-		}
-
-		$this->personen = json_decode(file_get_contents($personenFile), true);
 
 		if (!$this->logger) {
 			$log = new \TYPO3\Flow\Log\LoggerFactory();
@@ -116,6 +104,20 @@ class DataExportController extends ActionController {
 					)
 			);
 		}
+
+		$this->client = new \Solarium\Client($this->configuration);
+		$this->client->setAdapter('Solarium\Core\Client\Adapter\Http');
+
+		$personenFile = FLOW_PATH_DATA . 'GermaniaSacra/personen.json';
+
+		try {
+			file_put_contents($personenFile, fopen(self::PERSONEN_URL, 'r'));
+		} catch (\Exception $e) {
+			$this->logger->logException($e);
+		}
+
+		$this->personen = json_decode(file_get_contents($personenFile), true);
+
 	}
 
 	public function deleteAction() {
@@ -421,6 +423,7 @@ class DataExportController extends ActionController {
 								$von_bis = $von_von;
 							} else {
 								$von_vonArr[] = self::DISTANT_PAST;
+								$von_von = self::DISTANT_PAST;
 								$von_bisArr[] = self::DISTANT_PAST;
 								$von_bis = self::DISTANT_PAST;
 							}
@@ -744,6 +747,7 @@ class DataExportController extends ActionController {
 							$ko_von_bis = $ko_von_von;
 						} else {
 							$ko_von_vonArr[] = self::DISTANT_PAST;
+							$ko_von_von = self::DISTANT_PAST;
 							$ko_von_bisArr[] = self::DISTANT_PAST;
 							$ko_von_bis = self::DISTANT_PAST;
 						}
@@ -1403,6 +1407,7 @@ class DataExportController extends ActionController {
 			exit;
 		}
 	}
+
 }
 
 ?>
