@@ -72,8 +72,9 @@ class Ort {
 	protected $bistum;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl
-	 * @ORM\OneToMany(mappedBy="ort")
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
+	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
+	* @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $ortHasUrls;
 

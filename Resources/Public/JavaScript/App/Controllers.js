@@ -37,7 +37,7 @@ germaniaSacra.controller('listController', function($scope, $http, DTOptionsBuil
       }
     }
     changes.__csrfToken = $('#__csrfToken').val();
-    return $http.post('subugoe.germaniasacra/' + entityName + '/update', changes).error(function(data) {
+    return $http.post('subugoe.germaniasacra/' + entityName + '/listupdate', changes).error(function(data) {
       return $scope.message = 'ERROR';
     }).success(function(data) {
       return $scope.message = 'Änderungen gespeichert.';
