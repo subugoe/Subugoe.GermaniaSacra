@@ -6,14 +6,6 @@ $ ->
 	# TODO: Why is this function called even if there is no #list_form element?
 	if $("#list_form").length then $("#list_form").populate_list()
 
-	$(".edit").click (e) ->
-		e.preventDefault()
-		$("#edit_form").read_kloster $(this).attr("href")
-
-	$(".delete").click (e) ->
-		e.preventDefault()
-		$("#delete").delete_kloster $(this).attr("href")
-
 	$("#list_form").submit (e) ->
 		e.preventDefault()
 		if $("input[name^='uuid']:checked").length is 0
@@ -31,98 +23,94 @@ $.fn.populate_list = ->
 	$this.hide()
 	$('#loading').show()
 
-	$.getJSON "/_Resources/Static/Packages/Subugoe.GermaniaSacra/Data/kloster.json", (response) ->
+	$table = $this.find("table:eq(0)")
 
-		$this.show()
-		$('#loading').hide()
+	# Add a text input to each header cell used for search
+	$table.find("thead th").not(":first").not(":last").each ->
+		$(this).append '<div><input type="text"></div>'
 
-		# Fill "Status" select fields
-		bearbeitungsstatusArray = response[1]
-		$inputBearbeitungsstatus = $("select[name='bearbeitungsstatus']")
-		$inputBearbeitungsstatus.empty()
-		$.each bearbeitungsstatusArray, (k, v) ->
-			$.each v, (k1, v1) ->
-				$inputBearbeitungsstatus.append $("<option>",
-					value: v1
-					html: k1
-				)
+	$ths = $table.find('th')
+	columns = []
+	$ths.each ->
+		if $(this).data('name')?
+			columns.push
+				data: $(this).data('name')
+	columns.push
+		class: 'no-wrap show-only-on-hover'
+		data: null
+		defaultContent: $ths.last().data('html')
 
-		klosters = response[0]
-
-		$table = $this.find("table:eq(0)")
-		$trTemplate = $table.find("tbody tr:first")
-
-		# Add a text input to each header cell used for search
-		$table.find("thead th").not(":first").not(":last").each ->
-			$(this).append '<div><input type="text"></div>'
-
-		dataTable = $table.DataTable(
-			autoWidth: false
-			columnDefs: [
-				bSortable: false
-				aTargets: [ "no-sorting" ]
-			,
-				width: "10%"
-				targets: 1
-			]
-			dom: "lipt" # 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
-			language:
-				url: "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json"
-			order: [ [ 3, "asc" ] ]
-			fnDrawCallback: ->
-				# Since only visible textareas can be autosized, this has to be called after every page render
-				$table.find("textarea").autosize()
+	selectOptions = {}
+	dataTable = $table.DataTable(
+		#sAjaxSource: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/Data/kloster.json'
+		sAjaxSource: 'klosterListAll'
+		columns: columns
+		autoWidth: false
+		columnDefs: [
+			bSortable: false
+			aTargets: [ "no-sorting" ]
+		,
+			width: "10%"
+			targets: 1
+		]
+		dom: "lipt" # 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
+		language:
+			url: "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json"
+		order: [ [ 3, "asc" ] ]
+		fnServerData: (sSource, aoData, fnCallback, oSettings) ->
+			oSettings.jqXHR = $.ajax
+				dataType: 'json'
+				type: 'GET'
+				url: sSource
+				data: aoData
+				success: [setSelectOptions, fnCallback]
+		fnDrawCallback: ->
+			# Since only visible textareas can be autosized, this has to be called after every page render
+			$tr = $table.find('tbody tr:not(.processed)')
+			$tr.children().each ->
+				$th = $table.find('th[data-name]').eq( $(this).index() )
+				if $th.length
+					$input = $('<' + $th.data('input') + '/>').attr
+						name: $th.data('name')
+					if $th.data('name') is 'bearbeitungsstatus'
+						for obj in selectOptions.bearbeitungsstatus
+							$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
+					$(this).html( $input.val($(this).text()) )
+			$tr.each ->
+				uuid = $(this).find(':input[name=uuid]').val()
+				$(this).find(".edit").attr "href", "edit/" + uuid
+				$(this).find(".delete").attr "href", "delete/" + uuid
+				$(this).find("textarea").autosize()
 				# Mark row as dirty on change
-				$table.find(":input:not(:checkbox)").change ->
+				$(this).find(":input:not(:checkbox)").change ->
 					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
-		)
+			$tr.addClass('processed')
+		setSelectOptions = (json) ->
+			$this.show()
+			$('#loading').hide()
+			selectOptions.bearbeitungsstatus = json.bearbeitungsstatus
+	)
 
-		# Apply the search
-		dataTable.columns().eq(0).each (colIdx) ->
-			$("input", dataTable.column(colIdx).header()).click((e) ->
-				e.stopPropagation()
-			).on "keyup change", ->
-				dataTable.column(colIdx).search(@value).draw()
+	# Click handlers for edit and delete
+	$table.on "click", ".edit", (e) ->
+		e.preventDefault()
+		$("#edit_form").read_kloster $(this).attr("href")
+	$table.on "click", ".delete", (e) ->
+		e.preventDefault()
+		$("#delete").delete_kloster $(this).attr("href")
 
-		# Filter table by "search all" return values
-		$("body").append '<input id="uuid_filter" type="hidden">'
-		$("#uuid_filter").change ->
-			# enable regex, disable smart search (enabling both will not work)
-			dataTable.column(0).search(@value, true, false).draw()
+	# Apply the search
+	dataTable.columns().eq(0).each (colIdx) ->
+		$("input", dataTable.column(colIdx).header()).click((e) ->
+			e.stopPropagation()
+		).on "keyup change", ->
+			dataTable.column(colIdx).search(@value).draw()
 
-		# Fill the DataTable
-		$.each klosters, (index, kloster) ->
-
-			# Clone with triggers for edit and delete
-			$tr = $trTemplate.clone(true)
-			$tr.find(":input").each ->
-
-				name = $(this).attr("name")
-
-				if typeof name is "undefined"
-					return
-
-				val = kloster[name]
-
-				if $(this).is("select")
-					if name is "bearbeitungsstatus"
-						$tr.find("select[name=bearbeitungsstatus] option").each (i, opt) ->
-							if opt.value is val
-								$(opt).attr "selected", "selected"
-					else
-						$(this).append "<option>" + val + "</option>"
-				else if name isnt "__csrfToken"
-					$(this).val val
-
-				$('<span class="val"/>').text(if $(this).is("select") then $(this).find(":selected").text() else $(this).val()).hide().insertBefore $(this)
-
-			$tr.find(".edit").attr "href", "edit/" + kloster.uuid
-			$tr.find(".delete").attr "href", "delete/" + kloster.uuid
-			$tr.find("input.csrf").attr "id", "csrf" + index
-			dataTable.row.add $tr
-
-		# Remove template row and draw table
-		dataTable.row($trTemplate).remove().draw()
+	# Filter table by "search all" return values
+	$("body").append '<input id="uuid_filter" type="hidden">'
+	$("#uuid_filter").change ->
+		# enable regex, disable smart search (enabling both will not work)
+		dataTable.column(0).search(@value, true, false).draw()
 
 	return
 

@@ -29,4 +29,4 @@ $.fn.clear_form = ->
 	$(this).find(":input").prop "disabled", false
 	$(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("")
 	$(this).find(":checkbox, :radio").prop "checked", false
-	$(this).find(".multiple:gt(0)").removeInputs 0
+	$(this).find(".multiple:gt(0)").removeInputs()
