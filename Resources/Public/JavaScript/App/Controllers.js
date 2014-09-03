@@ -18,7 +18,7 @@ germaniaSacra.controller('listController', function($scope, $http, DTOptionsBuil
       return $(this).addClass('processed');
     });
   }).withOption("rowCallback", function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-    $(":input", nRow).bind("change", function() {
+    $(":input:gt(0)", nRow).bind("change", function() {
       $(this).closest('td').addClass('dirty');
       return $scope.$apply(function() {
         return $scope.entities[nRow._DT_RowIndex].selected = true;

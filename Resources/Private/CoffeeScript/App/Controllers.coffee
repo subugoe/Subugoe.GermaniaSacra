@@ -21,7 +21,7 @@ germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTC
 					.insertBefore $(this)
 				$(this).addClass('processed')
 		.withOption "rowCallback", (nRow, aData, iDisplayIndex, iDisplayIndexFull) ->
-			$(":input", nRow).bind "change", ->
+			$(":input:gt(0)", nRow).bind "change", ->
 				$(this).closest('td').addClass('dirty')
 				$scope.$apply ->
 					$scope.entities[nRow._DT_RowIndex].selected = true
