@@ -229,16 +229,16 @@ $.fn.update_kloster = function() {
   $this = $(this);
   url = $this.attr("action");
   return $.post(url, $this.serialize()).done(function(respond, status, jqXHR) {
-	  return $.post("updateSolrAfterKlosterUpdate", {
-	     uuid: respond
-	   }).done(function(respond, status, jqXHR) {
-	     if (status === "success") {
-	       return $this.message('Ihre Änderungen wurden gespeichert.');
-	     }
-	   }).fail(function(jqXHR, textStatus) {
-	     $this.message('Error');
-	     return console.dir(jqXHR.responseText);
-	   });
+    return $.post("updateSolrAfterKlosterUpdate", {
+      uuid: respond
+    }).done(function(respond, status, jqXHR) {
+      if (status === "success") {
+        return $this.message('Ihre Änderungen wurden gespeichert.');
+      }
+    }).fail(function(jqXHR, textStatus) {
+      $this.message('Error');
+      return console.dir(jqXHR.responseText);
+    });
   }).fail(function(jqXHR, textStatus) {
     $this.message('Error');
     return console.dir(jqXHR.responseText);
