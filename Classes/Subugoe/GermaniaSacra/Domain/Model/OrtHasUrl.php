@@ -38,7 +38,6 @@ class OrtHasUrl {
 		$this->ort = $ort;
 	}
 
-
 	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Url
 	 */

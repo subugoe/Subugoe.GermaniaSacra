@@ -15,6 +15,12 @@ class OrtController extends RestController {
 
 	/**
 	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrtRepository
+	 */
+	protected $ortHasUrlRepository;
+
+	/**
+	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\LandRepository
 	 */
 	protected $landRepository;
@@ -24,6 +30,12 @@ class OrtController extends RestController {
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\BistumRepository
 	 */
 	protected $bistumRepository;
+
+	/**
+	* The default argument name.
+	* @var string
+	*/
+	protected $resourceArgumentName = 'ort';
 
 	/**
 	 * @var array
@@ -84,7 +96,6 @@ class OrtController extends RestController {
 		$this->response->setStatus(201);
 	}
 
-
 	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ort $ort
 	 * @return void
@@ -101,6 +112,27 @@ class OrtController extends RestController {
 		$this->ortRepository->remove($ort);
 	}
 
+	/**
+	 * Updates the list of Ort
+	 * @return void
+	 */
+	public function listupdateAction() {
+		$orts = $this->request->getArguments();
+		foreach ($orts as $uuid => $ort) {
+			$ortObj = $this->ortRepository->findByIdentifier($uuid);
+			$ortObj->setOrt($ort['ort']);
+			$ortObj->setGemeinde($ort['gemeinde']);
+			$ortObj->setKreis($ort['kreis']);
+			$ortObj->setBreite($ort['breite']);
+			$ortObj->setLaenge($ort['laenge']);
+			$ortObj->setWuestung($ort['wuestung']);
+			$this->ortRepository->update($ortObj);
+		}
+
+		$this->persistenceManager->persistAll();
+
+		$this->throwStatus(200, NULL, Null);
+	}
 }
 
 ?>

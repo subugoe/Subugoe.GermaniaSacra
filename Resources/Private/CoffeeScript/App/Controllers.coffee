@@ -34,7 +34,7 @@ germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTC
 			if entity.selected
 				changes[entity.uUID] = entity
 		changes.__csrfToken = $('#__csrfToken').val()
-		$http.post('subugoe.germaniasacra/' + entityName + '/update', changes)
+		$http.post('subugoe.germaniasacra/' + entityName + '/listupdate', changes)
 			.error (data) ->
 				# TODO: Error handler
 				$scope.message = 'ERROR'
