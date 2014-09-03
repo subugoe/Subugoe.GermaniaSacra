@@ -310,6 +310,10 @@ class KlosterController extends ActionController {
 	 * @return array $reponse The list of all Kloster in json format
 	 */
 	public function klosterListAllAction() {
+		return $this->klosterListAsJson();
+	}
+
+	public function klosterListAsJson() {
 
 		$this->klosterRepository->setDefaultOrderings(
 				array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)

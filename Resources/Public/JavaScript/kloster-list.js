@@ -30,7 +30,7 @@ $.fn.populate_list = function() {
   $this = $(this);
   $this.hide();
   $('#loading').show();
-  $.getJSON("klosterListAll", function(response) {
+  $.getJSON("/_Resources/Static/Packages/Subugoe.GermaniaSacra/Data/kloster.json", function(response) {
     var $inputBearbeitungsstatus, $table, $trTemplate, bearbeitungsstatusArray, klosters;
     $this.show();
     $('#loading').hide();
@@ -152,7 +152,7 @@ $.fn.update_list = function() {
   });
 };
 
-$.fn.delete_kloster = function(url) {
+$.fn.delete_kloster = function(url, csrf) {
   var $this, check;
   $this = $(this);
   check = confirm('Wollen Sie diesen Eintrag wirklich löschen?');

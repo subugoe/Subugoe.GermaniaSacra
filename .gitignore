@@ -6,3 +6,4 @@ germaniasacra-gh-pages
 Build/.*
 config.rb
 *~
+/Resources/Public/Data/kloster.json
