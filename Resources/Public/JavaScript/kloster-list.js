@@ -42,7 +42,7 @@ $.fn.populate_list = function() {
   });
   selectOptions = {};
   dataTable = $table.DataTable({
-    sAjaxSource: 'klosterListAll',
+    sAjaxSource: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/Data/kloster.json',
     columns: columns,
     autoWidth: false,
     columnDefs: [
