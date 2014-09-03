@@ -69,55 +69,28 @@
 			<table class="large-12 columns display">
 				<thead>
 					<tr>
-						<th class="no-sorting"></th>
-						<th>
+						<th class="no-sorting" data-input="input type='checkbox'" data-name="uuid"></th>
+						<th data-input="textarea disabled" data-name="kloster_id">
 							Kloster-Nr.
 						</th>
-						<th>
+						<th data-input="select" data-name="bearbeitungsstatus">
 							Status
 						</th>
-						<th>
+						<th data-input="textarea" data-name="kloster">
 							Klostername
 						</th>
-						<th>
+						<th data-input="textarea disabled" data-name="ort">
 							Ort
 						</th>
-						<th>
+						<th data-input="textarea" data-name="gnd">
 							GND
 						</th>
-						<th>
+						<th data-input="textarea" data-name="bearbeitungsstand">
 							Bearbeitungsstand
 						</th>
-						<th class="no-sorting"></th>
+						<th class="no-sorting" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
 					</tr>
 				</thead>
-				<tbody>
-					<tr>
-						<td>
-							<input name="uuid" type="checkbox">
-						</td>
-						<td>
-							<textarea name="kloster_id" disabled></textarea>
-						</td>
-						<td>
-							<select name="bearbeitungsstatus"></select>
-						</td>
-						<td><textarea name="kloster"></textarea></td>
-						<td>
-							<textarea name="ort" disabled></textarea>
-						</td>
-						<td>
-							<textarea name="gnd"></textarea>
-						</td>
-						<td>
-							<textarea name="bearbeitungsstand"></textarea>
-						</td>
-						<td class="no-wrap show-only-on-hover">
-							<button class="edit icon-pencil" title="Bearbeiten"></button>
-							<button class="delete icon-trash" title="Löschen"></button>
-						</td>
-					</tr>
-				</tbody>
 			</table>
 		</fieldset>
 		<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
