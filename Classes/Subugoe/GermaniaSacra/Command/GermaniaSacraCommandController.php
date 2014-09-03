@@ -8,6 +8,7 @@ namespace Subugoe\GermaniaSacra\Command;
 
 use Subugoe\GermaniaSacra\Controller\DataImportController;
 use Subugoe\GermaniaSacra\Controller\DataExportController;
+use Subugoe\GermaniaSacra\Controller\KlosterController;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Log\LoggerFactory;
 /**
@@ -122,6 +123,23 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$sqlConnection->executeUpdate($sql);
 		$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
 		$this->logger->log('Import completed in ' . $time . ' seconds.');
+	}
+
+	/**
+	 * Generates json file
+	 *
+	 * @return void
+	 */
+	public function jsonKlosterCommand() {
+		$klosterFile = FLOW_PATH_PACKAGES . 'Application/Subugoe.GermaniaSacra/Resources/Public/Data/kloster.json';
+		try {
+			fopen($klosterFile, 'c+');
+			$klosterController = new KlosterController();
+			file_put_contents($klosterFile, $klosterController->klosterListAsJson());
+		} catch (\Exception $e) {
+			$this->logger->logException($e);
+		}
+		$this->logger->log('Json file generated in ' . $klosterFile);
 	}
 
 }

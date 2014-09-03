@@ -31,7 +31,7 @@ $.fn.populate_list = ->
 	$this.hide()
 	$('#loading').show()
 
-	$.getJSON "klosterListAll", (response) ->
+	$.getJSON "/_Resources/Static/Packages/Subugoe.GermaniaSacra/Data/kloster.json", (response) ->
 
 		$this.show()
 		$('#loading').hide()
