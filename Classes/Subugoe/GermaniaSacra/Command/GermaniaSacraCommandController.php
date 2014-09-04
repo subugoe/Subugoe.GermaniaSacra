@@ -132,6 +132,7 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 */
 	public function jsonKlosterCommand() {
 		$klosterFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/kloster.json';
+		$date = json_encode(array('lastChanged' => time()));
 		try {
 			fopen($klosterFile, 'c+');
 			$klosterController = new KlosterController();

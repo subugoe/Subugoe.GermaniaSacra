@@ -35,13 +35,7 @@
     '@package': 'Subugoe.GermaniaSacra'
     '@controller': 'Proxy'
     '@action':     'entity'
-
--
-  name: 'Default list routes'
-  uriPattern: '{@controller}'
-  defaults:
-    '@package': 'Subugoe.GermaniaSacra'
-    '@action':     'list'
+    '@format': 'json'
 
 -
   name: 'Search Ort'
@@ -129,15 +123,6 @@
     '@action': 'solrUpdateWhenKlosterCreate'
 
 -
-  name: 'Ort List URI'
-  uriPattern: 'ort'
-  defaults:
-    package: 'Subugoe.GermaniaSacra'
-    '@controller': 'Ort'
-    '@action': 'index'
-    '@format': 'json'
-
--
   name: 'New Ort URI'
   uriPattern: 'ort/new'
   defaults:
@@ -145,3 +130,10 @@
     '@controller': 'Ort'
     '@action': 'new'
     '@format': 'html'
+
+-
+  name: 'Default list routes'
+  uriPattern: '{@controller}'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'
+    '@action':     'list'
