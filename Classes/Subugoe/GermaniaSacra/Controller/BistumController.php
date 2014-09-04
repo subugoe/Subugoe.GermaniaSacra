@@ -75,6 +75,25 @@ class BistumController extends RestController {
 		$this->bistumRepository->remove($bistum);
 	}
 
-}
+	/**
+	 * Updates the list of Bistum
+	 * @return void
+	 */
+	public function listupdateAction() {
+		$bistums = $this->request->getArguments();
+		foreach ($bistums as $uuid => $bistum) {
+			$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
+			$bistumObj->setBistum($bistum['bistum']);
+			$bistumObj->setKirchenprovinz($bistum['kirchenprovinz']);
+			$bistumObj->setBemerkung($bistum['bemerkung']);
+			$bistumObj->setIst_erzbistum($bistum['ist_erzbistum']);
+			$bistumObj->setShapefile($bistum['shapefile']);
+			$this->bistumRepository->update($bistumObj);
+		}
 
+		$this->persistenceManager->persistAll();
+
+		$this->throwStatus(200, NULL, Null);
+	}
+}
 ?>
