@@ -4,6 +4,7 @@ germaniasacra-gh-pages
 /vendor/
 .sass-cache/
 Build/.*
+/Build/node_modules/
 config.rb
 *~
 /Resources/Public/Data/kloster.json
