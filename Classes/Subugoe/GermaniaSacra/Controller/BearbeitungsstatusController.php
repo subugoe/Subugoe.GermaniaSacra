@@ -1,7 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus;
 use TYPO3\Flow\Mvc\Controller\RestController;
@@ -71,6 +70,21 @@ class BearbeitungsstatusController extends RestController {
 		$this->bearbeitungsstatusRepository->remove($bearbeitungsstatus);
 	}
 
-}
+	/**
+	 * Updates the list of Bearbeitungsstatus
+	 * @return void
+	 */
+	public function listupdateAction() {
+		$bearbeitungsstatuses = $this->request->getArguments();
+		foreach ($bearbeitungsstatuses as $uuid => $bearbeitungsstatus) {
+			$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
+			$bearbeitungsstatusObj->setName($bearbeitungsstatus['name']);
+			$this->bearbeitungsstatusRepository->update($bearbeitungsstatusObj);
+		}
 
+		$this->persistenceManager->persistAll();
+
+		$this->throwStatus(200, NULL, Null);
+	}
+}
 ?>
