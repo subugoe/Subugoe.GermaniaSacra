@@ -28,10 +28,10 @@ class Band {
 	protected $bistum;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
-	 * @ORM\OneToMany(mappedBy="band")
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Kloster>
+	 * @ORM\OneToMany(mappedBy="band", cascade={"all"})
 	 */
-	public $klosters;
+	protected $klosters;
 
 	/**
 	 * @var string
@@ -164,7 +164,6 @@ class Band {
 	 * @return void
 	 */
 	public function setBandHasUrls(\Doctrine\Common\Collections\Collection $bandHasUrls) {
-
 		foreach ($bandHasUrls as $bandHasUrl) {
 			$bandHasUrl->setBand($this);
 		}
@@ -172,14 +171,20 @@ class Band {
 		$this->bandHasUrls = $bandHasUrls;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->getTitel();
 	}
 
+	/**
+	 * Returns the persistence object identifier of the object
+	 * @return string
+	 */
 	public function getUUID() {
 		return $this->persistenceManager->getIdentifierByObject($this);
 	}
-
 }
 
 ?>
