@@ -1,7 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,7 +21,7 @@ class Bearbeitungsstatus {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster>
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Kloster>
 	 * @ORM\OneToMany(mappedBy="bearbeitungsstatus")
 	 */
 	protected $klosters;
@@ -62,14 +61,19 @@ class Bearbeitungsstatus {
 		$this->name = $name;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->getName();
 	}
 
+	/**
+	 * Returns the persistence object identifier of the object
+	 * @return string
+	 */
 	public function getUUID() {
 		return $this->persistenceManager->getIdentifierByObject($this);
 	}
-
 }
-
 ?>
