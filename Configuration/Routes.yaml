@@ -29,7 +29,6 @@
     '@action': 'updateList'
 
 -
--
   name: 'Default list routes'
   uriPattern: '{@controller}'
   defaults:
