@@ -42,7 +42,7 @@ $.fn.populate_list = ->
 
 	selectOptions = {}
 	dataTable = $table.DataTable(
-		sAjaxSource: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/Data/kloster.json'
+		sAjaxSource: '/entity/kloster'
 		columns: columns
 		autoWidth: false
 		columnDefs: [

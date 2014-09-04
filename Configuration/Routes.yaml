@@ -29,6 +29,14 @@
     '@action': 'updateList'
 
 -
+  name: 'Proxy for static files'
+  uriPattern: 'entity/{entityName}'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'
+    '@controller': 'Proxy'
+    '@action':     'entity'
+
+-
   name: 'Default list routes'
   uriPattern: '{@controller}'
   defaults:

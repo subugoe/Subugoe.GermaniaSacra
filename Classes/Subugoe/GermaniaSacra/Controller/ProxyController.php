@@ -25,7 +25,9 @@ namespace Subugoe\GermaniaSacra\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use TYPO3\Flow\Error\Exception;
 use TYPO3\Flow\Mvc\Controller\ActionController;
+use TYPO3\Flow\Mvc\Controller\RestController;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
@@ -75,5 +77,30 @@ class ProxyController extends ActionController {
 			return $response->getBody();
 		}
 		return '';
+	}
+
+	/**
+	 * @param string $entityName
+	 */
+	public function entityAction($entityName) {
+
+		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
+
+		$entityFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/' . $entityName . '.json';
+
+		$controllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . ucfirst($entityName) . 'Controller';
+
+
+		if (class_exists($controllerName)){
+			/** @var \TYPO3\Flow\Mvc\Controller\ActionController $reflectionClass */
+			$reflectionClass = new $controllerName();
+		} else {
+			throw new Exception('Class ' .  $controllerName . ' not found.', 1409817407);
+		}
+
+		$contents = file_get_contents($entityFile);
+
+		return $contents;
+
 	}
 } 
