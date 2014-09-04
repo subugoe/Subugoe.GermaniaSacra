@@ -21,8 +21,8 @@ class Orden {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterorden
-	 * @ORM\OneToMany(mappedBy="orden")
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Klosterorden>
+	 * @ORM\OneToMany(mappedBy="orden", cascade={"all"})
 	 */
 	protected $klosterordens;
 
@@ -152,9 +152,6 @@ class Orden {
 		$this->ordenstyp = $ordenstyp;
 	}
 
-
-
-
 	/**
 	 * @return \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrdenHasUrl>
 	 */
@@ -167,7 +164,6 @@ class Orden {
 	 * @return void
 	 */
 	public function setOrdenHasUrls(\Doctrine\Common\Collections\Collection $ordenHasUrls) {
-
 		foreach ($ordenHasUrls as $ordenHasUrl) {
 			$ordenHasUrl->setOrden($this);
 		}
@@ -175,18 +171,19 @@ class Orden {
 		$this->ordenHasUrls = $ordenHasUrls;
 	}
 
-
-
-
-
+	/**
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->getOrden();
 	}
 
+	/**
+	 * Returns the persistence object identifier of the object
+	 * @return string
+	 */
 	public function getUUID() {
 		return $this->persistenceManager->getIdentifierByObject($this);
 	}
-
 }
-
 ?>

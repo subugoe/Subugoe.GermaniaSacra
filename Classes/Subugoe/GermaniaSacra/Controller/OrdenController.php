@@ -36,7 +36,6 @@ class OrdenController extends RestController {
 	 * @return void
 	 */
 	public function listAction() {
-
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
@@ -78,6 +77,24 @@ class OrdenController extends RestController {
 		$this->ordenRepository->remove($orden);
 	}
 
-}
+	/**
+	 * Updates the list of Orden
+	 * @return void
+	 */
+	public function listupdateAction() {
+		$ordens = $this->request->getArguments();
+		foreach ($ordens as $uuid => $orden) {
+			$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
+			$ordenObj->setOrden($orden['orden']);
+			$ordenObj->setOrdo($orden['ordo']);
+			$ordenObj->setSymbol($orden['symbol']);
+			$ordenObj->setGraphik($orden['graphik']);
+			$this->ordenRepository->update($ordenObj);
+		}
 
+		$this->persistenceManager->persistAll();
+
+		$this->throwStatus(200, NULL, Null);
+	}
+}
 ?>
