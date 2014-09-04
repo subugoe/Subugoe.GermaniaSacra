@@ -29,6 +29,14 @@
     '@action': 'updateList'
 
 -
+-
+  name: 'Default list routes'
+  uriPattern: '{@controller}'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'
+    '@action':     'list'
+
+-
   name: 'Search Ort'
   uriPattern: 'searchOrt'
   defaults:
