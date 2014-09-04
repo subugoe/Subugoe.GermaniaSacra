@@ -70,6 +70,21 @@ class OrdenstypController extends RestController {
 		$this->ordenstypRepository->remove($ordenstyp);
 	}
 
-}
+	/**
+	 * Updates the list of Ordenstyp
+	 * @return void
+	 */
+	public function listupdateAction() {
+		$ordenstyps = $this->request->getArguments();
+		foreach ($ordenstyps as $uuid => $ordenstyp) {
+			$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
+			$ordenstypObj->setOrdenstyp($ordenstyp['ordenstyp']);
+			$this->ordenstypRepository->update($ordenstypObj);
+		}
 
+		$this->persistenceManager->persistAll();
+
+		$this->throwStatus(200, NULL, Null);
+	}
+}
 ?>

@@ -1,8 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Domain\Model;
 
-
-
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -24,7 +22,7 @@ class Ordenstyp {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Orden
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Orden>
 	 * @ORM\OneToMany(mappedBy="ordenstyp")
 	 */
 	protected $ordens;
@@ -64,15 +62,21 @@ class Ordenstyp {
 		$this->ordenstyp = $ordenstyp;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 	  return $this->getOrdenstyp();
 	}
 
+	/**
+	 * Returns the persistence object identifier of the object
+	 * @return string
+	 */
 	public function getUUID()
     {
         return $this->persistenceManager->getIdentifierByObject($this);
     }
-
 }
 ?>
