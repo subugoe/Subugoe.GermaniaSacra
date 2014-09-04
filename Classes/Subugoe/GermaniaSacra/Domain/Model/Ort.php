@@ -74,7 +74,7 @@ class Ort {
 	/**
 	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl>
 	 * @ORM\OneToMany(mappedBy="ort", cascade={"all"})
-	* @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
+	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $ortHasUrls;
 
@@ -243,7 +243,6 @@ class Ort {
 	 * @return void
 	 */
 	public function setOrtHasUrls(\Doctrine\Common\Collections\Collection $ortHasUrls) {
-
 		foreach ($ortHasUrls as $ortHasUrl) {
 			$ortHasUrl->setOrt($this);
 		}
@@ -251,28 +250,19 @@ class Ort {
 		$this->ortHasUrls = $ortHasUrls;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString() {
 	  return $this->getOrt();
 	}
 
-	public function getOrtGemeindeKreis(){
-		$ortGemeindeKreis = "";
-		if (isset($this->ort) && !empty($this->ort)) {
-			$ortGemeindeKreis .= $this->ort;
-		}
-		if (isset($this->gemeinde) && !empty($this->gemeinde)) {
-			$ortGemeindeKreis .= " :: " . $this->gemeinde;
-		}
-		if (isset($this->kreis) && !empty($this->kreis)) {
-			$ortGemeindeKreis .= " :: " . $this->kreis;
-		}
-
-		return $ortGemeindeKreis;
-	}
-
+	/**
+	 * Returns the persistence object identifier of the object
+	 * @return string
+	 */
 	public function getUUID() {
         return $this->persistenceManager->getIdentifierByObject($this);
     }
-
 }
 ?>

@@ -22,8 +22,8 @@ class Bistum {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Ort
-	 * @ORM\OneToMany(mappedBy="bistum")
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Ort>
+	 * @ORM\OneToMany(mappedBy="bistum", cascade={"all"})
 	 */
 	protected $orts;
 
@@ -123,7 +123,7 @@ class Bistum {
 	}
 
 	/**
-	 * @param string $symbol
+	 * @param string $bemerkung
 	 * @return void
 	 */
 	public function setBemerkung($bemerkung) {
@@ -144,7 +144,6 @@ class Bistum {
 	public function setIst_erzbistum($ist_erzbistum) {
 		$this->ist_erzbistum = $ist_erzbistum;
 	}
-
 
 	/**
 	 * @return string
@@ -188,7 +187,6 @@ class Bistum {
 	 * @return void
 	 */
 	public function setBistumHasUrls(\Doctrine\Common\Collections\Collection $bistumHasUrls) {
-
 		foreach ($bistumHasUrls as $bistumHasUrl) {
 			$bistumHasUrl->setBistum($this);
 		}
@@ -196,14 +194,19 @@ class Bistum {
 		$this->bistumHasUrls = $bistumHasUrls;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->getBistum();
 	}
 
+	/**
+	 * Returns the persistence object identifier of the object
+	 * @return string
+	 */
 	public function getUUID() {
 		return $this->persistenceManager->getIdentifierByObject($this);
 	}
-
 }
-
 ?>

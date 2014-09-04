@@ -70,6 +70,24 @@ class BandController extends RestController {
 		$this->bandRepository->remove($band);
 	}
 
-}
+	/**
+	 * Updates the list of Band
+	 * @return void
+	 */
+	public function listupdateAction() {
+		$bands = $this->request->getArguments();
+		foreach ($bands as $uuid => $band) {
+			$bandObj = $this->bandRepository->findByIdentifier($uuid);
+			$bandObj->setNummer($band['nummer']);
+			$bandObj->setTitel($band['titel']);
+			$bandObj->setKurztitel($band['kurztitel']);
+			$bandObj->setSortierung($band['sortierung']);
+			$this->bandRepository->update($bandObj);
+		}
 
+		$this->persistenceManager->persistAll();
+
+		$this->throwStatus(200, NULL, Null);
+	}
+}
 ?>
