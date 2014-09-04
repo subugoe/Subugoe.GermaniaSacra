@@ -3,7 +3,7 @@ germaniaSacra.controller('listController', function($scope, $http, DTOptionsBuil
   var entityName, responsePromise;
   entityName = $('section[ng-controller]').attr('id');
   $scope.entities = {};
-  responsePromise = $http.get('subugoe.germaniasacra/' + entityName + '/list.json');
+  responsePromise = $http.get('/entity/' + entityName);
   responsePromise.success(function(data, status, headers, config) {
     return $scope.entities = data;
   });

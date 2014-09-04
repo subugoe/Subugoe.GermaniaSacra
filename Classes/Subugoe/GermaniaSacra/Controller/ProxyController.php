@@ -87,20 +87,17 @@ class ProxyController extends ActionController {
 		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
 
 		$entityFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/' . $entityName . '.json';
+		$controller = ucfirst($entityName) . 'Controller';
+		$controllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . $controller;
 
-		$controllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . ucfirst($entityName) . 'Controller';
-
-
-		if (class_exists($controllerName)){
-			/** @var \TYPO3\Flow\Mvc\Controller\ActionController $reflectionClass */
-			$reflectionClass = new $controllerName();
-		} else {
+		if (!class_exists($controllerName)){
 			throw new Exception('Class ' .  $controllerName . ' not found.', 1409817407);
 		}
 
-		$contents = file_get_contents($entityFile);
-
-		return $contents;
-
+		if (file_exists($entityFile)) {
+			return file_get_contents($entityFile);;
+		} else {
+			$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
+		}
 	}
 } 

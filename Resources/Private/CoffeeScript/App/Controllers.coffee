@@ -3,7 +3,7 @@ germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTC
 	entityName = $('section[ng-controller]').attr('id')
 
 	$scope.entities = {}
-	responsePromise = $http.get('subugoe.germaniasacra/' + entityName + '/list.json')
+	responsePromise = $http.get('/entity/' + entityName)
 	responsePromise.success (data, status, headers, config) ->
 		$scope.entities = data
 	responsePromise.error (data, status, headers, config) ->
