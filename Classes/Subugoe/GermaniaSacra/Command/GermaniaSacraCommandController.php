@@ -131,11 +131,11 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 * @return void
 	 */
 	public function jsonKlosterCommand() {
-		$klosterFile = FLOW_PATH_PACKAGES . 'Application/Subugoe.GermaniaSacra/Resources/Public/Data/kloster.json';
+		$klosterFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/kloster.json';
 		try {
 			fopen($klosterFile, 'c+');
 			$klosterController = new KlosterController();
-			file_put_contents($klosterFile, $klosterController->klosterListAsJson());
+			file_put_contents($klosterFile, $klosterController->allAsJson());
 		} catch (\Exception $e) {
 			$this->logger->logException($e);
 		}
