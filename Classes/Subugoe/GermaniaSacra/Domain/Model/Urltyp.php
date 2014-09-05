@@ -22,7 +22,7 @@ class Urltyp {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Url>
 	 * @ORM\OneToMany(mappedBy="urltyp")
 	 */
 	protected $urls;
@@ -62,14 +62,19 @@ class Urltyp {
 		$this->name = $name;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->getName();
 	}
 
+	/**
+	 * Returns the persistence object identifier of the object
+	 * @return string
+	 */
 	public function getUUID() {
 		return $this->persistenceManager->getIdentifierByObject($this);
 	}
-
 }
-
 ?>
