@@ -69,6 +69,22 @@ class UrltypController extends RestController {
 	public function deleteAction(Urltyp $urltyp) {
 		$this->urltypRepository->remove($urltyp);
 	}
-}
 
+	/**
+	 * Updates the list of Urltyp
+	 * @return void
+	 */
+	public function listupdateAction() {
+		$urltyps = $this->request->getArguments();
+		foreach ($urltyps as $uuid => $urltyp) {
+			$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
+			$urltypObj->setName($urltyp['name']);
+			$this->urltypRepository->update($urltypObj);
+		}
+
+		$this->persistenceManager->persistAll();
+
+		$this->throwStatus(200, NULL, Null);
+	}
+}
 ?>
