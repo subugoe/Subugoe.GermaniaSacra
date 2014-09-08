@@ -126,23 +126,30 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	}
 
 	/**
-	 * Generates json file
+	 * Generates json file from an entity
 	 *
+	 * @param string $entityName
 	 * @return void
 	 */
-	public function jsonKlosterCommand() {
-		$klosterFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/kloster.json';
+	public function jsonCommand($entityName) {
+
+		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
+		$entityControllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . ucfirst($entityName) . 'Controller';
+		$entityFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/' . $entityName . '.json';
+
 		$date = json_encode(array('lastChanged' => time()));
+
+		if (!is_dir(dirname($entityFile))) {
+			mkdir(dirname($entityFile), 0777, TRUE);
+		}
 		try {
-			fopen($klosterFile, 'c+');
-			$klosterController = new KlosterController();
-			file_put_contents($klosterFile, $klosterController->allAsJson());
+			$entityController = new $entityControllerName();
+			// TODO unified json generation for all models
+			file_put_contents($entityFile, $entityController->allAsJson());
+			$this->logger->log('Json file for ' . $entityName .' generated in ' . $entityFile);
 		} catch (\Exception $e) {
 			$this->logger->logException($e);
 		}
-		$this->logger->log('Json file generated in ' . $klosterFile);
 	}
 
 }
-
-?>
