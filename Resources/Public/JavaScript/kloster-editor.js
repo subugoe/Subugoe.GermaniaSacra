@@ -127,10 +127,13 @@ $.fn.read_kloster = function(url) {
       if (typeof name === "undefined") {
         return name = name.replace("[]", "");
       }
-      val = kloster[name];
+      if (name === 'changeddate' || name === 'creationdate') {
+        val = kloster[name] ? kloster[name].date.substr(0, kloster[name].date.indexOf(".")) : '';
+      } else {
+        val = kloster[name];
+      }
       return $(this).val(val);
     });
-    $fieldset.find("[name=changeddate]").val(kloster.changeddate ? kloster.changeddate.date.substr(0, kloster.changeddate.date.indexOf(".")) : '');
     $fieldset = $("#klosterorden");
     $.each(kloster.klosterorden, function(index, value) {
       if (index > 0) {

@@ -788,8 +788,7 @@ class KlosterController extends ActionController {
 		$klosterArr['band_seite'] = $kloster->getBand_seite();
 		$klosterArr['text_gs_band'] = $kloster->getText_gs_band();
 		$klosterArr['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
-		$creationdate = $kloster->getCreationDate()->format('d.m.Y');
-		$klosterArr['creationdate'] = $creationdate;
+		$klosterArr['creationdate'] = $kloster->getCreationDate();
 		$band = $kloster->getBand();
 		if (is_object($band)) {
 			$klosterArr['band'] = $band->getUUID();
@@ -1476,7 +1475,7 @@ class KlosterController extends ActionController {
 					$cc = $concat[$k];
 				}
 				else {
-					$cc = Null;
+					$cc = null;
 				}
 
 				if (trim($v) == 'bundesland.bundesland') {
