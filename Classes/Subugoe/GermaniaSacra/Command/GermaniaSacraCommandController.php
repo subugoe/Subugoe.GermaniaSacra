@@ -9,6 +9,7 @@ namespace Subugoe\GermaniaSacra\Command;
 use Subugoe\GermaniaSacra\Controller\DataImportController;
 use Subugoe\GermaniaSacra\Controller\DataExportController;
 use Subugoe\GermaniaSacra\Controller\KlosterController;
+use Subugoe\GermaniaSacra\Utility\JsonGeneratorUtility;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Log\LoggerFactory;
 /**
@@ -132,24 +133,7 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 * @return void
 	 */
 	public function jsonCommand($entityName) {
-
-		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
-		$entityControllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . ucfirst($entityName) . 'Controller';
-		$entityFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/' . $entityName . '.json';
-
-		$date = json_encode(array('lastChanged' => time()));
-
-		if (!is_dir(dirname($entityFile))) {
-			mkdir(dirname($entityFile), 0777, TRUE);
-		}
-		try {
-			$entityController = new $entityControllerName();
-			// TODO unified json generation for all models
-			file_put_contents($entityFile, $entityController->allAsJson());
-			$this->logger->log('Json file for ' . $entityName .' generated in ' . $entityFile);
-		} catch (\Exception $e) {
-			$this->logger->logException($e);
-		}
+		JsonGeneratorUtility::generateJsonFile($entityName);
 	}
 
 }

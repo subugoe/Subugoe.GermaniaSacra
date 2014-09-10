@@ -25,6 +25,7 @@ namespace Subugoe\GermaniaSacra\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
+use Subugoe\GermaniaSacra\Utility\JsonGeneratorUtility;
 use TYPO3\Flow\Error\Exception;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 use TYPO3\Flow\Mvc\Controller\RestController;
@@ -90,17 +91,25 @@ class ProxyController extends ActionController {
 		$controller = ucfirst($entityName) . 'Controller';
 		$controllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . $controller;
 
-		if (!class_exists($controllerName)){
-			throw new Exception('Class ' .  $controllerName . ' not found.', 1409817407);
+		if (!class_exists($controllerName)) {
+			throw new Exception('Class ' . $controllerName . ' not found.', 1409817407);
 		}
+
+		/** @var \TYPO3\Flow\Mvc\Controller\ActionController $controllerInstance */
+		$controllerInstance = new $controllerName();
+		$controllerInstance->initializeAction();
 
 		if (file_exists($entityFile)) {
 			$date = new \DateTime();
 			$date->setTimestamp(filemtime($entityFile));
-			$this->response->setLastModified(gmdate('D, d M Y H:i:s', filemtime($entityFile)) .'  GMT');
+			$this->response->setLastModified(gmdate('D, d M Y H:i:s', filemtime($entityFile)) . '  GMT');
 			$this->response->setHeader('Content-Type', 'application/json');
 			return file_get_contents($entityFile);
 		} else {
+			// TODO generate for all entities
+			if ($entityName === 'kloster') {
+				JsonGeneratorUtility::generateJsonFile($entityName);
+			}
 			$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
 		}
 	}
