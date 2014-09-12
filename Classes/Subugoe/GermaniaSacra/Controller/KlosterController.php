@@ -498,7 +498,7 @@ class KlosterController extends ActionController {
 			$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
 			$kloster->setBearbeiter($bearbeiter);
 
-			$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier('2378f34a-e3fe-b431-30ef-2f2b9b414b5b');
+			$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier('444eabb7-cb8d-33f0-df78-17f8e70ebfa0');
 			$kloster->setPersonallistenstatus($personallistenstatus);
 
 			$band_uuid = $this->request->getArgument('band');

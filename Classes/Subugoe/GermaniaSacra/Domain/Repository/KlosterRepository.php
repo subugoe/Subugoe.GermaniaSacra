@@ -1,8 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Domain\Repository;
 
-
-
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Persistence\Repository;
 use Subugoe\GermaniaSacra\Domain\Model\Kloster as Kloster;
@@ -28,10 +26,11 @@ class KlosterRepository extends Repository {
 	}
 
 	public function findLastEntry($offset=0, $limit=1) {
-		$query = $this->createQuery()
+		$query = $this->createQuery();
+		$query->matching($query->lessThan('kloster_id', 20000))
+				->setOrderings(array('kloster_id' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING))
 				->setOffset($offset)
-				->setLimit($limit)
-				->setOrderings(array('kloster_id' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING));
+				->setLimit($limit);
 		return $query->execute();
 	}
 
