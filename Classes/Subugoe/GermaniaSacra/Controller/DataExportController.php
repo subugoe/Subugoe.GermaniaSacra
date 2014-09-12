@@ -398,9 +398,12 @@ class DataExportController extends ActionController {
 							$koordinaten_institutionengenauArr[] = False;
 							$klosterstandorte[$k][$i]['koordinaten_institutionengenau'] = False;
 						}
-
 						$klosterstandorte[$k][$i]['koordinaten'] = $breite . "," . $laenge;
-
+						$bemerkung_standort = $klosterstandort->getBemerkung_standort();
+						if (!empty($bemerkung_standort)) {
+							$klosterstandorte[$k][$i]['bemerkung_standort'] = $bemerkung_standort;
+						}
+						unset($bemerkung_standort);
 						$gruender = $klosterstandort->getGruender();
 						if (!empty($gruender)) {
 							$gruenderArr[] = $gruender;
@@ -960,6 +963,11 @@ class DataExportController extends ActionController {
 									} else {
 										$standort_ordenArr[$k][$m][$n]['gruender'] = '';
 									}
+
+									if (!empty($mystandort['bemerkung_standort'])) {
+										$standort_ordenArr[$k][$m][$n]['bemerkung_standort'] = $mystandort['bemerkung_standort'];
+									}
+
 									if (!empty($mystandort['ort'])) {
 										$standort_ordenArr[$k][$m][$n]['ort'] = $mystandort['ort'];
 									}
