@@ -100,11 +100,12 @@ class ProxyController extends ActionController {
 		$controllerInstance->initializeAction();
 
 		if (file_exists($entityFile)) {
+			$content = file_get_contents($entityFile);
 			$date = new \DateTime();
 			$date->setTimestamp(filemtime($entityFile));
 			$this->response->setLastModified(gmdate('D, d M Y H:i:s', filemtime($entityFile)) . '  GMT');
 			$this->response->setHeader('Content-Type', 'application/json');
-			return file_get_contents($entityFile);
+			return $content;
 		} else {
 			// TODO generate for all entities
 			if ($entityName === 'kloster') {

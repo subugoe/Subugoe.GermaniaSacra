@@ -1,0 +1,73 @@
+<section ng-controller="listController" id="bistum">
+	<form ng-submit="update()" class="form-inline" novalidate ng-submit="entityForm.$valid && entityForm.addEntity(entity)" name="entityForm">
+		<table class="large-12 columns display" datatable="ng" dt-options="dtOptions">
+			<thead>
+				<tr>
+					<th></th>
+					<th>
+						<div class="form-group">
+							<label>
+								<input autofocus="" class="form-control" type="text" name="bistum" ng-model="entity.bistum" value="">
+							</label>
+						</div>
+					</th>
+					<th>
+						<div class="form-group">
+							<label>
+								<input type="text" class="form-control" name="bemerkung" ng-model="entity.bemerkung" value="">
+							</label>
+						</div>
+					</th>
+					<th>
+						<div class="form-group">
+							<label>
+								<input type="checkbox" class="form-control" name="ist_erzbistum" ng-model="entity.ist_erzbistum" value="">
+							</label>
+						</div>
+					</th>
+					<th>
+						<div class="form-group">
+							<label>
+								<input autofocus="" class="form-control" type="text" name="kirchenprovinz" ng-model="entity.kirchenprovinz" value="">
+							</label>
+						</div>
+					</th>
+					<th>
+						<div class="form-group">
+							<label>
+								<input autofocus="" class="form-control" type="text" name="shapefile" ng-model="bistum.shapefile" value="">
+							</label>
+						</div>
+					</th>
+					<th></th>
+				</tr>
+				<tr>
+					<th></th>
+					<th>Kloster</th>
+					<th>Bemerkung</th>
+					<th>Erzbistum</th>
+					<th>Kirchenprovinz</th>
+					<th>Shapefile</th>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="data" dt-rows="" ng-repeat="bistum in entities">
+					<td><input type="checkbox" ng-model="bistum.selected"></td>
+					<td><input type="text" ng-model="bistum.bistum" required></td>
+					<td><textarea ng-model="bistum.bemerkung"></textarea></td>
+					<td><input ng-model="bistum.ist_erzbistum" type="checkbox" ng-checked="bistum.ist_erzbistum"></td>
+					<td><input type="text" ng-model="bistum.kirchenprovinz"></td>
+					<td><input type="text" ng-model="bistum.shapefile"></td>
+					<td>
+						<button type="button" ng-click="modifyEntity($index)" class="edit icon-pencil"></button>
+						<button type="button" ng-click="removeEntity($index)" class="delete icon-trash"></button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="message" ng-show="message" ng-bind="message"></div>
+		<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
+		<input type="submit" value="Änderungen speichern">
+	</form>
+</section>

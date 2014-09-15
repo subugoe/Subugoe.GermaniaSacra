@@ -1,13 +1,6 @@
-germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTColumnBuilder) ->
+germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTColumnBuilder, $resource) ->
 
 	entityName = $('section[ng-controller]').attr('id')
-
-	$scope.entities = {}
-	responsePromise = $http.get('/entity/' + entityName)
-	responsePromise.success (data, status, headers, config) ->
-		$scope.entities = data
-	responsePromise.error (data, status, headers, config) ->
-		$scope.message = 'Daten konnten nicht geladen werden'
 
 	$scope.dtOptions = DTOptionsBuilder
 		.newOptions()
@@ -26,6 +19,25 @@ germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTC
 				$scope.$apply ->
 					$scope.entities[nRow._DT_RowIndex].selected = true
 			nRow
+
+	_buildEntityToAdd = (id) ->
+		id: id,
+		firstName: 'Foo' + id,
+		lastName: 'Bar' + id
+
+	$scope.entities = $resource('/entity/' + entityName).query()
+
+	$scope.entityToAdd = _buildEntityToAdd(1)
+	$scope.addEntity = ->
+		$scope.entities.push(angular.copy($scope.entityToAdd))
+		$scope.entityToAdd = _buildEntityToAdd($scope.entityToAdd.id + 1)
+
+	$scope.modifyEntity = (index) ->
+		$scope.entities.splice(index, 1, angular.copy($scope.entityToAdd))
+		$scope.entityToAdd = _buildEntityToAdd($scope.entityToAdd.id + 1)
+
+	$scope.removeEntity = (index) ->
+		$scope.entities.splice(index, 1);
 
 	$scope.update = ->
 		# Only post selected rows

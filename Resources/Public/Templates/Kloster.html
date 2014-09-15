@@ -1,0 +1,36 @@
+<section ng-controller="listController" id="kloster">
+	<form ng-submit="update()" class="form-inline">
+		<fieldset>
+			<legend>Klosterliste</legend>
+			<table class="large-12 columns display" datatable="ng" dt-options="dtOptions">
+				<thead>
+					<tr>
+						<th class="no-sorting" data-input="input type='checkbox'"></th>
+						<th data-input="textarea disabled" data-name="kloster_id">Kloster-Nr.</th>
+						<th data-input="select" data-name="bearbeitungsstatus">Status</th>
+						<th data-input="textarea" data-name="kloster">Klostername</th>
+						<th data-input="textarea disabled" data-name="ort">Ort</th>
+						<th data-input="textarea" data-name="gnd">GND</th>
+						<th data-input="textarea" data-name="bearbeitungsstand">Bearbeitungsstand</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="data" dt-rows="" ng-repeat="kloster in entities">
+						<td class="no-sorting" data-input="input type='checkbox'"></td>
+						<td data-input="textarea disabled" ng-model="kloster.kloster_id">{{kloster.kloster_id}}</td>
+						<td data-input="select" ng-model="kloster.bearbeitungsstatus">{{kloster.bearbeitungsstatus}}</td>
+						<td data-input="textarea" ng-model="kloster.kloster">{{kloster.kloster}}</td>
+						<td data-input="textarea disabled" ng-model="kloster.ort">{{kloster.ort}}</td>
+						<td data-input="textarea" ng-model="kloster.gnd">{{kloster.gnd}}</td>
+						<td data-input="textarea"ng-model="kloster.bearbeitungsstand">{{kloster.bearbeitungsstand}}</td>
+						<th class="no-sorting" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
+					</tr>
+				</tbody>
+			</table>
+		</fieldset>
+		<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
+		<input class="button" type="submit" value="Änderungen übernehmen">
+		<button class="new">Neues Kloster anlegen</button>
+	</form>
+</section>

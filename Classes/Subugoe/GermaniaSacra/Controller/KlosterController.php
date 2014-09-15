@@ -301,7 +301,7 @@ class KlosterController extends ActionController {
 		$response[] = $klosterArr;
 		$response[] = $bearbeitungsstatusArr;
 
-		return json_encode($response);
+		return json_encode($klosterArr);
 	}
 
 	/**
@@ -365,7 +365,7 @@ class KlosterController extends ActionController {
 		$response['data'] = $klosterArr;
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
 
-		return json_encode($response);
+		return json_encode($klosterArr);
 
 	}
 
@@ -1012,6 +1012,8 @@ class KlosterController extends ActionController {
 		$response[] = $klosterstatusArr;
 		$response[] = $bearbeiterArr;
 		$response[] = $urltypArr;
+		$this->response->setHeader('Content-Type', 'application/json');
+
 		return json_encode($response);
 
 	}
