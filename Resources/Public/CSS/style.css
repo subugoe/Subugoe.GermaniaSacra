@@ -7638,7 +7638,6 @@ fieldset.highlight {
   background: rgba(0, 0, 0, 0.1);
   border: 0;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
-  float: left;
   margin: 0 -0.625rem 0.625rem;
   padding: 0.625rem 0.625rem 0.3125rem;
   border-radius: 3px;
@@ -7882,6 +7881,10 @@ input[type="submit"],
   background: -moz-linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
   background: -o-linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
+}
+
+button.new, input.new[type="submit"] {
+  float: left;
 }
 
 .top-bar-section a {

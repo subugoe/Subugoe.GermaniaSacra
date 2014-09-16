@@ -16,4 +16,5 @@ $ ->
 
 	$('#search_form .reset').click (e) ->
 		e.preventDefault()
+		$('input[name=alle]').val('')
 		$('#uuid_filter').val('').change()

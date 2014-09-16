@@ -38,7 +38,6 @@ fieldset {
 		background: rgba(#000, .1);
 		border: 0;
 		box-shadow: 0 1px 6px rgba(#000, .2) inset;
-		float: left;
 		margin: 0 (-$fieldset-padding) $fieldset-padding;
 		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
 		border-radius: $global-radius;
@@ -187,6 +186,10 @@ input[type=submit],
 button,
 .top-bar, {
 	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
+}
+
+button.new {
+	float: left;
 }
 
 .top-bar-section a {
