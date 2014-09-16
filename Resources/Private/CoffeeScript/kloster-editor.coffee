@@ -1,6 +1,6 @@
 $ ->
 
-	$("#edit").hide().populate_selects()
+	if $("#edit").length then $("#edit").hide().populate_selects()
 	$("#edit textarea").autosize()
 
 	$("fieldset .multiple").append "<div class=\"add-remove-buttons\"><button class=\"remove\">-</button><button class=\"add\">+</button></div>"
