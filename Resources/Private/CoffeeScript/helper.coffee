@@ -31,3 +31,6 @@ $.fn.clear_form = ->
 	$(this).find(":checkbox, :radio").prop "checked", false
 	$(this).find(".multiple:gt(0)").removeInputs()
 	$(this).find("button.remove").prop 'disabled', true
+
+ucfirst = (string) ->
+	string.charAt(0).toUpperCase() + string.slice(1)

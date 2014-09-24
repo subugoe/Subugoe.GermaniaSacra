@@ -107,11 +107,11 @@ $.fn.populate_list = function() {
   });
   $table.on("click", ".edit", function(e) {
     e.preventDefault();
-    return $("#edit_form").read_kloster($(this).attr("href"));
+    return $("#edit form").read('kloster', $(this).attr("href"));
   });
   $table.on("click", ".delete", function(e) {
     e.preventDefault();
-    return $("#delete").delete_kloster($(this).attr("href"));
+    return $("#delete")["delete"]('kloster', $(this).attr("href"));
   });
   dataTable.columns().eq(0).each(function(colIdx) {
     return $("input", dataTable.column(colIdx).header()).click(function(e) {
@@ -159,7 +159,7 @@ $.fn.update_list = function() {
   });
 };
 
-$.fn.delete_kloster = function(url, csrf) {
+$.fn["delete"] = function(type, url, csrf) {
   var $this, check;
   $this = $(this);
   check = confirm('Wollen Sie diesen Eintrag wirklich löschen?');

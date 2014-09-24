@@ -8,7 +8,7 @@ Requires returned JSON to contain $uuid and $name for each item
  */
 var delay;
 
-$.fn.autocomplete = function() {
+$.fn.autocomplete = function(type) {
   return this.each(function() {
     var $input, $list, $overlay, $select, $spinner;
     $(this).siblings('.autocomplete').remove();
@@ -31,7 +31,7 @@ $.fn.autocomplete = function() {
         return delay((function() {
           $spinner.show();
           return $.ajax({
-            url: '/searchOrt?searchString=' + encodeURIComponent($input.val()),
+            url: '/search' + ucfirst(type) + '?searchString=' + encodeURIComponent($input.val()),
             type: 'GET',
             complete: function() {
               return $spinner.hide();

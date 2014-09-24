@@ -23,20 +23,24 @@ $ ->
 
 	$(".new").click (e) ->
 		e.preventDefault()
-		$("#edit_form").new_kloster()
+		$("#edit form").new_kloster()
 
 	$(".close").click (e) ->
 		e.preventDefault()
 		$(this).parent().closest("div[id]").slideUp()
 		$("#browse").slideDown()
 
-	$("#edit_form").submit (e) ->
+	$("form.edit").submit (e) ->
 		e.preventDefault()
+		type = $(this).attr('id')
+		if !type?
+			alert('Invalid type. Set form ID.')
+			return
 		$("select:disabled").prop("disabled", false).addClass "disabled"
 		unless $(this).find("[name=kloster_id]").val().length
-			$(this).create_kloster()
+			$(this).create( type )
 		else
-			$(this).update_kloster()
+			$(this).update( type )
 		$("select.disabled").prop "disabled", true
 
 	# Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
@@ -50,6 +54,7 @@ $ ->
 	return
 
 # Fill the select fields with options
+# TODO: Use generalized function, only populate one type at a time and fetch separately
 $.fn.populate_selects = ->
 	url = "getOptions"
 	$.getJSON url, (response) ->
@@ -83,24 +88,33 @@ $.fn.new_kloster = ->
 	$("#browse").slideUp()
 	$("#edit").slideDown()
 	$(this).clear_form()
-	$(this).find(".autocomplete").autocomplete()
+	# Get selects to be autocompleted by class
+	$(this).find(".autocomplete").autocomplete('ort')
 	$(this).find("textarea").trigger "autosize.resize"
 	$(this).find("input[type=url]").keyup()
 
 # Create a new Kloster
-$.fn.create_kloster = ->
+$.fn.create = (type) ->
 	$this = $(this)
-	$.post("create", $this.serialize()).done((respond, status, jqXHR) ->
-		$.get("solrUpdateWhenKlosterCreate",
-			uuid: respond
-		)
-		$this.message 'Ein neuer Eintrag wurde angelegt.'
-	).fail (jqXHR, textStatus) ->
-		$this.message 'Error'
-		console.dir jqXHR.responseText
+	if type is 'kloster'
+		$.post("create", $this.serialize()).done((respond, status, jqXHR) ->
+			$.get("solrUpdateWhenKlosterCreate",
+				uuid: respond
+			)
+			$this.message 'Ein neuer Eintrag wurde angelegt.'
+		).fail (jqXHR, textStatus) ->
+			$this.message 'Error'
+			console.dir jqXHR.responseText
+	else
+		$.post("create" + ucfirst(type), $this.serialize()).done((respond, status, jqXHR) ->
+			$this.message 'Ein neuer Eintrag wurde angelegt.'
+		).fail (jqXHR, textStatus) ->
+			$this.message 'Error'
+			console.dir jqXHR.responseText
 
 # Load a single Kloster into the edit form
-$.fn.read_kloster = (url) ->
+# TODO: Generalize this function for all data types
+$.fn.read = (type, url) ->
 
 	$this = $(this)
 	$this.clear_form()
@@ -108,70 +122,29 @@ $.fn.read_kloster = (url) ->
 	$("#browse").slideUp()
 	$('#loading').show()
 
-	$.getJSON url, (kloster) ->
+	$.getJSON url, (obj) ->
 
 		uuid = kloster.uuid
-		update_url = "update/" + uuid
-		$this.attr "action", update_url
 
-		$fieldset = $("#kloster")
-		$fieldset.find("label :input").each ->
-			name = $(this).attr("name")
-			if typeof name is "undefined"
-				return name = name.replace("[]", "")
-			if name is 'changeddate' or name is 'creationdate'
-				val = if kloster[name] then kloster[name].date.substr(0, kloster[name].date.indexOf(".")) else ''
-			else
-				val = kloster[name]
-			$(this).val val
+		if type is 'kloster'
 
-		$fieldset = $("#klosterorden")
-		$.each kloster.klosterorden, (index, value) ->
-			if index > 0
-				$fieldset.find(".multiple:last()").addInputs 0
-			$fieldset.find(".multiple:last() label :input").each ->
+			$this.attr 'action', 'update/' + uuid
+
+			$fieldset = $("#klosterdaten")
+			$fieldset.find("label :input").each ->
 				name = $(this).attr("name")
 				if typeof name is "undefined"
-					return
-				name = name.replace("[]", "")
-				$(this).val value[name]
-
-		$fieldset = $("#klosterstandorte")
-		$.each kloster.klosterstandorte, (index, value) ->
-			if index > 0
-				$fieldset.find(".multiple:last()").addInputs 0
-			$fieldset.find(".multiple:last() label :input").each ->
-				name = $(this).attr("name")
-				return	if typeof name is "undefined"
-				name = name.replace("[]", "")
-				val = value[name]
-				if name is "wuestung"
-					if name is "wuestung"
-						checkedCondition = value[name] is 1
-						$(this).prop "checked", checkedCondition
-				else if name is "ort"
-					$(this).html $("<option />",
-						value: value["uuid"]
-						text: value["ort"]
-					).attr("selected", true)
-				else if name is "bistum"
-					$(this).val(value[name])
-					text = $(this).find(':selected')
-					disabledCondition = text isnt "keine Angabe" and text isnt ""
-					$(this).prop "disabled", disabledCondition
+					return name = name.replace("[]", "")
+				if name is 'changeddate' or name is 'creationdate'
+					val = if obj[name] then obj[name].date.substr(0, obj[name].date.indexOf(".")) else ''
 				else
-					$(this).val value[name]
+					val = obj[name]
+				$(this).val val
 
-		$fieldset = $("#links")
-		$.each kloster.url, (index, value) ->
-			if value.url_typ_name is "GND"
-				$(":input[name=gnd]").val value.url
-				$(":input[name=gnd_label]").val value.url_label
-			else if value.url_typ_name is "Wikipedia"
-				$(":input[name=wikipedia]").val value.url
-				$(":input[name=wikipedia_label]").val value.url_label
-			else
-				$fieldset.find(".multiple:last()").addInputs 0
+			$fieldset = $("#klosterorden")
+			$.each obj.klosterorden, (index, value) ->
+				if index > 0
+					$fieldset.find(".multiple:last()").addInputs 0
 				$fieldset.find(".multiple:last() label :input").each ->
 					name = $(this).attr("name")
 					if typeof name is "undefined"
@@ -179,26 +152,73 @@ $.fn.read_kloster = (url) ->
 					name = name.replace("[]", "")
 					$(this).val value[name]
 
-		$fieldset.find(".multiple:eq(0)").removeInputs 0
-		$fieldset = $("#literatur")
-		$.each kloster.literatur, (index, value) ->
-			if index > 0
-				$fieldset.addInputs 0
-			$fieldset.find(".multiple:last() label :input").each ->
-				name = $(this).attr("name")
-				if typeof name is "undefined"
-					return
-				name = name.replace("[]", "")
-				$(this).val value
+			$fieldset = $("#klosterstandorte")
+			$.each obj.klosterstandorte, (index, value) ->
+				if index > 0
+					$fieldset.find(".multiple:last()").addInputs 0
+				$fieldset.find(".multiple:last() label :input").each ->
+					name = $(this).attr("name")
+					return	if typeof name is "undefined"
+					name = name.replace("[]", "")
+					val = value[name]
+					if name is "wuestung"
+						if name is "wuestung"
+							checkedCondition = value[name] is 1
+							$(this).prop "checked", checkedCondition
+					else if name is "ort"
+						$(this).html $("<option />",
+							value: value["uuid"]
+							text: value["ort"]
+						).attr("selected", true)
+					else if name is "bistum"
+						$(this).val(value[name])
+						text = $(this).find(':selected')
+						disabledCondition = text isnt "keine Angabe" and text isnt ""
+						$(this).prop "disabled", disabledCondition
+					else
+						$(this).val value[name]
+
+			$fieldset = $("#links")
+			$.each obj.url, (index, value) ->
+				if value.url_typ_name is "GND"
+					$(":input[name=gnd]").val value.url
+					$(":input[name=gnd_label]").val value.url_label
+				else if value.url_typ_name is "Wikipedia"
+					$(":input[name=wikipedia]").val value.url
+					$(":input[name=wikipedia_label]").val value.url_label
+				else
+					$fieldset.find(".multiple:last()").addInputs 0
+					$fieldset.find(".multiple:last() label :input").each ->
+						name = $(this).attr("name")
+						if typeof name is "undefined"
+							return
+						name = name.replace("[]", "")
+						$(this).val value[name]
+
+			$fieldset.find(".multiple:eq(0)").removeInputs 0
+			$fieldset = $("#literatur")
+			$.each obj.literatur, (index, value) ->
+				if index > 0
+					$fieldset.addInputs 0
+				$fieldset.find(".multiple:last() label :input").each ->
+					name = $(this).attr("name")
+					if typeof name is "undefined"
+						return
+					name = name.replace("[]", "")
+					$(this).val value
+
+		else
+
+			$this.attr 'action', 'update' + ucfirst(type) + '/' + uuid
 
 		$('#edit').slideDown()
 		$('#loading').hide()
-		$this.find(".autocomplete").autocomplete()
-		$this.find("textarea").trigger "autosize.resize"
+		$this.find(".autocomplete").autocomplete('ort')
 		$this.find("input[type=url]").keyup()
+		$this.find("textarea").trigger "autosize.resize"
 
 # Update a single Kloster
-$.fn.update_kloster = ->
+$.fn.update = (type) ->
 	$this = $(this)
 	url = $this.attr "action"
 	$.post(url, $this.serialize()).done((respond, status, jqXHR) ->

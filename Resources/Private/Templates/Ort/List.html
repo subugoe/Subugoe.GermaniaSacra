@@ -2,35 +2,31 @@
 
 <f:section name="Title"><f:translate id="orte" /></f:section>
 
-<!-- TODO: We most likely cannot load 40k+ Orte at once -->
 <f:section name="Content">
 	<section ng-controller="listController" id="ort">
 		<form ng-submit="update()">
-			<table class="large-12 columns display" datatable="ng" dt-options="dtOptions">
+			<table class="large-12 columns display" datatable="" dt-options="dtOptions" dt-columns="dtColumns">
 				<thead>
 					<tr>
-						<th></th>
-						<th>Ort</th>
-						<th>Gemeinde</th>
-						<th>Kreis</th>
-						<th>Wüstung</th>
-						<th>Koordinaten</th>
+						<th data-input="input type='checkbox'" data-name="uUID" class="not-sortable"></th>
+						<th data-input="textarea" data-name="ort">Ort</th>
+						<th data-input="textarea" data-name="gemeinde">Gemeinde</th>
+						<th data-input="textarea" data-name="kreis">Kreis</th>
+						<th data-input="input type='checkbox'" data-name="wuestung">Wüstung</th>
+						<th data-input="textarea" data-name="laenge">Längengrad</th>
+						<th data-input="textarea" data-name="breite">Breitengrad</th>
 					</tr>
 				</thead>
-				<tbody>
-					<tr class="data" dt-rows="" ng-repeat="ort in entities">
-						<td><input type="checkbox" ng-model="ort.selected"></td>
-						<td><input type="text" ng-model="ort.ort" /></td>
-						<td><input type="text" ng-model="ort.gemeinde" /></td>
-						<td><input type="text" ng-model="ort.kreis" /></td>
-						<td><input type="checkbox" ng-model="ort.wuestung" /></td>
-						<td><input type="text" ng-model="ort.laenge" /> <input type="text" ng-model="ort.breite" /></td>
-					</tr>
-				</tbody>
 			</table>
+			<div class="child-row" id="urls">
+				<span data-input="textarea" data-name="url">URL</span>
+				<span data-input="textarea" data-name="link_label">Darstellung</span>
+				<span data-input="select" data-name="url_typ">URL-Typ</span>
+			</div>
 			<div id="message" ng-show="message" ng-bind="message"></div>
 			<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
 			<input type="submit" value="Änderungen speichern">
+			<button class="new" ng-click="new($event)">Neuen Ort hinzufügen</button>
 		</form>
 	</section>
 </f:section>

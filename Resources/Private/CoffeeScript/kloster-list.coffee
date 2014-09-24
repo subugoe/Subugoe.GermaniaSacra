@@ -93,10 +93,10 @@ $.fn.populate_list = ->
 	# Click handlers for edit and delete
 	$table.on "click", ".edit", (e) ->
 		e.preventDefault()
-		$("#edit_form").read_kloster $(this).attr("href")
+		$("#edit form").read 'kloster', $(this).attr("href")
 	$table.on "click", ".delete", (e) ->
 		e.preventDefault()
-		$("#delete").delete_kloster $(this).attr("href")
+		$("#delete").delete 'kloster', $(this).attr("href")
 
 	# Apply the search
 	dataTable.columns().eq(0).each (colIdx) ->
@@ -138,7 +138,8 @@ $.fn.update_list =  ->
 
 
 # Delete a single Kloster
-$.fn.delete_kloster = (url, csrf) ->
+# TODO: Type is not really needed here, URL contains all information
+$.fn.delete = (type, url, csrf) ->
 	$this = $(this)
 	check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
 	if check is true

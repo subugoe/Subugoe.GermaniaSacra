@@ -24,20 +24,26 @@ $(function() {
   });
   $(".new").click(function(e) {
     e.preventDefault();
-    return $("#edit_form").new_kloster();
+    return $("#edit form").new_kloster();
   });
   $(".close").click(function(e) {
     e.preventDefault();
     $(this).parent().closest("div[id]").slideUp();
     return $("#browse").slideDown();
   });
-  $("#edit_form").submit(function(e) {
+  $("form.edit").submit(function(e) {
+    var type;
     e.preventDefault();
+    type = $(this).attr('id');
+    if (type == null) {
+      alert('Invalid type. Set form ID.');
+      return;
+    }
     $("select:disabled").prop("disabled", false).addClass("disabled");
     if (!$(this).find("[name=kloster_id]").val().length) {
-      $(this).create_kloster();
+      $(this).create(type);
     } else {
-      $(this).update_kloster();
+      $(this).update(type);
     }
     return $("select.disabled").prop("disabled", true);
   });
@@ -90,108 +96,64 @@ $.fn.new_kloster = function() {
   $("#browse").slideUp();
   $("#edit").slideDown();
   $(this).clear_form();
-  $(this).find(".autocomplete").autocomplete();
+  $(this).find(".autocomplete").autocomplete('ort');
   $(this).find("textarea").trigger("autosize.resize");
   return $(this).find("input[type=url]").keyup();
 };
 
-$.fn.create_kloster = function() {
+$.fn.create = function(type) {
   var $this;
   $this = $(this);
-  return $.post("create", $this.serialize()).done(function(respond, status, jqXHR) {
-    $.get("solrUpdateWhenKlosterCreate", {
-      uuid: respond
+  if (type === 'kloster') {
+    return $.post("create", $this.serialize()).done(function(respond, status, jqXHR) {
+      $.get("solrUpdateWhenKlosterCreate", {
+        uuid: respond
+      });
+      return $this.message('Ein neuer Eintrag wurde angelegt.');
+    }).fail(function(jqXHR, textStatus) {
+      $this.message('Error');
+      return console.dir(jqXHR.responseText);
     });
-    return $this.message('Ein neuer Eintrag wurde angelegt.');
-  }).fail(function(jqXHR, textStatus) {
-    $this.message('Error');
-    return console.dir(jqXHR.responseText);
-  });
+  } else {
+    return $.post("create" + ucfirst(type), $this.serialize()).done(function(respond, status, jqXHR) {
+      return $this.message('Ein neuer Eintrag wurde angelegt.');
+    }).fail(function(jqXHR, textStatus) {
+      $this.message('Error');
+      return console.dir(jqXHR.responseText);
+    });
+  }
 };
 
-$.fn.read_kloster = function(url) {
+$.fn.read = function(type, url) {
   var $this;
   $this = $(this);
   $this.clear_form();
   $("#browse").slideUp();
   $('#loading').show();
-  return $.getJSON(url, function(kloster) {
-    var $fieldset, update_url, uuid;
+  return $.getJSON(url, function(obj) {
+    var $fieldset, uuid;
     uuid = kloster.uuid;
-    update_url = "update/" + uuid;
-    $this.attr("action", update_url);
-    $fieldset = $("#kloster");
-    $fieldset.find("label :input").each(function() {
-      var name, val;
-      name = $(this).attr("name");
-      if (typeof name === "undefined") {
-        return name = name.replace("[]", "");
-      }
-      if (name === 'changeddate' || name === 'creationdate') {
-        val = kloster[name] ? kloster[name].date.substr(0, kloster[name].date.indexOf(".")) : '';
-      } else {
-        val = kloster[name];
-      }
-      return $(this).val(val);
-    });
-    $fieldset = $("#klosterorden");
-    $.each(kloster.klosterorden, function(index, value) {
-      if (index > 0) {
-        $fieldset.find(".multiple:last()").addInputs(0);
-      }
-      return $fieldset.find(".multiple:last() label :input").each(function() {
-        var name;
+    if (type === 'kloster') {
+      $this.attr('action', 'update/' + uuid);
+      $fieldset = $("#klosterdaten");
+      $fieldset.find("label :input").each(function() {
+        var name, val;
         name = $(this).attr("name");
         if (typeof name === "undefined") {
-          return;
+          return name = name.replace("[]", "");
         }
-        name = name.replace("[]", "");
-        return $(this).val(value[name]);
-      });
-    });
-    $fieldset = $("#klosterstandorte");
-    $.each(kloster.klosterstandorte, function(index, value) {
-      if (index > 0) {
-        $fieldset.find(".multiple:last()").addInputs(0);
-      }
-      return $fieldset.find(".multiple:last() label :input").each(function() {
-        var checkedCondition, disabledCondition, name, text, val;
-        name = $(this).attr("name");
-        if (typeof name === "undefined") {
-          return;
-        }
-        name = name.replace("[]", "");
-        val = value[name];
-        if (name === "wuestung") {
-          if (name === "wuestung") {
-            checkedCondition = value[name] === 1;
-            return $(this).prop("checked", checkedCondition);
-          }
-        } else if (name === "ort") {
-          return $(this).html($("<option />", {
-            value: value["uuid"],
-            text: value["ort"]
-          }).attr("selected", true));
-        } else if (name === "bistum") {
-          $(this).val(value[name]);
-          text = $(this).find(':selected');
-          disabledCondition = text !== "keine Angabe" && text !== "";
-          return $(this).prop("disabled", disabledCondition);
+        if (name === 'changeddate' || name === 'creationdate') {
+          val = obj[name] ? obj[name].date.substr(0, obj[name].date.indexOf(".")) : '';
         } else {
-          return $(this).val(value[name]);
+          val = obj[name];
         }
+        return $(this).val(val);
       });
-    });
-    $fieldset = $("#links");
-    $.each(kloster.url, function(index, value) {
-      if (value.url_typ_name === "GND") {
-        $(":input[name=gnd]").val(value.url);
-        return $(":input[name=gnd_label]").val(value.url_label);
-      } else if (value.url_typ_name === "Wikipedia") {
-        $(":input[name=wikipedia]").val(value.url);
-        return $(":input[name=wikipedia_label]").val(value.url_label);
-      } else {
-        $fieldset.find(".multiple:last()").addInputs(0);
+      $fieldset = $("#klosterorden");
+      $.each(obj.klosterorden, function(index, value) {
+        if (index > 0) {
+          $fieldset.find(".multiple:last()").addInputs(0);
+        }
         return $fieldset.find(".multiple:last() label :input").each(function() {
           var name;
           name = $(this).attr("name");
@@ -201,33 +163,89 @@ $.fn.read_kloster = function(url) {
           name = name.replace("[]", "");
           return $(this).val(value[name]);
         });
-      }
-    });
-    $fieldset.find(".multiple:eq(0)").removeInputs(0);
-    $fieldset = $("#literatur");
-    $.each(kloster.literatur, function(index, value) {
-      if (index > 0) {
-        $fieldset.addInputs(0);
-      }
-      return $fieldset.find(".multiple:last() label :input").each(function() {
-        var name;
-        name = $(this).attr("name");
-        if (typeof name === "undefined") {
-          return;
-        }
-        name = name.replace("[]", "");
-        return $(this).val(value);
       });
-    });
+      $fieldset = $("#klosterstandorte");
+      $.each(obj.klosterstandorte, function(index, value) {
+        if (index > 0) {
+          $fieldset.find(".multiple:last()").addInputs(0);
+        }
+        return $fieldset.find(".multiple:last() label :input").each(function() {
+          var checkedCondition, disabledCondition, name, text, val;
+          name = $(this).attr("name");
+          if (typeof name === "undefined") {
+            return;
+          }
+          name = name.replace("[]", "");
+          val = value[name];
+          if (name === "wuestung") {
+            if (name === "wuestung") {
+              checkedCondition = value[name] === 1;
+              return $(this).prop("checked", checkedCondition);
+            }
+          } else if (name === "ort") {
+            return $(this).html($("<option />", {
+              value: value["uuid"],
+              text: value["ort"]
+            }).attr("selected", true));
+          } else if (name === "bistum") {
+            $(this).val(value[name]);
+            text = $(this).find(':selected');
+            disabledCondition = text !== "keine Angabe" && text !== "";
+            return $(this).prop("disabled", disabledCondition);
+          } else {
+            return $(this).val(value[name]);
+          }
+        });
+      });
+      $fieldset = $("#links");
+      $.each(obj.url, function(index, value) {
+        if (value.url_typ_name === "GND") {
+          $(":input[name=gnd]").val(value.url);
+          return $(":input[name=gnd_label]").val(value.url_label);
+        } else if (value.url_typ_name === "Wikipedia") {
+          $(":input[name=wikipedia]").val(value.url);
+          return $(":input[name=wikipedia_label]").val(value.url_label);
+        } else {
+          $fieldset.find(".multiple:last()").addInputs(0);
+          return $fieldset.find(".multiple:last() label :input").each(function() {
+            var name;
+            name = $(this).attr("name");
+            if (typeof name === "undefined") {
+              return;
+            }
+            name = name.replace("[]", "");
+            return $(this).val(value[name]);
+          });
+        }
+      });
+      $fieldset.find(".multiple:eq(0)").removeInputs(0);
+      $fieldset = $("#literatur");
+      $.each(obj.literatur, function(index, value) {
+        if (index > 0) {
+          $fieldset.addInputs(0);
+        }
+        return $fieldset.find(".multiple:last() label :input").each(function() {
+          var name;
+          name = $(this).attr("name");
+          if (typeof name === "undefined") {
+            return;
+          }
+          name = name.replace("[]", "");
+          return $(this).val(value);
+        });
+      });
+    } else {
+      $this.attr('action', 'update' + ucfirst(type) + '/' + uuid);
+    }
     $('#edit').slideDown();
     $('#loading').hide();
-    $this.find(".autocomplete").autocomplete();
-    $this.find("textarea").trigger("autosize.resize");
-    return $this.find("input[type=url]").keyup();
+    $this.find(".autocomplete").autocomplete('ort');
+    $this.find("input[type=url]").keyup();
+    return $this.find("textarea").trigger("autosize.resize");
   });
 };
 
-$.fn.update_kloster = function() {
+$.fn.update = function(type) {
   var $this, url;
   $this = $(this);
   url = $this.attr("action");

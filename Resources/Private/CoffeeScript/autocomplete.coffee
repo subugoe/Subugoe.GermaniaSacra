@@ -5,7 +5,7 @@ Overlaying input field, data AJAXed on type
 Requires returned JSON to contain $uuid and $name for each item
 ###
 
-$.fn.autocomplete = () ->
+$.fn.autocomplete = (type) ->
 
 	@each ->
 
@@ -31,7 +31,7 @@ $.fn.autocomplete = () ->
 				delay (->
 					$spinner.show()
 					$.ajax
-						url: '/searchOrt?searchString=' + encodeURIComponent($input.val())
+						url: '/search' + ucfirst(type) + '?searchString=' + encodeURIComponent($input.val())
 						type: 'GET'
 						complete: ->
 							$spinner.hide()
