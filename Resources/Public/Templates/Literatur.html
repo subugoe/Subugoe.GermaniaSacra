@@ -1,23 +1,16 @@
-<section ng-controller="listController" id="literatur">
-	<form ng-submit="update()">
-		<table class="large-12 columns display" dt-options="dtOptions" datatable="ng">
+<section id="literatur">
+	<form>
+		<table class="large-12 columns display">
 			<thead>
 				<tr>
-					<th></th>
-					<th>Cite ID</th>
-					<th>Beschreibung</th>
+					<th data-input="input type='checkbox'" data-name="uuid" class="not-sortable"></th>
+					<th data-input="textarea" data-name="citekey">Citekey</th>
+					<th data-input="textarea" data-name="beschreibung">Beschreibung</th>
+					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr class="data" dt-rows="" ng-repeat="literatur in entities">
-					<td><input class="marker" type="checkbox" ng-model="literatur.selected"></td>
-					<td><input type="text" ng-model="literatur.citekey"></td>
-					<td><input type="text" ng-model="literatur.beschreibung"></td>
-				</tr>
-			</tbody>
 		</table>
-		<div id="message" ng-show="message" ng-bind="message"></div>
-		<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
 		<input type="submit" value="Änderungen speichern">
+		<button class="new">Neue Literatur hinzufügen</button>
 	</form>
 </section>

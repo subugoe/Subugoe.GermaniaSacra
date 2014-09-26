@@ -53,20 +53,17 @@ class OrtController extends RestController {
 	/**
 	 * @return void
 	 */
-	// TODO: Do we really need to load all Orts with the page?
-	// Maybe this could be used only by the ProxyController while the template is rendered without loading anything from the DB
 	public function listAction() {
 
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orts'));
 		}
-	
+
 		$ortArr = array();
 		$orts = $this->ortRepository->findOrts();
 
 		foreach ($orts as $k => $ort) {
-
-			$ortArr[$k]['uUID'] = $ort->getUUID();
+			$ortArr[$k]['uuid'] = $ort->getUUID();
 			$ortArr[$k]['ort'] = $ort->getOrt();
 			$ortArr[$k]['gemeinde'] = $ort->getGemeinde();
 			$ortArr[$k]['kreis'] = $ort->getKreis();
@@ -77,26 +74,55 @@ class OrtController extends RestController {
 			$ortArr[$k]['land'] = is_object($land) ? $land->getUUID() : null;
 			$bistum = $ort->getBistum();
 			$ortArr[$k]['bistum'] = is_object($bistum) ? $bistum->getUUID() : null;
-
-			$ortHasUrls = $ort->getOrtHasUrls();
-			$urlArr = array();
-			foreach ($ortHasUrls as $ortHasUrl) {
-				$urlObj = $ortHasUrl->getUrl();
-				$url = $urlObj->getUrl();
-				if (!empty($url)) {
-					$urlTypObj = $urlObj->getUrltyp();
-					$urlArr[$urlObj->getUUID()] = [
-						'url' => $url,
-						'url_typ' =>  $urlTypObj->getUUID(),
-						'links_label' => $urlObj->getBemerkung()
-					];
-				}
-			}
-			$ortArr[$k]['urls'] = $urlArr;
-
 		}
-	
-		$this->view->assign('orts', $ortArr);
+
+		return json_encode(['data' => $ortArr]);
+
+	}
+
+	/**
+	 * @return void
+	 */
+	public function editAction() {
+
+		$uuid = $this->request->getArgument('uuid');
+
+		if ($this->request->getFormat() === 'json') {
+			$this->view->setVariablesToRender(array('ort'));
+		}
+
+		$ortArr = array();
+		$ort = $this->ortRepository->findByIdentifier($uuid);
+
+		$ortArr['uuid'] = $ort->getUUID();
+		$ortArr['ort'] = $ort->getOrt();
+		$ortArr['gemeinde'] = $ort->getGemeinde();
+		$ortArr['kreis'] = $ort->getKreis();
+		$ortArr['wuestung'] = $ort->getWuestung();
+		$ortArr['breite'] = $ort->getBreite();
+		$ortArr['laenge'] = $ort->getLaenge();
+		$land = $ort->getLand();
+		$ortArr['land'] = is_object($land) ? $land->getUUID() : null;
+		$bistum = $ort->getBistum();
+		$ortArr['bistum'] = is_object($bistum) ? $bistum->getUUID() : null;
+
+		$ortHasUrls = $ort->getOrtHasUrls();
+		$urlArr = array();
+		foreach ($ortHasUrls as $ortHasUrl) {
+			$urlObj = $ortHasUrl->getUrl();
+			$url = $urlObj->getUrl();
+			if (!empty($url)) {
+				$urlTypObj = $urlObj->getUrltyp();
+				$urlArr[$urlObj->getUUID()] = [
+					'url' => $url,
+					'url_typ' =>  $urlTypObj->getUUID(),
+					'links_label' => $urlObj->getBemerkung()
+				];
+			}
+		}
+		$ortArr['urls'] = $urlArr;
+
+		return json_encode($ortArr);
 
 	}
 
@@ -133,7 +159,7 @@ class OrtController extends RestController {
 	 */
 	public function createAction(Ort $newOrt) {
 		$this->ortRepository->add($newOrt);
-		// TODO: Get the uUIDs of newly created Orts
+		// TODO: Get the uuids of newly created Orts
 		$this->response->setStatus(201);
 	}
 

@@ -33,7 +33,7 @@ class BandController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bands'));
 		}
-		$this->view->assign('bands', $this->bandRepository->findAll());
+		$this->view->assign('bands', ['data' => $this->bandRepository->findAll()]);
 	}
 
 	/**

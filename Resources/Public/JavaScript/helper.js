@@ -40,11 +40,13 @@ $.fn.removeInputs = function(slideTime) {
 };
 
 $.fn.clear_form = function() {
-  $(this).find(":input").prop("disabled", false);
-  $(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("");
-  $(this).find(":checkbox, :radio").prop("checked", false);
-  $(this).find(".multiple:gt(0)").removeInputs();
-  return $(this).find("button.remove").prop('disabled', true);
+  return this.each(function() {
+    $(this).find(":input").prop("disabled", false);
+    $(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("");
+    $(this).find(":checkbox, :radio").prop("checked", false);
+    $(this).find(".multiple:gt(0)").removeInputs();
+    return $(this).find("button.remove").prop('disabled', true);
+  });
 };
 
 ucfirst = function(string) {

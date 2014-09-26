@@ -1,4 +1,4 @@
-germaniaSacra = angular.module('germaniaSacra', ['angular-loading-bar', 'datatables', 'ngRoute', 'ngResource'])
+germaniaSacra = angular.module('germaniaSacra', ['ngRoute'])
 
 germaniaSacra.config ($routeProvider, $locationProvider) ->
 	templatePath = '/_Resources/Static/Packages/Subugoe.GermaniaSacra/Templates/'

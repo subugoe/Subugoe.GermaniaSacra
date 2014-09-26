@@ -1,29 +1,60 @@
-<section ng-controller="listController" id="ort">
-	<form ng-submit="update()">
-		<table class="large-12 columns display" datatable="ng" dt-options="dtOptions">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Ort</th>
-					<th>Gemeinde</th>
-					<th>Kreis</th>
-					<th>Wüstung</th>
-					<th>Koordinaten</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="data" dt-rows="" ng-repeat="ort in entities">
-					<td><input type="checkbox" ng-model="ort.selected"></td>
-					<td><input type="text" ng-model="ort.ort" /></td>
-					<td><input type="text" ng-model="ort.gemeinde" /></td>
-					<td><input type="text" ng-model="ort.kreis" /></td>
-					<td><input type="checkbox" ng-model="ort.wuestung" /></td>
-					<td><input type="text" ng-model="ort.laenge" /> <input type="text" ng-model="ort.breite" /></td>
-				</tr>
-			</tbody>
-		</table>
-		<div id="message" ng-show="message" ng-bind="message"></div>
-		<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
-		<input type="submit" value="Änderungen speichern">
-	</form>
+<section id="ort">
+
+	<div id="list">
+		<h2>Orte</h2>
+		<form>
+			<table class="large-12 columns display">
+				<thead>
+					<tr>
+						<th data-input="input type='checkbox'" data-name="uuid" class="not-sortable"></th>
+						<th data-input="textarea" data-name="ort">Ort</th>
+						<th data-input="textarea" data-name="gemeinde">Gemeinde</th>
+						<th data-input="textarea" data-name="kreis">Kreis</th>
+						<th data-input="input type='checkbox'" data-name="wuestung">Wüstung</th>
+						<th data-input="textarea" data-name="laenge">Längengrad</th>
+						<th data-input="textarea" data-name="breite">Breitengrad</th>
+						<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
+					</tr>
+				</thead>
+			</table>
+			<input type="submit" value="Änderungen speichern">
+			<button class="new">Neuen Ort hinzufügen</button>
+		</form>
+	</div>
+
+	<div id="edit">
+		<h2>Ort beareiten</h2>
+		<div class="text-right clear"><button class="close">Zurück zur Ortliste</button></div>
+		<form>
+			<label class="large-4 columns">Ort
+				<textarea name="ort"></textarea>
+			</label>
+			<label class="large-4 columns">Gemeinde
+				<textarea name="gemeinde"></textarea>
+			</label>
+			<label class="large-4 columns">Kreis
+				<textarea name="kreis"></textarea>
+			</label>
+			<label class="large-4 columns">Wüstung
+				<input type="checkbox" name="wuestung">
+			</label>
+			<label class="large-4 columns">Längengrad
+				<textarea name="laenge"></textarea>
+			</label>
+			<label class="large-4 columns">Breitengrad
+				<textarea name="breite"></textarea>
+			</label>
+			<label class="large-4 columns">URL
+				<textarea name="url"></textarea>
+			</label>
+			<label class="large-4 columns">Darstellung
+				<textarea name="link_label"></textarea>
+			</label>
+			<label class="large-4 columns">URL-Typ
+				<select name="url_typ"></select>
+			</label>
+			<input class="button" type="submit" value="Änderungen speichern">
+		</form>
+	</div>
+
 </section>

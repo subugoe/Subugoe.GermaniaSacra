@@ -1,27 +1,18 @@
-<section ng-controller="listController" id="band">
-	<form ng-submit="update()">
-		<table class="large-12 columns display" datatable="ng" dt-options="dtOptions">
+<section id="band">
+	<form>
+		<table class="large-12 columns display">
 			<thead>
 				<tr>
-					<th></th>
-					<th>Nummer</th>
-					<th>Titel</th>
-					<th>Kurztitel</th>
-					<th>Sortierung</th>
+					<th data-input="input type='checkbox'" data-name="uuid" class="not-sortable"></th>
+					<th data-input="textarea" data-name="nummer">Nummer</th>
+					<th data-input="textarea" data-name="titel">Titel</th>
+					<th data-input="textarea" data-name="kurztitel">Kurztitel</th>
+					<th data-input="textarea" data-name="sortierung">Sortierung</th>
+					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr class="data" dt-rows="" ng-repeat="band in entities">
-					<td><input type="checkbox" ng-model="band.selected"></td>
-					<td><input type="text" ng-model="band.nummer" /></td>
-					<td><input type="text" ng-model="band.titel" /></td>
-					<td><input type="text" ng-model="band.kurztitel" /></td>
-					<td><input type="number" ng-model="band.sortierung" /></td>
-				</tr>
-			</tbody>
 		</table>
-		<div id="message" ng-show="message" ng-bind="message"></div>
-		<input type="hidden" id="__csrfToken" value="{f:security.csrfToken()}">
 		<input type="submit" value="Änderungen speichern">
+		<button class="new"">Neuen Band hinzufügen</button>
 	</form>
 </section>

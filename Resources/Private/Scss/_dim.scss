@@ -20,7 +20,7 @@ body {
 	background: #fff;
 	box-shadow: $reveal-box-shadow;
 	clear: both;
-	margin: rem-calc(20) 0;
+	margin: rem-calc(20);
 	padding: rem-calc(20);
 	.timestamp {
 		background: #eee;
@@ -35,6 +35,7 @@ body {
 button {
 	margin: 0 0 .5em 0;
 	padding: rem-calc(8);
+	min-width: rem-calc(32);
 	&.new {
 		float: left;
 	}
@@ -61,20 +62,22 @@ fieldset {
 	margin-bottom: 0;
 	padding-left: 0;
 	padding-right: 0;
-	&.highlight {
-		background: rgba(#000, .1);
-		border: 0;
-		box-shadow: 0 1px 6px rgba(#000, .2) inset;
-		margin: 0 (-$fieldset-padding) $fieldset-padding;
-		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
-		border-radius: $global-radius;
-	}
 	legend {
 		background: none;
 	}
 	.add-remove-buttons {
 		float: right
 	}
+}
+
+div.highlight {
+	background: rgba(#000, .1);
+	border: 0;
+	box-shadow: 0 1px 6px rgba(#000, .2) inset;
+	float: left;
+	margin: 0 (-$fieldset-padding) $fieldset-padding;
+	padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
+	border-radius: $global-radius;
 }
 
 label {

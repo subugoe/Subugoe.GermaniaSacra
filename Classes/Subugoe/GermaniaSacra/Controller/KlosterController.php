@@ -298,10 +298,10 @@ class KlosterController extends ActionController {
 		}
 
 		$response = array();
-		$response[] = $klosterArr;
-		$response[] = $bearbeitungsstatusArr;
+		$response['data'] = $klosterArr;
+		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
 
-		return json_encode($klosterArr);
+		return json_encode($response);
 	}
 
 	/**
@@ -365,7 +365,7 @@ class KlosterController extends ActionController {
 		$response['data'] = $klosterArr;
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
 
-		return json_encode($klosterArr);
+		return json_encode($response);
 
 	}
 
@@ -776,7 +776,11 @@ class KlosterController extends ActionController {
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return array $response The data of the selected Kloster entry in json format
 	 */
-	public function editAction(Kloster $kloster) {
+	public function editAction() {
+
+		$uuid = $this->request->getArgument('uuid');
+		$kloster = $this->klosterRepository->findByIdentifier($uuid);
+
 		// Kloster data
 		$klosterArr = array();
 		$klosterArr['uuid'] = $kloster->getUUID();

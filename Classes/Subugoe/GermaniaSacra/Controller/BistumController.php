@@ -38,7 +38,7 @@ class BistumController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bistum'));
 		}
-		$this->view->assign('bistum', $this->bistumRepository->findAll());
+		$this->view->assign('bistum', ['data' => $this->bistumRepository->findAll()]);
 	}
 
 	/**

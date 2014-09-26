@@ -7624,7 +7624,7 @@ body > section {
   background: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
   clear: both;
-  margin: 1.25rem 0;
+  margin: 1.25rem;
   padding: 1.25rem;
 }
 #loading .timestamp,
@@ -7639,6 +7639,7 @@ body > section {
 button, input[type="submit"] {
   margin: 0 0 .5em 0;
   padding: 0.5rem;
+  min-width: 2rem;
 }
 button.new, input.new[type="submit"] {
   float: left;
@@ -7664,19 +7665,21 @@ fieldset {
   padding-left: 0;
   padding-right: 0;
 }
-fieldset.highlight {
-  background: rgba(0, 0, 0, 0.1);
-  border: 0;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
-  margin: 0 -0.625rem 0.625rem;
-  padding: 0.625rem 0.625rem 0.3125rem;
-  border-radius: 3px;
-}
 fieldset legend {
   background: none;
 }
 fieldset .add-remove-buttons {
   float: right;
+}
+
+div.highlight {
+  background: rgba(0, 0, 0, 0.1);
+  border: 0;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
+  float: left;
+  margin: 0 -0.625rem 0.625rem;
+  padding: 0.625rem 0.625rem 0.3125rem;
+  border-radius: 3px;
 }
 
 label, .dataTables_info {

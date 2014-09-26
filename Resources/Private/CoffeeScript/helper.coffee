@@ -26,11 +26,12 @@ $.fn.removeInputs = (slideTime) ->
 		$fieldset.find("button.remove").prop "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
 
 $.fn.clear_form = ->
-	$(this).find(":input").prop "disabled", false
-	$(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("")
-	$(this).find(":checkbox, :radio").prop "checked", false
-	$(this).find(".multiple:gt(0)").removeInputs()
-	$(this).find("button.remove").prop 'disabled', true
+	@each ->
+		$(this).find(":input").prop "disabled", false
+		$(this).find(":input:not(:checkbox):not([type=hidden]):not(:submit)").val("")
+		$(this).find(":checkbox, :radio").prop "checked", false
+		$(this).find(".multiple:gt(0)").removeInputs()
+		$(this).find("button.remove").prop 'disabled', true
 
 ucfirst = (string) ->
 	string.charAt(0).toUpperCase() + string.slice(1)

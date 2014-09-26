@@ -1,61 +1,6 @@
-$ ->
-
-	$("#edit").hide().populate_selects()
-	$("#edit textarea").autosize()
-
-	$("fieldset .multiple").append "<div class=\"add-remove-buttons\"><button class=\"remove\">-</button><button class=\"add\">+</button></div>"
-	$("fieldset .multiple button").click (e) ->
-		e.preventDefault()
-		div = $(this).closest(".multiple")
-		if $(this).hasClass("remove")
-			div.removeInputs 250
-		else if $(this).hasClass("add")
-			div.addInputs 250
-
-	$("input[type=url]").keyup ->
-		$(this).parent().next(".link").html( if $(this).val() then '<a class="icon-link" href="' + $(this).val() + '" target="_blank"></a>' else '' )
-
-	$("fieldset .multiple .remove").click()
-	$(".togglable + .togglable").hide()
-	$(".toggle").click (e) ->
-		e.preventDefault()
-		$(this).closest(".togglable").siblings(".togglable").addBack().slideToggle()
-
-	$(".new").click (e) ->
-		e.preventDefault()
-		$("#edit form").new_kloster()
-
-	$(".close").click (e) ->
-		e.preventDefault()
-		$(this).parent().closest("div[id]").slideUp()
-		$("#browse").slideDown()
-
-	$("form.edit").submit (e) ->
-		e.preventDefault()
-		type = $(this).attr('id')
-		if !type?
-			alert('Invalid type. Set form ID.')
-			return
-		$("select:disabled").prop("disabled", false).addClass "disabled"
-		unless $(this).find("[name=kloster_id]").val().length
-			$(this).create( type )
-		else
-			$(this).update( type )
-		$("select.disabled").prop "disabled", true
-
-	# Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
-	$(window).bind "keydown", (e) ->
-		if e.ctrlKey or e.metaKey
-			switch String.fromCharCode(e.which).toLowerCase()
-				when "s"
-					e.preventDefault()
-					$(":submit:visible:last").click()
-	
-	return
-
 # Fill the select fields with options
 # TODO: Use generalized function, only populate one type at a time and fetch separately
-$.fn.populate_selects = ->
+populateSelectsAction = ->
 	url = "getOptions"
 	$.getJSON url, (response) ->
 
@@ -71,7 +16,7 @@ $.fn.populate_selects = ->
 		options.bearbeiter = response[7]
 		options.url_typ = response[8]
 		$.each options, (name, values) ->
-			$select = $("select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]")
+			$select = $("#edit select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]")
 			$select.empty().append $("<option>",
 				value: ""
 				text: ""
@@ -84,8 +29,8 @@ $.fn.populate_selects = ->
 					)
 
 # Clear the edit form for a new Kloster
-$.fn.new_kloster = ->
-	$("#browse").slideUp()
+newAction = ->
+	$("#list").slideUp()
 	$("#edit").slideDown()
 	$(this).clear_form()
 	# Get selects to be autocompleted by class
@@ -94,7 +39,7 @@ $.fn.new_kloster = ->
 	$(this).find("input[type=url]").keyup()
 
 # Create a new Kloster
-$.fn.create = (type) ->
+createAction = (type) ->
 	$this = $(this)
 	if type is 'kloster'
 		$.post("create", $this.serialize()).done((respond, status, jqXHR) ->
@@ -112,23 +57,24 @@ $.fn.create = (type) ->
 			$this.message 'Error'
 			console.dir jqXHR.responseText
 
-# Load a single Kloster into the edit form
-# TODO: Generalize this function for all data types
-$.fn.read = (type, url) ->
+# Load a single entity into the edit form
+editAction = (type, id) ->
 
-	$this = $(this)
+	$this = $('#edit form')
 	$this.clear_form()
 
-	$("#browse").slideUp()
+	$("#list").slideUp()
 	$('#loading').show()
+
+	url = type + '/edit/' + id
 
 	$.getJSON url, (obj) ->
 
-		uuid = kloster.uuid
-
 		if type is 'kloster'
 
-			$this.attr 'action', 'update/' + uuid
+			uuid = kloster.uuid
+
+			$this.attr 'action', 'updateKloster/' + uuid
 
 			$fieldset = $("#klosterdaten")
 			$fieldset.find("label :input").each ->
@@ -210,15 +156,20 @@ $.fn.read = (type, url) ->
 		else
 
 			$this.attr 'action', 'update' + ucfirst(type) + '/' + uuid
+			$this.find("label :input").each ->
+				name = $(this).attr("name")
+				val = obj[name]
+				$(this).val val
 
 		$('#edit').slideDown()
 		$('#loading').hide()
+		# TODO: Generalize
 		$this.find(".autocomplete").autocomplete('ort')
 		$this.find("input[type=url]").keyup()
 		$this.find("textarea").trigger "autosize.resize"
 
 # Update a single Kloster
-$.fn.update = (type) ->
+updateAction = (type) ->
 	$this = $(this)
 	url = $this.attr "action"
 	$.post(url, $this.serialize()).done((respond, status, jqXHR) ->
@@ -231,3 +182,19 @@ $.fn.update = (type) ->
 	).fail (jqXHR, textStatus) ->
 		$this.message 'Error'
 		console.dir jqXHR.responseText
+
+# Delete a single Kloster
+# TODO: Type is not really needed here, URL contains all information
+deleteAction = (type, url, csrf) ->
+	$this = $(this)
+	check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
+	if check is true
+		csrf = $('#csrf').val()
+		$.post(url,
+			__csrfToken: csrf
+		).done((respond, status, jqXHR) ->
+			if status is "success"
+				$this.message 'Der Eintrag wurde gelöscht.'
+		).fail (jqXHR, textStatus) ->
+			$this.message 'Error'
+			console.dir jqXHR.responseText

@@ -6,7 +6,7 @@
   uriPattern: ''
   defaults:
     '@controller': 'Kloster'
-    '@action': 'index'
+    #'@action': 'index'
 -
   name: 'JSON-List Kloster URI'
   uriPattern: 'jsonList'
@@ -50,13 +50,6 @@
   defaults:
     '@controller': 'Kloster'
     '@action': 'search'
-
--
-  name: 'Edit Kloster URI'
-  uriPattern: 'edit/{kloster.__identity}'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'edit'
 
 -
   name: 'Get Kloster Options URI'
@@ -130,10 +123,19 @@
     '@controller': 'Ort'
     '@action': 'new'
     '@format': 'html'
-
 -
-  name: 'Default list routes'
+  name: 'Default list routes (controller only)'
   uriPattern: '{@controller}'
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
     '@action':     'list'
+-
+  name: 'Default list routes (controller with action)'
+  uriPattern: '{@controller}/{@action}'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'
+-
+  name: 'Default list routes (controller with action and id)'
+  uriPattern: '{@controller}/{@action}/{uuid}'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'

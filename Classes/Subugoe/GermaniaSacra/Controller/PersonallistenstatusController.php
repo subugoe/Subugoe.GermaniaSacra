@@ -33,7 +33,7 @@ class PersonallistenstatusController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('personallistenstatus'));
 		}
-		$this->view->assign('personallistenstatus', $this->personallistenstatusRepository->findAll());
+		$this->view->assign('personallistenstatus', ['data' => $this->personallistenstatusRepository->findAll()]);
 	}
 
 	/**

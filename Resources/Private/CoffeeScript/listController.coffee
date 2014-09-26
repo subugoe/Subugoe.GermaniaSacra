@@ -1,24 +1,14 @@
 # Make dataTables global so we can use it to access hidden table rows later
 dataTable = null
 
-$ ->
-
-	# TODO: Why is this function called even if there is no #list_form element?
-	if $("#list_form").length then $("#list_form").populate_list()
-
-	$("#list_form").submit (e) ->
-		e.preventDefault()
-		if $("input[name^='uuid']:checked").length is 0
-			$(this).message "Wählen Sie bitte mindestens einen Eintrag aus."
-			return false
-		$(this).update_list()
-
-	return
-
 # Fill the Kloster list
-$.fn.populate_list = ->
+populateListAction = (type) ->
 
-	$this = $(this)
+	$this = $('#' + type)
+
+	if ! $this.length
+		alert('There has to be a <section> whose id equals type')
+		return
 
 	$this.hide()
 	$('#loading').show()
@@ -42,15 +32,12 @@ $.fn.populate_list = ->
 
 	selectOptions = {}
 	dataTable = $table.DataTable(
-		sAjaxSource: '/entity/kloster'
+		sAjaxSource: '/entity/' + type
 		columns: columns
 		autoWidth: false
 		columnDefs: [
 			bSortable: false
-			aTargets: [ "no-sorting" ]
-		,
-			width: "10%"
-			targets: 1
+			aTargets: [ "not-sortable" ]
 		]
 		dom: "lipt" # 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
 		language:
@@ -62,7 +49,7 @@ $.fn.populate_list = ->
 				type: 'GET'
 				url: sSource
 				data: aoData
-				success: [setSelectOptions, fnCallback]
+				success: [ajaxSuccess, fnCallback]
 		fnDrawCallback: ->
 			# Since only visible textareas can be autosized, this has to be called after every page render
 			$tr = $table.find('tbody tr:not(.processed)')
@@ -71,32 +58,34 @@ $.fn.populate_list = ->
 				if $th.length
 					$input = $('<' + $th.data('input') + '/>').attr
 						name: $th.data('name')
-					if $th.data('name') is 'bearbeitungsstatus'
-						for obj in selectOptions.bearbeitungsstatus
-							$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
+					# Fill selects
+					if $th.data('input') is 'select'
+						select_name = $th.data('name')
+						if selectOptions[select_name]?
+							for obj in selectOptions[select_name]
+								$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
 					$(this).html( $input.val($(this).text()) )
 			$tr.each ->
 				uuid = $(this).find(':input[name=uuid]').val()
-				$(this).find(".edit").attr "href", "edit/" + uuid
-				$(this).find(".delete").attr "href", "delete/" + uuid
 				$(this).find("textarea").autosize()
 				# Mark row as dirty on change
 				$(this).find(":input:not(:checkbox)").change ->
 					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
 			$tr.addClass('processed')
-		setSelectOptions = (json) ->
+		ajaxSuccess = (json) ->
 			$this.show()
 			$('#loading').hide()
+			# TODO: Get select options for each select type
 			selectOptions.bearbeitungsstatus = json.bearbeitungsstatus
 	)
 
 	# Click handlers for edit and delete
 	$table.on "click", ".edit", (e) ->
 		e.preventDefault()
-		$("#edit form").read 'kloster', $(this).attr("href")
+		editAction(type, $(this).closest('tr').find(':input[name=uuid]').val())
 	$table.on "click", ".delete", (e) ->
 		e.preventDefault()
-		$("#delete").delete 'kloster', $(this).attr("href")
+		deleteAction(type, $(this).closest('tr').find(':input[name=uuid]').val())
 
 	# Apply the search
 	dataTable.columns().eq(0).each (colIdx) ->
@@ -114,8 +103,10 @@ $.fn.populate_list = ->
 	return
 
 # Save the Kloster list
-$.fn.update_list =  ->
-	$this = $(this)
+updateListAction = (type) ->
+
+	$this = $('#' + type)
+
 	$rows = dataTable.$('tr').has('input:checked')
 	formData = {}
 	$rows.each ->
@@ -135,20 +126,3 @@ $.fn.update_list =  ->
 	).fail (jqXHR, textStatus) ->
 		$this.message 'Error'
 		console.dir jqXHR.responseText
-
-
-# Delete a single Kloster
-# TODO: Type is not really needed here, URL contains all information
-$.fn.delete = (type, url, csrf) ->
-	$this = $(this)
-	check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
-	if check is true
-		csrf = $('#csrf').val()
-		$.post(url,
-			__csrfToken: csrf
-		).done((respond, status, jqXHR) ->
-			if status is "success"
-				$this.message 'Der Eintrag wurde gelöscht.'
-		).fail (jqXHR, textStatus) ->
-			$this.message 'Error'
-			console.dir jqXHR.responseText

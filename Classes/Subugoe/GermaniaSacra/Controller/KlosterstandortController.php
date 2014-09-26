@@ -47,7 +47,7 @@ class KlosterstandortController extends ActionController {
 	 */
 	public function newAction() {
 		$this->view->assign('klosters', $this->klosterRepository->findAll());
-		$this->view->assign('orts', $this->ortRepository->findAll());	
+		$this->view->assign('orts', $this->ortRepository->findAll());
 	}
 
 	/**
