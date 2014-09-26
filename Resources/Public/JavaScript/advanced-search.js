@@ -18,6 +18,7 @@ $(function() {
   });
   return $('#search_form .reset').click(function(e) {
     e.preventDefault();
+    $('input[name=alle]').val('');
     return $('#uuid_filter').val('').change();
   });
 });

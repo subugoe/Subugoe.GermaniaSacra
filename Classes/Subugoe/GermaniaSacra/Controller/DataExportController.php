@@ -365,6 +365,8 @@ class DataExportController extends ActionController {
 				$kirchenprovinzArr = array();
 				$ist_erzbistumArr = array();
 
+				$bemerkung_standortArr = array();
+
 				$kloster_standort_jahr50 = array();
 				$start = self::MIN_YEAR;
 
@@ -401,6 +403,7 @@ class DataExportController extends ActionController {
 						$klosterstandorte[$k][$i]['koordinaten'] = $breite . "," . $laenge;
 						$bemerkung_standort = $klosterstandort->getBemerkung_standort();
 						if (!empty($bemerkung_standort)) {
+							$bemerkung_standortArr[] = $bemerkung_standort;
 							$klosterstandorte[$k][$i]['bemerkung_standort'] = $bemerkung_standort;
 						}
 						unset($bemerkung_standort);
@@ -1266,6 +1269,12 @@ class DataExportController extends ActionController {
 					$klosterArr[$k]['standort_bis_verbal'] = $bis_verbalArr;
 				} else {
 					$klosterArr[$k]['standort_bis_verbal'] = '';
+				}
+
+				if (isset($bemerkung_standortArr) && !empty($bemerkung_standortArr)) {
+					$klosterArr[$k]['bemerkung_standort'] = $bemerkung_standortArr;
+				} else {
+					$klosterArr[$k]['bemerkung_standort'] = '';
 				}
 
 				if (isset($bisArr) && !empty($bisArr)) {
