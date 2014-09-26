@@ -1,9 +1,11 @@
-<section id="land">
+<h1>Länder</h1>
+
+<section id="list" data-type="land">
 	<form>
 		<table class="large-12 columns display">
 			<thead>
 				<tr>
-					<th data-input="input type='checkbox'" data-name="uuid" class="not-sortable"></th>
+					<th data-input="input type='checkbox'" data-name="uUID" class="not-sortable"></th>
 					<th data-input="textarea" data-name="land">Land</th>
 					<th data-input="input type='checkbox'" data-name="ist_in_deutschland">In Deutschland</th>
 					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
@@ -12,5 +14,15 @@
 		</table>
 		<input type="submit" value="Änderungen übernehmen">
 		<button class="new">Neues Land hinzufügen</button>
+	</form>
+</section>
+
+<section id="edit" data-type="land">
+	<button class="close">Zurück zur Landliste</button>
+	<form>
+		<input type="hidden" name="uUID">
+		<label class="large-8 columns">Land <textarea name="land"></textarea></label>
+		<label class="large-4 columns">In Deutschland <input type="checkbox" name="ist_in_deutschland"></label>
+		<input type="submit" value="Änderungen speichern">
 	</form>
 </section>

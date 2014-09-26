@@ -1,10 +1,14 @@
-$.fn.message = (text) ->
-	$('#message').remove()
+message = (text) ->
 	date = new Date()
-	$message = $('<div id="message"><span class="timestamp">' + date.toLocaleString() + '</span>' + text + '</div>')
-	$message.insertBefore( $(this) ).hide().slideDown()
+	$('#message').hide().html('<span class="timestamp">' + date.toLocaleString() + '</span>' + text + '<i class="hover close icon-close right">&times;</i>').slideDown();
+	$("#message .close").click (e) ->
+		e.preventDefault()
+		$('#message').slideUp()
 	$('html, body').animate
-		scrollTop: $message.offset().top
+		scrollTop: $('#message').offset().top
+
+ucfirst = (string) ->
+	string.charAt(0).toUpperCase() + string.slice(1)
 
 $.fn.addInputs = (slideTime) ->
 	if typeof slideTime is "undefined"
@@ -32,6 +36,3 @@ $.fn.clear_form = ->
 		$(this).find(":checkbox, :radio").prop "checked", false
 		$(this).find(".multiple:gt(0)").removeInputs()
 		$(this).find("button.remove").prop 'disabled', true
-
-ucfirst = (string) ->
-	string.charAt(0).toUpperCase() + string.slice(1)

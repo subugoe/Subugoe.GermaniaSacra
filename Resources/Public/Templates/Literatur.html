@@ -1,9 +1,10 @@
-<section id="literatur">
+<section id="list" data-type="literatur">
+	<h2>Literatur</h2>
 	<form>
 		<table class="large-12 columns display">
 			<thead>
 				<tr>
-					<th data-input="input type='checkbox'" data-name="uuid" class="not-sortable"></th>
+					<th data-input="input type='checkbox'" data-name="uUID" class="not-sortable"></th>
 					<th data-input="textarea" data-name="citekey">Citekey</th>
 					<th data-input="textarea" data-name="beschreibung">Beschreibung</th>
 					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
@@ -12,5 +13,15 @@
 		</table>
 		<input type="submit" value="Änderungen speichern">
 		<button class="new">Neue Literatur hinzufügen</button>
+	</form>
+</section>
+
+<section id="edit" data-type="literatur">
+	<button class="close">Zurück zur Literaturliste</button>
+	<form>
+		<input type="hidden" name="uUID">
+		<label class="large-4 columns">Citekey <textarea name="citekey" required></textarea></label>
+		<label class="large-8 columns">Beschreibung <textarea name="titel"></textarea></label>
+		<input type="submit" value="Änderungen speichern">
 	</form>
 </section>

@@ -39,7 +39,6 @@ class OrdenController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
-
 		$this->view->assign('orden', ['data' => $this->ordenRepository->findAll()]);
 	}
 

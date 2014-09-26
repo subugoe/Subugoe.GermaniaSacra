@@ -5,8 +5,9 @@
   name: 'Kloster List URI'
   uriPattern: ''
   defaults:
+    '@package': 'Subugoe.GermaniaSacra'
     '@controller': 'Kloster'
-    #'@action': 'index'
+    '@action': 'list'
 -
   name: 'JSON-List Kloster URI'
   uriPattern: 'jsonList'
@@ -128,14 +129,15 @@
   uriPattern: '{@controller}'
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
-    '@action':     'list'
+    '@action': 'list'
 -
   name: 'Default list routes (controller with action)'
   uriPattern: '{@controller}/{@action}'
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
--
-  name: 'Default list routes (controller with action and id)'
-  uriPattern: '{@controller}/{@action}/{uuid}'
-  defaults:
-    '@package': 'Subugoe.GermaniaSacra'
+# TODO: This works, but breaks login. Please check.
+#-
+#  name: 'Default list routes (controller with action and id)'
+#  uriPattern: '{@controller}/{@action}/{uUID}'
+#  defaults:
+#    '@package': 'Subugoe.GermaniaSacra'

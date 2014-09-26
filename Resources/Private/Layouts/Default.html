@@ -74,10 +74,11 @@
 		</section>
 	</nav>
 
-	<f:flashMessages class="flashmessages" />
+	<!--<f:flashMessages class="flashmessages" />-->
 
 	<div id="loading">Wird geladen&hellip; <i class="spinner spinner-icon right"></i></div>
 
+	<div id="message"></div>
 	<div id="content" ng-view=""></div>
 
 	<!-- Append this to every form via JavaScript -->
@@ -103,7 +104,6 @@
 	<script src="{f:uri.resource(path: 'JavaScript/geopicker.js')}"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/DataTables/jquery.dataTables.min.js')}"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/DataTables/dataTables.foundation.js')}"></script>
-	<script src="{f:uri.resource(path: 'JavaScript/DataTables/angular-datatables.min.js')}"></script>
 	<script>
 		$(document).foundation();
 	</script>

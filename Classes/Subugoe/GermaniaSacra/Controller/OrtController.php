@@ -63,7 +63,7 @@ class OrtController extends RestController {
 		$orts = $this->ortRepository->findOrts();
 
 		foreach ($orts as $k => $ort) {
-			$ortArr[$k]['uuid'] = $ort->getUUID();
+			$ortArr[$k]['uUID'] = $ort->getUUID();
 			$ortArr[$k]['ort'] = $ort->getOrt();
 			$ortArr[$k]['gemeinde'] = $ort->getGemeinde();
 			$ortArr[$k]['kreis'] = $ort->getKreis();
@@ -76,7 +76,9 @@ class OrtController extends RestController {
 			$ortArr[$k]['bistum'] = is_object($bistum) ? $bistum->getUUID() : null;
 		}
 
-		return json_encode(['data' => $ortArr]);
+		// TODO: Returning JSON directly would make the List template obsolete, but prevents /ort from being invoked directly
+		//return json_encode(['data' => $ortArr]);
+		$this->view->assign('orts', ['data' => $ortArr]);
 
 	}
 
@@ -94,7 +96,7 @@ class OrtController extends RestController {
 		$ortArr = array();
 		$ort = $this->ortRepository->findByIdentifier($uuid);
 
-		$ortArr['uuid'] = $ort->getUUID();
+		$ortArr['uUID'] = $ort->getUUID();
 		$ortArr['ort'] = $ort->getOrt();
 		$ortArr['gemeinde'] = $ort->getGemeinde();
 		$ortArr['kreis'] = $ort->getKreis();

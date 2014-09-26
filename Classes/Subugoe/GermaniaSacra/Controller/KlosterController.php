@@ -168,6 +168,7 @@ class KlosterController extends ActionController {
 	 * @return integer $status http status
 	 */
 	public function updateListAction() {
+
 		if ($this->request->hasArgument('klosters')) {
 			$klosterlist = $this->request->getArgument('klosters');
 		}
@@ -243,7 +244,7 @@ class KlosterController extends ActionController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('monasteries'));
 		}
-		$this->view->assign('monasteries', $this->klosterRepository->findAll());
+		//$this->view->assign('monasteries', $this->klosterRepository->findAll());
 	}
 
 	/**
@@ -265,7 +266,7 @@ class KlosterController extends ActionController {
 
 		$klosterArr = array();
 		foreach ($klosters as $k => $kloster) {
-			$klosterArr[$k]['uuid'] = $kloster->getUUID();
+			$klosterArr[$k]['uUID'] = $kloster->getUUID();
 			$klosterArr[$k]['uid'] = $kloster->getUid();
 			$klosterArr[$k]['kloster'] = $kloster->getKloster();
 			$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
@@ -324,7 +325,7 @@ class KlosterController extends ActionController {
 
 		$klosterArr = array();
 		foreach ($klosters as $k => $kloster) {
-			$klosterArr[$k]['uuid'] = $kloster->getUUID();
+			$klosterArr[$k]['uUID'] = $kloster->getUUID();
 			$klosterArr[$k]['kloster'] = $kloster->getKloster();
 			$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
 			$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
@@ -358,7 +359,7 @@ class KlosterController extends ActionController {
 		$bearbeitungsstatusArr = array();
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
 		foreach ($bearbeitungsstatuses as $bearbeitungsstatus) {
-			$bearbeitungsstatusArr[] = array('uuid' => $bearbeitungsstatus->getUUID(), 'name' => $bearbeitungsstatus->getName());
+			$bearbeitungsstatusArr[] = array('uUID' => $bearbeitungsstatus->getUUID(), 'name' => $bearbeitungsstatus->getName());
 		}
 
 		$response = array();
@@ -765,8 +766,8 @@ class KlosterController extends ActionController {
 	 * @return $kloster_id The id of the kloster in json format
 	 */
 	public function solrUpdateWhenKlosterCreateAction() {
-		if ($this->request->hasArgument('uuid')) {
-			$uuid = $this->request->getArgument('uuid');
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
 			return json_decode($uuid);
 		}
 	}
@@ -776,14 +777,14 @@ class KlosterController extends ActionController {
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return array $response The data of the selected Kloster entry in json format
 	 */
-	public function editAction() {
+	public function readAction() {
 
-		$uuid = $this->request->getArgument('uuid');
+		$uuid = $this->request->getArgument('uUID');
 		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 
 		// Kloster data
 		$klosterArr = array();
-		$klosterArr['uuid'] = $kloster->getUUID();
+		$klosterArr['uUID'] = $kloster->getUUID();
 		$klosterArr['uid'] = $kloster->getUid();
 		$klosterArr['kloster_name'] = $kloster->getKloster();
 		$klosterArr['kloster_id'] = $kloster->getKloster_id();
@@ -816,7 +817,7 @@ class KlosterController extends ActionController {
 			$klosterstandorte[$i]['standort_interne_bemerkung'] = $klosterstandort->getBemerkung();
 
 			$ort = $klosterstandort->getOrt();
-			$klosterstandorte[$i]['uuid'] = $ort->getUUID();
+			$klosterstandorte[$i]['uUID'] = $ort->getUUID();
 			$klosterstandorte[$i]['ort'] = $ort->getFullOrt();
 			$klosterstandorte[$i]['wuestung'] = $ort->getWuestung();
 
@@ -1353,8 +1354,8 @@ class KlosterController extends ActionController {
 	* @FLOW\SkipCsrfProtection
 	*/
 	public function updateSolrAfterKlosterUpdateAction() {
-		if ($this->request->hasArgument('uuid')) {
-			$uuid = $this->request->getArgument('uuid');
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
 			return json_decode($uuid);
 		}
 	}
@@ -1406,7 +1407,7 @@ class KlosterController extends ActionController {
 			$orte = array();
 			foreach ($searchResult as $res) {
 				$orte[] = array(
-					'uuid' => $res->getUUID(),
+					'uUID' => $res->getUUID(),
 					'name' => $res->getFullOrt()
 				);
 			}

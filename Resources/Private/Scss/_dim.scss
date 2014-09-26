@@ -20,6 +20,7 @@ body {
 	background: #fff;
 	box-shadow: $reveal-box-shadow;
 	clear: both;
+	display: none;
 	margin: rem-calc(20);
 	padding: rem-calc(20);
 	.timestamp {
@@ -253,11 +254,17 @@ td {
 	}
 }
 
+.hover:hover {
+	color: $primary-color;
+	cursor: pointer;
+}
+
 .clear {
 	clear: both;
 }
 
 .no-wrap {
+	text-align: right;
 	white-space: nowrap;
 }
 

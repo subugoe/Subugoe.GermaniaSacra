@@ -7624,6 +7624,7 @@ body > section {
   background: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
   clear: both;
+  display: none;
   margin: 1.25rem;
   padding: 1.25rem;
 }
@@ -7676,6 +7677,7 @@ div.highlight {
   background: rgba(0, 0, 0, 0.1);
   border: 0;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
+  float: left;
   margin: 0 -0.625rem 0.625rem;
   padding: 0.625rem 0.625rem 0.3125rem;
   border-radius: 3px;
@@ -7869,10 +7871,6 @@ input[type="submit"],
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
 }
 
-button.new, input.new[type="submit"] {
-  float: left;
-}
-
 .top-bar-section a {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #c90230), color-stop(95%, #ac001e), color-stop(100%, #a20019)) !important;
   background: -webkit-linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
@@ -7948,11 +7946,17 @@ td.dirty {
   font-weight: bold;
 }
 
+.hover:hover {
+  color: #c90230;
+  cursor: pointer;
+}
+
 .clear {
   clear: both;
 }
 
 .no-wrap {
+  text-align: right;
   white-space: nowrap;
 }
 
