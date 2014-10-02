@@ -407,7 +407,12 @@ class Kloster {
 	* @return void
 	*/
 	public function prePersist() {
-		$this->setCreationDate(new \DateTime());
+		if (!isset($this->creationDate)) {
+			$this->setCreationDate(new \DateTime());
+		}
+		else {
+			$this->setCreationDate($this->creationDate);
+		}
 	}
 
 	/**
