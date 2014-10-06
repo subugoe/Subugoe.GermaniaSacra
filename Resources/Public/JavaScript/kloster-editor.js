@@ -70,10 +70,7 @@ $.fn.populate_selects = function() {
     return $.each(options, function(name, values) {
       var $select;
       $select = $("select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]");
-      $select.empty().append($("<option>", {
-        value: "",
-        text: ""
-      }));
+      $select.empty();
       return $.each(values, function(index, object) {
         return $.each(object, function(value, uuid) {
           return $select.append($("<option>", {

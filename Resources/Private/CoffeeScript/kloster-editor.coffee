@@ -67,10 +67,7 @@ $.fn.populate_selects = ->
 		options.url_typ = response[8]
 		$.each options, (name, values) ->
 			$select = $("select[name=\"" + name + "\"], select[name=\"" + name + "[]\"]")
-			$select.empty().append $("<option>",
-				value: ""
-				text: ""
-			)
+			$select.empty()
 			$.each values, (index, object) ->
 				$.each object, (value, uuid) ->
 					$select.append $("<option>",
