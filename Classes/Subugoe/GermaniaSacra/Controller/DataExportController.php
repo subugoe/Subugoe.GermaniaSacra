@@ -355,8 +355,6 @@ class DataExportController extends ActionController {
 				$bisArr = array();
 				$ortArr = array();
 				$ortuidArr = array();
-				$kreisArr = array();
-				$gemeindeArr = array();
 				$wuestungArr = array();
 				$landArr = array();
 				$ist_in_deutschlandArr = array();
@@ -535,18 +533,6 @@ class DataExportController extends ActionController {
 							if (!empty($ortuid)) {
 								$ortuidArr[] = $ortuid;
 								$klosterstandorte[$k][$i]['ort_uid'] = $ortuid;
-							}
-
-							$kreis = $ortObj->getKreis();
-							if (!empty($kreis)) {
-								$kreisArr[] = $kreis;
-								$klosterstandorte[$k][$i]['kreis'] = $kreis;
-							}
-
-							$gemeinde = $ortObj->getGemeinde();
-							if (!empty($gemeinde)) {
-								$gemeindeArr[] = $gemeinde;
-								$klosterstandorte[$k][$i]['gemeinde'] = $gemeinde;
 							}
 
 							$wuestung = $ortObj->getWuestung();
@@ -974,12 +960,7 @@ class DataExportController extends ActionController {
 									if (!empty($mystandort['ort'])) {
 										$standort_ordenArr[$k][$m][$n]['ort'] = $mystandort['ort'];
 									}
-									if (!empty($mystandort['gemeinde'])) {
-										$standort_ordenArr[$k][$m][$n]['gemeinde'] = $mystandort['gemeinde'];
-									}
-									if (!empty($mystandort['kreis'])) {
-										$standort_ordenArr[$k][$m][$n]['kreis'] = $mystandort['kreis'];
-									}
+
 									if (!empty($mystandort['land'])) {
 										$standort_ordenArr[$k][$m][$n]['land'] = $mystandort['land'];
 									}
@@ -1290,14 +1271,6 @@ class DataExportController extends ActionController {
 
 				if (isset($ortuidArr) && !empty($ortuidArr)) {
 					$klosterArr[$k]['ort_uid'] = $ortuidArr;
-				}
-
-				if (isset($kreisArr) && !empty($kreisArr)) {
-					$klosterArr[$k]['kreis'] = $kreisArr;
-				}
-
-				if (isset($gemeindeArr) && !empty($gemeindeArr)) {
-					$klosterArr[$k]['gemeinde'] = $gemeindeArr;
 				}
 
 				if (isset($wuestungArr) && !empty($wuestungArr)) {
