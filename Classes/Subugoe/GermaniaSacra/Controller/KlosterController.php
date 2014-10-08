@@ -788,7 +788,10 @@ class KlosterController extends ActionController {
 		$klosterArr['band_seite'] = $kloster->getBand_seite();
 		$klosterArr['text_gs_band'] = $kloster->getText_gs_band();
 		$klosterArr['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
-		$klosterArr['creationdate'] = $kloster->getCreationDate();
+
+		$creationdate = $kloster->getCreationDate()->format('d.m.Y H:i:s');
+		$klosterArr['creationdate'] = $creationdate;
+
 		$band = $kloster->getBand();
 		if (is_object($band)) {
 			$klosterArr['band'] = $band->getUUID();
