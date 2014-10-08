@@ -116,10 +116,7 @@ $.fn.read_kloster = (url) ->
 			name = $(this).attr("name")
 			if typeof name is "undefined"
 				return name = name.replace("[]", "")
-			if name is 'changeddate' or name is 'creationdate'
-				val = if kloster[name] then kloster[name].date.substr(0, kloster[name].date.indexOf(".")) else ''
-			else
-				val = kloster[name]
+			val = kloster[name]
 			$(this).val val
 
 		$fieldset = $("#klosterorden")

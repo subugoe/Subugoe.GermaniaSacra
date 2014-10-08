@@ -124,11 +124,7 @@ $.fn.read_kloster = function(url) {
       if (typeof name === "undefined") {
         return name = name.replace("[]", "");
       }
-      if (name === 'changeddate' || name === 'creationdate') {
-        val = kloster[name] ? kloster[name].date.substr(0, kloster[name].date.indexOf(".")) : '';
-      } else {
-        val = kloster[name];
-      }
+      val = kloster[name];
       return $(this).val(val);
     });
     $fieldset = $("#klosterorden");
