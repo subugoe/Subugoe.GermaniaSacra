@@ -25,17 +25,22 @@ namespace Subugoe\GermaniaSacra\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
-use Subugoe\GermaniaSacra\Service\JsonGeneratorService;
 
 /**
- * Generates json files from entities
- * @deprecated use JsonGeneratorService
+ * Utility to work with entity names
  */
-class JsonGeneratorUtility {
+class EntityUtility {
 
-	static public function generateJsonFile($entityName) {
-		$fileService = new JsonGeneratorService();
-		$fileService->generateJsonFile($entityName);
+	/**
+	 * @param string $className
+	 * @return string
+	 */
+	static public function getEntityNameFromControllerClassName($className) {
+		$path = explode('\\', $className);
+		$shortClass = array_pop($path);
+
+		$entityName = strtolower(str_replace('Controller', '', $shortClass));
+		return $entityName;
 	}
 
 } 

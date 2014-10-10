@@ -31,7 +31,7 @@ class OrtRepository extends Repository {
 	 * @param integer $limit The select limit
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The ort
 	 */
-	public function findOrts($offset=0, $limit=50) {
+	public function findOrts($offset=0, $limit=50000) {
 	    $query = $this->createQuery();
 		$query->setOffset($offset);
 		$query->setLimit($limit);
