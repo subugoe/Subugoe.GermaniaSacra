@@ -13,12 +13,6 @@ define('MSX_APPEND', 3);
 
 class DumpController extends ActionController {
 
-	/**
-	 * @Flow\Inject
-	 * @var \Doctrine\Common\Persistence\ObjectManager
-	 */
-	protected $entityManager;
-
 	protected $server;
 	protected $port;
 	protected $username;
@@ -60,17 +54,17 @@ class DumpController extends ActionController {
 
 	/**
 	 * @var string
-	*/
+	 */
 	protected $dumpDirectory;
 
 	/**
 	 * @var array
-	*/
+	 */
 	protected $settings;
 
 	/**
 	 * @param array $settings
-	*/
+	 */
 	public function injectSettings(array $settings) {
 		$this->settings = $settings;
 	}
@@ -165,7 +159,6 @@ class DumpController extends ActionController {
 				$anhang["type"] = "application/octet-stream";
 
 			$status = true;
-			// return true;
 			return array($status, $path);
 		} else {
 			return $sql;
@@ -176,17 +169,29 @@ class DumpController extends ActionController {
 	 * @return mixed
 	 */
 	protected function _Connect() {
-		return $this->entityManager->getConnection();
+		if (!$this->connected) {
+			if (!$this->server) $this->server = 'localhost';
+			$host = $this->server;
+			if ($this->port) {
+				$port = $this->port;
+			} else {
+				$port = 3306;
+			}
+			$this->link_id = new \mysqli($host, $this->username, $this->password, $this->database, $port);
+		}
+
+		if (!$this->link_id) {
+			$this->error = mysqli_error($this->link_id);
+		}
+		return $this->link_id;
 	}
 
 	protected function _Query($sql) {
 		if ($this->link_id !== -1) {
-			$result = mysql_query($sql, $this->link_id);
-		} else {
-			$result = mysql_query($sql);
+			$result = mysqli_query($this->link_id, $sql);
 		}
 		if (!$result) {
-			$this->error = mysql_error();
+			$this->error = mysqli_error($this->link_id);
 		}
 		return $result;
 	}
@@ -196,7 +201,7 @@ class DumpController extends ActionController {
 		if (!($result = $this->_Query('SHOW TABLES'))) {
 			return false;
 		}
-		while ($row = mysql_fetch_row($result)) {
+		while ($row = mysqli_fetch_row($result)) {
 			if (empty($this->tables) || in_array($row[0], $this->tables)) {
 				$value[] = $row[0];
 			}
@@ -223,7 +228,7 @@ class DumpController extends ActionController {
 			if (!($result = $this->_Query('SHOW CREATE TABLE ' . $table))) {
 				return false;
 			}
-			$row = mysql_fetch_assoc($result);
+			$row = mysqli_fetch_assoc($result);
 			$value .= str_replace("\n", MSX_NL, $row['Create Table']) . ';';
 			$value .= MSX_NL . MSX_NL;
 		}
@@ -255,17 +260,17 @@ class DumpController extends ActionController {
 		if (!($result = $this->_Query('SELECT * FROM ' . $table))) {
 			return false;
 		}
-		$num_rows = mysql_num_rows($result);
+		$num_rows = mysqli_num_rows($result);
 		if ($num_rows == 0) {
 			return $value;
 		}
 		$insert = 'INSERT INTO `' . $table . '`';
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		$insert .= ' (`' . implode('`,`', array_keys($row)) . '`)';
 		$insert .= ' VALUES ';
 
 		$fields = count($row);
-		mysql_data_seek($result, 0);
+		mysqli_data_seek($result, 0);
 
 		if ($this->locks) {
 			$value .= 'LOCK TABLES ' . $table . ' WRITE;' . MSX_NL;
@@ -279,7 +284,7 @@ class DumpController extends ActionController {
 
 		$j = 0;
 		$size = 0;
-		while ($row = mysql_fetch_row($result)) {
+		while ($row = mysqli_fetch_row($result)) {
 			if ($fp) {
 				$i = 0;
 				$value = true;
@@ -381,7 +386,7 @@ class DumpController extends ActionController {
 			$value .= '# ' . MSX_NL;
 			$value .= '# Host: ' . $this->server . MSX_NL;
 			$value .= '# Generated: ' . date('M j, Y') . ' at ' . date('H:i') . MSX_NL;
-			$value .= '# MySQL version: ' . mysql_get_server_info() . MSX_NL;
+			$value .= '# MySQL version: ' . mysqli_get_server_info($this->link_id) . MSX_NL;
 			$value .= '# PHP version: ' . phpversion() . MSX_NL;
 			if (!empty($this->database)) {
 				$value .= '# ' . MSX_NL;
