@@ -16,8 +16,9 @@ $(function() {
       return alert('Suche fehlgeschlagen');
     });
   });
-  return $('#search_form .reset').click(function(e) {
+  return $('form .reset').click(function(e) {
     e.preventDefault();
-    return $('#uuid_filter').val('').change();
+    $('#uuid_filter').val('').change();
+    return $(this).parents('form').clear_form();
   });
 });
