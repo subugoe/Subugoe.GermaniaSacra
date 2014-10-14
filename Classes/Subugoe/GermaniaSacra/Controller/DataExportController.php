@@ -678,7 +678,9 @@ class DataExportController extends ActionController {
 					$ordenObj = $this->ordenRepository->findByIdentifier($ordenUUID);
 					$ordo = $ordenObj->getOrdo();
 					$ordenstyp = $ordenObj->getOrdenstyp();
-					$graphik = $ordenObj->getGraphik();
+					$graphikdatei = explode('.png', $ordenObj->getGraphik());
+					$graphik = $graphikdatei[0];
+
 					$symbol = $ordenObj->getSymbol();
 					$klosterstatus = $ko->getKlosterstatus();
 
