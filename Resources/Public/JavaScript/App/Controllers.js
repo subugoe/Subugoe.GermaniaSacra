@@ -25,7 +25,7 @@ germaniaSacra.controller('listController', function($scope, $http, DTOptionsBuil
       });
     });
     return nRow;
-  });
+  }).withDisplayLength(100);
   return $scope.update = function() {
     var changes, entity, _i, _len, _ref;
     changes = {};

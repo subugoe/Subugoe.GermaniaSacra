@@ -45,6 +45,7 @@ $.fn.populate_list = function() {
     sAjaxSource: '/entity/kloster',
     columns: columns,
     autoWidth: false,
+    pageLength: 100,
     columnDefs: [
       {
         bSortable: false,

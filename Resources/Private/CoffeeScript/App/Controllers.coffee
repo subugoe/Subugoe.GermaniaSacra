@@ -26,6 +26,7 @@ germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTC
 				$scope.$apply ->
 					$scope.entities[nRow._DT_RowIndex].selected = true
 			nRow
+		.withDisplayLength(100);
 
 	$scope.update = ->
 		# Only post selected rows
