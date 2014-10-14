@@ -1236,8 +1236,7 @@ class DataImportController extends ActionController {
 				$symbol = $ordenvalue['Symbol'];
 				$graphik = null;
 				if (isset($ordenvalue['Grafikdatei']) && !empty($ordenvalue['Grafikdatei'])) {
-					$grafikdatei = explode('.png', $ordenvalue['Grafikdatei']);
-					$graphik = $grafikdatei[0];
+					$graphik = $ordenvalue['Grafikdatei'];
 				}
 				$ordenstyp = $ordenvalue['Geschlecht'];
 				$gnd = $ordenvalue['GND_Orden'];
