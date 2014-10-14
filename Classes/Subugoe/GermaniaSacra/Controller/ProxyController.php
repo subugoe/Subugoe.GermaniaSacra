@@ -104,7 +104,7 @@ class ProxyController extends ActionController {
 			$date->setTimestamp(filemtime($entityFile));
 			$this->response->setLastModified(gmdate('D, d M Y H:i:s', filemtime($entityFile)) . '  GMT');
 			$this->response->setHeader('Content-Type', 'application/json');
-			return file_get_contents($entityFile);
+			return \TYPO3\Flow\Utility\Files::getFileContents($entityFile);
 		} else {
 			// TODO generate for all entities
 			if ($entityName === 'kloster') {

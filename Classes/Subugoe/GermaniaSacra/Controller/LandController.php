@@ -35,6 +35,7 @@ class LandController extends ActionController {
 			$this->view->setVariablesToRender(array('land'));
 		}
 		$this->view->assign('land', $this->landRepository->findAll());
+		return $this->view->render();
 	}
 
 	/**

@@ -54,12 +54,12 @@ class DumpController extends ActionController {
 
 	/**
 	 * @var string
-	 */
+	*/
 	protected $dumpDirectory;
 
 	/**
 	 * @var array
-	 */
+	*/
 	protected $settings;
 
 	/**
@@ -79,7 +79,7 @@ class DumpController extends ActionController {
 
 	public function __construct() {
 		parent::__construct();
-		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/';
+		$this->dumpDirectory = FLOW_PATH_DATA . 'GermaniaSacra/Dump/';
 		if (!file_exists($this->dumpDirectory)) {
 			mkdir($this->dumpDirectory, 0777, true);
 		}
