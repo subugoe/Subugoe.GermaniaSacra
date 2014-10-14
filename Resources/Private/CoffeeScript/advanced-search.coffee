@@ -14,6 +14,7 @@ $ ->
 		search.fail (data) ->
 			alert 'Suche fehlgeschlagen'
 
-	$('#search_form .reset').click (e) ->
+	$('form .reset').click (e) ->
 		e.preventDefault()
 		$('#uuid_filter').val('').change()
+		$(this).parents('form').clear_form()
