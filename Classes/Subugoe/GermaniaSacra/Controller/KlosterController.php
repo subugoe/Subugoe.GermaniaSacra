@@ -142,6 +142,11 @@ class KlosterController extends ActionController {
 	);
 
 	/**
+	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeiter
+	 */
+	protected $bearbeiterObj;
+
+	/**
 	 * @var array
 	*/
 	protected  $joinParamArr = array(
@@ -370,18 +375,20 @@ class KlosterController extends ActionController {
 
 	}
 
+	public function initializeAction() {
+		$account = $this->securityContext->getAccount();
+		$this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
+	}
+
+
+
+
 	/**
 	 * Calls the index page
 	 * @return void
 	 */
 	public function indexAction() {
-		if (isset($_SERVER["QUERY_STRING"]) && !empty($_SERVER["QUERY_STRING"])) {
-			$query_string = explode("=", $_SERVER["QUERY_STRING"]);
-			$page = (integer)trim($query_string[1]);
-		}
-		if (!isset($page) && empty($page)) $page = 1;
-		$this->view->assign('klosters', $this->klosterRepository->findAll());
-		$this->view->assign('page', $page);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**
@@ -495,11 +502,10 @@ class KlosterController extends ActionController {
 			$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 			$kloster->setBearbeitungsstatus($bearbeitungsstatus);
 
-			$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
-			$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
-			$kloster->setBearbeiter($bearbeiter);
+			$kloster->setBearbeiter($this->bearbeiterObj);
 
-			$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier('444eabb7-cb8d-33f0-df78-17f8e70ebfa0');
+			$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
+			$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
 			$kloster->setPersonallistenstatus($personallistenstatus);
 
 			$band_uuid = $this->request->getArgument('band');
@@ -802,9 +808,12 @@ class KlosterController extends ActionController {
 		$personallistenstatus = $kloster->getPersonallistenstatus();
 		$klosterArr['personallistenstatus'] = $personallistenstatus->getUUID();
 		$bearbeiter = $kloster->getBearbeiter();
-		$klosterArr['bearbeiter'] = $bearbeiter->getUUID();
-		$klosterArr['changeddate'] = $kloster->getChangedDate();
+		$klosterArr['bearbeiter'] = $bearbeiter->getBearbeiter();
 
+		if ($kloster->getChangedDate()) {
+			$changeddate = $kloster->getChangedDate()->format('d.m.Y H:i:s');
+			$klosterArr['changeddate'] = $changeddate;
+		}
 		// Klosterstandort data
 		$klosterstandorte = array();
 		$klosterstandorts = $kloster->getKlosterstandorts();
@@ -1039,8 +1048,7 @@ class KlosterController extends ActionController {
 		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
-		$bearbeiter_uuid = $this->request->getArgument('bearbeiter');
-		$bearbeiter = $this->bearbeiterRepository->findByIdentifier($bearbeiter_uuid);
+		$bearbeiter = $this->bearbeiterObj;
 		$kloster->setBearbeiter($bearbeiter);
 		$band_uuid = $this->request->getArgument('band');
 		$band = $this->bandRepository->findByIdentifier($band_uuid);

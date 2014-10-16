@@ -31,6 +31,18 @@ use Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl;
 class DataImportController extends ActionController {
 
 	/**
+	 * @FLOW\Inject
+	 * @var \TYPO3\Flow\Security\AccountFactory
+	 */
+	protected $accountFactory;
+
+	/**
+	* @FLOW\Inject
+	* @var \TYPO3\Flow\Security\AccountRepository
+	*/
+	protected $accountRepository;
+
+	/**
 	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\BearbeiterRepository
 	 */
@@ -327,18 +339,32 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importBearbeiterAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
-		$sql = 'SELECT ID, Bearbeiter FROM Bearbeiter';
-		$bearbeiters = $sqlConnection->fetchAll($sql);
-		if (isset($bearbeiters) and is_array($bearbeiters)) {
-			foreach ($bearbeiters as $be) {
-				$uid = $be['ID'];
-				$bearbeiter = $be['Bearbeiter'];
-				$bearbeiterObject = new Bearbeiter();
-				$bearbeiterObject->setUid($uid);
-				$bearbeiterObject->setBearbeiter($bearbeiter);
-				$this->bearbeiterRepository->add($bearbeiterObject);
-				$this->persistenceManager->persistAll();
+
+		$checkIfTableExists = $sqlConnection->getSchemaManager()->tablesExist('subugoe_germaniasacra_domain_model_bearbeiter');
+		if (!$checkIfTableExists) {
+
+			$sql = 'SELECT ID, Bearbeiter FROM Bearbeiter';
+			$bearbeiters = $sqlConnection->fetchAll($sql);
+			if (isset($bearbeiters) and is_array($bearbeiters)) {
+				foreach ($bearbeiters as $be) {
+					$uid = $be['ID'];
+					$bearbeiter = $be['Bearbeiter'];
+
+					$userName = $this->createUsername($bearbeiter);
+					$password = $this->createPassword();
+
+					$account = $this->accountFactory->createAccountWithPassword($userName,$password, array('Flow.Login:Administrator'));
+					$this->accountRepository->add($account);
+					$bearbeiterObject = new Bearbeiter();
+					$bearbeiterObject->setUid($uid);
+					$bearbeiterObject->setBearbeiter($bearbeiter);
+					$bearbeiterObject->setAccount($account);
+					$this->bearbeiterRepository->add($bearbeiterObject);
+					$this->persistenceManager->persistAll();
+					$this->createUsernamePasswordFile($userName, $password);
+				}
 			}
 		}
 	}
@@ -2241,5 +2267,45 @@ class DataImportController extends ActionController {
 
 	}
 
+	/**
+	 * @param string $fullName
+	 * @return string
+	 */
+	protected function createUsername($fullName) {
+		$username = implode('.', explode(' ', $fullName));
+		$username = strtolower(str_replace(
+		array('Ä','ä','Ö','ö','Ü','ü','ß'),
+		array('Ae','ae','Oe','oe','Ue','ue','ss'), $username));
+
+		return $username;
+	}
+
+	/**
+	 * @return string
+	 */
+	private function createPassword() {
+		$chars ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.$@#&0123456789";
+		$password = '';
+		for($i = 0; $i < 8; $i++) {
+			$password .= substr($chars, rand(0, strlen($chars) - 1), 1);
+		}
+		return $password;
+	}
+
+	/**
+	 * @param string $userName
+	 * @param string $password
+	 */
+	private function createUsernamePasswordFile($userName, $password) {
+		$usernamePassword = 'Benutzername: ' . $userName . PHP_EOL;
+		$usernamePassword .= 'Password: ' . $password . PHP_EOL;
+		$usernamePassword .= PHP_EOL;
+
+		$usernamePasswordFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/usernamePassword.txt';
+		if (!is_dir(dirname($usernamePasswordFile))) {
+			mkdir(dirname($usernamePasswordFile), 0777, TRUE);
+		}
+		file_put_contents($usernamePasswordFile, $usernamePassword,  FILE_APPEND);
+	}
 }
 ?>
