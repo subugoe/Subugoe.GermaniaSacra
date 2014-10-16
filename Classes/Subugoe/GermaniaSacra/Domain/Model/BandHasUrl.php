@@ -19,7 +19,7 @@ class BandHasUrl {
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Url
-	 * @ORM\ManyToOne(inversedBy="bandHasUrls")
+	 * @ORM\ManyToOne
 	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $url;
