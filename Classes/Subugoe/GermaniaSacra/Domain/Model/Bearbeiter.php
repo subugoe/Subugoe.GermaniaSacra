@@ -33,6 +33,12 @@ class Bearbeiter {
 	protected $bearbeiter;
 
 	/**
+	 * @var \TYPO3\Flow\Security\Account
+	 * @ORM\ManyToOne(cascade={"all"})
+	 */
+	protected $account;
+
+	/**
 	 * @return integer
 	 */
 	public function getUid() {
@@ -60,6 +66,25 @@ class Bearbeiter {
 	 */
 	public function setBearbeiter($bearbeiter) {
 		$this->bearbeiter = $bearbeiter;
+	}
+
+	/**
+	 * Sets (and adds if necessary) the account.
+	 *
+	 * @param \TYPO3\Flow\Security\Account $account
+	 * @return void
+	 */
+	public function setAccount(\TYPO3\Flow\Security\Account $account) {
+		$this->account = $account;
+	}
+
+	/**
+	 * Returns the account, if one has been defined.
+	 *
+	 * @return \TYPO3\Flow\Security\Account $account
+	 */
+	public function getAccount() {
+		return $this->account;
 	}
 
 	public function __toString() {
