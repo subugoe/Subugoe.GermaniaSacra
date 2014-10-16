@@ -67,7 +67,7 @@ class Klosterorden {
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Klosterstatus
-	 * @ORM\ManyToOne(inversedBy="klosterordens")
+	 * @ORM\ManyToOne
 	 * @ORM\JoinColumn(onDelete="NO ACTION")
 	 */
 	protected $klosterstatus;

@@ -31,7 +31,7 @@ class Kloster {
 	 * @var integer
 	 * @ORM\Column(nullable=true)
 	 */
-	public $kloster_id;
+	protected $kloster_id;
 
 	/**
 	 * @Flow\Validate(type="Text")
