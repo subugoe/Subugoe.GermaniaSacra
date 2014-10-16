@@ -923,6 +923,10 @@ class KlosterController extends ActionController {
 
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
+		$this->bearbeitungsstatusRepository->setDefaultOrderings(
+				array('name' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
 		foreach ($bearbeitungsstatuses as $n => $bearbeitungsstatus) {
 			$bearbeitungsstatusArr[$n] = array($bearbeitungsstatus->getName() => $bearbeitungsstatus->getUUID());
@@ -938,7 +942,7 @@ class KlosterController extends ActionController {
 		// Band data
 		$bandArr = array();
 		$this->bandRepository->setDefaultOrderings(
-				array('titel' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+				array('sortierung' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bands = $this->bandRepository->findAll();
 		foreach ($bands as $p => $band) {
