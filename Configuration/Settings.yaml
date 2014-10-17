@@ -1,11 +1,5 @@
 Subugoe:
   GermaniaSacra:
-    mysql:
-      server: '127.0.0.1'
-      port: 3306
-      user: 'root'
-      password: 'vagrant'
-      database: 'gsflow'
     data:
       geoJson: 'http://adw-goe.de/typo3conf/ext/tmpl_adw/Resources/Public/Images/GermaniaSacra/Bistumsgrenzen/GSBistumsgrenzenGEOJSON.geojson'
       literature: 'http://adw-goe.de/api/forschung/forschungsprojekte-akademienprogramm/germania-sacra/klosterdatenbank/bibliographieinterface/bibliography/588/'
