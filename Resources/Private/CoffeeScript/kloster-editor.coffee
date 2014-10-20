@@ -83,6 +83,7 @@ $.fn.new_kloster = ->
 	$(this).find(".autocomplete").autocomplete()
 	$(this).find("textarea").trigger "autosize.resize"
 	$(this).find("input[type=url]").keyup()
+	$('select option:contains("Erfassung")').prop('selected',true);
 
 # Create a new Kloster
 $.fn.create_kloster = ->
