@@ -89,7 +89,8 @@ $.fn.new_kloster = function() {
   $(this).clear_form();
   $(this).find(".autocomplete").autocomplete();
   $(this).find("textarea").trigger("autosize.resize");
-  return $(this).find("input[type=url]").keyup();
+  $(this).find("input[type=url]").keyup();
+  return $('select option:contains("Erfassung")').prop('selected', true);
 };
 
 $.fn.create_kloster = function() {
