@@ -19,6 +19,6 @@ $(function() {
   return $('form .reset').click(function(e) {
     e.preventDefault();
     $('#uuid_filter').val('').change();
-    return $(this).parents('form').clear_form();
+    return $(this).parents('form').clearForm();
   });
 });

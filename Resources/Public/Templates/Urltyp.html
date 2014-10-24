@@ -1,0 +1,25 @@
+<section id="list" data-type="urltyp">
+	<h2>URL-Typen</h2>
+	<form>
+		<table class="large-12 columns display">
+			<thead>
+				<tr>
+					<th data-input="input type='checkbox'" data-name="uUID" class="not-sortable"></th>
+					<th data-input="textarea" data-name="name">URL-Typ</th>
+					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
+				</tr>
+			</thead>
+		</table>
+		<input type="submit" value="Änderungen speichern">
+		<button class="new">Neuen URL-Typ hinzufügen</button>
+	</form>
+</section>
+
+<section id="edit" data-type="urltyp">
+	<button class="close">Zurück zur Ordenliste</button>
+	<form>
+		<input type="hidden" name="uUID">
+		<label class="large-12 columns">URL-Typ <textarea name="name" required></textarea></label>
+		<input type="submit" value="Änderungen speichern">
+	</form>
+</section>

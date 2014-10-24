@@ -33,7 +33,7 @@ class OrdenstypController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ordenstyp'));
 		}
-		$this->view->assign('ordenstyp', $this->ordenstypRepository->findAll());
+		$this->view->assign('ordenstyp', ['data' => $this->ordenstypRepository->findAll()]);
 	}
 
 	/**

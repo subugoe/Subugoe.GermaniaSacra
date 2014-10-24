@@ -17,4 +17,4 @@ $ ->
 	$('form .reset').click (e) ->
 		e.preventDefault()
 		$('#uuid_filter').val('').change()
-		$(this).parents('form').clear_form()
+		$(this).parents('form').clearForm()

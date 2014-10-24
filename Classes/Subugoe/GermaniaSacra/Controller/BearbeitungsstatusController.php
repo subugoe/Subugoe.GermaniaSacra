@@ -33,7 +33,7 @@ class BearbeitungsstatusController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bearbeitungsstatuses'));
 		}
-		$this->view->assign('bearbeitungsstatuses', $this->bearbeitungsstatusRepository->findAll());
+		$this->view->assign('bearbeitungsstatuses', ['data' => $this->bearbeitungsstatusRepository->findAll()]);
 	}
 
 	/**

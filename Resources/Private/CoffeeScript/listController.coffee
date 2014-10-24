@@ -1,27 +1,31 @@
 # Make dataTables global so we can use it to access hidden table rows later
 dataTable = null
 
-$ ->
+initList = (type) ->
 
-	# TODO: Why is this function called even if there is no #list_form element?
-	if $("#list_form").length then $("#list_form").populate_list()
+	editListAction(type)
 
-	$("#list_form").submit (e) ->
+	$("#list form").submit (e) ->
 		e.preventDefault()
-		if $("input[name^='uuid']:checked").length is 0
-			$(this).message "Wählen Sie bitte mindestens einen Eintrag aus."
+		# WORKAROUND for different spelling of uuid
+		if $(this).find("input[name=uuid]:checked, input[name=uUID]:checked").length is 0
+			message "Wählen Sie bitte mindestens einen Eintrag aus."
 			return false
-		$(this).update_list()
+		updateListAction(type)
 
 	return
 
-# Fill the Kloster list
-$.fn.populate_list = ->
+# Fill the list
+editListAction = (type) ->
 
-	$this = $(this)
+	$this = $('#list')
+
+	if ! $this.length
+		alert('There has to be a <section> whose id equals type')
+		return
 
 	$this.hide()
-	$('#loading').show()
+	$('#loading').slideDown()
 
 	$table = $this.find("table:eq(0)")
 
@@ -40,64 +44,71 @@ $.fn.populate_list = ->
 		data: null
 		defaultContent: $ths.last().data('html')
 
+	orderBy = $table.find('th.order-by').index()
+	if orderBy < 0 then orderBy = 1
+
 	selectOptions = {}
 	dataTable = $table.DataTable(
-		sAjaxSource: '/entity/kloster'
+		sAjaxSource: '/entity/' + type
 		columns: columns
 		autoWidth: false
-		pageLength: 100
+		pageLength: 10
+		#pageLength: 100
 		columnDefs: [
 			bSortable: false
-			aTargets: [ "no-sorting" ]
-		,
-			width: "10%"
-			targets: 1
+			aTargets: [ "not-sortable" ]
 		]
 		dom: "lipt" # 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
 		language:
 			url: "/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json"
-		order: [ [ 3, "asc" ] ]
+		order: [ [ orderBy, "asc" ] ]
 		fnServerData: (sSource, aoData, fnCallback, oSettings) ->
 			oSettings.jqXHR = $.ajax
+				cache: false
 				dataType: 'json'
 				type: 'GET'
 				url: sSource
 				data: aoData
-				success: [setSelectOptions, fnCallback]
+				success: [ajaxSuccess, fnCallback]
 		fnDrawCallback: ->
 			# Since only visible textareas can be autosized, this has to be called after every page render
 			$tr = $table.find('tbody tr:not(.processed)')
 			$tr.children().each ->
 				$th = $table.find('th[data-name]').eq( $(this).index() )
 				if $th.length
-					$input = $('<' + $th.data('input') + '/>').attr
-						name: $th.data('name')
-					if $th.data('name') is 'bearbeitungsstatus'
-						for obj in selectOptions.bearbeitungsstatus
-							$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
+					$input = $('<' + $th.data('input') + '/>').attr('name', $th.data('name'))
+					# Fill selects
+					if $th.data('input') is 'select'
+						select_name = $th.data('name')
+						if selectOptions[select_name]?
+							for obj in selectOptions[select_name]
+								$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
 					$(this).html( $input.val($(this).text()) )
 			$tr.each ->
 				uuid = $(this).find(':input[name=uuid]').val()
-				$(this).find(".edit").attr "href", "edit/" + uuid
-				$(this).find(".delete").attr "href", "delete/" + uuid
 				$(this).find("textarea").autosize()
 				# Mark row as dirty on change
 				$(this).find(":input:not(:checkbox)").change ->
 					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
 			$tr.addClass('processed')
-		setSelectOptions = (json) ->
+		ajaxSuccess = (json) ->
 			$this.show()
-			$('#loading').hide()
+			$('#loading').slideUp()
+			# TODO: Get select options for each select type
 			selectOptions.bearbeitungsstatus = json.bearbeitungsstatus
 	)
 
 	# Click handlers for edit and delete
 	$table.on "click", ".edit", (e) ->
 		e.preventDefault()
-		$("#edit_form").read_kloster $(this).attr("href")
+		# WORKAROUND: uuid is spelled uUID for Stammdaten
+		uuid = $(this).closest('tr').find(':input[name=uuid], :input[name=uUID]').first().val()
+		editAction(type, uuid)
 	$table.on "click", ".delete", (e) ->
 		e.preventDefault()
-		$("#delete").delete_kloster $(this).attr("href")
+		# WORKAROUND: uuid is spelled uUID for Stammdaten
+		uuid = $(this).closest('tr').find(':input[name=uuid], :input[name=uUID]').first().val()
+		deleteAction(type, uuid)
 
 	# Apply the search
 	dataTable.columns().eq(0).each (colIdx) ->
@@ -114,41 +125,45 @@ $.fn.populate_list = ->
 
 	return
 
-# Save the Kloster list
-$.fn.update_list =  ->
-	$this = $(this)
+# Save the list
+updateListAction = (type) ->
+
+	$this = $('#list form')
+
 	$rows = dataTable.$('tr').has('input:checked')
 	formData = {}
 	$rows.each ->
 		uuid = $(this).find(':input[name=uuid]').val()
-		formData['klosters[' + uuid + ']'] = {}
+		#formData['klosters[' + uuid + ']'] = {}
+		formData[uuid] = {}
 		$(this).find(':input:not([name=uuid])').each (i, input) ->
-			if input.name then formData['klosters[' + uuid + ']'][input.name] = input.value
+			#if input.name then formData['klosters[' + uuid + ']'][input.name] = input.value
+			if input.name then formData[uuid][input.name] = input.value
 			return
 	formData.__csrfToken = $(this).find('input[name=__csrfToken]').val()
-	$.post('updateList', formData).done((respond, status, jqXHR) ->
-		$.post("updateSolrAfterListUpdate", {uuids: respond}).done((respond, status, jqXHR) ->
-			if status is "success"
-				$this.message 'Ihre Änderungen wurden gespeichert.'
-		).fail (jqXHR, textStatus) ->
-			$this.message 'Error'
-			console.dir jqXHR.responseText
+	$.post(type + '/updateList', formData).done((respond, status, jqXHR) ->
+		message 'Ihre Änderungen wurden gespeichert.'
+		# TODO: Please find a way to trigger the Solr update server-side
+		if type is 'kloster'
+			$.post("updateSolrAfterListUpdate", {uuids: respond})
 	).fail (jqXHR, textStatus) ->
-		$this.message 'Error'
+		message 'Fehler'
 		console.dir jqXHR.responseText
 
+	return
 
-# Delete a single Kloster
-$.fn.delete_kloster = (url, csrf) ->
+# Delete a single entity
+deleteAction = (type, id) ->
 	$this = $(this)
 	check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
 	if check is true
 		csrf = $('#csrf').val()
-		$.post(url,
+		$.post(type + '/delete/' + id,
 			__csrfToken: csrf
 		).done((respond, status, jqXHR) ->
-			if status is "success"
-				$this.message 'Der Eintrag wurde gelöscht.'
+			if status is 'success'
+				message 'Der Eintrag wurde gelöscht.'
 		).fail (jqXHR, textStatus) ->
-			$this.message 'Error'
+			message 'Fehler'
 			console.dir jqXHR.responseText
+	return

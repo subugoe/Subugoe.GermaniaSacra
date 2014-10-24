@@ -1,0 +1,49 @@
+<section id="list" data-type="bistum">
+	<h2>Bistümer</h2>
+	<form>
+		<table class="large-12 columns display">
+			<thead>
+				<tr>
+					<th data-input="input type='checkbox'" data-name="uUID" class="not-sortable"></th>
+					<th data-input="textarea" data-name="bistum">Bistum</th>
+					<th data-input="textarea" data-name="bemerkung">Bemerkung</th>
+					<th data-input="input type='checkbox'" data-name="ist_erzbistum">Erzbistum</th>
+					<th data-input="textarea" data-name="kirchenprovinz">Kirchenprovinz</th>
+					<th data-input="textarea" data-name="shapefile">Shapefile</th>
+					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
+				</tr>
+			</thead>
+		</table>
+		<input type="submit" value="Änderungen speichern">
+		<button class="new">Neues Bistum hinzufügen</button>
+	</form>
+</section>
+
+<section id="edit" data-type="bistum">
+	<button class="close">Zurück zur Bistumliste</button>
+	<form>
+		<input type="hidden" name="uUID">
+		<label class="large-12 columns">Bistum <textarea name="bistum" required></textarea></label>
+		<label class="large-8 columns">Bemerkung <textarea name="bemerkung"></textarea></label>
+		<label class="large-4 columns">Erzbistum <input type="checkbox" name="ist_erzbistum"></label>
+		<label class="large-4 columns">Kirchenprovinz <textarea name="kirchenprovinz"></textarea></label>
+		<label class="large-4 columns">Shapefile <textarea name="shapefile"></textarea></label>
+		<label class="large-4 columns">Ort <select name="ort_uid"></select></label>
+		<fieldset id="links">
+			<legend>Links</legend>
+			<div class="multiple">
+				<label class="large-2 columns none">
+					<select name="url_typ[]"></select>
+				</label>
+				<label class="large-4 columns none">
+					<input name="url[]" type="url">
+				</label>
+				<span class="link"></span>
+				<label class="large-5 columns">Darstellung
+					<input name="links_label[]" type="text">
+				</label>
+			</div>
+		</fieldset>
+		<input type="submit" value="Änderungen speichern">
+	</form>
+</section>

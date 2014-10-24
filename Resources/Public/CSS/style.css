@@ -4948,11 +4948,11 @@ h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
 }
 
 h1 {
-  font-size: 0.8125rem;
+  font-size: 2.125rem;
 }
 
 h2 {
-  font-size: 1.6875rem;
+  font-size: 0.875rem;
 }
 
 h3 {
@@ -5151,11 +5151,11 @@ blockquote p {
   }
 
   h1 {
-    font-size: 1.4375rem;
+    font-size: 2.75rem;
   }
 
   h2 {
-    font-size: 2.3125rem;
+    font-size: 1.5rem;
   }
 
   h3 {
@@ -7607,9 +7607,46 @@ body > section {
   padding: 1rem;
 }
 
+#content {
+  padding: 1.25rem;
+}
+
+#browse:before, #browse:after {
+  content: " ";
+  display: table;
+}
+#browse:after {
+  clear: both;
+}
+
+#loading,
+#message {
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  clear: both;
+  display: none;
+  margin: 1.25rem;
+  padding: 1.25rem;
+}
+#loading .timestamp,
+#message .timestamp {
+  background: #eee;
+  float: left;
+  margin: -0.75rem;
+  margin-right: 0.75rem;
+  padding: 0.75rem;
+}
+
 button, input[type="submit"] {
-  min-width: 2.5rem;
-  padding: 0.5625rem;
+  margin: 0 0 .5em 0;
+  padding: 0.5rem;
+  min-width: 2rem;
+}
+button.new, input.new[type="submit"] {
+  float: left;
+}
+td button, td input[type="submit"] {
+  margin: -.5rem 0;
 }
 
 form span {
@@ -7622,26 +7659,12 @@ form span.link {
   z-index: 9;
 }
 
-textarea {
-  min-height: 0;
-  resize: none;
-}
-
 fieldset {
   border: 0;
   border-top: 1px solid;
   margin-bottom: 0;
   padding-left: 0;
   padding-right: 0;
-}
-fieldset.highlight {
-  background: rgba(0, 0, 0, 0.1);
-  border: 0;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
-  float: left;
-  margin: 0 -0.625rem 0.625rem;
-  padding: 0.625rem 0.625rem 0.3125rem;
-  border-radius: 3px;
 }
 fieldset legend {
   background: none;
@@ -7650,36 +7673,22 @@ fieldset .add-remove-buttons {
   float: right;
 }
 
+div.highlight {
+  background: rgba(0, 0, 0, 0.1);
+  border: 0;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
+  float: left;
+  margin: 0 -0.625rem 0.625rem;
+  padding: 0.625rem 0.625rem 0.3125rem;
+  border-radius: 3px;
+}
+
 label, .dataTables_info {
   line-height: 2.33333em;
 }
 label.columns, .columns.dataTables_info {
   padding: 0;
   text-align: right;
-}
-
-table {
-  background: none;
-  border: none;
-  border-collapse: collapse;
-}
-table tr {
-  border-bottom: 1px solid;
-  margin-bottom: -1px;
-}
-table tr:nth-of-type(2n) {
-  background: none;
-}
-table td {
-  vertical-align: top;
-}
-table select,
-table textarea {
-  margin: 0;
-}
-
-button, input[type="submit"] {
-  margin: 0;
 }
 
 input[type="text"],
@@ -7722,23 +7731,14 @@ textarea {
   border: 0;
   box-shadow: none;
   float: none;
-  margin: -8px -10px;
-}
-
-button, input[type="submit"] {
-  margin-bottom: .5em;
-}
-td button, td input[type="submit"] {
-  margin: 0;
+  margin: -0.5625rem -0.625rem;
 }
 
 input[type="checkbox"] {
-  height: 1.75rem;
-  margin-left: .5rem;
+  margin-bottom: 1rem;
 }
-
-input[type="submit"] {
-  min-width: 5rem;
+td input[type="checkbox"] {
+  height: auto;
 }
 
 input,
@@ -7834,28 +7834,24 @@ div.autocomplete {
   width: 83.33333%;
 }
 
-input:invalid,
+input:invalid, input:invalid + .autocomplete input,
 select:invalid,
-textarea:invalid {
+select:invalid + .autocomplete input,
+textarea:invalid,
+textarea:invalid + .autocomplete input {
   background: #fabdb3 !important;
 }
 
-input.year {
-  background: #def0f7;
-}
-input.year:focus {
-  background: #f2f9fc;
+input[type="checkbox"] {
+  height: 1.75rem;
+  margin-left: .5rem;
 }
 
-td.dirty {
-  background: #fad7b3;
+input[type="submit"] {
+  min-width: 5rem;
 }
 
-th div {
-  padding-right: 1em;
-}
-
-input[type=submit]:not([disabled]):active, input[type=submit]:not([disabled]):focus, input[type=submit]:not([disabled]):hover,
+input[type="submit"]:not([disabled]):active, input[type="submit"]:not([disabled]):focus, input[type="submit"]:not([disabled]):hover,
 button:not([disabled]):active,
 input[type="submit"]:not([disabled]):active,
 button:not([disabled]):focus,
@@ -7869,11 +7865,7 @@ input[type="submit"]:not([disabled]):hover {
   background: linear-gradient(top, #970124 0%, #790015 95%, #6f0011 100%);
 }
 
-input[name="kloster_nr[]"] {
-  max-width: 5rem;
-}
-
-input[type=submit],
+input[type="submit"],
 button,
 input[type="submit"],
 .top-bar {
@@ -7892,14 +7884,22 @@ input[type="submit"],
   background: linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important;
 }
 
-.bold,
-.bold input,
-.bold select,
-.bold textarea {
-  font-weight: bold;
+input[name="kloster_nr[]"] {
+  max-width: 5rem;
 }
 
-.clear,
+input.year {
+  background: #def0f7;
+}
+input.year:focus {
+  background: #f2f9fc;
+}
+
+textarea {
+  min-height: 0;
+  resize: none;
+}
+
 .multiple {
   clear: both;
 }
@@ -7909,7 +7909,61 @@ input[type="submit"],
   padding-top: 0.625rem;
 }
 
+table {
+  background: none;
+  border: none;
+  border-collapse: collapse;
+}
+table tr {
+  border-bottom: 1px solid;
+  margin-bottom: -1px;
+}
+table tr.even, table tr:nth-of-type(even) {
+  background: none;
+}
+table td {
+  vertical-align: top;
+}
+
+tr.new {
+  background: #cfecda !important;
+}
+
+th div {
+  padding-right: 1em;
+}
+
+td[colspan] {
+  background: #f9f9f9;
+}
+td.dirty {
+  background: #fad7b3;
+}
+
+.child-row {
+  display: none;
+}
+
+.bold,
+.bold input,
+.bold select,
+.bold textarea {
+  font-weight: bold;
+}
+
+.hover {
+  cursor: pointer;
+}
+.hover:hover {
+  color: #c90230;
+}
+
+.clear {
+  clear: both;
+}
+
 .no-wrap {
+  text-align: right;
   white-space: nowrap;
 }
 
@@ -7918,35 +7972,6 @@ input[type="submit"],
 }
 tr:hover .show-only-on-hover * {
   opacity: 1;
-}
-
-#content {
-  padding: 1.25rem;
-}
-
-#browse:before, #browse:after {
-  content: " ";
-  display: table;
-}
-#browse:after {
-  clear: both;
-}
-
-#loading,
-#message {
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-  clear: both;
-  margin: 1.25rem 0;
-  padding: 1.25rem;
-}
-#loading .timestamp,
-#message .timestamp {
-  background: #eee;
-  float: left;
-  margin: -0.75rem;
-  margin-right: 0.75rem;
-  padding: 0.75rem;
 }
 
 #map-container,

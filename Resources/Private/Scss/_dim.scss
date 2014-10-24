@@ -1,3 +1,4 @@
+// Layout
 body {
 	background: $background-color;
 	overflow-y: scroll;
@@ -6,9 +7,42 @@ body {
 	}
 }
 
+#content {
+	padding: rem-calc(20);
+}
+
+#browse {
+	@include clearfix;
+}
+
+#loading,
+#message {
+	background: #fff;
+	box-shadow: $reveal-box-shadow;
+	clear: both;
+	display: none;
+	margin: rem-calc(20);
+	padding: rem-calc(20);
+	.timestamp {
+		background: #eee;
+		float: left;
+		margin: -$tooltip-padding;
+		margin-right: $tooltip-padding;
+		padding: $tooltip-padding;
+	}
+}
+
+// Form styles
 button {
-	min-width: 2.5rem;
-	padding: rem-calc(9);
+	margin: 0 0 .5em 0;
+	padding: rem-calc(8);
+	min-width: rem-calc(32);
+	&.new {
+		float: left;
+	}
+	td & {
+		margin: -.5rem 0;
+	}
 }
 
 form {
@@ -23,26 +57,12 @@ form {
 	}
 }
 
-textarea {
-	min-height: 0;
-	resize: none;
-}
-
 fieldset {
 	border: 0;
 	border-top: 1px solid;
 	margin-bottom: 0;
 	padding-left: 0;
 	padding-right: 0;
-	&.highlight {
-		background: rgba(#000, .1);
-		border: 0;
-		box-shadow: 0 1px 6px rgba(#000, .2) inset;
-		float: left;
-		margin: 0 (-$fieldset-padding) $fieldset-padding;
-		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
-		border-radius: $global-radius;
-	}
 	legend {
 		background: none;
 	}
@@ -51,36 +71,22 @@ fieldset {
 	}
 }
 
+div.highlight {
+	background: rgba(#000, .1);
+	border: 0;
+	box-shadow: 0 1px 6px rgba(#000, .2) inset;
+	float: left;
+	margin: 0 (-$fieldset-padding) $fieldset-padding;
+	padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
+	border-radius: $global-radius;
+}
+
 label {
 	line-height: 2.33333em;
 	&.columns {
 		padding: 0;
 		text-align: right;
 	}
-}
-
-table {
-	background: none;
-	border: none;
-	border-collapse: collapse;
-	tr {
-		border-bottom: 1px solid;
-		margin-bottom: -1px;
-		&:nth-of-type(2n) {
-			background: none;
-		}
-	}
-	td {
-		vertical-align: top;
-	}
-	select,
-	textarea {
-		margin: 0;
-	}
-}
-
-button {
-	margin: 0;
 }
 
 input[type="text"],
@@ -106,25 +112,15 @@ textarea {
 		border: 0;
 		box-shadow: none;
 		float: none;
-		margin: -8px -10px;
-	}
-}
-
-button {
-	margin-bottom: .5em;
-	td & {
-		margin: 0;
+		margin: -0.5625rem -0.625rem
 	}
 }
 
 input[type="checkbox"] {
-	height: $form-label-font-size * 2;
-	margin-left: .5rem;
-}
-
-input[type="submit"] {
-	@extend button;
-	min-width: 5rem;
+	margin-bottom: 1rem;
+	td & {
+		height: auto;
+	}
 }
 
 input,
@@ -150,9 +146,44 @@ div.autocomplete {
 input,
 select,
 textarea {
-	&:invalid {
+	&:invalid,
+	&:invalid + .autocomplete input {
 		background: lighten($alert-color, 30) !important;
 	}
+}
+
+input[type="checkbox"] {
+	height: $form-label-font-size * 2;
+	margin-left: .5rem;
+}
+
+input[type="submit"] {
+	@extend button;
+	min-width: 5rem;
+}
+
+input[type="submit"],
+button {
+	&:not([disabled]) {
+		&:active, &:focus, &:hover {
+			@include background(linear-gradient(top, darken(#c90230, 10) 0%, darken(#ac001e, 10) 95%, darken(#a20019, 10) 100%));
+		}
+	}
+}
+
+input[type="submit"],
+button,
+.top-bar, {
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
+}
+
+// TODO: Move this
+.top-bar-section a {
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
+}
+
+input[name="kloster_nr[]"] {
+	max-width: 5rem;
 }
 
 input.year {
@@ -162,47 +193,11 @@ input.year {
 	}
 }
 
-td.dirty {
-	background: lighten($warning-color, 30);
+textarea {
+	min-height: 0;
+	resize: none;
 }
 
-th div {
-	padding-right: 1em;
-}
-
-input[type=submit],
-button {
-	&:not([disabled]) {
-		&:active, &:focus, &:hover {
-			@include background(linear-gradient(top, darken(#c90230, 10) 0%, darken(#ac001e, 10) 95%, darken(#a20019, 10) 100%));
-		}
-	}
-}
-
-input[name="kloster_nr[]"] {
-	max-width: 5rem;
-}
-
-input[type=submit],
-button,
-.top-bar, {
-	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
-}
-
-.top-bar-section a {
-	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
-}
-
-.bold {
-	&,
-	input,
-	select,
-	textarea {
-		font-weight: bold;
-	}
-}
-
-.clear,
 .multiple {
 	clear: both;
 }
@@ -212,7 +207,68 @@ button,
 	padding-top: $fieldset-padding;
 }
 
+// Table styles
+table {
+	background: none;
+	border: none;
+	border-collapse: collapse;
+	tr {
+		border-bottom: 1px solid;
+		margin-bottom: -1px;
+		&.even,
+		&:nth-of-type(even) {
+			background: none;
+		}
+	}
+	td {
+		vertical-align: top;
+	}
+}
+
+tr.new {
+	background: lighten($success-color, 40) !important;
+}
+
+th div {
+	padding-right: 1em;
+}
+
+td {
+	&[colspan] {
+		background: $table-even-row-bg;
+	}
+	&.dirty {
+		background: lighten($warning-color, 30);
+	}
+}
+
+.child-row {
+	display: none;
+}
+
+// Helper styles
+.bold {
+	&,
+	input,
+	select,
+	textarea {
+		font-weight: bold;
+	}
+}
+
+.hover {
+	cursor: pointer;
+	&:hover {
+		color: $primary-color;
+	}
+}
+
+.clear {
+	clear: both;
+}
+
 .no-wrap {
+	text-align: right;
 	white-space: nowrap;
 }
 
@@ -220,29 +276,5 @@ button,
 	opacity: 0;
 	tr:hover & {
 		opacity: 1;
-	}
-}
-
-#content {
-	padding: rem-calc(20);
-}
-
-#browse {
-	@include clearfix;
-}
-
-#loading,
-#message {
-	background: #fff;
-	box-shadow: $reveal-box-shadow;
-	clear: both;
-	margin: rem-calc(20) 0;
-	padding: rem-calc(20);
-	.timestamp {
-		background: #eee;
-		float: left;
-		margin: -$tooltip-padding;
-		margin-right: $tooltip-padding;
-		padding: $tooltip-padding;
 	}
 }
