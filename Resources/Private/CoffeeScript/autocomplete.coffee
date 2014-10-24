@@ -7,7 +7,7 @@ $.fn.autocomplete = ->
 	@each ->
 
 		$select = $(this)
-		name = $select.attr('name').replace('[]', '')
+		name = if $select.data('type') then $select.data('type') else $select.attr('name').replace('[]', '')
 
 		# If already is autocomplete-enabled, remove autocomplete first
 		$select.hide().siblings('.autocomplete').remove()
@@ -34,7 +34,7 @@ $.fn.autocomplete = ->
 		$list.on 'click', 'li', ->
 			$input.val $(this).text()
 			$select.setSelected $(this)
-			$list.slideUp()
+			$input.blur()
 
 		$input.on 'keyup', (e) ->
 

@@ -49,7 +49,7 @@ body {
 }
 
 body {
-  background: white;
+  background: #efede4;
   color: #222222;
   padding: 0;
   margin: 0;
@@ -4640,7 +4640,7 @@ div.switch.round label:after, div.switch.round .dataTables_info:after {
 table {
   background: white;
   margin-bottom: 1.25rem;
-  border: solid 1px #dddddd;
+  border: solid 1px #bbbbbb;
 }
 table caption {
   background: transparent;
@@ -7600,7 +7600,6 @@ table.dataTable th:active {
 }
 
 body {
-  background: #efede4;
   overflow-y: scroll;
 }
 body > section {
@@ -7646,7 +7645,12 @@ button.new, input.new[type="submit"] {
   float: left;
 }
 td button, td input[type="submit"] {
-  margin: -.5rem 0;
+  background: none !important;
+  color: #c90230;
+  margin: -0.5rem 0;
+}
+td button:active, td input[type="submit"]:active, td button:focus, td input[type="submit"]:focus, td button:hover, td input[type="submit"]:hover {
+  color: #970124;
 }
 
 form span {
@@ -7658,10 +7662,20 @@ form span.link {
   position: absolute;
   z-index: 9;
 }
+form .highlight {
+  background: rgba(0, 0, 0, 0.1);
+  border: 0;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
+  float: left;
+  margin: 0 -0.625rem 0.625rem;
+  padding: 0.625rem 0.625rem 0.3125rem;
+  border-radius: 3px;
+}
 
 fieldset {
   border: 0;
   border-top: 1px solid;
+  clear: both;
   margin-bottom: 0;
   padding-left: 0;
   padding-right: 0;
@@ -7671,16 +7685,6 @@ fieldset legend {
 }
 fieldset .add-remove-buttons {
   float: right;
-}
-
-div.highlight {
-  background: rgba(0, 0, 0, 0.1);
-  border: 0;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
-  float: left;
-  margin: 0 -0.625rem 0.625rem;
-  padding: 0.625rem 0.625rem 0.3125rem;
-  border-radius: 3px;
 }
 
 label, .dataTables_info {
@@ -7915,7 +7919,7 @@ table {
   border-collapse: collapse;
 }
 table tr {
-  border-bottom: 1px solid;
+  border-bottom: 1px solid #bbbbbb;
   margin-bottom: -1px;
 }
 table tr.even, table tr:nth-of-type(even) {
@@ -7968,7 +7972,7 @@ td.dirty {
 }
 
 .show-only-on-hover * {
-  opacity: 0;
+  opacity: .25;
 }
 tr:hover .show-only-on-hover * {
   opacity: 1;

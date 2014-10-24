@@ -1,6 +1,5 @@
 // Layout
 body {
-	background: $background-color;
 	overflow-y: scroll;
 	> section {
 		padding: 1rem;
@@ -41,7 +40,12 @@ button {
 		float: left;
 	}
 	td & {
-		margin: -.5rem 0;
+		background: none !important;
+		color: $primary-color;
+		margin: rem-calc(-8) 0;
+		&:active, &:focus, &:hover {
+			color: darken($primary-color, 10);
+		}
 	}
 }
 
@@ -55,11 +59,21 @@ form {
 			z-index: 9;
 		}
 	}
+	.highlight {
+		background: rgba(#000, .1);
+		border: 0;
+		box-shadow: 0 1px 6px rgba(#000, .2) inset;
+		float: left;
+		margin: 0 (-$fieldset-padding) $fieldset-padding;
+		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
+		border-radius: $global-radius;
+	}
 }
 
 fieldset {
 	border: 0;
 	border-top: 1px solid;
+	clear: both;
 	margin-bottom: 0;
 	padding-left: 0;
 	padding-right: 0;
@@ -69,16 +83,6 @@ fieldset {
 	.add-remove-buttons {
 		float: right
 	}
-}
-
-div.highlight {
-	background: rgba(#000, .1);
-	border: 0;
-	box-shadow: 0 1px 6px rgba(#000, .2) inset;
-	float: left;
-	margin: 0 (-$fieldset-padding) $fieldset-padding;
-	padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
-	border-radius: $global-radius;
 }
 
 label {
@@ -213,7 +217,7 @@ table {
 	border: none;
 	border-collapse: collapse;
 	tr {
-		border-bottom: 1px solid;
+		border-bottom: $table-border-size $table-border-style $table-border-color;
 		margin-bottom: -1px;
 		&.even,
 		&:nth-of-type(even) {
@@ -273,7 +277,7 @@ td {
 }
 
 .show-only-on-hover * {
-	opacity: 0;
+	opacity: .25;
 	tr:hover & {
 		opacity: 1;
 	}

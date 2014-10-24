@@ -9,7 +9,7 @@ $.fn.autocomplete = function() {
   return this.each(function() {
     var $input, $list, $overlay, $select, $spinner, name;
     $select = $(this);
-    name = $select.attr('name').replace('[]', '');
+    name = $select.data('type') ? $select.data('type') : $select.attr('name').replace('[]', '');
     $select.hide().siblings('.autocomplete').remove();
     $input = $('<input type="text">').val($select.find(':selected').text());
     $spinner = $('<i class="spinner spinner-icon"/>');
@@ -33,7 +33,7 @@ $.fn.autocomplete = function() {
     $list.on('click', 'li', function() {
       $input.val($(this).text());
       $select.setSelected($(this));
-      return $list.slideUp();
+      return $input.blur();
     });
     $input.on('keyup', function(e) {
       var $current, $newCurrent, $visibleItems, liHeight;
