@@ -1,11 +1,14 @@
-message = (text) ->
+message = (text, withTimestampAndCloseButton = true) ->
 	$message = $('#message')
 	date = new Date()
-	$message.hide().html("<span class='timestamp'>#{date.toLocaleString()}</span>#{text}").slideDown()
-	$close = $("<i class='hover close icon-close right'>&times;</i>")
-	$close.appendTo($message).click (e) ->
-		e.preventDefault()
-		$message.slideUp()
+	timestamp = if withTimestampAndCloseButton then "<span class='timestamp'>#{date.toLocaleString()}</span>" else ''
+	text = "<span class='text'>#{text}</span>"
+	$message.hide().html(timestamp + text).slideDown()
+	if withTimestampAndCloseButton
+		$close = $("<i class='hover close icon-close right'>&times;</i>")
+		$close.appendTo($message).click (e) ->
+			e.preventDefault()
+			$message.slideUp()
 	$('html, body').animate
 		scrollTop: $message.offset().top
 
@@ -31,8 +34,9 @@ $.fn.removeInputs = (slideTime) ->
 
 $.fn.clearForm = ->
 	@each ->
+		$(this).find("label").removeClass('dirty')
 		$(this).find(":input").prop "disabled", false
-		$(this).find(":input:not(:checkbox):not(:submit)").val("")
+		$(this).find(":input:not([name=__csrfToken]):not(:checkbox):not(:submit)").val('')
 		$(this).find(":checkbox, :radio").prop "checked", false
 		$(this).find(".multiple:gt(0)").removeInputs()
 		$(this).find("button.remove").prop 'disabled', true

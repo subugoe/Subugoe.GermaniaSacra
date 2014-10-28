@@ -12,7 +12,7 @@ $.fn.autocomplete = ->
 		# If already is autocomplete-enabled, remove autocomplete first
 		$select.hide().siblings('.autocomplete').remove()
 
-		$input = $('<input type="text">').val $select.find(':selected').text()
+		$input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val $select.find(':selected').text()
 		$spinner = $ '<i class="spinner spinner-icon"/>'
 		$spinner.hide()
 		$list = $('<ol class="list"/>')

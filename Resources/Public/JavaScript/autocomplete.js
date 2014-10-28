@@ -11,7 +11,7 @@ $.fn.autocomplete = function() {
     $select = $(this);
     name = $select.data('type') ? $select.data('type') : $select.attr('name').replace('[]', '');
     $select.hide().siblings('.autocomplete').remove();
-    $input = $('<input type="text">').val($select.find(':selected').text());
+    $input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val($select.find(':selected').text());
     $spinner = $('<i class="spinner spinner-icon"/>');
     $spinner.hide();
     $list = $('<ol class="list"/>');

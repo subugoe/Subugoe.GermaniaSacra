@@ -1,6 +1,8 @@
-<section id="list" data-type="kloster">
+<section id="search">
+
 	<h2>Klöster</h2>
-	<form id="search" class="togglable">
+
+	<form id="simple-search" class="togglable">
 		<fieldset>
 			<legend>Suche über alle Felder</legend>
 			<label class="large-6 columns none"><input name="alle" type="text"></label>
@@ -10,7 +12,7 @@
 		</fieldset>
 	</form>
 
-	<form id="advanced_search" class="togglable">
+	<form id="advanced-search" class="togglable">
 		<fieldset>
 			<legend>Erweiterte Suche</legend>
 			<div class="text-right clear"><button class="toggle">Suche über alle Felder</button></div>
@@ -65,12 +67,15 @@
 		</fieldset>
 	</form>
 
+</section>
+
+<section id="list" data-type="kloster">
 	<form>
 		<table class="large-12 columns display">
 			<thead>
 				<tr>
-					<th class="not-sortable" data-input="input type='checkbox'" data-name="uuid"></th>
-					<th data-input="textarea disabled" data-name="kloster_id">Kloster-Nr.</th>
+					<th class="not-sortable" data-input="checkbox" data-name="uuid"></th>
+					<th class="narrow" data-input="textarea disabled" data-name="kloster_id">Kloster-Nr.</th>
 					<th data-input="select" data-name="bearbeitungsstatus">Status</th>
 					<th data-input="textarea" data-name="kloster">Klostername</th>
 					<th data-input="textarea disabled" data-name="ort">Ort</th>
@@ -83,7 +88,6 @@
 		<input class="button" type="submit" value="Änderungen übernehmen">
 		<button class="new">Neues Kloster anlegen</button>
 	</form>
-
 </section>
 
 <section id="edit" data-type="kloster">
@@ -113,9 +117,6 @@
 				</label>
 				<label class="large-12 columns">Bearbeitungsstand
 					<textarea name="bearbeitungsstand"></textarea>
-				</label>
-				<label class="large-12 columns">Personallistenstatus
-					<textarea name="personallistenstatus"></textarea>
 				</label>
 			</div>
 			<label class="large-12 columns">Patrozinium

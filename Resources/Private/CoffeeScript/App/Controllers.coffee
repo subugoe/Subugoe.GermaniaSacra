@@ -2,27 +2,50 @@ germaniaSacra.controller 'listController', ($scope) ->
 
 	# Init the view after the template has been rendered
 	$scope.$watch (->
-		$('#content > section:first').data('type')
+		$('#list').data('type')
 	), ((newval, oldval) ->
 		if newval? then init()
 	), true
 
+# TODO: Move this
+s_loading = '<i class="spinner spinner-icon"></i> Wird geladen&hellip;'
+
 init = ->
 
-	type = $('#content > section:first').data('type')
+	type = $('#list').data('type')
+
+	$('#message').hide()
 
 	unless type?
 		alert('There has to be at least one <section> with data-type set.')
 		return
 
-	$('form').append( $('input.csrf:first').clone() )
+	$('form').append( $('#csrf').clone().removeAttr('id') )
 
+	initSearch()
 	initList(type)
 	initEditor(type)
+
+	$("fieldset .multiple").append "<div class='add-remove-buttons'><button class='remove'>-</button><button class='add'>+</button></div>"
+	$("fieldset .multiple button").click (e) ->
+		e.preventDefault()
+		div = $(this).closest(".multiple")
+		if $(this).hasClass("remove")
+			div.removeInputs 250
+		else if $(this).hasClass("add")
+			div.addInputs 250
 
 	$(".new").click (e) ->
 		e.preventDefault()
 		newAction()
+
+	# Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
+	$(window).bind "keydown", (e) ->
+		if e.ctrlKey or e.metaKey
+			switch String.fromCharCode(e.which).toLowerCase()
+				when "s"
+					e.preventDefault()
+					$(":submit[type=submit]:visible:last").click()
 
 	$(".togglable + .togglable").hide()
 

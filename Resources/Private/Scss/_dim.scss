@@ -6,6 +6,11 @@ body {
 	}
 }
 
+h2 {
+	margin: 0;
+	padding-bottom: .5em;
+}
+
 #content {
 	padding: rem-calc(20);
 }
@@ -14,20 +19,42 @@ body {
 	@include clearfix;
 }
 
-#loading,
 #message {
+	@extend .clearfix;
 	background: #fff;
-	box-shadow: $reveal-box-shadow;
-	clear: both;
-	display: none;
-	margin: rem-calc(20);
-	padding: rem-calc(20);
+	border-bottom: $table-border-size $table-border-style $table-border-color;
+	padding: $tooltip-padding;
+	width: 100%;
+	.spinner-icon {
+		display: inline-block;
+		margin-bottom: -2px;
+	}
 	.timestamp {
-		background: #eee;
+		background: $table-head-bg;
 		float: left;
-		margin: -$tooltip-padding;
-		margin-right: $tooltip-padding;
+		color: $form-label-font-color;
+		margin: -$tooltip-padding $tooltip-padding -$tooltip-padding -$tooltip-padding;
 		padding: $tooltip-padding;
+		white-space: nowrap;
+	}
+	.text {
+		float: left;
+		font-weight: bold;
+		margin: -$tooltip-padding $tooltip-padding;
+		padding: $tooltip-padding;
+	}
+}
+
+// Navigation
+.top-bar, {
+	// Copied from AdW site
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
+}
+
+.top-bar-section a {
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
+	&:active, &:focus, &:hover {
+		background: darken($primary-color, 10) !important;
 	}
 }
 
@@ -39,13 +66,18 @@ button {
 	&.new {
 		float: left;
 	}
+	.add-remove-buttons &,
 	td & {
 		background: none !important;
 		color: $primary-color;
-		margin: rem-calc(-8) 0;
+		font-weight: bold;
 		&:active, &:focus, &:hover {
-			color: darken($primary-color, 10);
+			background: $primary-color !important;
+			color: #fff;
 		}
+	}
+	td & {
+		margin: rem-calc(-8) 0;
 	}
 }
 
@@ -80,9 +112,6 @@ fieldset {
 	legend {
 		background: none;
 	}
-	.add-remove-buttons {
-		float: right
-	}
 }
 
 label {
@@ -116,7 +145,7 @@ textarea {
 		border: 0;
 		box-shadow: none;
 		float: none;
-		margin: -0.5625rem -0.625rem
+		margin: -$table-row-padding 0
 	}
 }
 
@@ -168,26 +197,12 @@ input[type="submit"] {
 
 input[type="submit"],
 button {
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
 	&:not([disabled]) {
 		&:active, &:focus, &:hover {
 			@include background(linear-gradient(top, darken(#c90230, 10) 0%, darken(#ac001e, 10) 95%, darken(#a20019, 10) 100%));
 		}
 	}
-}
-
-input[type="submit"],
-button,
-.top-bar, {
-	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
-}
-
-// TODO: Move this
-.top-bar-section a {
-	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
-}
-
-input[name="kloster_nr[]"] {
-	max-width: 5rem;
 }
 
 input.year {
@@ -211,6 +226,11 @@ textarea {
 	padding-top: $fieldset-padding;
 }
 
+.add-remove-buttons {
+	float: right;
+	white-space: nowrap;
+}
+
 // Table styles
 table {
 	background: none;
@@ -223,31 +243,26 @@ table {
 		&:nth-of-type(even) {
 			background: none;
 		}
+		&.new {
+			background: lighten($success-color, 40) !important;
+		}
+	}
+	th {
+		&:first-child {
+			width: 1em;
+		}
+		&:last-child {
+			width: 6em;
+		}
+		div {
+			padding-right: 1em;
+		}
 	}
 	td {
-		vertical-align: top;
+		&[colspan] {
+			background: $table-even-row-bg;
+		}
 	}
-}
-
-tr.new {
-	background: lighten($success-color, 40) !important;
-}
-
-th div {
-	padding-right: 1em;
-}
-
-td {
-	&[colspan] {
-		background: $table-even-row-bg;
-	}
-	&.dirty {
-		background: lighten($warning-color, 30);
-	}
-}
-
-.child-row {
-	display: none;
 }
 
 // Helper styles
@@ -260,6 +275,14 @@ td {
 	}
 }
 
+.clear {
+	clear: both;
+}
+
+.dirty {
+	background: lighten($warning-color, 30);
+}
+
 .hover {
 	cursor: pointer;
 	&:hover {
@@ -267,8 +290,8 @@ td {
 	}
 }
 
-.clear {
-	clear: both;
+.narrow {
+	width: 8em;
 }
 
 .no-wrap {
@@ -277,7 +300,8 @@ td {
 }
 
 .show-only-on-hover * {
-	opacity: .25;
+	opacity: .2;
+	transition: opacity .5s;
 	tr:hover & {
 		opacity: 1;
 	}

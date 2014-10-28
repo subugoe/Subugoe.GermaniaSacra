@@ -1,7 +1,8 @@
 # Convert the advanced search form data to JSON, send to controller and apply the result as a filter on the Koster DataTable
 
-$ ->
-	$('#search_form, #advanced_search_form').submit ->
+initSearch = ->
+
+	$('#simple-search, #advanced-search').submit ->
 		json = $(this).serializeArray()
 		search = $.post '/search', json
 		search.success (data) ->

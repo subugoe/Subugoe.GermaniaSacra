@@ -74,7 +74,7 @@ class BistumController extends RestController {
 		$bistumArr['shapefile'] = $bistumObj->getShapefile();
 		$ort = $bistumObj->getOrt();
 		if ( $ort )
-			$bistumArr['ort'] = array($ort->getUUID() => $ort->getOrt());
+			$bistumArr['ort'] = array('uuid' => $ort->getUUID(), 'name' => $ort->getOrt());
 		else
 			$bistumArr['ort'] = array();
 
@@ -126,7 +126,7 @@ class BistumController extends RestController {
 	 * @return void
 	 */
 	public function updateListAction() {
-		$bistums = $this->request->getArguments();
+		$bistums = $this->request->getArgument('data');
 		foreach ($bistums as $uuid => $bistum) {
 			$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
 			$bistumObj->setBistum($bistum['bistum']);

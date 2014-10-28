@@ -67,23 +67,27 @@
 				</li>
 			</ul>
 			<ul class="right">
-				<li><a href="#">{bearbeiter}</a></li><!-- TODO: Deangularize -->
+				<!-- TODO: bearbeiter is only displayed if first page loaded was "kloster" since it's only defined there -->
 				<li>
-					<f:link.action controller="Dump" action="dump">SQL Dump</f:link.action>
+					<a href="#"><i class="icon-user"></i> {bearbeiter}</a>
+				</li>
+				<li>
+					<!-- TODO: Use f:link for that: <f:link.action package="Flow" subpackage="Login" controller="Login" action="logout" target="_self">Abmelden</f:link.action> -->
+					<a href="/logout" target="_self" title="Abmelden"><i class="icon-logout"></i></a>
+				</li>
+				<li>
+					<f:link.action controller="Dump" action="dump" target="_self">SQL Dump</f:link.action>
 				</li>
 			</ul>
 		</section>
 	</nav>
 
 	<!--<f:flashMessages class="flashmessages" />-->
-
-	<div id="loading">Wird geladen&hellip; <i class="spinner spinner-icon right"></i></div>
-
 	<div id="message"></div>
 	<div id="content" ng-view=""></div>
 
 	<!-- Append this to every form via JavaScript -->
-	<input class="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
+	<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 
 	<script src="{f:uri.resource(path: 'JavaScript/jquery.min.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/jquery.autosize.min.js')}" type="text/javascript"></script>
@@ -93,9 +97,9 @@
 	<script src="{f:uri.resource(path: 'JavaScript/angular-route.min.js')}"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/App/App.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/App/Controllers.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/searchController.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/listController.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/editorController.js')}" type="text/javascript"></script>
-	<script src="{f:uri.resource(path: 'JavaScript/advanced-search.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/helper.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/autocomplete.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/leaflet-0.7.3.min.js')}"></script>

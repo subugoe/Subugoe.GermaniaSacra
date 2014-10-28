@@ -7,7 +7,7 @@
   uriPattern: ''
   defaults:
     '@controller': 'Kloster'
-    #'@action': 'index'
+    '@action': 'list'
 
 -
   name: 'JSON-List Kloster URI'
@@ -59,13 +59,6 @@
   defaults:
     '@controller': 'Kloster'
     '@action': 'updateSolrAfterListUpdate'
-
--
-  name: 'Update Solr after kloster update URI'
-  uriPattern: 'updateSolrAfterKlosterUpdate'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'updateSolrAfterKlosterUpdate'
 
 -
   name: 'Update Solr after kloster create URI'

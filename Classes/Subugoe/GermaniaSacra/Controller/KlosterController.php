@@ -82,6 +82,12 @@ class KlosterController extends ActionController {
 
 	/**
 	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrdenstypRepository
+	 */
+	protected $ordenstypRepository;
+
+	/**
+	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterstatusRepository
 	 */
 	protected $klosterstatusRepository;
@@ -174,8 +180,9 @@ class KlosterController extends ActionController {
 	 * @return integer $status http status
 	 */
 	public function updateListAction() {
-		if ($this->request->hasArgument('klosters')) {
-			$klosterlist = $this->request->getArgument('klosters');
+
+		if ($this->request->hasArgument('data')) {
+			$klosterlist = $this->request->getArgument('data');
 		}
 
 		$uuids = array();
@@ -229,6 +236,7 @@ class KlosterController extends ActionController {
 		}
 
 		return json_encode($uuids);
+
 	}
 
 	/**
@@ -249,6 +257,7 @@ class KlosterController extends ActionController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('monasteries'));
 		}
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 		//$this->view->assign('monasteries', $this->klosterRepository->findAll());
 	}
 
@@ -378,17 +387,6 @@ class KlosterController extends ActionController {
 	public function initializeAction() {
 		$account = $this->securityContext->getAccount();
 		$this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
-	}
-
-
-
-
-	/**
-	 * Calls the index page
-	 * @return void
-	 */
-	public function indexAction() {
-		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**
@@ -994,6 +992,16 @@ class KlosterController extends ActionController {
 			$ordenArr[$orden->getUUID()] = $orden->getOrden();
 		}
 
+		// Ordenstyp data for select box
+		$ordenstypArr = array();
+		$this->ordenstypRepository->setDefaultOrderings(
+				array('ordenstyp' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+		$ordenstyps = $this->ordenstypRepository->findAll();
+		foreach ($ordenstyps as $ordenstyp) {
+			$ordenstypArr[$ordenstyp->getUUID()] = $ordenstyp->getOrdenstyp();
+		}
+
 		// Klosterstatus data for select box
 		$klosterstatusArr = array();
 		$this->klosterstatusRepository->setDefaultOrderings(
@@ -1026,29 +1034,28 @@ class KlosterController extends ActionController {
 		}
 
 		$response = array();
-		$response[] = $bearbeitungsstatusArr;
-		$response[] = $personallistenstatusArr;
-		$response[] = $bandArr;
-		$response[] = $literaturArr;
-		$response[] = $bistumArr;
-		$response[] = $ordenArr;
-		$response[] = $klosterstatusArr;
-		$response[] = $bearbeiterArr;
-		$response[] = $urltypArr;
+		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
+		$response['personallistenstatus'] = $personallistenstatusArr;
+		$response['band'] = $bandArr;
+		$response['literatur'] = $literaturArr;
+		$response['bistum'] = $bistumArr;
+		$response['orden'] = $ordenArr;
+		$response['ordenstyp'] = $ordenstypArr;
+		$response['klosterstatus'] = $klosterstatusArr;
+		$response['bearbeiter'] = $bearbeiterArr;
+		$response['url_typ'] = $urltypArr;
 		return json_encode($response);
 
 	}
 
 	/** Update data of a selected Kloster
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return integer The http status
 	 **/
-	public function updateAction(Kloster $kloster) {
+	public function updateAction() {
 
 		// Update Kloster
-		$param = $this->request->getArguments();
-		$id = $param['kloster']['__identity'];
-		$kloster = $this->klosterRepository->findByIdentifier($id);
+		$uuid = $this->request->getArgument('uuid');
+		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		$kloster->setKloster( $this->request->getArgument('kloster_name') );
 		$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
 		$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
@@ -1085,7 +1092,7 @@ class KlosterController extends ActionController {
 		$klosterstandortNumber = count($ortArr);
 		$klosterstandortArr = array();
 		for ($i = 0; $i < $klosterstandortNumber; $i++) {
-			$klosterstandortArr[$i]['kloster'] = $id;
+			$klosterstandortArr[$i]['kloster'] = $uuid;
 			$klosterstandortArr[$i]['ort'] = $ortArr[$i];
 			$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
 			$klosterstandortArr[$i]['gruender'] = $gruenderArr[$i];
@@ -1155,7 +1162,7 @@ class KlosterController extends ActionController {
 		$klosterordenNumber = count($ordenArr);
 		$klosterordenArr = array();
 		for ($i = 0; $i < $klosterordenNumber; $i++) {
-			$klosterordenArr[$i]['kloster'] = $id;
+			$klosterordenArr[$i]['kloster'] = $uuid;
 			$klosterordenArr[$i]['orden'] = $ordenArr[$i];
 			$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
 			$klosterordenArr[$i]['bemerkung_orden'] = $bemerkung_ordenArr[$i];
@@ -1361,7 +1368,7 @@ class KlosterController extends ActionController {
 			}
 		}
 
-		return json_encode($id);
+		return json_encode($uuid);
 	}
 
 	/**

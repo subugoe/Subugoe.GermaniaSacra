@@ -11,9 +11,9 @@ initList = (type) ->
 		if $(this).find("input[name=uuid]:checked, input[name=uUID]:checked").length is 0
 			message "Wählen Sie bitte mindestens einen Eintrag aus."
 			return false
-		updateListAction(type)
-
-	return
+		else
+			updateListAction(type)
+			return true
 
 # Fill the list
 editListAction = (type) ->
@@ -24,8 +24,8 @@ editListAction = (type) ->
 		alert('There has to be a <section> whose id equals type')
 		return
 
-	$this.hide()
-	$('#loading').slideDown()
+	$('#search, #list').hide()
+	message s_loading, false
 
 	$table = $this.find("table:eq(0)")
 
@@ -71,29 +71,35 @@ editListAction = (type) ->
 				data: aoData
 				success: [ajaxSuccess, fnCallback]
 		fnDrawCallback: ->
-			# Since only visible textareas can be autosized, this has to be called after every page render
 			$tr = $table.find('tbody tr:not(.processed)')
 			$tr.children().each ->
 				$th = $table.find('th[data-name]').eq( $(this).index() )
 				if $th.length
-					$input = $('<' + $th.data('input') + '/>').attr('name', $th.data('name'))
+					if $th.data('input') is 'checkbox'
+						$input = $('<input type="checkbox"/>')
+					else
+						$input = $("<#{$th.data('input')}/>")
+					$input.attr('name', $th.data('name'))
 					# Fill selects
 					if $th.data('input') is 'select'
-						select_name = $th.data('name')
-						if selectOptions[select_name]?
-							for obj in selectOptions[select_name]
+						selectName = $th.data('name')
+						if selectOptions[selectName]?
+							for obj in selectOptions[selectName]
 								$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
+					else if $th.data('input') is 'checkbox'
+						if $(this).text() is '1' then $input.prop('checked', true)
 					$(this).html( $input.val($(this).text()) )
 			$tr.each ->
 				uuid = $(this).find(':input[name=uuid]').val()
+				# Since only visible textareas can be autosized, this has to be called after every page render
 				$(this).find("textarea").autosize()
 				# Mark row as dirty on change
-				$(this).find(":input:not(:checkbox)").change ->
+				$(this).find(":input:not([name=uuid]):not([name=uUID])").change ->
 					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
 			$tr.addClass('processed')
 		ajaxSuccess = (json) ->
-			$this.show()
-			$('#loading').slideUp()
+			$('#search, #list').slideDown()
+			$('#message').slideUp()
 			# TODO: Get select options for each select type
 			selectOptions.bearbeitungsstatus = json.bearbeitungsstatus
 	)
@@ -130,25 +136,24 @@ updateListAction = (type) ->
 
 	$this = $('#list form')
 
-	$rows = dataTable.$('tr').has('input:checked')
+	$rows = dataTable.$('tr').has('td:first input:checked')
 	formData = {}
+	formData.data = {}
 	$rows.each ->
-		uuid = $(this).find(':input[name=uuid]').val()
-		#formData['klosters[' + uuid + ']'] = {}
-		formData[uuid] = {}
-		$(this).find(':input:not([name=uuid])').each (i, input) ->
-			#if input.name then formData['klosters[' + uuid + ']'][input.name] = input.value
-			if input.name then formData[uuid][input.name] = input.value
+		uuid = $(this).find('input[name=uuid], input[name=uUID]').first().val()
+		formData.data[uuid] = {}
+		$(this).find(':input:not([name=uuid]):not([name=uUID])').each (i, input) ->
+			if input.name then formData.data[uuid][input.name] = input.value
 			return
-	formData.__csrfToken = $(this).find('input[name=__csrfToken]').val()
+	formData.__csrfToken = $('#csrf').val()
 	$.post(type + '/updateList', formData).done((respond, status, jqXHR) ->
 		message 'Ihre Änderungen wurden gespeichert.'
+		# TODO: Remove .dirty from all td
 		# TODO: Please find a way to trigger the Solr update server-side
 		if type is 'kloster'
 			$.post("updateSolrAfterListUpdate", {uuids: respond})
 	).fail (jqXHR, textStatus) ->
-		message 'Fehler'
-		console.dir jqXHR.responseText
+		message 'Fehler: Daten konnten nicht gespeichert werden.'
 
 	return
 
@@ -164,6 +169,5 @@ deleteAction = (type, id) ->
 			if status is 'success'
 				message 'Der Eintrag wurde gelöscht.'
 		).fail (jqXHR, textStatus) ->
-			message 'Fehler'
-			console.dir jqXHR.responseText
+			message 'Fehler: Eintrag konnte nicht gelöscht werden.'
 	return

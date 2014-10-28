@@ -5,25 +5,17 @@ initEditor = function(type) {
   populateSelectsAction(type);
   $("#edit textarea").autosize();
   $('#edit').hide();
-  $("#edit fieldset .multiple").append("<div class=\"add-remove-buttons\"><button class=\"remove\">-</button><button class=\"add\">+</button></div>");
-  $("#edit fieldset .multiple button").click(function(e) {
-    var div;
-    e.preventDefault();
-    div = $(this).closest(".multiple");
-    if ($(this).hasClass("remove")) {
-      return div.removeInputs(250);
-    } else if ($(this).hasClass("add")) {
-      return div.addInputs(250);
-    }
-  });
   $("#edit input[type=url]").keyup(function() {
     return $(this).parent().next(".link").html($(this).val() ? '<a class="icon-link" href="' + $(this).val() + '" target="_blank"></a>' : '');
   });
   $("#edit fieldset .multiple .remove").click();
+  $("#edit :input:not([name=uuid]):not([name=uUID])").change(function() {
+    return $(this).closest("label").addClass("dirty");
+  });
   $("#edit .close").click(function(e) {
     e.preventDefault();
     $(this).parent().closest("section[id]").slideUp();
-    return $("#list").slideDown();
+    return $("#search, #list").slideDown();
   });
   $("#edit form").submit(function(e) {
     e.preventDefault();
@@ -35,33 +27,14 @@ initEditor = function(type) {
     }
     return $("select.disabled").prop("disabled", true);
   });
-  return $(window).bind("keydown", function(e) {
-    if (e.ctrlKey || e.metaKey) {
-      switch (String.fromCharCode(e.which).toLowerCase()) {
-        case "s":
-          e.preventDefault();
-          return $(":submit:visible:last").click();
-      }
-    }
-  });
+  return initGeopicker();
 };
 
 populateSelectsAction = function() {
   return $.getJSON('getOptions', function(response) {
-    var options;
-    options = {};
-    options.bearbeitungsstatus = response[0];
-    options.personallistenstatus = response[1];
-    options.band = response[2];
-    options.literatur = response[3];
-    options.bistum = response[4];
-    options.orden = response[5];
-    options.klosterstatus = response[6];
-    options.bearbeiter = response[7];
-    options.url_typ = response[8];
-    return $.each(options, function(name, values) {
+    return $.each(response, function(name, values) {
       var $selects;
-      $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]']");
+      $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid");
       $selects.empty();
       return $.each(values, function(uuid, text) {
         return $selects.append($('<option>', {
@@ -77,8 +50,10 @@ newAction = function() {
   var $form;
   $form = $('#edit form');
   $form.clearForm();
-  $('#list').slideUp();
+  $('#search, #list').slideUp();
   $('#edit').slideDown();
+  $form.find('select[name=personallistenstatus] option:contains("Erfassung")').attr('selected', 'selected');
+  $form.find('select option:contains("keine Angabe")').attr('selected', 'selected');
   $("#edit select").autocomplete();
   $("#edit").find('input[type=url]').keyup();
   return $("#edit").find('textarea').trigger('autosize.resize');
@@ -93,16 +68,14 @@ createAction = function(type, data) {
         uuid: respond
       });
       return message('Ein neuer Eintrag wurde angelegt.');
-    }).fail(function(jqXHR, textStatus) {
-      message('Error');
-      return console.dir(jqXHR.responseText);
+    }).fail(function() {
+      return message('Fehler: Eintrag konnte nicht angelegt werden.');
     });
   } else {
     return $.post(type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
       return message('Ein neuer Eintrag wurde angelegt.');
-    }).fail(function(jqXHR, textStatus) {
-      message('Fehler');
-      return console.dir(jqXHR.responseText);
+    }).fail(function() {
+      return message('Fehler: Eintrag konnte nicht angelegt werden.');
     });
   }
 };
@@ -111,32 +84,102 @@ editAction = function(type, id) {
   var $form;
   $form = $('#edit form');
   $form.clearForm();
-  $('#list').slideUp();
-  $('#loading').slideDown();
-  return $.getJSON("" + type + "/edit/" + id, function(obj) {
-    var $fieldset;
-    if (type === 'kloster') {
-      $form.find(':input[name=uuid]').val(obj.uuid);
-      $fieldset = $('#klosterdaten');
-      if ($fieldset.length) {
-        $fieldset.find('label :input').each(function() {
-          var name, val;
-          name = $(this).attr('name');
-          if (name) {
-            name = name.replace('[]', '');
-          }
-          val = obj[name];
-          return $(this).val(val);
-        });
+  $('#search, #list').slideUp();
+  message(s_loading, false);
+  return $.getJSON("" + type + "/edit/" + id).done(function(obj) {
+    var $fieldset, $input, name, value;
+    for (name in obj) {
+      value = obj[name];
+      $input = $form.find(":input[data-type=" + name + "], :input[name='" + name + "']").first();
+      if (name === 'ort') {
+        $input.html($('<option />', {
+          value: value.uuid,
+          text: value.name
+        }).attr('selected', true));
+      } else {
+        if ($input.is(':checkbox') && value) {
+          $input.prop('checked', true);
+        } else {
+          $input.val(value);
+        }
       }
-      $fieldset = $('#klosterorden');
-      if ($fieldset.length) {
-        $.each(obj.klosterorden, function(index, value) {
-          if (index > 0) {
-            $fieldset.find('.multiple:last()').addInputs(0);
+    }
+    $fieldset = $('#klosterdaten');
+    if ($fieldset.length) {
+      $fieldset.find('label :input').each(function() {
+        var val;
+        name = $(this).attr('name');
+        if (name) {
+          name = name.replace('[]', '');
+        }
+        val = obj[name];
+        return $(this).val(val);
+      });
+    }
+    $fieldset = $('#klosterorden');
+    if ($fieldset.length) {
+      $.each(obj.klosterorden, function(index, value) {
+        if (index > 0) {
+          $fieldset.find('.multiple:last()').addInputs(0);
+        }
+        return $fieldset.find('.multiple:last() label :input').each(function() {
+          name = $(this).attr('name');
+          if (typeof name === 'undefined') {
+            return;
           }
+          name = name.replace('[]', '');
+          return $(this).val(value[name]);
+        });
+      });
+    }
+    $fieldset = $('#klosterstandorte');
+    if ($fieldset.length) {
+      $.each(obj.klosterstandorte, function(index, value) {
+        if (index > 0) {
+          $fieldset.find('.multiple:last()').addInputs(0);
+        }
+        return $fieldset.find('.multiple:last() label :input').each(function() {
+          var checkedCondition, disabledCondition, text, val;
+          name = $(this).attr('name');
+          if (typeof name === 'undefined') {
+            return;
+          }
+          name = name.replace('[]', '');
+          val = value[name];
+          if (name === 'wuestung') {
+            if (name === 'wuestung') {
+              checkedCondition = value[name] === 1;
+              return $(this).prop('checked', checkedCondition);
+            }
+          } else if (name === 'ort') {
+            return $(this).html($('<option />', {
+              value: value.uuid,
+              text: value.ort
+            }).attr('selected', true));
+          } else if (name === 'bistum') {
+            $(this).val(value[name]);
+            text = $(this).find(':selected');
+            disabledCondition = text !== 'keine Angabe' && text !== '';
+            return $(this).prop('disabled', disabledCondition);
+          } else {
+            return $(this).val(value[name]);
+          }
+        });
+      });
+    }
+    $fieldset = $('#links');
+    if ($fieldset.length) {
+      $fieldset.find('.multiple:eq(0)').removeInputs(0);
+      $.each(obj.url, function(index, value) {
+        if (value.url_typ_name === 'GND') {
+          $(':input[name=gnd]').val(value.url);
+          return $(':input[name=gnd_label]').val(value.url_label);
+        } else if (value.url_typ_name === 'Wikipedia') {
+          $(':input[name=wikipedia]').val(value.url);
+          return $(':input[name=wikipedia_label]').val(value.url_label);
+        } else {
+          $fieldset.find('.multiple:last()').addInputs(0);
           return $fieldset.find('.multiple:last() label :input').each(function() {
-            var name;
             name = $(this).attr('name');
             if (typeof name === 'undefined') {
               return;
@@ -144,97 +187,32 @@ editAction = function(type, id) {
             name = name.replace('[]', '');
             return $(this).val(value[name]);
           });
-        });
-      }
-      $fieldset = $('#klosterstandorte');
-      if ($fieldset.length) {
-        $.each(obj.klosterstandorte, function(index, value) {
-          if (index > 0) {
-            $fieldset.find('.multiple:last()').addInputs(0);
+        }
+      });
+    }
+    $fieldset = $('#literatur');
+    if ($fieldset.length) {
+      $.each(obj.literatur, function(index, value) {
+        if (index > 0) {
+          $fieldset.addInputs(0);
+        }
+        return $fieldset.find('.multiple:last() label :input').each(function() {
+          name = $(this).attr('name');
+          if (typeof name === 'undefined') {
+            return;
           }
-          return $fieldset.find('.multiple:last() label :input').each(function() {
-            var checkedCondition, disabledCondition, name, text, val;
-            name = $(this).attr('name');
-            if (typeof name === 'undefined') {
-              return;
-            }
-            name = name.replace('[]', '');
-            val = value[name];
-            if (name === 'wuestung') {
-              if (name === 'wuestung') {
-                checkedCondition = value[name] === 1;
-                return $(this).prop('checked', checkedCondition);
-              }
-            } else if (name === 'ort') {
-              return $(this).html($('<option />', {
-                value: value['uuid'],
-                text: value['ort']
-              }).attr('selected', true));
-            } else if (name === 'bistum') {
-              $(this).val(value[name]);
-              text = $(this).find(':selected');
-              disabledCondition = text !== 'keine Angabe' && text !== '';
-              return $(this).prop('disabled', disabledCondition);
-            } else {
-              return $(this).val(value[name]);
-            }
-          });
+          name = name.replace('[]', '');
+          return $(this).val(value);
         });
-      }
-      $fieldset = $('#links');
-      if ($fieldset.length) {
-        $fieldset.find('.multiple:eq(0)').removeInputs(0);
-        $.each(obj.url, function(index, value) {
-          if (value.url_typ_name === 'GND') {
-            $(':input[name=gnd]').val(value.url);
-            return $(':input[name=gnd_label]').val(value.url_label);
-          } else if (value.url_typ_name === 'Wikipedia') {
-            $(':input[name=wikipedia]').val(value.url);
-            return $(':input[name=wikipedia_label]').val(value.url_label);
-          } else {
-            $fieldset.find('.multiple:last()').addInputs(0);
-            return $fieldset.find('.multiple:last() label :input').each(function() {
-              var name;
-              name = $(this).attr('name');
-              if (typeof name === 'undefined') {
-                return;
-              }
-              name = name.replace('[]', '');
-              return $(this).val(value[name]);
-            });
-          }
-        });
-      }
-      $fieldset = $('#literatur');
-      if ($fieldset.length) {
-        $.each(obj.literatur, function(index, value) {
-          if (index > 0) {
-            $fieldset.addInputs(0);
-          }
-          return $fieldset.find('.multiple:last() label :input').each(function() {
-            var name;
-            name = $(this).attr('name');
-            if (typeof name === 'undefined') {
-              return;
-            }
-            name = name.replace('[]', '');
-            return $(this).val(value);
-          });
-        });
-      }
-    } else {
-      $form.find(':input:not(:submit)').each(function() {
-        var name;
-        name = $(this).attr('name');
-        return $(this).val(obj[name]);
       });
     }
     $('#edit').slideDown();
-    $('#loading').slideUp();
+    $('#message').slideUp();
     $form.find('select').autocomplete();
     $form.find('input[type=url]').keyup();
-    $form.find('textarea').trigger('autosize.resize');
-    return $('select option:contains("Erfassung")').prop('selected', true);
+    return $form.find('textarea').trigger('autosize.resize');
+  }).fail(function() {
+    return message('Fehler: Daten konnte nicht werden.');
   });
 };
 
@@ -245,12 +223,11 @@ updateAction = function(type) {
   return $.post("" + type + "/update/" + uuid, $form.serialize()).done(function(respond, status, jqXHR) {
     message('Ihre Änderungen wurden gespeichert.');
     if (type === 'kloster') {
-      return $.post("updateSolrAfterListUpdate", {
-        uuids: respond
+      return $.post("kloster/updateSolrAfterKlosterUpdate", {
+        uuid: respond
       });
     }
-  }).fail(function(jqXHR, textStatus) {
-    message('Fehler: Ihre Änderungen konnten nicht gespeichert werden.');
-    return console.dir(jqXHR.responseText);
+  }).fail(function() {
+    return message('Fehler: Ihre Änderungen konnten nicht gespeichert werden.');
   });
 };

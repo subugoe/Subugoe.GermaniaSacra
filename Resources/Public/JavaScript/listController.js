@@ -5,13 +5,15 @@ dataTable = null;
 
 initList = function(type) {
   editListAction(type);
-  $("#list form").submit(function(e) {
+  return $("#list form").submit(function(e) {
     e.preventDefault();
     if ($(this).find("input[name=uuid]:checked, input[name=uUID]:checked").length === 0) {
       message("Wählen Sie bitte mindestens einen Eintrag aus.");
       return false;
+    } else {
+      updateListAction(type);
+      return true;
     }
-    return updateListAction(type);
   });
 };
 
@@ -22,8 +24,8 @@ editListAction = function(type) {
     alert('There has to be a <section> whose id equals type');
     return;
   }
-  $this.hide();
-  $('#loading').slideDown();
+  $('#search, #list').hide();
+  message(s_loading, false);
   $table = $this.find("table:eq(0)");
   $table.find("thead th").not(":first").not(":last").each(function() {
     return $(this).append('<div><input type="text"></div>');
@@ -77,18 +79,27 @@ editListAction = function(type) {
       var $tr;
       $tr = $table.find('tbody tr:not(.processed)');
       $tr.children().each(function() {
-        var $input, $th, obj, select_name, _i, _len, _ref;
+        var $input, $th, obj, selectName, _i, _len, _ref;
         $th = $table.find('th[data-name]').eq($(this).index());
         if ($th.length) {
-          $input = $('<' + $th.data('input') + '/>').attr('name', $th.data('name'));
+          if ($th.data('input') === 'checkbox') {
+            $input = $('<input type="checkbox"/>');
+          } else {
+            $input = $("<" + ($th.data('input')) + "/>");
+          }
+          $input.attr('name', $th.data('name'));
           if ($th.data('input') === 'select') {
-            select_name = $th.data('name');
-            if (selectOptions[select_name] != null) {
-              _ref = selectOptions[select_name];
+            selectName = $th.data('name');
+            if (selectOptions[selectName] != null) {
+              _ref = selectOptions[selectName];
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                 obj = _ref[_i];
                 $input.append($('<option/>').text(obj.name).attr('value', obj.uuid));
               }
+            }
+          } else if ($th.data('input') === 'checkbox') {
+            if ($(this).text() === '1') {
+              $input.prop('checked', true);
             }
           }
           return $(this).html($input.val($(this).text()));
@@ -98,15 +109,15 @@ editListAction = function(type) {
         var uuid;
         uuid = $(this).find(':input[name=uuid]').val();
         $(this).find("textarea").autosize();
-        return $(this).find(":input:not(:checkbox)").change(function() {
+        return $(this).find(":input:not([name=uuid]):not([name=uUID])").change(function() {
           return $(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop("checked", true);
         });
       });
       return $tr.addClass('processed');
     }
   }, ajaxSuccess = function(json) {
-    $this.show();
-    $('#loading').slideUp();
+    $('#search, #list').slideDown();
+    $('#message').slideUp();
     return selectOptions.bearbeitungsstatus = json.bearbeitungsstatus;
   });
   $table.on("click", ".edit", function(e) {
@@ -137,19 +148,20 @@ editListAction = function(type) {
 updateListAction = function(type) {
   var $rows, $this, formData;
   $this = $('#list form');
-  $rows = dataTable.$('tr').has('input:checked');
+  $rows = dataTable.$('tr').has('td:first input:checked');
   formData = {};
+  formData.data = {};
   $rows.each(function() {
     var uuid;
-    uuid = $(this).find(':input[name=uuid]').val();
-    formData[uuid] = {};
-    return $(this).find(':input:not([name=uuid])').each(function(i, input) {
+    uuid = $(this).find('input[name=uuid], input[name=uUID]').first().val();
+    formData.data[uuid] = {};
+    return $(this).find(':input:not([name=uuid]):not([name=uUID])').each(function(i, input) {
       if (input.name) {
-        formData[uuid][input.name] = input.value;
+        formData.data[uuid][input.name] = input.value;
       }
     });
   });
-  formData.__csrfToken = $(this).find('input[name=__csrfToken]').val();
+  formData.__csrfToken = $('#csrf').val();
   $.post(type + '/updateList', formData).done(function(respond, status, jqXHR) {
     message('Ihre Änderungen wurden gespeichert.');
     if (type === 'kloster') {
@@ -158,8 +170,7 @@ updateListAction = function(type) {
       });
     }
   }).fail(function(jqXHR, textStatus) {
-    message('Fehler');
-    return console.dir(jqXHR.responseText);
+    return message('Fehler: Daten konnten nicht gespeichert werden.');
   });
 };
 
@@ -176,8 +187,7 @@ deleteAction = function(type, id) {
         return message('Der Eintrag wurde gelöscht.');
       }
     }).fail(function(jqXHR, textStatus) {
-      message('Fehler');
-      return console.dir(jqXHR.responseText);
+      return message('Fehler: Eintrag konnte nicht gelöscht werden.');
     });
   }
 };
