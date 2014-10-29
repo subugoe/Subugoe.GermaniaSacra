@@ -110,7 +110,7 @@ editAction = function(type, id) {
       });
     }
     $fieldset = $('#klosterorden');
-    if ($fieldset.length) {
+    if ($fieldset.length && (obj.klosterorden != null)) {
       $.each(obj.klosterorden, function(index, value) {
         if (index > 0) {
           $fieldset.find('.multiple:last()').addInputs(0);
@@ -126,7 +126,7 @@ editAction = function(type, id) {
       });
     }
     $fieldset = $('#klosterstandorte');
-    if ($fieldset.length) {
+    if ($fieldset.length && (obj.klosterstandorte != null)) {
       $.each(obj.klosterstandorte, function(index, value) {
         if (index > 0) {
           $fieldset.find('.multiple:last()').addInputs(0);
@@ -161,7 +161,7 @@ editAction = function(type, id) {
       });
     }
     $fieldset = $('#links');
-    if ($fieldset.length) {
+    if ($fieldset.length && (obj.url != null)) {
       $fieldset.find('.multiple:eq(0)').removeInputs(0);
       $.each(obj.url, function(index, value) {
         if (value.url_typ_name === 'GND') {
@@ -184,7 +184,7 @@ editAction = function(type, id) {
       });
     }
     $fieldset = $('#literatur');
-    if ($fieldset.length) {
+    if ($fieldset.length && (obj.literatur != null)) {
       $.each(obj.literatur, function(index, value) {
         if (index > 0) {
           $fieldset.addInputs(0);

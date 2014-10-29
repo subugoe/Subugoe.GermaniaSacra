@@ -84,7 +84,7 @@ editAction = (type, id) ->
 	$('#search, #list').slideUp()
 	message s_loading, false
 
-	$.getJSON("#{type}/edit/#{id}").done((obj) ->
+	$.getJSON("#{type}/edit/#{id}").done( (obj) ->
 
 		for name, value of obj
 			$input = $form.find(":input[data-type=#{name}], :input[name='#{name}']").first()
@@ -102,7 +102,7 @@ editAction = (type, id) ->
 				$(this).val val
 
 		$fieldset = $('#klosterorden')
-		if $fieldset.length
+		if $fieldset.length and obj.klosterorden?
 			$.each obj.klosterorden, (index, value) ->
 				if index > 0
 					$fieldset.find('.multiple:last()').addInputs 0
@@ -114,7 +114,7 @@ editAction = (type, id) ->
 					$(this).val value[name]
 
 		$fieldset = $('#klosterstandorte')
-		if $fieldset.length
+		if $fieldset.length and obj.klosterstandorte?
 			$.each obj.klosterstandorte, (index, value) ->
 				if index > 0
 					$fieldset.find('.multiple:last()').addInputs 0
@@ -141,7 +141,7 @@ editAction = (type, id) ->
 						$(this).val value[name]
 
 		$fieldset = $('#links')
-		if $fieldset.length
+		if $fieldset.length and obj.url?
 			$fieldset.find('.multiple:eq(0)').removeInputs 0
 			$.each obj.url, (index, value) ->
 				if value.url_typ_name is 'GND'
@@ -160,7 +160,7 @@ editAction = (type, id) ->
 						$(this).val value[name]
 
 		$fieldset = $('#literatur')
-		if $fieldset.length
+		if $fieldset.length and obj.literatur?
 			$.each obj.literatur, (index, value) ->
 				if index > 0
 					$fieldset.addInputs 0

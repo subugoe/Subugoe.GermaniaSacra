@@ -62,6 +62,24 @@ class OrdenController extends RestController {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function editAction() {
+		$uuid = $this->request->getArgument('uuid');
+		$ordenArr = array();
+		$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
+		$ordenArr['uUID'] = $ordenObj->getUUID();
+		$ordenArr['orden'] = $ordenObj->getOrden();
+		$ordenArr['ordo'] = $ordenObj->getOrdo();
+		$ordenstyp = $ordenObj->getOrdenstyp();
+		$ordenArr['ordenstyp'] = $ordenstyp->getUUID();
+		$ordenArr['graphik'] = $ordenObj->getGraphik();
+		$ordenArr['symbol'] = $ordenObj->getSymbol();
+
+		return json_encode($ordenArr);
+	}
+
+	/**
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Orden $orden
 	 * @return void
 	 */
