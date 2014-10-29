@@ -62,22 +62,17 @@ newAction = function() {
 createAction = function(type, data) {
   var $form;
   $form = $('#edit form');
-  if (type === 'kloster') {
-    return $.post('kloster/create', $form.serialize()).done(function(respond, status, jqXHR) {
+  return $.post(type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
+    if (type === 'kloster') {
       $.get('solrUpdateWhenKlosterCreate', {
         uuid: respond
       });
-      return message('Ein neuer Eintrag wurde angelegt.');
-    }).fail(function() {
-      return message('Fehler: Eintrag konnte nicht angelegt werden.');
-    });
-  } else {
-    return $.post(type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
-      return message('Ein neuer Eintrag wurde angelegt.');
-    }).fail(function() {
-      return message('Fehler: Eintrag konnte nicht angelegt werden.');
-    });
-  }
+    }
+    message('Ein neuer Eintrag wurde angelegt.');
+    return $form.find('.dirty').removeClass('.dirty');
+  }).fail(function() {
+    return message('Fehler: Eintrag konnte nicht angelegt werden.');
+  });
 };
 
 editAction = function(type, id) {
@@ -205,7 +200,7 @@ editAction = function(type, id) {
     $form.find('input[type=url]').keyup();
     return $form.find('textarea').trigger('autosize.resize');
   }).fail(function() {
-    return message('Fehler: Daten konnte nicht werden.');
+    return message('Fehler: Daten konnten nicht geladen werden.');
   });
 };
 
@@ -214,12 +209,13 @@ updateAction = function(type) {
   $form = $("#edit form");
   uuid = $form.find(':input[name=uuid], :input[name=uUID]').first().val();
   return $.post("" + type + "/update/" + uuid, $form.serialize()).done(function(respond, status, jqXHR) {
-    message('Ihre Änderungen wurden gespeichert.');
     if (type === 'kloster') {
-      return $.post("kloster/updateSolrAfterKlosterUpdate", {
+      $.post("kloster/updateSolrAfterKlosterUpdate", {
         uuid: respond
       });
     }
+    message('Ihre Änderungen wurden gespeichert.');
+    return $form.find('.dirty').removeClass('.dirty');
   }).fail(function() {
     return message('Fehler: Ihre Änderungen konnten nicht gespeichert werden.');
   });

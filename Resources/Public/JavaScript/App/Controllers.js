@@ -2,13 +2,22 @@
 var init, s_loading;
 
 germaniaSacra.controller('listController', function($scope) {
-  return $scope.$watch((function() {
+  $scope.$watch((function() {
     return $('#list').data('type');
   }), (function(newval, oldval) {
     if (newval != null) {
       return init();
     }
   }), true);
+  return $scope.$on('$locationChangeStart', function(e) {
+    var cnfrm;
+    if ($('form .dirty').length) {
+      cnfrm = confirm("Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.");
+      if (cnfrm !== true) {
+        return e.preventDefault();
+      }
+    }
+  });
 });
 
 s_loading = '<i class="spinner spinner-icon"></i> Wird geladen&hellip;';
@@ -50,8 +59,13 @@ init = function() {
     }
   });
   $(".togglable + .togglable").hide();
-  return $(".toggle").click(function(e) {
+  $(".toggle").click(function(e) {
     e.preventDefault();
     return $(this).closest(".togglable").siblings(".togglable").addBack().slideToggle();
   });
+  return window.onbeforeunload = function() {
+    if ($('form .dirty').length) {
+      return 'Sind Sie sicher, dass Sie diese Seite verlassen möchten? Ihre Änderungen wurden nicht gespeichert.';
+    }
+  };
 };

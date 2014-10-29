@@ -124,8 +124,8 @@ editListAction = (type) ->
 			dataTable.column(colIdx).search(@value).draw()
 
 	# Filter table by "search all" return values
-	$("body").append '<input id="uuid_filter" type="hidden">'
-	$("#uuid_filter").change ->
+	$("body").append '<input id="uuid-filter" type="hidden">'
+	$("#uuid-filter").change ->
 		# enable regex, disable smart search (enabling both will not work)
 		dataTable.column(0).search(@value, true, false).draw()
 
@@ -134,24 +134,24 @@ editListAction = (type) ->
 # Save the list
 updateListAction = (type) ->
 
-	$this = $('#list form')
+	$form = $('#list form')
 
 	$rows = dataTable.$('tr').has('td:first input:checked')
 	formData = {}
 	formData.data = {}
 	$rows.each ->
-		uuid = $(this).find('input[name=uuid], input[name=uUID]').first().val()
+		uuid = $form.find('input[name=uuid], input[name=uUID]').first().val()
 		formData.data[uuid] = {}
-		$(this).find(':input:not([name=uuid]):not([name=uUID])').each (i, input) ->
+		$form.find(':input:not([name=uuid]):not([name=uUID])').each (i, input) ->
 			if input.name then formData.data[uuid][input.name] = input.value
 			return
 	formData.__csrfToken = $('#csrf').val()
 	$.post(type + '/updateList', formData).done((respond, status, jqXHR) ->
-		message 'Ihre Änderungen wurden gespeichert.'
-		# TODO: Remove .dirty from all td
 		# TODO: Please find a way to trigger the Solr update server-side
 		if type is 'kloster'
 			$.post("updateSolrAfterListUpdate", {uuids: respond})
+		message 'Ihre Änderungen wurden gespeichert.'
+		$form.find('.dirty').removeClass('.dirty')
 	).fail (jqXHR, textStatus) ->
 		message 'Fehler: Daten konnten nicht gespeichert werden.'
 

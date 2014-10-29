@@ -60,20 +60,16 @@ newAction = ->
 # Create a new Kloster
 createAction = (type, data) ->
 	$form = $('#edit form')
-	if type is 'kloster'
-		$.post('kloster/create', $form.serialize()).done((respond, status, jqXHR) ->
+	$.post(type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
+		if type is 'kloster'
 			# TODO: Please find a way to trigger the Solr update server-side
 			$.get('solrUpdateWhenKlosterCreate',
 				uuid: respond
 			)
-			message 'Ein neuer Eintrag wurde angelegt.'
-		).fail ->
-			message 'Fehler: Eintrag konnte nicht angelegt werden.'
-	else
-		$.post(type + '/create', $form.serialize()).done((respond, status, jqXHR) ->
-			message 'Ein neuer Eintrag wurde angelegt.'
-		).fail ->
-			message 'Fehler: Eintrag konnte nicht angelegt werden.'
+		message 'Ein neuer Eintrag wurde angelegt.'
+		$form.find('.dirty').removeClass('.dirty')
+	).fail ->
+		message 'Fehler: Eintrag konnte nicht angelegt werden.'
 
 # Load a single entity into the edit form
 editAction = (type, id) ->
@@ -178,7 +174,7 @@ editAction = (type, id) ->
 		$form.find('textarea').trigger('autosize.resize')
 
 	).fail( ->
-		message 'Fehler: Daten konnte nicht werden.'
+		message 'Fehler: Daten konnten nicht geladen werden.'
 	)
 
 # Update a single entity
@@ -186,9 +182,10 @@ updateAction = (type) ->
 	$form = $("#edit form")
 	uuid = $form.find(':input[name=uuid], :input[name=uUID]').first().val()
 	$.post("#{type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) ->
-		message 'Ihre Änderungen wurden gespeichert.'
 		# TODO: Find a way to trigger Solr update server-side
 		if type is 'kloster'
 			$.post("kloster/updateSolrAfterKlosterUpdate", {uuid: respond})
+		message 'Ihre Änderungen wurden gespeichert.'
+		$form.find('.dirty').removeClass('.dirty')
 	).fail ->
 		message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'

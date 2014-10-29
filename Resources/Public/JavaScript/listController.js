@@ -139,23 +139,23 @@ editListAction = function(type) {
       return dataTable.column(colIdx).search(this.value).draw();
     });
   });
-  $("body").append('<input id="uuid_filter" type="hidden">');
-  $("#uuid_filter").change(function() {
+  $("body").append('<input id="uuid-filter" type="hidden">');
+  $("#uuid-filter").change(function() {
     return dataTable.column(0).search(this.value, true, false).draw();
   });
 };
 
 updateListAction = function(type) {
-  var $rows, $this, formData;
-  $this = $('#list form');
+  var $form, $rows, formData;
+  $form = $('#list form');
   $rows = dataTable.$('tr').has('td:first input:checked');
   formData = {};
   formData.data = {};
   $rows.each(function() {
     var uuid;
-    uuid = $(this).find('input[name=uuid], input[name=uUID]').first().val();
+    uuid = $form.find('input[name=uuid], input[name=uUID]').first().val();
     formData.data[uuid] = {};
-    return $(this).find(':input:not([name=uuid]):not([name=uUID])').each(function(i, input) {
+    return $form.find(':input:not([name=uuid]):not([name=uUID])').each(function(i, input) {
       if (input.name) {
         formData.data[uuid][input.name] = input.value;
       }
@@ -163,12 +163,13 @@ updateListAction = function(type) {
   });
   formData.__csrfToken = $('#csrf').val();
   $.post(type + '/updateList', formData).done(function(respond, status, jqXHR) {
-    message('Ihre Änderungen wurden gespeichert.');
     if (type === 'kloster') {
-      return $.post("updateSolrAfterListUpdate", {
+      $.post("updateSolrAfterListUpdate", {
         uuids: respond
       });
     }
+    message('Ihre Änderungen wurden gespeichert.');
+    return $form.find('.dirty').removeClass('.dirty');
   }).fail(function(jqXHR, textStatus) {
     return message('Fehler: Daten konnten nicht gespeichert werden.');
   });
