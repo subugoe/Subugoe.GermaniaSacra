@@ -8,6 +8,7 @@ $.fn.autocomplete = ->
 
 		$select = $(this)
 		name = if $select.data('type') then $select.data('type') else $select.attr('name').replace('[]', '')
+		isAjax = $select.hasClass('ajax')
 
 		# If already is autocomplete-enabled, remove autocomplete first
 		$select.hide().siblings('.autocomplete').remove()
@@ -33,13 +34,19 @@ $.fn.autocomplete = ->
 
 		$list.on 'click', 'li', ->
 			$input.val $(this).text()
-			$select.setSelected $(this)
+			if isAjax
+				$select.empty().append("<option value='#{$(this).data('uuid')}' selected>#{$(this).text()}</option>")
+			else
+				$select.val( $(this).data('uuid') )
 			$input.blur()
+
+		oldVal = ''
 
 		$input.on 'keyup', (e) ->
 
-			if $select.hasClass('ajax')
-				if $input.val().length > 0
+			if isAjax
+				if $input.val().length > 0 and $input.val() isnt oldVal
+					oldVal = $input.val()
 					delay (->
 						$spinner.show()
 						$.ajax
@@ -72,9 +79,7 @@ $.fn.autocomplete = ->
 				switch e.which
 					when 13 # enter
 						e.preventDefault()
-						$input.val $current.text().trim()
-						$select.setSelected $current
-						$input.blur()
+						$current.click()
 					when 38 # up
 						$newCurrent = $current.prevAll(':visible').first()
 						unless $newCurrent.length then $newCurrent = $visibleItems.last()
@@ -96,10 +101,6 @@ $.fn.autocomplete = ->
 			$list.slideUp()
 			$list.find('.current').removeClass('current')
 			$input.val $select.find(':selected').text()
-
-$.fn.setSelected = ($el) ->
-	@each ->
-		$(this).empty().append("<option value='#{$el.data('uuid')}' selected>#{$el.text()}</option>")
 
 delay = (->
 	timer = 0

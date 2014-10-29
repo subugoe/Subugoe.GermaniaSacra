@@ -34,7 +34,7 @@ populateSelectsAction = function() {
   return $.getJSON('getOptions', function(response) {
     return $.each(response, function(name, values) {
       var $selects;
-      $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid");
+      $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid']");
       $selects.empty();
       return $.each(values, function(uuid, text) {
         return $selects.append($('<option>', {
@@ -52,8 +52,8 @@ newAction = function() {
   $form.clearForm();
   $('#search, #list').slideUp();
   $('#edit').slideDown();
-  $form.find('select[name=personallistenstatus] option:contains("Erfassung")').attr('selected', 'selected');
-  $form.find('select option:contains("keine Angabe")').attr('selected', 'selected');
+  $form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true);
+  $form.find('select option:contains("keine Angabe")').prop('selected', true);
   $("#edit select").autocomplete();
   $("#edit").find('input[type=url]').keyup();
   return $("#edit").find('textarea').trigger('autosize.resize');
@@ -91,17 +91,10 @@ editAction = function(type, id) {
     for (name in obj) {
       value = obj[name];
       $input = $form.find(":input[data-type=" + name + "], :input[name='" + name + "']").first();
-      if (name === 'ort') {
-        $input.html($('<option />', {
-          value: value.uuid,
-          text: value.name
-        }).attr('selected', true));
+      if ($input.is(':checkbox') && value) {
+        $input.prop('checked', true);
       } else {
-        if ($input.is(':checkbox') && value) {
-          $input.prop('checked', true);
-        } else {
-          $input.val(value);
-        }
+        $input.val(value);
       }
     }
     $fieldset = $('#klosterdaten');

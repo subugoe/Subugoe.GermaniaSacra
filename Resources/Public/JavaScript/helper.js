@@ -57,9 +57,9 @@ $.fn.removeInputs = function(slideTime) {
 $.fn.clearForm = function() {
   return this.each(function() {
     $(this).find("label").removeClass('dirty');
-    $(this).find(":input").prop("disabled", false);
+    $(this).find(":input").prop('disabled', false);
     $(this).find(":input:not([name=__csrfToken]):not(:checkbox):not(:submit)").val('');
-    $(this).find(":checkbox, :radio").prop("checked", false);
+    $(this).find(":checkbox, :radio").prop('checked', false);
     $(this).find(".multiple:gt(0)").removeInputs();
     return $(this).find("button.remove").prop('disabled', true);
   });

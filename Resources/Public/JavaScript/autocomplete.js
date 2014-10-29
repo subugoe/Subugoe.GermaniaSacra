@@ -7,9 +7,10 @@ var delay;
 
 $.fn.autocomplete = function() {
   return this.each(function() {
-    var $input, $list, $overlay, $select, $spinner, name;
+    var $input, $list, $overlay, $select, $spinner, isAjax, name, oldVal;
     $select = $(this);
     name = $select.data('type') ? $select.data('type') : $select.attr('name').replace('[]', '');
+    isAjax = $select.hasClass('ajax');
     $select.hide().siblings('.autocomplete').remove();
     $input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val($select.find(':selected').text());
     $spinner = $('<i class="spinner spinner-icon"/>');
@@ -32,13 +33,19 @@ $.fn.autocomplete = function() {
     });
     $list.on('click', 'li', function() {
       $input.val($(this).text());
-      $select.setSelected($(this));
+      if (isAjax) {
+        $select.empty().append("<option value='" + ($(this).data('uuid')) + "' selected>" + ($(this).text()) + "</option>");
+      } else {
+        $select.val($(this).data('uuid'));
+      }
       return $input.blur();
     });
+    oldVal = '';
     $input.on('keyup', function(e) {
       var $current, $newCurrent, $visibleItems, liHeight;
-      if ($select.hasClass('ajax')) {
-        if ($input.val().length > 0) {
+      if (isAjax) {
+        if ($input.val().length > 0 && $input.val() !== oldVal) {
+          oldVal = $input.val();
           delay((function() {
             $spinner.show();
             return $.ajax({
@@ -82,9 +89,7 @@ $.fn.autocomplete = function() {
         switch (e.which) {
           case 13:
             e.preventDefault();
-            $input.val($current.text().trim());
-            $select.setSelected($current);
-            return $input.blur();
+            return $current.click();
           case 38:
             $newCurrent = $current.prevAll(':visible').first();
             if (!$newCurrent.length) {
@@ -116,12 +121,6 @@ $.fn.autocomplete = function() {
       $list.find('.current').removeClass('current');
       return $input.val($select.find(':selected').text());
     });
-  });
-};
-
-$.fn.setSelected = function($el) {
-  return this.each(function() {
-    return $(this).empty().append("<option value='" + ($el.data('uuid')) + "' selected>" + ($el.text()) + "</option>");
   });
 };
 

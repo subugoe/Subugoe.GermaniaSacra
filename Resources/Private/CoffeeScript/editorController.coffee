@@ -35,7 +35,7 @@ initEditor = (type) ->
 populateSelectsAction = ->
 	$.getJSON 'getOptions', (response) ->
 		$.each response, (name, values) ->
-			$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid")
+			$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
 			$selects.empty()
 			$.each values, (uuid, text) ->
 				$selects.append $('<option>',
@@ -50,9 +50,9 @@ newAction = ->
 	$('#search, #list').slideUp()
 	$('#edit').slideDown()
 	# Select default value for Personallistenstatus
-	$form.find('select[name=personallistenstatus] option:contains("Erfassung")').attr('selected', 'selected')
+	$form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true)
 	# Select "keine Angabe" as default if available
-	$form.find('select option:contains("keine Angabe")').attr('selected', 'selected')
+	$form.find('select option:contains("keine Angabe")').prop('selected', true)
 	$("#edit select").autocomplete()
 	$("#edit").find('input[type=url]').keyup()
 	$("#edit").find('textarea').trigger('autosize.resize')
@@ -88,16 +88,10 @@ editAction = (type, id) ->
 
 		for name, value of obj
 			$input = $form.find(":input[data-type=#{name}], :input[name='#{name}']").first()
-			if name is 'ort'
-				$input.html $('<option />',
-					value: value.uuid
-					text: value.name
-				).attr('selected', true)
+			if $input.is(':checkbox') and value
+				$input.prop('checked', true)
 			else
-				if $input.is(':checkbox') and value
-					$input.prop('checked', true)
-				else
-					$input.val value
+				$input.val value
 
 		$fieldset = $('#klosterdaten')
 		if $fieldset.length
