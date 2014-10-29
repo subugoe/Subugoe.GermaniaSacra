@@ -7701,10 +7701,17 @@ form .highlight {
   background: rgba(0, 0, 0, 0.1);
   border: 0;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) inset;
-  float: left;
+  clear: both;
   margin: 0 -0.625rem 0.625rem;
   padding: 0.625rem 0.625rem 0.3125rem;
   border-radius: 3px;
+}
+form .highlight:before, form .highlight:after {
+  content: " ";
+  display: table;
+}
+form .highlight:after {
+  clear: both;
 }
 
 fieldset {

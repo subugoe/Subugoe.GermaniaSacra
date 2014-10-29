@@ -92,10 +92,11 @@ form {
 		}
 	}
 	.highlight {
+		@include clearfix;
 		background: rgba(#000, .1);
 		border: 0;
 		box-shadow: 0 1px 6px rgba(#000, .2) inset;
-		float: left;
+		clear: both;
 		margin: 0 (-$fieldset-padding) $fieldset-padding;
 		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
 		border-radius: $global-radius;
