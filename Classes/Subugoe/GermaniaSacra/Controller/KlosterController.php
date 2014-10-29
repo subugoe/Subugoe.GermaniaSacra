@@ -1214,7 +1214,7 @@ class KlosterController extends ActionController {
 				foreach ($literaturArr as $lit) {
 					if (isset($lit) && !empty($lit)) {
 						$klosterHasLiteratur = new KlosterHasLiteratur();
-						$kloster = $this->klosterRepository->findByIdentifier($id);
+						$kloster = $this->klosterRepository->findByIdentifier($uuid);
 						$literatur = $this->literaturRepository->findByIdentifier($lit);
 						$klosterHasLiteratur->setKloster($kloster);
 						$klosterHasLiteratur->setLiteratur($literatur);
@@ -1384,10 +1384,11 @@ class KlosterController extends ActionController {
 
 	/**
 	 * Delete a selected Kloster entry
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return integer $status The http status
 	 */
-	public function deleteAction(Kloster $kloster) {
+	public function deleteAction() {
+		$uuid = $this->request->getArgument('uuid');
+		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		$this->klosterRepository->remove($kloster);
 		$klosterordens = $kloster->getKlosterordens();
 		if (is_array($klosterordens)) {
@@ -1413,8 +1414,7 @@ class KlosterController extends ActionController {
 				$this->klosterHasUrlRepository->remove($url);
 			}
 		}
-		$status = 200;
-		return json_encode(array($status));
+		return $uuid;
 	}
 
 	/** Gets and returns the list of Orte as per search string
