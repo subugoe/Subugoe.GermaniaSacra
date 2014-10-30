@@ -72,7 +72,6 @@ initGeopicker = ->
 		# AJAX load GeoJSON data
 		geoJsonFile = "/subugoe.germaniasacra/proxy/geojson"
 		$.getJSON(geoJsonFile).success (data) ->
-
 			style =
 				clickable: false
 				color: "#000"
@@ -80,8 +79,7 @@ initGeopicker = ->
 				weight: 1.5
 				opacity: 0.3
 				fillOpacity: 0.05
-
-			borders = L.geoJson(data,
+			borders = L.geoJson( data,
 				style: style
 			)
 			borders.addTo(map)
@@ -96,9 +94,9 @@ initGeopicker = ->
 			lat = e.latlng.lat.toFixed(6)
 			lng = e.latlng.lng.toFixed(6)
 
-			# Insert values into input fields, cut to 6 decimals (corresponds to a precision of about 10 cm)
-			$container.find(":input[name$=\"breite[]\"]").val lat
-			$container.find(":input[name$=\"laenge[]\"]").val lng
-
-			marker.setLatLng(e.latlng)
-			#	.setContent(lat + " | " + lng)
+			cnfrm = confirm("Sollen die Koordinaten #{lat}, #{lng} übernommen werden?")
+			if cnfrm is true
+				# Insert values into input fields, cut to 6 decimals (corresponds to a precision of about 10 cm)
+				$container.find(":input[name$=\"breite[]\"]").val lat
+				$container.find(":input[name$=\"laenge[]\"]").val lng
+				marker.setLatLng(e.latlng)

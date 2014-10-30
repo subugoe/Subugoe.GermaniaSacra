@@ -86,11 +86,15 @@ initGeopicker = function() {
     });
     $("#map .leaflet-control-layers-base input:eq(0)").click();
     return map.on("click", onMapClick = function(e) {
+      var cnfrm;
       lat = e.latlng.lat.toFixed(6);
       lng = e.latlng.lng.toFixed(6);
-      $container.find(":input[name$=\"breite[]\"]").val(lat);
-      $container.find(":input[name$=\"laenge[]\"]").val(lng);
-      return marker.setLatLng(e.latlng);
+      cnfrm = confirm("Sollen die Koordinaten " + lat + ", " + lng + " übernommen werden?");
+      if (cnfrm === true) {
+        $container.find(":input[name$=\"breite[]\"]").val(lat);
+        $container.find(":input[name$=\"laenge[]\"]").val(lng);
+        return marker.setLatLng(e.latlng);
+      }
     });
   });
 };
