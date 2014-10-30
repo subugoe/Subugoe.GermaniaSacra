@@ -1,14 +1,84 @@
+// Layout
 body {
-	background: $background-color;
 	overflow-y: scroll;
 	> section {
 		padding: 1rem;
 	}
 }
 
+h2 {
+	margin: 0;
+	padding-bottom: .5em;
+}
+
+#content {
+	padding: rem-calc(20);
+}
+
+#browse {
+	@include clearfix;
+}
+
+#message {
+	@extend .clearfix;
+	background: #fff;
+	border-bottom: $table-border-size $table-border-style $table-border-color;
+	padding: $tooltip-padding;
+	width: 100%;
+	.spinner-icon {
+		display: inline-block;
+		margin-bottom: -2px;
+	}
+	.timestamp {
+		background: $table-head-bg;
+		float: left;
+		color: $form-label-font-color;
+		margin: -$tooltip-padding $tooltip-padding -$tooltip-padding -$tooltip-padding;
+		padding: $tooltip-padding;
+		white-space: nowrap;
+	}
+	.text {
+		float: left;
+		font-weight: bold;
+		margin: -$tooltip-padding $tooltip-padding;
+		padding: $tooltip-padding;
+	}
+}
+
+// Navigation
+.top-bar, {
+	// Copied from AdW site
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
+}
+
+.top-bar-section a {
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
+	&:active, &:focus, &:hover {
+		background: darken($primary-color, 10) !important;
+	}
+}
+
+// Form styles
 button {
-	min-width: 2.5rem;
-	padding: rem-calc(9);
+	margin: 0 0 .5em 0;
+	padding: rem-calc(8);
+	min-width: rem-calc(32);
+	&.new {
+		float: left;
+	}
+	.add-remove-buttons &,
+	td & {
+		background: none !important;
+		color: $primary-color;
+		font-weight: bold;
+		&:active, &:focus, &:hover {
+			background: $primary-color !important;
+			color: #fff;
+		}
+	}
+	td & {
+		margin: rem-calc(-8) 0;
+	}
 }
 
 form {
@@ -21,33 +91,27 @@ form {
 			z-index: 9;
 		}
 	}
-}
-
-textarea {
-	min-height: 0;
-	resize: none;
+	.highlight {
+		@include clearfix;
+		background: rgba(#000, .1);
+		border: 0;
+		box-shadow: 0 1px 6px rgba(#000, .2) inset;
+		clear: both;
+		margin: 0 (-$fieldset-padding) $fieldset-padding;
+		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
+		border-radius: $global-radius;
+	}
 }
 
 fieldset {
 	border: 0;
 	border-top: 1px solid;
+	clear: both;
 	margin-bottom: 0;
 	padding-left: 0;
 	padding-right: 0;
-	&.highlight {
-		background: rgba(#000, .1);
-		border: 0;
-		box-shadow: 0 1px 6px rgba(#000, .2) inset;
-		float: left;
-		margin: 0 (-$fieldset-padding) $fieldset-padding;
-		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
-		border-radius: $global-radius;
-	}
 	legend {
 		background: none;
-	}
-	.add-remove-buttons {
-		float: right
 	}
 }
 
@@ -57,30 +121,6 @@ label {
 		padding: 0;
 		text-align: right;
 	}
-}
-
-table {
-	background: none;
-	border: none;
-	border-collapse: collapse;
-	tr {
-		border-bottom: 1px solid;
-		margin-bottom: -1px;
-		&:nth-of-type(2n) {
-			background: none;
-		}
-	}
-	td {
-		vertical-align: top;
-	}
-	select,
-	textarea {
-		margin: 0;
-	}
-}
-
-button {
-	margin: 0;
 }
 
 input[type="text"],
@@ -106,25 +146,15 @@ textarea {
 		border: 0;
 		box-shadow: none;
 		float: none;
-		margin: -8px -10px;
-	}
-}
-
-button {
-	margin-bottom: .5em;
-	td & {
-		margin: 0;
+		margin: -$table-row-padding 0
 	}
 }
 
 input[type="checkbox"] {
-	height: $form-label-font-size * 2;
-	margin-left: .5rem;
-}
-
-input[type="submit"] {
-	@extend button;
-	min-width: 5rem;
+	margin-bottom: 1rem;
+	td & {
+		height: auto;
+	}
 }
 
 input,
@@ -150,8 +180,29 @@ div.autocomplete {
 input,
 select,
 textarea {
-	&:invalid {
+	&:invalid,
+	&:invalid + .autocomplete input {
 		background: lighten($alert-color, 30) !important;
+	}
+}
+
+input[type="checkbox"] {
+	height: $form-label-font-size * 2;
+	margin-left: .5rem;
+}
+
+input[type="submit"] {
+	@extend button;
+	min-width: 5rem;
+}
+
+input[type="submit"],
+button {
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
+	&:not([disabled]) {
+		&:active, &:focus, &:hover {
+			@include background(linear-gradient(top, darken(#c90230, 10) 0%, darken(#ac001e, 10) 95%, darken(#a20019, 10) 100%));
+		}
 	}
 }
 
@@ -162,47 +213,11 @@ input.year {
 	}
 }
 
-td.dirty {
-	background: lighten($warning-color, 30);
+textarea {
+	min-height: 0;
+	resize: none;
 }
 
-th div {
-	padding-right: 1em;
-}
-
-input[type=submit],
-button {
-	&:not([disabled]) {
-		&:active, &:focus, &:hover {
-			@include background(linear-gradient(top, darken(#c90230, 10) 0%, darken(#ac001e, 10) 95%, darken(#a20019, 10) 100%));
-		}
-	}
-}
-
-input[name="kloster_nr[]"] {
-	max-width: 5rem;
-}
-
-input[type=submit],
-button,
-.top-bar, {
-	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
-}
-
-.top-bar-section a {
-	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
-}
-
-.bold {
-	&,
-	input,
-	select,
-	textarea {
-		font-weight: bold;
-	}
-}
-
-.clear,
 .multiple {
 	clear: both;
 }
@@ -212,37 +227,83 @@ button,
 	padding-top: $fieldset-padding;
 }
 
+.add-remove-buttons {
+	float: right;
+	white-space: nowrap;
+}
+
+// Table styles
+table {
+	background: none;
+	border: none;
+	border-collapse: collapse;
+	tr {
+		border-bottom: $table-border-size $table-border-style $table-border-color;
+		margin-bottom: -1px;
+		&.even,
+		&:nth-of-type(even) {
+			background: none;
+		}
+		&.new {
+			background: lighten($success-color, 40) !important;
+		}
+	}
+	th {
+		&:first-child {
+			width: 1em;
+		}
+		&:last-child {
+			width: 6em;
+		}
+		div {
+			padding-right: 1em;
+		}
+	}
+	td {
+		&[colspan] {
+			background: $table-even-row-bg;
+		}
+	}
+}
+
+// Helper styles
+.bold {
+	&,
+	input,
+	select,
+	textarea {
+		font-weight: bold;
+	}
+}
+
+.clear {
+	clear: both;
+}
+
+.dirty {
+	background: lighten($warning-color, 30);
+}
+
+.hover {
+	cursor: pointer;
+	&:hover {
+		color: $primary-color;
+	}
+}
+
+.narrow {
+	width: 8em;
+}
+
 .no-wrap {
+	text-align: right;
 	white-space: nowrap;
 }
 
 .show-only-on-hover * {
-	opacity: 0;
+	opacity: .2;
+	transition: opacity .5s;
 	tr:hover & {
 		opacity: 1;
-	}
-}
-
-#content {
-	padding: rem-calc(20);
-}
-
-#browse {
-	@include clearfix;
-}
-
-#loading,
-#message {
-	background: #fff;
-	box-shadow: $reveal-box-shadow;
-	clear: both;
-	margin: rem-calc(20) 0;
-	padding: rem-calc(20);
-	.timestamp {
-		background: #eee;
-		float: left;
-		margin: -$tooltip-padding;
-		margin-right: $tooltip-padding;
-		padding: $tooltip-padding;
 	}
 }

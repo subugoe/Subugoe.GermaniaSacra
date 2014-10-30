@@ -2,18 +2,17 @@
 
 /*
 Autocomplete for select fields
-
-Overlaying input field, data AJAXed on type
-Requires returned JSON to contain $uuid and $name for each item
  */
 var delay;
 
 $.fn.autocomplete = function() {
   return this.each(function() {
-    var $input, $list, $overlay, $select, $spinner;
-    $(this).siblings('.autocomplete').remove();
-    $select = $(this).hide();
-    $input = $('<input type="text">').val($select.find(':selected').text());
+    var $input, $list, $overlay, $select, $spinner, isAjax, name, oldVal;
+    $select = $(this);
+    name = $select.data('type') ? $select.data('type') : $select.attr('name').replace('[]', '');
+    isAjax = $select.hasClass('ajax');
+    $select.hide().siblings('.autocomplete').remove();
+    $input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val($select.find(':selected').text());
     $spinner = $('<i class="spinner spinner-icon"/>');
     $spinner.hide();
     $list = $('<ol class="list"/>');
@@ -22,72 +21,93 @@ $.fn.autocomplete = function() {
     });
     $overlay = $('<div class="overlay autocomplete"/>').append($input, $spinner, $list);
     $overlay.insertAfter($select);
+    if (!$select.hasClass('ajax')) {
+      $.each($select.find('option'), function(index, element) {
+        return $list.append("<li data-uuid='" + ($(element).val()) + "'>" + ($(element).text()) + "</li>");
+      });
+    }
     $input.click(function() {
-      this.select();
-      return $list.slideDown().scrollTop(0).find('li:eq(0)').addClass('current');
+      $input.val('');
+      $list.find('li').show().first().addClass('current');
+      return $list.slideDown();
     });
-    $input.on('input', function() {
-      if ($input.val().length > 0) {
-        return delay((function() {
-          $spinner.show();
-          return $.ajax({
-            url: '/searchOrt?searchString=' + encodeURIComponent($input.val()),
-            type: 'GET',
-            complete: function() {
-              return $spinner.hide();
-            },
-            error: function() {
-              return console.log('autocomplete ajax error');
-            },
-            success: function(data) {
-              var json;
-              json = $.parseJSON(data);
-              $list.empty();
-              $.each(json, function(index, element) {
-                return $list.append('<li data-uuid="' + element.uuid + '">' + element.name + '</li>');
-              });
-              $list.slideDown().scrollTop(0).find('li').first().addClass('current');
-              return $list.find('li').click(function() {
-                $input.val($(this).text());
-                $select.setSelected($(this));
-                return $list.slideUp();
-              });
-            }
-          });
-        }), 500);
+    $list.on('click', 'li', function() {
+      $input.val($(this).text());
+      if (isAjax) {
+        $select.empty().append("<option value='" + ($(this).data('uuid')) + "' selected>" + ($(this).text()) + "</option>");
+      } else {
+        $select.val($(this).data('uuid'));
       }
+      return $input.blur();
     });
-    $input.blur(function() {
-      $list.slideUp();
-      return $select.find(':selected').text();
-    });
-    return $input.on('keydown', function(e) {
-      var $current, $lis, index, li_height;
+    oldVal = '';
+    $input.on('keyup', function(e) {
+      var $current, $newCurrent, $visibleItems, liHeight;
+      if (isAjax) {
+        if ($input.val().length > 0 && $input.val() !== oldVal) {
+          oldVal = $input.val();
+          delay((function() {
+            $spinner.show();
+            return $.ajax({
+              url: "/search" + (ucfirst(name)) + "?searchString=" + (encodeURIComponent($input.val())),
+              type: 'GET',
+              complete: function() {
+                return $spinner.hide();
+              },
+              error: function() {
+                return alert('Fehler: Daten konnten nicht geladen werden.');
+              },
+              success: function(data) {
+                var json;
+                json = $.parseJSON(data);
+                $list.empty();
+                $.each(json, function(index, item) {
+                  return $list.append("<li data-uuid='" + item.uuid + "'>" + item.name + "</li>");
+                });
+                return $list.slideDown().scrollTop(0).find('li').first().addClass('current');
+              }
+            });
+          }), 500);
+        }
+      } else {
+        $.each($list.find('li'), function(index, item) {
+          if ($(item).text().toLowerCase().indexOf($input.val().toLowerCase()) > -1) {
+            return $(item).show();
+          } else {
+            return $(item).hide();
+          }
+        });
+      }
       if ($list.is(':visible')) {
-        $lis = $list.children();
-        li_height = $list.children(':eq(0)').outerHeight();
-        $current = $list.find('.current');
-        index = $list.children('.current').siblings().addBack().index($list.children('.current'));
+        $visibleItems = $list.children(':visible');
+        liHeight = $list.children(':first').outerHeight();
+        $visibleItems.filter('.current:gt(0)').removeClass('current');
+        $current = $visibleItems.filter('.current');
+        if (!$current.length) {
+          $current = $visibleItems.first().addClass('current');
+        }
         switch (e.which) {
           case 13:
             e.preventDefault();
-            $input.val($current.text());
-            $select.setSelected($current);
-            return $list.slideUp();
+            return $current.click();
           case 38:
-            if (--index < 0) {
-              index = $lis.length - 1;
+            $newCurrent = $current.prevAll(':visible').first();
+            if (!$newCurrent.length) {
+              $newCurrent = $visibleItems.last();
             }
-            $lis.removeClass('current').eq(index).addClass('current');
-            $list.scrollTop(index * li_height - ($list.height() - li_height) / 2);
+            $current.removeClass('current');
+            $newCurrent.addClass('current');
+            $list.scrollTop($visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2);
             return false;
           case 9:
           case 40:
-            if (++index >= $lis.length) {
-              index = 0;
+            $newCurrent = $current.nextAll(':visible').first();
+            if (!$newCurrent.length) {
+              $newCurrent = $visibleItems.first();
             }
-            $lis.removeClass('current').eq(index).addClass('current');
-            $list.scrollTop(index * li_height - ($list.height() - li_height) / 2);
+            $current.removeClass('current');
+            $newCurrent.addClass('current');
+            $list.scrollTop($visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2);
             return false;
           case 35:
           case 36:
@@ -96,12 +116,11 @@ $.fn.autocomplete = function() {
         }
       }
     });
-  });
-};
-
-$.fn.setSelected = function($el) {
-  return this.each(function() {
-    return $(this).empty().append('<option value="' + $el.data('uuid') + '" selected>' + $el.text() + '</option>');
+    return $input.blur(function() {
+      $list.slideUp();
+      $list.find('.current').removeClass('current');
+      return $input.val($select.find(':selected').text());
+    });
   });
 };
 

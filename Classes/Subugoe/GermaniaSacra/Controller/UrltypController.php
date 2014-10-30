@@ -33,7 +33,7 @@ class UrltypController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('urltyp'));
 		}
-		$this->view->assign('urltyp', $this->urltypRepository->findAll());
+		$this->view->assign('urltyp', ['data' => $this->urltypRepository->findAll()]);
 	}
 
 	/**

@@ -1,86 +1,106 @@
 ###
 Autocomplete for select fields
-
-Overlaying input field, data AJAXed on type
-Requires returned JSON to contain $uuid and $name for each item
 ###
 
-$.fn.autocomplete = () ->
+$.fn.autocomplete = ->
 
 	@each ->
 
-		# If already is autocomplete-enabled, remove autocomplete first
-		$(this).siblings('.autocomplete').remove()
+		$select = $(this)
+		name = if $select.data('type') then $select.data('type') else $select.attr('name').replace('[]', '')
+		isAjax = $select.hasClass('ajax')
 
-		$select = $(this).hide()
-		$input = $('<input type="text">').val $select.find(':selected').text()
+		# If already is autocomplete-enabled, remove autocomplete first
+		$select.hide().siblings('.autocomplete').remove()
+
+		$input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val $select.find(':selected').text()
 		$spinner = $ '<i class="spinner spinner-icon"/>'
 		$spinner.hide()
-		$list = $ '<ol class="list"/>'
+		$list = $('<ol class="list"/>')
 		$list.css
 			top: $('select:eq(0)').outerHeight()
 		$overlay = $('<div class="overlay autocomplete"/>').append $input, $spinner, $list
 		$overlay.insertAfter $select
 
+		# If list items aren't ajaxed, populate list with select options
+		unless $select.hasClass('ajax')
+			$.each $select.find('option'), (index, element) ->
+				$list.append "<li data-uuid='#{$(element).val()}'>#{$(element).text()}</li>"
+
 		$input.click ->
-			this.select()
-			$list.slideDown().scrollTop(0).find('li:eq(0)').addClass('current')
+			$input.val('')
+			$list.find('li').show().first().addClass('current')
+			$list.slideDown()
 
-		$input.on 'input', ->
-			if $input.val().length > 0
-				delay (->
-					$spinner.show()
-					$.ajax
-						url: '/searchOrt?searchString=' + encodeURIComponent($input.val())
-						type: 'GET'
-						complete: ->
-							$spinner.hide()
-						error: ->
-							console.log 'autocomplete ajax error'
-						success: (data) ->
-							json = $.parseJSON data
-							$list.empty()
-							$.each json, (index, element) ->
-								$list.append '<li data-uuid="' + element.uuid + '">' + element.name + '</li>'
-							$list.slideDown().scrollTop(0).find('li').first().addClass('current')
-							$list.find('li').click ->
-								$input.val $(this).text()
-								$select.setSelected $(this)
-								$list.slideUp()
-				), 500
+		$list.on 'click', 'li', ->
+			$input.val $(this).text()
+			if isAjax
+				$select.empty().append("<option value='#{$(this).data('uuid')}' selected>#{$(this).text()}</option>")
+			else
+				$select.val( $(this).data('uuid') )
+			$input.blur()
 
-		$input.blur ->
-			$list.slideUp()
-			$select.find(':selected').text()
+		oldVal = ''
 
-		$input.on 'keydown', (e) ->
+		$input.on 'keyup', (e) ->
+
+			if isAjax
+				if $input.val().length > 0 and $input.val() isnt oldVal
+					oldVal = $input.val()
+					delay (->
+						$spinner.show()
+						$.ajax
+							url: "/search#{ucfirst(name)}?searchString=#{encodeURIComponent($input.val())}"
+							type: 'GET'
+							complete: ->
+								$spinner.hide()
+							error: ->
+								alert 'Fehler: Daten konnten nicht geladen werden.'
+							success: (data) ->
+								json = $.parseJSON data
+								$list.empty()
+								$.each json, (index, item) ->
+									$list.append "<li data-uuid='#{item.uuid}'>#{item.name}</li>"
+								$list.slideDown().scrollTop(0).find('li').first().addClass('current')
+					), 500
+			else
+				$.each $list.find('li'), (index, item) ->
+					if $(item).text().toLowerCase().indexOf( $input.val().toLowerCase() ) > -1
+						$(item).show()
+					else
+						$(item).hide()
+
 			if $list.is ':visible'
-				$lis = $list.children()
-				li_height = $list.children(':eq(0)').outerHeight();
-				$current = $list.find('.current')
-				index = $list.children('.current').siblings().addBack().index( $list.children('.current') )
+				$visibleItems = $list.children(':visible')
+				liHeight = $list.children(':first').outerHeight();
+				$visibleItems.filter('.current:gt(0)').removeClass('current')
+				$current = $visibleItems.filter('.current')
+				unless $current.length then $current = $visibleItems.first().addClass('current')
 				switch e.which
-					when 13  # enter
+					when 13 # enter
 						e.preventDefault()
-						$input.val $current.text()
-						$select.setSelected $current
-						$list.slideUp()
-					when 38  # up
-						if  --index < 0 then index = $lis.length - 1
-						$lis.removeClass('current').eq(index).addClass('current')
-						$list.scrollTop( index * li_height - ($list.height() - li_height) / 2)
+						$current.click()
+					when 38 # up
+						$newCurrent = $current.prevAll(':visible').first()
+						unless $newCurrent.length then $newCurrent = $visibleItems.last()
+						$current.removeClass('current')
+						$newCurrent.addClass('current')
+						$list.scrollTop( $visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2 )
 						false
-					when 9, 40  # tab, down
-						if ++index >= $lis.length then index = 0
-						$lis.removeClass('current').eq(index).addClass('current')
-						$list.scrollTop( index * li_height - ($list.height() - li_height) / 2)
+					when 9, 40 # tab, down
+						$newCurrent = $current.nextAll(':visible').first()
+						unless $newCurrent.length then $newCurrent = $visibleItems.first()
+						$current.removeClass('current')
+						$newCurrent.addClass('current')
+						$list.scrollTop( $visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2 )
 						false
 					when 35, 36, 27 # esc
 						$input.blur()
 
-$.fn.setSelected = ($el) ->
-	@each ->
-		$(this).empty().append('<option value="' + $el.data('uuid') + '" selected>' + $el.text() + '</option>')
+		$input.blur ->
+			$list.slideUp()
+			$list.find('.current').removeClass('current')
+			$input.val $select.find(':selected').text()
 
 delay = (->
 	timer = 0

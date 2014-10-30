@@ -40,7 +40,7 @@ class OrdenController extends RestController {
 			$this->view->setVariablesToRender(array('orden'));
 		}
 
-		$this->view->assign('orden', $this->ordenRepository->findAll());
+		$this->view->assign('orden', ['data' => $this->ordenRepository->findAll()]);
 	}
 
 	/**
@@ -59,6 +59,24 @@ class OrdenController extends RestController {
 	public function createAction(Orden $newOrden) {
 		$this->ordenRepository->add($newOrden);
 		$this->response->setStatus(201);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function editAction() {
+		$uuid = $this->request->getArgument('uuid');
+		$ordenArr = array();
+		$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
+		$ordenArr['uUID'] = $ordenObj->getUUID();
+		$ordenArr['orden'] = $ordenObj->getOrden();
+		$ordenArr['ordo'] = $ordenObj->getOrdo();
+		$ordenstyp = $ordenObj->getOrdenstyp();
+		$ordenArr['ordenstyp'] = $ordenstyp->getUUID();
+		$ordenArr['graphik'] = $ordenObj->getGraphik();
+		$ordenArr['symbol'] = $ordenObj->getSymbol();
+
+		return json_encode($ordenArr);
 	}
 
 	/**

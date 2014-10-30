@@ -1,103 +1,115 @@
+{namespace m=Subugoe\GermaniaSacra\ViewHelpers}
+
 <!DOCTYPE html>
 <html ng-app="germaniaSacra">
-	<head>
-		<title>
-			<f:translate id="app.title" />
-		</title>
-		<f:base />
-		<meta charset="utf-8">
-		<link href="{f:uri.resource(path:'CSS/style.css')}" rel="stylesheet">
-		<link rel="icon" type="image/png" href="{f:uri.resource(path:'Images/favicon.png')}" />
-	</head>
-	<body>
-		<nav class="top-bar" data-topbar>
-			<ul class="title-area">
-				<li class="name">
-					<h1>
-						<f:link.action action="index" controller="Kloster"><f:translate id="app.title" /></f:link.action>
-					</h1>
+
+<head>
+	<title>
+		<f:translate id="app.title" />
+	</title>
+	<f:base />
+	<meta charset="utf-8">
+	<link href="{f:uri.resource(path:'CSS/style.css')}" rel="stylesheet">
+	<link rel="icon" type="image/png" href="{f:uri.resource(path:'Images/favicon.png')}" />
+</head>
+
+<body ng-controller="listController">
+	<nav class="top-bar" data-topbar>
+		<ul class="title-area">
+			<li class="name">
+				<h1>
+					<f:link.action action="index" controller="Kloster"><f:translate id="app.title" /></f:link.action>
+				</h1>
+			</li>
+			<li class="toggle-topbar menu-icon">
+				<a href="/"><f:translate id="app.navigation" /></a>
+			</li>
+		</ul>
+		<section class="top-bar-section">
+			<ul class="left">
+				<li>
+					<f:link.action action="list" controller="Orden" format="html"><f:translate id="orden" /></f:link.action>
 				</li>
-				<li class="toggle-topbar menu-icon">
-					<a href="/"><f:translate id="app.navigation" /></a>
+				<li>
+					<f:link.action action="list" controller="Ort" format="html"><f:translate id="orte" /></f:link.action>
+				</li>
+				<li>
+					<f:link.action action="list" controller="Band"><f:translate id="baende" /></f:link.action>
+				</li>
+				<li>
+					<f:link.action action="list" controller="Bistum"><f:translate id="bistuemer" /></f:link.action>
+				</li>
+				<li>
+					<f:link.action action="list" controller="Land"><f:translate id="countries" /></f:link.action>
+				</li>
+				<li>
+					<f:link.action action="list" controller="Literatur"><f:translate id="literature" /></f:link.action>
+				</li>
+				<li class="has-dropdown"><f:link.action action="list" controller="Bearbeitungsstatus"><f:translate id="states" /></f:link.action>
+					<ul class="dropdown">
+						<li>
+							<f:link.action action="list" controller="Bearbeitungsstatus"><f:translate id="datasetstatus" /></f:link.action>
+						</li>
+						<li>
+							<f:link.action action="list" controller="Personallistenstatus"><f:translate id="personalliststatus" /></f:link.action>
+						</li>
+					</ul>
+				</li>
+				<li class="has-dropdown"><f:link.action action="list" controller="Ordenstyp"><f:translate id="types" /></f:link.action>
+					<ul class="dropdown">
+						<li>
+							<f:link.action action="list" controller="Ordenstyp"><f:translate id="ordentype" /></f:link.action>
+						</li>
+						<li>
+							<f:link.action action="list" controller="Urltyp"><f:translate id="urltype" /></f:link.action>
+						</li>
+					</ul>
 				</li>
 			</ul>
-			<section class="top-bar-section">
-				<ul class="left">
-					<li>
-						<f:link.action action="list" controller="Orden" format="html"><f:translate id="orden" /></f:link.action>
-					</li>
-					<li>
-						<f:link.action action="list" controller="Ort" format="html"><f:translate id="orte" /></f:link.action>
-					</li>
-					<li>
-						<f:link.action action="list" controller="Band"><f:translate id="baende" /></f:link.action>
-					</li>
-					<li>
-						<f:link.action action="list" controller="Bistum"><f:translate id="bistuemer" /></f:link.action>
-					</li>
-					<li>
-						<f:link.action action="list" controller="Land"><f:translate id="countries" /></f:link.action>
-					</li>
-					<li>
-						<f:link.action action="list" controller="Literatur"><f:translate id="literature" /></f:link.action>
-					</li>
-					<li class="has-dropdown"><a href="#"><f:translate id="states" /></a>
-						<ul class="dropdown">
-							<li>
-								<f:link.action action="list" controller="Bearbeitungsstatus"><f:translate id="datasetstatus" /></f:link.action>
-							</li>
-							<li>
-								<f:link.action action="list" controller="Personallistenstatus"><f:translate id="personalliststatus" /></f:link.action>
-							</li>
-						</ul>
-					</li>
-					<li class="has-dropdown"><a href="#"><f:translate id="types" /></a>
-						<ul class="dropdown">
-							<li>
-								<f:link.action action="list" controller="Ordenstyp"><f:translate id="ordentype" /></f:link.action>
-							</li>
-							<li>
-								<f:link.action action="list" controller="Urltyp"><f:translate id="urltype" /></f:link.action>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="right">
-					<li><a href="#">{bearbeiter}</a></li>
-					<li>
-						<f:link.action controller="Dump" action="dump">SQL Dump</f:link.action>
-					</li>
-				</ul>
-			</section>
-		</nav>
+			<ul class="right">
+				<!-- TODO: bearbeiter is only displayed if first page loaded was "kloster" since it's only defined there -->
+				<li>
+					<a href="#"><i class="icon-user"></i> {bearbeiter}</a>
+				</li>
+				<li>
+					<!-- TODO: Use f:link for that: <f:link.action package="Flow" subpackage="Login" controller="Login" action="logout" target="_self">Abmelden</f:link.action> -->
+					<a href="/logout" target="_self" title="Abmelden"><i class="icon-logout"></i></a>
+				</li>
+				<li>
+					<f:link.action controller="Dump" action="dump" target="_self">SQL Dump</f:link.action>
+				</li>
+			</ul>
+		</section>
+	</nav>
 
-		<f:flashMessages class="flashmessages" />
+	<!--<f:flashMessages class="flashmessages" />-->
+	<div id="message"></div>
+	<div id="content" ng-view=""></div>
 
-		<div id="content">
-			<f:render section="Content" />
-		</div>
+	<!-- Append this to every form via JavaScript -->
+	<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 
-		<script src="{f:uri.resource(path: 'JavaScript/jquery.min.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/jquery.autosize.min.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/foundation/foundation.js')}"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/foundation/foundation.topbar.js')}"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/loading-bar.min.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/App/App.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/App/Controllers.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/kloster-list.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/kloster-editor.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/advanced-search.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/helper.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/autocomplete.js')}" type="text/javascript"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/leaflet-0.7.3.min.js')}"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/geopicker.js')}"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/DataTables/jquery.dataTables.min.js')}"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/DataTables/dataTables.foundation.js')}"></script>
-		<script src="{f:uri.resource(path: 'JavaScript/DataTables/angular-datatables.min.js')}"></script>
-		<script>
-			$(document).foundation();
-		</script>
+	<script src="{f:uri.resource(path: 'JavaScript/jquery.min.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/jquery.autosize.min.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/foundation/modernizr.js')}"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/foundation/foundation.min.js')}"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/angular.min.js')}"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/angular-route.min.js')}"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/App/App.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/App/Controllers.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/searchController.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/listController.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/editorController.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/helper.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/autocomplete.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/leaflet-0.7.3.min.js')}"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/geopicker.js')}"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/DataTables/jquery.dataTables.min.js')}"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/DataTables/dataTables.foundation.js')}"></script>
+	<script>
+		$(document).foundation();
+	</script>
 
-	</body>
+</body>
+
 </html>

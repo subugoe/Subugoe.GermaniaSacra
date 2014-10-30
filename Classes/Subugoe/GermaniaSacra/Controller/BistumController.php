@@ -38,7 +38,7 @@ class BistumController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bistum'));
 		}
-		$this->view->assign('bistum', $this->bistumRepository->findAll());
+		$this->view->assign('bistum', ['data' => $this->bistumRepository->findAll()]);
 	}
 
 	/**
@@ -57,6 +57,52 @@ class BistumController extends RestController {
 	public function createAction(Bistum $bistum) {
 		$this->bistumRepository->add($bistum);
 		$this->response->setStatus(201);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function editAction() {
+		$uuid = $this->request->getArgument('uuid');
+		$bistumArr = array();
+		$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
+		$bistumArr['uUID'] = $bistumObj->getUUID();
+		$bistumArr['bistum'] = $bistumObj->getBistum();
+		$bistumArr['kirchenprovinz'] = $bistumObj->getKirchenprovinz();
+		$bistumArr['bemerkung'] = $bistumObj->getBemerkung();
+		$bistumArr['ist_erzbistum'] = $bistumObj->getIst_erzbistum();
+		$bistumArr['shapefile'] = $bistumObj->getShapefile();
+		$ort = $bistumObj->getOrt();
+		if ( $ort )
+			$bistumArr['ort'] = array('uuid' => $ort->getUUID(), 'name' => $ort->getOrt());
+		else
+			$bistumArr['ort'] = array();
+
+		// Bistum Url data
+		$Urls = array();
+		$bistumHasUrls = $bistumObj->getBistumHasUrls();
+
+		foreach ($bistumHasUrls as $k => $bistumHasUrl) {
+			$urlObj = $bistumHasUrl->getUrl();
+			$url = rawurldecode($urlObj->getUrl());
+			$url_bemerkung = $urlObj->getBemerkung();
+			if ($url !== 'keine Angabe') {
+				$urlTypObj = $urlObj->getUrltyp();
+				if (is_object($urlTypObj)) {
+					$urlTyp = $urlTypObj->getUUID();
+					$urlTypName = $urlTypObj->getName();
+					if ($urlTypName == 'GND' || $urlTypName == 'Wikipedia') {
+						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
+					}
+					else {
+						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'links_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
+					}
+				}
+			}
+		}
+		$bistumArr['url'] = $Urls;
+
+		return json_encode($bistumArr);
 	}
 
 	/**
@@ -79,8 +125,8 @@ class BistumController extends RestController {
 	 * Updates the list of Bistum
 	 * @return void
 	 */
-	public function listupdateAction() {
-		$bistums = $this->request->getArguments();
+	public function updateListAction() {
+		$bistums = $this->request->getArgument('data');
 		foreach ($bistums as $uuid => $bistum) {
 			$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
 			$bistumObj->setBistum($bistum['bistum']);

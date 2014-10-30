@@ -82,6 +82,12 @@ class KlosterController extends ActionController {
 
 	/**
 	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrdenstypRepository
+	 */
+	protected $ordenstypRepository;
+
+	/**
+	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterstatusRepository
 	 */
 	protected $klosterstatusRepository;
@@ -174,8 +180,9 @@ class KlosterController extends ActionController {
 	 * @return integer $status http status
 	 */
 	public function updateListAction() {
-		if ($this->request->hasArgument('klosters')) {
-			$klosterlist = $this->request->getArgument('klosters');
+
+		if ($this->request->hasArgument('data')) {
+			$klosterlist = $this->request->getArgument('data');
 		}
 
 		$uuids = array();
@@ -229,6 +236,7 @@ class KlosterController extends ActionController {
 		}
 
 		return json_encode($uuids);
+
 	}
 
 	/**
@@ -249,7 +257,8 @@ class KlosterController extends ActionController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('monasteries'));
 		}
-		$this->view->assign('monasteries', $this->klosterRepository->findAll());
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		//$this->view->assign('monasteries', $this->klosterRepository->findAll());
 	}
 
 	/**
@@ -304,8 +313,8 @@ class KlosterController extends ActionController {
 		}
 
 		$response = array();
-		$response[] = $klosterArr;
-		$response[] = $bearbeitungsstatusArr;
+		$response['data'] = $klosterArr;
+		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
 
 		return json_encode($response);
 	}
@@ -378,17 +387,6 @@ class KlosterController extends ActionController {
 	public function initializeAction() {
 		$account = $this->securityContext->getAccount();
 		$this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
-	}
-
-
-
-
-	/**
-	 * Calls the index page
-	 * @return void
-	 */
-	public function indexAction() {
-		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**
@@ -783,7 +781,11 @@ class KlosterController extends ActionController {
 	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return array $response The data of the selected Kloster entry in json format
 	 */
-	public function editAction(Kloster $kloster) {
+	public function editAction() {
+
+		$uuid = $this->request->getArgument('uuid');
+		$kloster = $this->klosterRepository->findByIdentifier($uuid);
+
 		// Kloster data
 		$klosterArr = array();
 		$klosterArr['uuid'] = $kloster->getUUID();
@@ -921,6 +923,8 @@ class KlosterController extends ActionController {
 	 */
 	public function getOptionsAction() {
 
+		$options = array();
+
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
 		$this->bearbeitungsstatusRepository->setDefaultOrderings(
@@ -928,15 +932,15 @@ class KlosterController extends ActionController {
 		);
 
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
-		foreach ($bearbeitungsstatuses as $n => $bearbeitungsstatus) {
-			$bearbeitungsstatusArr[$n] = array($bearbeitungsstatus->getName() => $bearbeitungsstatus->getUUID());
+		foreach ($bearbeitungsstatuses as $bearbeitungsstatus) {
+			$bearbeitungsstatusArr[$bearbeitungsstatus->getUUID()] = $bearbeitungsstatus->getName();
 		}
 
 		// Personallistenstatus data
 		$personallistenstatusArr = array();
 		$personallistenstatuses = $this->personallistenstatusRepository->findAll();
-		foreach ($personallistenstatuses as $m => $personallistenstatus) {
-			$personallistenstatusArr[$m] = array($personallistenstatus->getName() => $personallistenstatus->getUUID());
+		foreach ($personallistenstatuses as $personallistenstatus) {
+			$personallistenstatusArr[$personallistenstatus->getUUID()] = $personallistenstatus->getName();
 		}
 
 		// Band data
@@ -945,14 +949,14 @@ class KlosterController extends ActionController {
 				array('sortierung' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bands = $this->bandRepository->findAll();
-		foreach ($bands as $p => $band) {
+		foreach ($bands as $band) {
 			if ($band->getTitel() != 'keine Angabe') {
 				$bandNummerTitel = $band->getNummer() . '-' . $band->getTitel();
 			}
 			else {
 				 $bandNummerTitel = $band->getTitel();
 			}
-			$bandArr[$p] = array($bandNummerTitel => $band->getUUID());
+			$bandArr[$band->getUUID()] = $bandNummerTitel;
 		}
 
 		// Literature data for select box
@@ -961,11 +965,11 @@ class KlosterController extends ActionController {
 				array('citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$literaturs = $this->literaturRepository->findAll();
-		foreach ($literaturs as $q => $literatur) {
+		foreach ($literaturs as $literatur) {
 			$literatur_name = $literatur->getCitekey();
 			$literatur_beschreibung = $literatur->getBeschreibung();
 			if (null !== $literatur_beschreibung && !empty($literatur_beschreibung)) $literatur_name .= "(" . $literatur_beschreibung . ")";
-			$literaturArr[$q] = array($literatur_name => $literatur->getUUID());
+			$literaturArr[$literatur->getUUID()] = $literatur_name;
 		}
 
 		// Bistum data for select box
@@ -974,8 +978,8 @@ class KlosterController extends ActionController {
 				array('bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bistums = $this->bistumRepository->findAll();
-		foreach ($bistums as $r => $bistum) {
-			$bistumArr[$r] = array($bistum->getBistum() => $bistum->getUUID());
+		foreach ($bistums as $bistum) {
+			$bistumArr[$bistum->getUUID()] = $bistum->getBistum();
 		}
 
 		// Orden data for select box
@@ -984,8 +988,18 @@ class KlosterController extends ActionController {
 				array('orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$ordens = $this->ordenRepository->findAll();
-		foreach ($ordens as $m => $orden) {
-			$ordenArr[$m] = array($orden->getOrden() => $orden->getUUID());
+		foreach ($ordens as $orden) {
+			$ordenArr[$orden->getUUID()] = $orden->getOrden();
+		}
+
+		// Ordenstyp data for select box
+		$ordenstypArr = array();
+		$this->ordenstypRepository->setDefaultOrderings(
+				array('ordenstyp' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+		$ordenstyps = $this->ordenstypRepository->findAll();
+		foreach ($ordenstyps as $ordenstyp) {
+			$ordenstypArr[$ordenstyp->getUUID()] = $ordenstyp->getOrdenstyp();
 		}
 
 		// Klosterstatus data for select box
@@ -994,8 +1008,8 @@ class KlosterController extends ActionController {
 				array('status' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$klosterstatuses = $this->klosterstatusRepository->findAll();
-		foreach ($klosterstatuses as $n => $klosterstatus) {
-			$klosterstatusArr[$n] = array($klosterstatus->getStatus() => $klosterstatus->getUUID());
+		foreach ($klosterstatuses as $klosterstatus) {
+			$klosterstatusArr[$klosterstatus->getUUID()] = $klosterstatus->getStatus();
 		}
 
 		// Bearbeiter data for select box
@@ -1004,8 +1018,8 @@ class KlosterController extends ActionController {
 				array('bearbeiter' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$bearbeiters = $this->bearbeiterRepository->findAll();
-		foreach ($bearbeiters as $q => $bearbeiter) {
-			$bearbeiterArr[$q] = array($bearbeiter->getBearbeiter() => $bearbeiter->getUUID());
+		foreach ($bearbeiters as $bearbeiter) {
+			$bearbeiterArr[$bearbeiter->getUUID()] = $bearbeiter->getBearbeiter();
 		}
 
 		// URL-Typ data for select box
@@ -1014,35 +1028,34 @@ class KlosterController extends ActionController {
 				array('urltyp' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$urltyps = $this->urltypRepository->findAll();
-		foreach ($urltyps as $q => $urltyp) {
+		foreach ($urltyps as $urltyp) {
 			if ( $urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND' )
-				$urltypArr[$q] = array($urltyp->getName() => $urltyp->getUUID());
+				$urltypArr[$urltyp->getUUID()] = $urltyp->getName();
 		}
 
 		$response = array();
-		$response[] = $bearbeitungsstatusArr;
-		$response[] = $personallistenstatusArr;
-		$response[] = $bandArr;
-		$response[] = $literaturArr;
-		$response[] = $bistumArr;
-		$response[] = $ordenArr;
-		$response[] = $klosterstatusArr;
-		$response[] = $bearbeiterArr;
-		$response[] = $urltypArr;
+		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
+		$response['personallistenstatus'] = $personallistenstatusArr;
+		$response['band'] = $bandArr;
+		$response['literatur'] = $literaturArr;
+		$response['bistum'] = $bistumArr;
+		$response['orden'] = $ordenArr;
+		$response['ordenstyp'] = $ordenstypArr;
+		$response['klosterstatus'] = $klosterstatusArr;
+		$response['bearbeiter'] = $bearbeiterArr;
+		$response['url_typ'] = $urltypArr;
 		return json_encode($response);
 
 	}
 
 	/** Update data of a selected Kloster
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
 	 * @return integer The http status
 	 **/
-	public function updateAction(Kloster $kloster) {
+	public function updateAction() {
 
 		// Update Kloster
-		$param = $this->request->getArguments();
-		$id = $param['kloster']['__identity'];
-		$kloster = $this->klosterRepository->findByIdentifier($id);
+		$uuid = $this->request->getArgument('uuid');
+		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		$kloster->setKloster( $this->request->getArgument('kloster_name') );
 		$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
 		$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
@@ -1079,7 +1092,7 @@ class KlosterController extends ActionController {
 		$klosterstandortNumber = count($ortArr);
 		$klosterstandortArr = array();
 		for ($i = 0; $i < $klosterstandortNumber; $i++) {
-			$klosterstandortArr[$i]['kloster'] = $id;
+			$klosterstandortArr[$i]['kloster'] = $uuid;
 			$klosterstandortArr[$i]['ort'] = $ortArr[$i];
 			$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
 			$klosterstandortArr[$i]['gruender'] = $gruenderArr[$i];
@@ -1149,7 +1162,7 @@ class KlosterController extends ActionController {
 		$klosterordenNumber = count($ordenArr);
 		$klosterordenArr = array();
 		for ($i = 0; $i < $klosterordenNumber; $i++) {
-			$klosterordenArr[$i]['kloster'] = $id;
+			$klosterordenArr[$i]['kloster'] = $uuid;
 			$klosterordenArr[$i]['orden'] = $ordenArr[$i];
 			$klosterordenArr[$i]['klosterstatus'] = $klosterstatusArr[$i];
 			$klosterordenArr[$i]['bemerkung_orden'] = $bemerkung_ordenArr[$i];
@@ -1355,7 +1368,7 @@ class KlosterController extends ActionController {
 			}
 		}
 
-		return json_encode($id);
+		return json_encode($uuid);
 	}
 
 	/**

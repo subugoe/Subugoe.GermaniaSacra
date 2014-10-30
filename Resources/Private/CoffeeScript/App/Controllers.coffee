@@ -1,44 +1,54 @@
-germaniaSacra.controller 'listController', ($scope, $http, DTOptionsBuilder, DTColumnBuilder) ->
+germaniaSacra.controller 'listController', ($scope) ->
 
-	entityName = $('section[ng-controller]').attr('id')
+	# Init the view after the template has been rendered
+	$scope.$watch (->
+		$('#list').data('type')
+	), ((newval, oldval) ->
+		if newval? then init()
+	), true
 
-	$scope.entities = {}
-	responsePromise = $http.get('/entity/' + entityName)
-	responsePromise.success (data, status, headers, config) ->
-		$scope.entities = data
-	responsePromise.error (data, status, headers, config) ->
-		$scope.message = 'Daten konnten nicht geladen werden'
+# TODO: Move this
+s_loading = '<i class="spinner spinner-icon"></i> Wird geladen&hellip;'
 
-	$scope.dtOptions = DTOptionsBuilder
-		.newOptions()
-		.withDOM('lifpt')
-		.withLanguage(sUrl: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json')
-		.withOption 'fnCreatedRow', ->
-			$(this).find(':input:not(.processed)').each ->
-				$('<span class="val"/>')
-					.text if $(this).is("select") then $(this).find(":selected").text() else $(this).val()
-					.hide()
-					.insertBefore $(this)
-				$(this).addClass('processed')
-		.withOption "rowCallback", (nRow, aData, iDisplayIndex, iDisplayIndexFull) ->
-			$(":input:gt(0)", nRow).bind "change", ->
-				$(this).closest('td').addClass('dirty')
-				$scope.$apply ->
-					$scope.entities[nRow._DT_RowIndex].selected = true
-			nRow
-		.withDisplayLength(100);
+init = ->
 
-	$scope.update = ->
-		# Only post selected rows
-		changes = {}
-		for entity in $scope.entities
-			if entity.selected
-				changes[entity.uUID] = entity
-		changes.__csrfToken = $('#__csrfToken').val()
-		$http.post('subugoe.germaniasacra/' + entityName + '/listupdate', changes)
-			.error (data) ->
-				# TODO: Error handler
-				$scope.message = 'ERROR'
-			.success (data) ->
-				# TODO: Remove class dirty from saved rows
-				$scope.message = 'Änderungen gespeichert.'
+	type = $('#list').data('type')
+
+	$('#message').hide()
+
+	unless type?
+		alert('There has to be at least one <section> with data-type set.')
+		return
+
+	$('form').append( $('#csrf').clone().removeAttr('id') )
+
+	initSearch()
+	initList(type)
+	initEditor(type)
+
+	$("fieldset .multiple").append "<div class='add-remove-buttons'><button class='remove'>-</button><button class='add'>+</button></div>"
+	$("fieldset .multiple button").click (e) ->
+		e.preventDefault()
+		div = $(this).closest(".multiple")
+		if $(this).hasClass("remove")
+			div.removeInputs 250
+		else if $(this).hasClass("add")
+			div.addInputs 250
+
+	$(".new").click (e) ->
+		e.preventDefault()
+		newAction()
+
+	# Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
+	$(window).bind "keydown", (e) ->
+		if e.ctrlKey or e.metaKey
+			switch String.fromCharCode(e.which).toLowerCase()
+				when "s"
+					e.preventDefault()
+					$(":submit[type=submit]:visible:last").click()
+
+	$(".togglable + .togglable").hide()
+
+	$(".toggle").click (e) ->
+		e.preventDefault()
+		$(this).closest(".togglable").siblings(".togglable").addBack().slideToggle()

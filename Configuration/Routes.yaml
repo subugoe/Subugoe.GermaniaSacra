@@ -1,12 +1,14 @@
 #                                                                        #
 # Routes configuration for the GermaniaSacra package                     #
 #                                                                        #
+
 -
   name: 'Kloster List URI'
   uriPattern: ''
   defaults:
     '@controller': 'Kloster'
-    '@action': 'index'
+    '@action': 'list'
+
 -
   name: 'JSON-List Kloster URI'
   uriPattern: 'jsonList'
@@ -20,13 +22,6 @@
   defaults:
     '@controller': 'Kloster'
     '@action': 'klosterListAll'
-
--
-  name: 'Update_List Kloster URI'
-  uriPattern: 'updateList'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'updateList'
 
 -
   name: 'Proxy for static files'
@@ -52,54 +47,11 @@
     '@action': 'search'
 
 -
-  name: 'Edit Kloster URI'
-  uriPattern: 'edit/{kloster.__identity}'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'edit'
-
--
-  name: 'Get Kloster Options URI'
+  name: 'Get select options'
   uriPattern: 'getOptions'
   defaults:
     '@controller': 'Kloster'
     '@action': 'getOptions'
-
--
-  name: 'Update Kloster URI'
-  uriPattern: 'update/{kloster.__identity}'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'update'
-    '@format': 'json'
-
--
-  name: 'Update Kloster URI'
-  uriPattern: 'delete/{kloster.__identity}'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'delete'
-
--
-  name: 'New Kloster URI'
-  uriPattern: 'new'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'new'
-
--
-  name: 'Create Kloster URI'
-  uriPattern: 'create'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'create'
-
--
-  name: 'Add Kloster Id URI'
-  uriPattern: 'addKlosterId'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'addKlosterId'
 
 -
   name: 'Update Solr after list update URI'
@@ -109,13 +61,6 @@
     '@action': 'updateSolrAfterListUpdate'
 
 -
-  name: 'Update Solr after kloster update URI'
-  uriPattern: 'updateSolrAfterKlosterUpdate'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'updateSolrAfterKlosterUpdate'
-
--
   name: 'Update Solr after kloster create URI'
   uriPattern: 'solrUpdateWhenKlosterCreate'
   defaults:
@@ -123,17 +68,20 @@
     '@action': 'solrUpdateWhenKlosterCreate'
 
 -
-  name: 'New Ort URI'
-  uriPattern: 'ort/new'
-  defaults:
-    package: 'Subugoe.GermaniaSacra'
-    '@controller': 'Ort'
-    '@action': 'new'
-    '@format': 'html'
-
--
-  name: 'Default list routes'
+  name: 'Default list routes (controller only)'
   uriPattern: '{@controller}'
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
     '@action':     'list'
+
+-
+  name: 'Default list routes (controller with action)'
+  uriPattern: '{@controller}/{@action}'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'
+
+-
+  name: 'Default list routes (controller with action and id)'
+  uriPattern: '{@controller}/{@action}/{uuid}'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'

@@ -33,7 +33,7 @@ class LiteraturController extends RestController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('literatur'));
 		}
-		$this->view->assign('literatur', $this->literaturRepository->findAll());
+		$this->view->assign('literatur', ['data' => $this->literaturRepository->findAll()]);
 	}
 
 	/**

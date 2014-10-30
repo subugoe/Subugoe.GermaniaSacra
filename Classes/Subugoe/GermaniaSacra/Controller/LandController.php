@@ -34,7 +34,7 @@ class LandController extends ActionController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('land'));
 		}
-		$this->view->assign('land', $this->landRepository->findAll());
+		$this->view->assign('land', ['data' => $this->landRepository->findAll()]);
 		return $this->view->render();
 	}
 

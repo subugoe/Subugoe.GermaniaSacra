@@ -1,11 +1,8 @@
-<f:layout name="Default"/>
+<section id="search">
 
-<f:section name="Title">Klosterliste</f:section>
+	<h2>Klöster</h2>
 
-<f:section name="Content">
-
-<div id="browse">
-	<form action="" id="search_form" class="togglable">
+	<form id="simple-search" class="togglable">
 		<fieldset>
 			<legend>Suche über alle Felder</legend>
 			<label class="large-6 columns none"><input name="alle" type="text"></label>
@@ -14,7 +11,8 @@
 			<div class="large-2 columns text-right"><button class="toggle">Erweiterte Suche</button></div>
 		</fieldset>
 	</form>
-	<form action="" id="advanced_search_form" class="togglable">
+
+	<form id="advanced-search" class="togglable">
 		<fieldset>
 			<legend>Erweiterte Suche</legend>
 			<div class="text-right clear"><button class="toggle">Suche über alle Felder</button></div>
@@ -68,56 +66,45 @@
 			</div>
 		</fieldset>
 	</form>
-	<form action="" id="list_form">
-		<fieldset>
-			<legend>Klosterliste</legend>
-			<table class="large-12 columns display">
-				<thead>
-					<tr>
-						<th class="no-sorting" data-input="input type='checkbox'" data-name="uuid"></th>
-						<th data-input="textarea disabled" data-name="kloster_id">
-							Kloster-Nr.
-						</th>
-						<th data-input="select" data-name="bearbeitungsstatus">
-							Status
-						</th>
-						<th data-input="textarea" data-name="kloster">
-							Klostername
-						</th>
-						<th data-input="textarea disabled" data-name="ort">
-							Ort
-						</th>
-						<th data-input="textarea" data-name="gnd">
-							GND
-						</th>
-						<th data-input="textarea" data-name="bearbeitungsstand">
-							Bearbeitungsstand
-						</th>
-						<th class="no-sorting" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
-					</tr>
-				</thead>
-			</table>
-		</fieldset>
-		<input type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
+
+</section>
+
+<section id="list" data-type="kloster">
+	<form>
+		<table class="large-12 columns display">
+			<thead>
+				<tr>
+					<th class="not-sortable" data-input="checkbox" data-name="uuid"></th>
+					<th class="narrow" data-input="textarea disabled" data-name="kloster_id">Kloster-Nr.</th>
+					<th data-input="select" data-name="bearbeitungsstatus">Status</th>
+					<th data-input="textarea" data-name="kloster">Klostername</th>
+					<th data-input="textarea disabled" data-name="ort">Ort</th>
+					<th data-input="textarea" data-name="gnd">GND</th>
+					<th data-input="textarea" data-name="bearbeitungsstand">Bearbeitungsstand</th>
+					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
+				</tr>
+			</thead>
+		</table>
 		<input class="button" type="submit" value="Änderungen übernehmen">
 		<button class="new">Neues Kloster anlegen</button>
 	</form>
-</div>
+</section>
 
-<div id="edit">
-	<div class="text-right clear"><button class="close">Zurück zur Klosterliste</button></div>
-	<form action="" id="edit_form">
-		<fieldset id="kloster">
+<section id="edit" data-type="kloster">
+	<button class="close">Zurück zur Klosterliste</button>
+	<form>
+		<fieldset id="klosterdaten">
 			<legend>Kloster</legend>
+			<input type="hidden" name="uuid">
 			<label class="large-9 columns bold">Name
-				<textarea name="kloster_name" required="required"></textarea>
+				<textarea name="kloster_name" required></textarea>
 			</label>
 			<label class="large-3 columns">Kloster-Nr.
 				<input readonly name="kloster_id" type="text">
 			</label>
-			<fieldset class="highlight">
+			<div class="highlight">
 				<label class="large-4 columns">Status
-					<select name="bearbeitungsstatus" required="required"></select>
+					<select name="bearbeitungsstatus" required></select>
 				</label>
 				<label class="large-4 columns">
 					Zuletzt bearbeitet von <textarea readonly name="bearbeiter"></textarea>
@@ -131,9 +118,9 @@
 				<label class="large-12 columns">Bearbeitungsstand
 					<textarea name="bearbeitungsstand"></textarea>
 				</label>
-			</fieldset>
+			</div>
 			<label class="large-12 columns">Patrozinium
-				<textarea name="patrozinium" required="required"></textarea>
+				<textarea name="patrozinium" required></textarea>
 			</label>
 			<label class="large-12 columns">Kommentar online
 				<textarea name="bemerkung"></textarea>
@@ -155,7 +142,7 @@
 			<legend>Orte</legend>
 			<div class="multiple separator">
 				<label class="large-7 columns">Ort
-					<select class="autocomplete" name="ort[]"></select>
+					<select class="ajax" name="ort[]"></select>
 				</label>
 				<label class="large-1 columns">Wüstung
 					<input name="wuestung[]" type="checkbox" value="1">
@@ -168,7 +155,7 @@
 						<input
 							name="breite[]"
 							type="text"
-							pattern="-?([1-8]?[0-9]|[0-9])(\.\d{1,9})?"
+							pattern="-?([1-8]?[0-9]|[0-9])(\.\d{1,12})?"
 							title="Breitengrad muss zwischen -90.0 und 90.0 liegen."
 						>
 					</label>
@@ -176,7 +163,7 @@
 						<input
 							name="laenge[]"
 							type="text"
-							pattern="-?([1]?[1-7][0-9]|[1-9]?[0-9])(\.\d{1,9})?"
+							pattern="-?([1]?[1-7][0-9]|[1-9]?[0-9])(\.\d{1,12})?"
 							title="Längengrad muss zwischen -180.0 und 180.0 liegen."
 						>
 					</label>
@@ -268,7 +255,6 @@
 				</label>
 				<label class="large-4 columns none">
 					<input name="url[]" type="url">
-					<i class="link large-1 columns">{{link}}</i>
 				</label>
 				<span class="link"></span>
 				<label class="large-5 columns">Darstellung
@@ -282,11 +268,6 @@
 				<label class="large-11 columns">Bezeichnung<select name="literatur[]"></select></label>
 			</div>
 		</fieldset>
-		<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 		<input class="button" type="submit" value="Änderungen speichern">
 	</form>
-</div>
-
-<div id="loading">Lade... <i class="spinner spinner-icon right"></i></div>
-
-</f:section>
+</section>
