@@ -51,8 +51,6 @@ newAction = ->
 	$('#edit').slideDown()
 	# Select default value for Personallistenstatus
 	$form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true)
-	# Select "keine Angabe" as default if available
-	$form.find('select option:contains("keine Angabe")').prop('selected', true)
 	$("#edit select").autocomplete()
 	$("#edit").find('input[type=url]').keyup()
 	$("#edit").find('textarea').trigger('autosize.resize')
