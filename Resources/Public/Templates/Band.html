@@ -5,10 +5,10 @@
 			<thead>
 				<tr>
 					<th data-input="checkbox" data-name="uUID" class="not-sortable"></th>
-					<th data-input="textarea" data-name="nummer">Nummer</th>
-					<th data-input="textarea" data-name="titel">Titel</th>
+					<th data-input="textarea" data-name="nummer" class="narrow">Nummer</th>
+					<th data-input="textarea" data-name="titel" class="wide">Titel</th>
 					<th data-input="textarea" data-name="kurztitel">Kurztitel</th>
-					<th data-input="textarea" data-name="sortierung" class="order-by">Sortierung</th>
+					<th data-input="textarea" data-name="sortierung" class="narrow order-by">Sortierung</th>
 					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
 				</tr>
 			</thead>
@@ -26,7 +26,7 @@
 		<label class="large-8 columns">Kurztitel <textarea name="titel" required></textarea></label>
 		<label class="large-4 columns">Facette Kurztitel <textarea name="kurztitel" required></textarea></label>
 		<label class="large-4 columns">Sortierung <textarea name="sortierung" required></textarea></label>
-		<label class="large-4 columns">Bistum <select name="bistum_uid"></select></label>
+		<label class="large-4 columns">Bistum <select name="bistum"></select></label>
 		<fieldset id="links">
 			<legend>Links</legend>
 			<div class="clearfix">
