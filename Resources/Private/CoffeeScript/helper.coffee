@@ -39,6 +39,7 @@ $.fn.clearForm = ->
 		$form.find(":input").prop('disabled', false)
 		$form.find(":input:not([name=__csrfToken]):not(:checkbox):not(:submit)").val('')
 		$form.find(":checkbox, :radio").prop('checked', false)
-		$form.find('select option:contains("keine Angabe")').prop('selected', true)
+		# Select "keine Angabe" or "unbekannt" as default if available
+		$form.find('select option:contains("keine Angabe"), select option:contains("unbekannt")').prop('selected', true)
 		$form.find(".multiple:gt(0)").removeInputs()
 		$form.find("button.remove").prop 'disabled', true

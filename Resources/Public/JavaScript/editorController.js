@@ -53,7 +53,6 @@ newAction = function() {
   $('#search, #list').slideUp();
   $('#edit').slideDown();
   $form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true);
-  $form.find('select option:contains("keine Angabe")').prop('selected', true);
   $("#edit select").autocomplete();
   $("#edit").find('input[type=url]').keyup();
   return $("#edit").find('textarea').trigger('autosize.resize');
