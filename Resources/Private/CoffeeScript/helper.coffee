@@ -21,8 +21,8 @@ $.fn.addInputs = (slideTime) ->
 		$fieldset = $(this).closest("fieldset")
 		$clone = $(this).clone(true)
 		$clone.clearForm()
-		$clone.find("select.autocomplete").autocomplete()
-		$clone.insertAfter($(this)).hide().slideDown slideTime
+		$clone.find("select").autocomplete()
+		$clone.insertAfter( $(this) ).hide().slideDown slideTime
 		$fieldset.find("button.remove").prop "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
 
 $.fn.removeInputs = (slideTime) ->
@@ -34,9 +34,11 @@ $.fn.removeInputs = (slideTime) ->
 
 $.fn.clearForm = ->
 	@each ->
-		$(this).find("label").removeClass('dirty')
-		$(this).find(":input").prop('disabled', false)
-		$(this).find(":input:not([name=__csrfToken]):not(:checkbox):not(:submit)").val('')
-		$(this).find(":checkbox, :radio").prop('checked', false)
-		$(this).find(".multiple:gt(0)").removeInputs()
-		$(this).find("button.remove").prop 'disabled', true
+		$form = $(this)
+		$form.find("label").removeClass('dirty')
+		$form.find(":input").prop('disabled', false)
+		$form.find(":input:not([name=__csrfToken]):not(:checkbox):not(:submit)").val('')
+		$form.find(":checkbox, :radio").prop('checked', false)
+		$form.find('select option:contains("keine Angabe")').prop('selected', true)
+		$form.find(".multiple:gt(0)").removeInputs()
+		$form.find("button.remove").prop 'disabled', true

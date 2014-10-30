@@ -9,9 +9,9 @@ initSearch = function() {
     search.success(function(data) {
       data = $.parseJSON(data);
       if (data.length) {
-        return $('#uuid_filter').val(data.join('|')).change();
+        return $('#uuid-filter').val(data.join('|')).change();
       } else {
-        return $('#uuid_filter').val('```').change();
+        return $('#uuid-filter').val('```').change();
       }
     });
     return search.fail(function(data) {
@@ -20,7 +20,7 @@ initSearch = function() {
   });
   return $('form .reset').click(function(e) {
     e.preventDefault();
-    $('#uuid_filter').val('').change();
+    $('#uuid-filter').val('').change();
     return $(this).parents('form').clearForm();
   });
 };

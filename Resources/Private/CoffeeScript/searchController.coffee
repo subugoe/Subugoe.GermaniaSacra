@@ -8,14 +8,14 @@ initSearch = ->
 		search.success (data) ->
 			data = $.parseJSON(data)
 			if data.length
-				$('#uuid_filter').val(data.join('|')).change()
+				$('#uuid-filter').val(data.join('|')).change()
 			else
 				# WORKAROUND: Server does return 500 if search term is empty
-				$('#uuid_filter').val('```').change()
+				$('#uuid-filter').val('```').change()
 		search.fail (data) ->
 			alert 'Suche fehlgeschlagen'
 
 	$('form .reset').click (e) ->
 		e.preventDefault()
-		$('#uuid_filter').val('').change()
+		$('#uuid-filter').val('').change()
 		$(this).parents('form').clearForm()

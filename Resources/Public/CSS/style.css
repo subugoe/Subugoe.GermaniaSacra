@@ -8010,6 +8010,10 @@ tr:hover .show-only-on-hover * {
   opacity: 1;
 }
 
+.wide {
+  width: 50%;
+}
+
 #map-container,
 #map {
   height: 560px;

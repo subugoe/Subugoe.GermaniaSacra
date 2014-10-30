@@ -10,7 +10,7 @@ $.fn.autocomplete = ->
 		name = if $select.data('type') then $select.data('type') else $select.attr('name').replace('[]', '')
 		isAjax = $select.hasClass('ajax')
 
-		# If already is autocomplete-enabled, remove autocomplete first
+		# If already autocomplete-enabled, remove autocomplete first
 		$select.hide().siblings('.autocomplete').remove()
 
 		$input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val $select.find(':selected').text()
@@ -18,6 +18,7 @@ $.fn.autocomplete = ->
 		$spinner.hide()
 		$list = $('<ol class="list"/>')
 		$list.css
+			# We are relying on all selects being the same height; cannot get height for elements not yet visible
 			top: $('select:eq(0)').outerHeight()
 		$overlay = $('<div class="overlay autocomplete"/>').append $input, $spinner, $list
 		$overlay.insertAfter $select
