@@ -73,7 +73,8 @@ editListAction = (type) ->
 		fnDrawCallback: ->
 			$tr = $table.find('tbody tr:not(.processed)')
 			$tr.children().each ->
-				$th = $table.find('th[data-name]').eq( $(this).index() )
+				$td = $(this)
+				$th = $table.find('th[data-name]').eq( $td.index() )
 				if $th.length
 					if $th.data('input') is 'checkbox'
 						$input = $('<input type="checkbox"/>')
@@ -87,7 +88,9 @@ editListAction = (type) ->
 							for obj in selectOptions[selectName]
 								$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
 					else if $th.data('input') is 'checkbox'
-						if $(this).text() is '1' then $input.prop('checked', true)
+						if $td.text() is '1' then $input.prop('checked', true)
+						if $input.attr('name') isnt 'uuid' and $input.attr('name') isnt 'uUID'
+							$td.text('1')
 					$(this).html( $input.val($(this).text()) )
 			$tr.each ->
 				uuid = $(this).find(':input[name=uuid]').val()
@@ -143,7 +146,8 @@ updateListAction = (type) ->
 		uuid = $(row).find('input[name=uuid], input[name=uUID]').first().val()
 		formData.data[uuid] = {}
 		$(row).find(':input:not([name=uuid]):not([name=uUID])').each (i, input) ->
-			if input.name then formData.data[uuid][input.name] = input.value
+			if not $(input).is(':checkbox') or $(input).prop('checked')
+				if input.name then formData.data[uuid][input.name] = input.value
 			return
 	formData.__csrfToken = $('#csrf').val()
 	$.post(type + '/updateList', formData).done((respond, status, jqXHR) ->
