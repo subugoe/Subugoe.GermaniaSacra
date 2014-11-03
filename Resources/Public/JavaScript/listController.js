@@ -79,8 +79,9 @@ editListAction = function(type) {
       var $tr;
       $tr = $table.find('tbody tr:not(.processed)');
       $tr.children().each(function() {
-        var $input, $th, obj, selectName, _i, _len, _ref;
-        $th = $table.find('th[data-name]').eq($(this).index());
+        var $input, $td, $th, obj, selectName, _i, _len, _ref;
+        $td = $(this);
+        $th = $table.find('th[data-name]').eq($td.index());
         if ($th.length) {
           if ($th.data('input') === 'checkbox') {
             $input = $('<input type="checkbox"/>');
@@ -98,8 +99,11 @@ editListAction = function(type) {
               }
             }
           } else if ($th.data('input') === 'checkbox') {
-            if ($(this).text() === '1') {
+            if ($td.text() === '1') {
               $input.prop('checked', true);
+            }
+            if ($input.attr('name') !== 'uuid' && $input.attr('name') !== 'uUID') {
+              $td.text('1');
             }
           }
           return $(this).html($input.val($(this).text()));
@@ -156,8 +160,10 @@ updateListAction = function(type) {
     uuid = $(row).find('input[name=uuid], input[name=uUID]').first().val();
     formData.data[uuid] = {};
     return $(row).find(':input:not([name=uuid]):not([name=uUID])').each(function(i, input) {
-      if (input.name) {
-        formData.data[uuid][input.name] = input.value;
+      if (!$(input).is(':checkbox') || $(input).prop('checked')) {
+        if (input.name) {
+          formData.data[uuid][input.name] = input.value;
+        }
       }
     });
   });
