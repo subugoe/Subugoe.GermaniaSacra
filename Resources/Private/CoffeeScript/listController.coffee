@@ -151,7 +151,7 @@ updateListAction = (type) ->
 		if type is 'kloster'
 			$.post("updateSolrAfterListUpdate", {uuids: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
-		$form.find('.dirty').removeClass('.dirty')
+		$form.find('.dirty').removeClass('dirty')
 	).fail (jqXHR, textStatus) ->
 		message 'Fehler: Daten konnten nicht gespeichert werden.'
 

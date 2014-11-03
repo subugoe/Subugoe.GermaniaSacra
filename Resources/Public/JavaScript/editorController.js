@@ -68,7 +68,7 @@ createAction = function(type, data) {
       });
     }
     message('Ein neuer Eintrag wurde angelegt.');
-    return $form.find('.dirty').removeClass('.dirty');
+    return $form.find('.dirty').removeClass('dirty');
   }).fail(function() {
     return message('Fehler: Eintrag konnte nicht angelegt werden.');
   });
@@ -85,8 +85,11 @@ editAction = function(type, id) {
     for (name in obj) {
       value = obj[name];
       $input = $form.find(":input[data-type=" + name + "], :input[name='" + name + "']").first();
-      if ($input.is(':checkbox') && value) {
-        $input.prop('checked', true);
+      if ($input.is(':checkbox')) {
+        $input.val(1);
+        if (value) {
+          $input.prop('checked', true);
+        }
       } else {
         $input.val(value);
       }
@@ -214,7 +217,7 @@ updateAction = function(type) {
       });
     }
     message('Ihre Änderungen wurden gespeichert.');
-    return $form.find('.dirty').removeClass('.dirty');
+    return $form.find('.dirty').removeClass('dirty');
   }).fail(function() {
     return message('Fehler: Ihre Änderungen konnten nicht gespeichert werden.');
   });
