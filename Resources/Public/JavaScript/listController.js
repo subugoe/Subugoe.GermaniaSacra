@@ -151,11 +151,11 @@ updateListAction = function(type) {
   $rows = dataTable.$('tr').has('td:first input:checked');
   formData = {};
   formData.data = {};
-  $rows.each(function() {
+  $rows.each(function(i, row) {
     var uuid;
-    uuid = $form.find('input[name=uuid], input[name=uUID]').first().val();
+    uuid = $(row).find('input[name=uuid], input[name=uUID]').first().val();
     formData.data[uuid] = {};
-    return $form.find(':input:not([name=uuid]):not([name=uUID])').each(function(i, input) {
+    return $(row).find(':input:not([name=uuid]):not([name=uUID])').each(function(i, input) {
       if (input.name) {
         formData.data[uuid][input.name] = input.value;
       }

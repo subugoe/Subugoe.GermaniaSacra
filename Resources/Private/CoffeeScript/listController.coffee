@@ -139,10 +139,10 @@ updateListAction = (type) ->
 	$rows = dataTable.$('tr').has('td:first input:checked')
 	formData = {}
 	formData.data = {}
-	$rows.each ->
-		uuid = $form.find('input[name=uuid], input[name=uUID]').first().val()
+	$rows.each (i, row) ->
+		uuid = $(row).find('input[name=uuid], input[name=uUID]').first().val()
 		formData.data[uuid] = {}
-		$form.find(':input:not([name=uuid]):not([name=uUID])').each (i, input) ->
+		$(row).find(':input:not([name=uuid]):not([name=uUID])').each (i, input) ->
 			if input.name then formData.data[uuid][input.name] = input.value
 			return
 	formData.__csrfToken = $('#csrf').val()
