@@ -169,7 +169,7 @@ updateListAction = function(type) {
       });
     }
     message('Ihre Änderungen wurden gespeichert.');
-    return $form.find('.dirty').removeClass('.dirty');
+    return $form.find('.dirty').removeClass('dirty');
   }).fail(function(jqXHR, textStatus) {
     return message('Fehler: Daten konnten nicht gespeichert werden.');
   });

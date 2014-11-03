@@ -65,7 +65,7 @@ createAction = (type, data) ->
 				uuid: respond
 			)
 		message 'Ein neuer Eintrag wurde angelegt.'
-		$form.find('.dirty').removeClass('.dirty')
+		$form.find('.dirty').removeClass('dirty')
 	).fail ->
 		message 'Fehler: Eintrag konnte nicht angelegt werden.'
 
@@ -82,8 +82,9 @@ editAction = (type, id) ->
 
 		for name, value of obj
 			$input = $form.find(":input[data-type=#{name}], :input[name='#{name}']").first()
-			if $input.is(':checkbox') and value
-				$input.prop('checked', true)
+			if $input.is(':checkbox')
+				$input.val 1
+				if value then $input.prop('checked', true)
 			else
 				$input.val value
 
@@ -184,6 +185,6 @@ updateAction = (type) ->
 		if type is 'kloster'
 			$.post("kloster/updateSolrAfterKlosterUpdate", {uuid: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
-		$form.find('.dirty').removeClass('.dirty')
+		$form.find('.dirty').removeClass('dirty')
 	).fail ->
 		message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'
