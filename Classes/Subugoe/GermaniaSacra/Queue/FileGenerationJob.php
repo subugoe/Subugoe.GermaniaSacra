@@ -6,7 +6,7 @@ namespace Subugoe\GermaniaSacra\Queue;
  *
  *  (c) 2014 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -63,7 +63,6 @@ class FileGenerationJob implements JobInterface {
 	 * @return boolean TRUE if the job was executed successfully and the message should be finished
 	 */
 	public function execute(QueueInterface $queue, Message $message) {
-
 		return $this->jsonGeneratorService->generateJsonFile($this->entityName);
 	}
 
@@ -73,7 +72,7 @@ class FileGenerationJob implements JobInterface {
 	 * @return string A job identifier
 	 */
 	public function getIdentifier() {
-		return NULL;
+		return $this->entityName;
 	}
 
 	/**
