@@ -17,6 +17,7 @@ class Band {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $uid;
 

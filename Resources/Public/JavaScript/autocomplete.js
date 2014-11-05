@@ -62,7 +62,7 @@ $.fn.autocomplete = function() {
                 json = $.parseJSON(data);
                 $list.empty();
                 $.each(json, function(index, item) {
-                  return $list.append("<li data-uuid='" + item.uuid + "'>" + item.name + "</li>");
+                  return $list.append("<li data-uuid='" + item.uUID + "'>" + item.name + "</li>");
                 });
                 return $list.slideDown().scrollTop(0).find('li').first().addClass('current');
               }

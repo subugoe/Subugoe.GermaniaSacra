@@ -37,9 +37,9 @@ populateSelectsAction = ->
 		$.each response, (name, values) ->
 			$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
 			$selects.empty()
-			$.each values, (uuid, text) ->
+			$.each values, (uUID, text) ->
 				$selects.append $('<option>',
-					value: uuid
+					value: uUID
 					text: text
 				)
 
@@ -61,8 +61,8 @@ createAction = (type, data) ->
 	$.post(type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
 		if type is 'kloster'
 			# TODO: Please find a way to trigger the Solr update server-side
-			$.get('solrUpdateWhenKlosterCreate',
-				uuid: respond
+			$.get('kloster/solrUpdateWhenKlosterCreate',
+				uUID: respond
 			)
 		message 'Ein neuer Eintrag wurde angelegt.'
 		$form.find('.dirty').removeClass('dirty')
@@ -124,7 +124,7 @@ editAction = (type, id) ->
 							$(this).prop 'checked', checkedCondition
 					else if name is 'ort'
 						$(this).html $('<option />',
-							value: value.uuid
+							value: value.uUID
 							text: value.ort
 						).attr('selected', true)
 					else if name is 'bistum'
@@ -183,7 +183,7 @@ updateAction = (type) ->
 	$.post("#{type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) ->
 		# TODO: Find a way to trigger Solr update server-side
 		if type is 'kloster'
-			$.post("kloster/updateSolrAfterKlosterUpdate", {uuid: respond})
+			$.post("kloster/updateSolrAfterKlosterUpdate", {uUID: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
 		$form.find('.dirty').removeClass('dirty')
 	).fail ->

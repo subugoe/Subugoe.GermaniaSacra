@@ -17,6 +17,7 @@ class Bistum {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $uid;
 

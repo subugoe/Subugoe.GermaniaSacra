@@ -11,7 +11,7 @@ class OrdenHasUrl {
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Orden
-	 * @ORM\ManyToOne(inversedBy="ordenHasUrls")
+	 * @ORM\ManyToOne
 	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $orden;
@@ -53,7 +53,6 @@ class OrdenHasUrl {
 	public function setUrl(\Subugoe\GermaniaSacra\Domain\Model\Url $url) {
 		$this->url = $url;
 	}
-
 
 }
 

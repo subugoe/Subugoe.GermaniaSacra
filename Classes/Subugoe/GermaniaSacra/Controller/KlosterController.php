@@ -28,6 +28,12 @@ class KlosterController extends ActionController {
 
 	/**
 	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\LandRepository
+	 */
+	protected $landRepository;
+
+	/**
+	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterstandortRepository
 	 */
 	protected $klosterstandortRepository;
@@ -280,7 +286,7 @@ class KlosterController extends ActionController {
 
 		$klosterArr = array();
 		foreach ($klosters as $k => $kloster) {
-			$klosterArr[$k]['uuid'] = $kloster->getUUID();
+			$klosterArr[$k]['uUID'] = $kloster->getUUID();
 			$klosterArr[$k]['uid'] = $kloster->getUid();
 			$klosterArr[$k]['kloster'] = $kloster->getKloster();
 			$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
@@ -339,7 +345,7 @@ class KlosterController extends ActionController {
 
 		$klosterArr = array();
 		foreach ($klosters as $k => $kloster) {
-			$klosterArr[$k]['uuid'] = $kloster->getUUID();
+			$klosterArr[$k]['uUID'] = $kloster->getUUID();
 			$klosterArr[$k]['kloster'] = $kloster->getKloster();
 			$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
 			$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
@@ -516,6 +522,7 @@ class KlosterController extends ActionController {
 			$uuid = $kloster->getUUID();
 
 			// Add Klosterstandort
+//			$ortArr = array('30f08b75-7df1-82a4-d4ab-e0f88308e7e4');
 			$ortArr = $this->request->getArgument('ort');
 			$bistumArr = $this->request->getArgument('bistum');
 			$gruenderArr = $this->request->getArgument('gruender');
@@ -765,30 +772,29 @@ class KlosterController extends ActionController {
 		}
 	}
 
-	/**
+	/** Update solr index after creating a new Kloster entity
 	 * @FLOW\SkipCsrfProtection
-	 * @return $kloster_id The id of the kloster in json format
+	 * @return String $uuid
 	 */
 	public function solrUpdateWhenKlosterCreateAction() {
-		if ($this->request->hasArgument('uuid')) {
-			$uuid = $this->request->getArgument('uuid');
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
 			return json_decode($uuid);
 		}
 	}
 
 	/**
-	 * Return the data of the selected Kloster entry to be updated
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Kloster $kloster
+	 * Edit a Kloster entity
 	 * @return array $response The data of the selected Kloster entry in json format
 	 */
 	public function editAction() {
 
-		$uuid = $this->request->getArgument('uuid');
+		$uuid = $this->request->getArgument('uUID');
 		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 
 		// Kloster data
 		$klosterArr = array();
-		$klosterArr['uuid'] = $kloster->getUUID();
+		$klosterArr['uUID'] = $kloster->getUUID();
 		$klosterArr['uid'] = $kloster->getUid();
 		$klosterArr['kloster_name'] = $kloster->getKloster();
 		$klosterArr['kloster_id'] = $kloster->getKloster_id();
@@ -827,7 +833,7 @@ class KlosterController extends ActionController {
 			$klosterstandorte[$i]['standort_interne_bemerkung'] = $klosterstandort->getBemerkung();
 
 			$ort = $klosterstandort->getOrt();
-			$klosterstandorte[$i]['uuid'] = $ort->getUUID();
+			$klosterstandorte[$i]['uUID'] = $ort->getUUID();
 			$klosterstandorte[$i]['ort'] = $ort->getFullOrt();
 			$klosterstandorte[$i]['wuestung'] = $ort->getWuestung();
 
@@ -1024,14 +1030,25 @@ class KlosterController extends ActionController {
 
 		// URL-Typ data for select box
 		$urltypArr = array();
-		$this->bearbeiterRepository->setDefaultOrderings(
-				array('urltyp' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		$this->urltypRepository->setDefaultOrderings(
+				array('name' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
 		);
 		$urltyps = $this->urltypRepository->findAll();
 		foreach ($urltyps as $urltyp) {
 			if ( $urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND' )
 				$urltypArr[$urltyp->getUUID()] = $urltyp->getName();
 		}
+
+		// Land data for select box
+		$landArr = array();
+		$this->landRepository->setDefaultOrderings(
+				array('land' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+		$lands = $this->landRepository->findAll();
+		foreach ($lands as $land) {
+				$landArr[$land->getUUID()] = $land->getLand();
+		}
+
 
 		$response = array();
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
@@ -1044,17 +1061,18 @@ class KlosterController extends ActionController {
 		$response['klosterstatus'] = $klosterstatusArr;
 		$response['bearbeiter'] = $bearbeiterArr;
 		$response['url_typ'] = $urltypArr;
+		$response['land'] = $landArr;
 		return json_encode($response);
 
 	}
 
-	/** Update data of a selected Kloster
+	/** Update a Kloster entity
 	 * @return integer The http status
 	 **/
 	public function updateAction() {
 
 		// Update Kloster
-		$uuid = $this->request->getArgument('uuid');
+		$uuid = $this->request->getArgument('uUID');
 		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		$kloster->setKloster( $this->request->getArgument('kloster_name') );
 		$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
@@ -1371,23 +1389,23 @@ class KlosterController extends ActionController {
 		return json_encode($uuid);
 	}
 
-	/**
-	* Updates the updated entries in Solr
-	* @FLOW\SkipCsrfProtection
-	*/
+	/** Update solr index after updating a Kloster entity
+	 * @FLOW\SkipCsrfProtection
+	 * @return String $uuid
+	 */
 	public function updateSolrAfterKlosterUpdateAction() {
-		if ($this->request->hasArgument('uuid')) {
-			$uuid = $this->request->getArgument('uuid');
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
 			return json_decode($uuid);
 		}
 	}
 
 	/**
-	 * Delete a selected Kloster entry
+	 * Delete a Kloster entity
 	 * @return integer $status The http status
 	 */
 	public function deleteAction() {
-		$uuid = $this->request->getArgument('uuid');
+		$uuid = $this->request->getArgument('uUID');
 		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		$this->klosterRepository->remove($kloster);
 		$klosterordens = $kloster->getKlosterordens();
@@ -1423,13 +1441,13 @@ class KlosterController extends ActionController {
 	 */
 	public function searchOrtAction() {
 		if ($this->request->hasArgument('searchString')) {
-			$searchString = $this->request->getArgument('searchString');
+			$searchString = trim($this->request->getArgument('searchString'));
 			$searchString = "%" . $searchString . "%";
 			$searchResult = $this->ortRepository->findOrtBySearchString($searchString);
 			$orte = array();
 			foreach ($searchResult as $res) {
 				$orte[] = array(
-					'uuid' => $res->getUUID(),
+					'uUID' => $res->getUUID(),
 					'name' => $res->getFullOrt()
 				);
 			}
@@ -1540,7 +1558,5 @@ class KlosterController extends ActionController {
 		}
 
 	}
-
 }
-
 ?>

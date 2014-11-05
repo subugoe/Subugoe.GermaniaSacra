@@ -170,7 +170,7 @@ updateListAction = function(type) {
   formData.__csrfToken = $('#csrf').val();
   $.post(type + '/updateList', formData).done(function(respond, status, jqXHR) {
     if (type === 'kloster') {
-      $.post("updateSolrAfterListUpdate", {
+      $.post("kloster/updateSolrAfterListUpdate", {
         uuids: respond
       });
     }
