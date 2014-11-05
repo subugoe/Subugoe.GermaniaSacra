@@ -192,7 +192,9 @@ class SolrUpdateAspect {
 	 * @return void
 	 */
 	public function solrUpdateWhenKlosterDeleted(\TYPO3\Flow\AOP\JoinPointInterface $joinPoint) {
-		$kloster = $joinPoint->getMethodArgument('kloster');
+
+		$kloster_uuid = $joinPoint->getResult();
+		$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 		$kloster_uid = $kloster->getUid();
 		$this->injectSettings($this->settings);
 		$this->initializeAction();

@@ -3,15 +3,21 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use Subugoe\GermaniaSacra\Domain\Model\Ordenstyp;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\RestController;
+use TYPO3\Flow\Mvc\Controller\ActionController;
 
-class OrdenstypController extends RestController {
+class OrdenstypController extends ActionController {
 
 	/**
 	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrdenstypRepository
 	 */
 	protected $ordenstypRepository;
+
+	/**
+	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrdenRepository
+	 */
+	protected $ordenRepository;
 
 	/**
 	 * @var array
@@ -37,53 +43,105 @@ class OrdenstypController extends RestController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp $ordenstyp
+	 * Create a new Ordenstyp entity
 	 * @return void
 	 */
-	public function showAction(Ordenstyp $ordenstyp) {
-		$this->view->setVariablesToRender(array('ordenstyp'));
-		$this->view->assign('ordenstyp', $ordenstyp);
+	public function createAction() {
+		$ordenstypObj = new Ordenstyp();
+		if (is_object($ordenstypObj)) {
+			if (!$this->request->hasArgument('ordenstyp')) {
+				$this->throwStatus(400, 'Ordenstyp not provided', Null);
+			}
+			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
+			$this->ordenstypRepository->add($ordenstypObj);
+			$this->persistenceManager->persistAll();
+			$this->throwStatus(201, NULL, Null);
+		}
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp $newOrdenstyp
-	 * @return void
+	 * Edit an Ordenstyp entity
+	 * @return array $ordenstypArr
 	 */
-	public function createAction(Ordenstyp $newOrdenstyp) {
-		$this->ordenstypRepository->add($newOrdenstyp);
-		$this->response->setStatus(201);
+	public function editAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$ordenstypArr = array();
+		$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
+		$ordenstypArr['uUID'] = $ordenstypObj->getUUID();
+		$ordenstypArr['ordenstyp'] = $ordenstypObj->getOrdenstyp();
+		return json_encode($ordenstypArr);
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp $ordenstyp
+	 * Update an Ordenstyp entity
 	 * @return void
 	 */
-	public function updateAction(Ordenstyp $ordenstyp) {
-		$this->ordenstypRepository->update($ordenstyp);
+	public function updateAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
+		if (is_object($ordenstypObj)) {
+			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
+			$this->ordenstypRepository->update($ordenstypObj);
+			$this->persistenceManager->persistAll();
+			$this->throwStatus(200, NULL, Null);
+		}
+		else {
+			$this->throwStatus(400, 'Entity Ordenstyp not available', Null);
+		}
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Ordenstyp $ordenstyp
+	 * Delete an Ordenstyp entity
 	 * @return void
 	 */
-	public function deleteAction(Ordenstyp $ordenstyp) {
-		$this->ordenstypRepository->remove($ordenstyp);
+	public function deleteAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$ordens = count($this->ordenRepository->findByOrdenstyp($uuid));
+		if ($ordens == 0) {
+			$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
+			if (!is_object($ordenstypObj)) {
+				$this->throwStatus(400, 'Entity Ordenstyp not available', Null);
+			}
+			$this->ordenstypRepository->remove($ordenstypObj);
+			$this->throwStatus(200, NULL, Null);
+		}
+		else {
+			$this->throwStatus(400, 'Due to dependencies Ordenstyp entity could not be deleted', Null);
+		}
 	}
 
 	/**
-	 * Updates the list of Ordenstyp
+	 * Update a list of Ordenstyp entities
 	 * @return void
 	 */
-	public function listupdateAction() {
-		$ordenstyps = $this->request->getArguments();
-		foreach ($ordenstyps as $uuid => $ordenstyp) {
+	public function updateListAction() {
+		if ($this->request->hasArgument('data')) {
+			$ordenstyplist = $this->request->getArgument('data');
+		}
+		if (empty($ordenstyplist)) {
+			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+		}
+		foreach ($ordenstyplist as $uuid => $ordenstyp) {
 			$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
 			$ordenstypObj->setOrdenstyp($ordenstyp['ordenstyp']);
 			$this->ordenstypRepository->update($ordenstypObj);
 		}
-
 		$this->persistenceManager->persistAll();
-
 		$this->throwStatus(200, NULL, Null);
 	}
 }

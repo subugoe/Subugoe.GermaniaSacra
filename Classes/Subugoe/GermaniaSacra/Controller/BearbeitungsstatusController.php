@@ -3,9 +3,9 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus;
-use TYPO3\Flow\Mvc\Controller\RestController;
+use TYPO3\Flow\Mvc\Controller\ActionController;
 
-class BearbeitungsstatusController extends RestController {
+class BearbeitungsstatusController extends ActionController {
 
 	/**
 	 * @Flow\Inject
@@ -13,6 +13,11 @@ class BearbeitungsstatusController extends RestController {
 	 */
 	protected $bearbeitungsstatusRepository;
 
+	/**
+	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterRepository
+	 */
+	protected $klosterRepository;
 	/**
 	 * @var array
 	 */
@@ -46,44 +51,105 @@ class BearbeitungsstatusController extends RestController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $newBearbeitungsstatus
+	 * Create a new Bearbeitungsstatus entity
 	 * @return void
 	 */
-	public function createAction(Bearbeitungsstatus $newBearbeitungsstatus) {
-		$this->bearbeitungsstatusRepository->add($newBearbeitungsstatus);
-		$this->response->setStatus(201);
+	public function createAction() {
+		$bearbeitungsstatusObj = new Bearbeitungsstatus();
+		if (is_object($bearbeitungsstatusObj)) {
+			if (!$this->request->hasArgument('name')) {
+				$this->throwStatus(400, 'Bearbeitungsstatus name not provided', Null);
+			}
+			$bearbeitungsstatusObj->setName($this->request->getArgument('name'));
+			$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObj);
+			$this->persistenceManager->persistAll();
+			$this->throwStatus(201, NULL, Null);
+		}
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
-	 * @return void
+	 * Edit a Bearbeitungsstatus entity
+	 * @return array $bearbeitungsstatusArr
 	 */
-	public function updateAction(Bearbeitungsstatus $bearbeitungsstatus) {
-		$this->bearbeitungsstatusRepository->update($bearbeitungsstatus);
+	public function editAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$bearbeitungsstatusArr = array();
+		$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
+		$bearbeitungsstatusArr['uUID'] = $bearbeitungsstatusObj->getUUID();
+		$bearbeitungsstatusArr['name'] = $bearbeitungsstatusObj->getName();
+		return json_encode($bearbeitungsstatusArr);
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
+	 * Update a Bearbeitungsstatus entity
 	 * @return void
 	 */
-	public function deleteAction(Bearbeitungsstatus $bearbeitungsstatus) {
-		$this->bearbeitungsstatusRepository->remove($bearbeitungsstatus);
+	public function updateAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
+		if (is_object($bearbeitungsstatusObj)) {
+			$bearbeitungsstatusObj->setName($this->request->getArgument('name'));
+			$this->bearbeitungsstatusRepository->update($bearbeitungsstatusObj);
+			$this->persistenceManager->persistAll();
+			$this->throwStatus(200, NULL, Null);
+		}
+		else {
+			$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', Null);
+		}
 	}
 
 	/**
-	 * Updates the list of Bearbeitungsstatus
+	 * Delete a Bearbeitungsstatus entity
 	 * @return void
 	 */
-	public function listupdateAction() {
-		$bearbeitungsstatuses = $this->request->getArguments();
-		foreach ($bearbeitungsstatuses as $uuid => $bearbeitungsstatus) {
+	public function deleteAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$klosters = count($this->klosterRepository->findByBearbeitungsstatus($uuid));
+		if ($klosters == 0) {
+			$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
+			if (!is_object($bearbeitungsstatusObj)) {
+				$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', Null);
+			}
+			$this->bearbeitungsstatusRepository->remove($bearbeitungsstatusObj);
+			$this->throwStatus(200, NULL, Null);
+		}
+		else {
+			$this->throwStatus(400, 'Due to dependencies Bearbeitungsstatus entity could not be deleted', Null);
+		}
+	}
+
+	/**
+	 * Update a list of Bearbeitungsstatus entities
+	 * @return void
+	 */
+	public function updateListAction() {
+		if ($this->request->hasArgument('data')) {
+			$bearbeitungsstatuslist = $this->request->getArgument('data');
+		}
+		if (empty($bearbeitungsstatuslist)) {
+			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+		}
+		foreach ($bearbeitungsstatuslist as $uuid => $bearbeitungsstatus) {
 			$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
 			$bearbeitungsstatusObj->setName($bearbeitungsstatus['name']);
 			$this->bearbeitungsstatusRepository->update($bearbeitungsstatusObj);
 		}
-
 		$this->persistenceManager->persistAll();
-
 		$this->throwStatus(200, NULL, Null);
 	}
 }

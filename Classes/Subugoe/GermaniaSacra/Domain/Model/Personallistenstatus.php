@@ -21,7 +21,7 @@ class Personallistenstatus {
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Kloster>
 	 * @ORM\OneToMany(mappedBy="personallistenstatus")
 	 */
 	protected $klosters;

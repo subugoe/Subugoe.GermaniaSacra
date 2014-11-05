@@ -61,7 +61,7 @@ $.fn.autocomplete = ->
 								json = $.parseJSON data
 								$list.empty()
 								$.each json, (index, item) ->
-									$list.append "<li data-uuid='#{item.uuid}'>#{item.name}</li>"
+									$list.append "<li data-uuid='#{item.uUID}'>#{item.name}</li>"
 								$list.slideDown().scrollTop(0).find('li').first().addClass('current')
 					), 500
 			else

@@ -331,18 +331,18 @@ class DataImportController extends ActionController {
 
 		$checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('subugoe_germaniasacra_domain_model_bearbeiter');
 		if ($checkIfBearbeiterTableExists) {
-			$numberOfBearbeiter = $sqlConnection->fetchAll('SELECT COUNT(*) AS count FROM subugoe_germaniasacra_domain_model_bearbeiter');
+			$numberOfBearbeiter = count($this->bearbeiterRepository->findAll());
 		}
 
 		$checkIfAccountTableExists = $sqlConnection->getSchemaManager()->tablesExist('typo3_flow_security_account');
 		if ($checkIfAccountTableExists) {
-			$numberOfAccounts = $sqlConnection->fetchAll('SELECT COUNT(*) AS count FROM typo3_flow_security_account');
+			$numberOfAccounts = count($this->accountRepository->findAll());
 		}
 
-		if ($numberOfBearbeiter[0]['count'] == 0 && $numberOfAccounts[0]['count'] == 0) {
+		if ($numberOfBearbeiter == 0 && $numberOfAccounts == 0) {
 			$this->importAndJoinBearbeiterWithAccount();
 		}
-		elseif ($numberOfBearbeiter[0]['count'] == 0 && $numberOfAccounts[0]['count'] != 0) {
+		elseif ($numberOfBearbeiter == 0 && $numberOfAccounts != 0) {
 			$sql = 'SET foreign_key_checks = 0';
 			$sqlConnection->executeUpdate($sql);
 			$accountTbl = 'typo3_flow_security_account';
@@ -355,7 +355,7 @@ class DataImportController extends ActionController {
 			$sqlConnection->executeUpdate($sql);
 			$this->importAndJoinBearbeiterWithAccount();
 		}
-		elseif ($numberOfBearbeiter[0]['count'] != 0 && $numberOfAccounts[0]['count'] == 0) {
+		elseif ($numberOfBearbeiter != 0 && $numberOfAccounts == 0) {
 			$sql = 'SET foreign_key_checks = 0';
 			$sqlConnection->executeUpdate($sql);
 			$bearbeiterTbl = 'subugoe_germaniasacra_domain_model_bearbeiter';

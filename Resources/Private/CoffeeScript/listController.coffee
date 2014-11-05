@@ -153,7 +153,7 @@ updateListAction = (type) ->
 	$.post(type + '/updateList', formData).done((respond, status, jqXHR) ->
 		# TODO: Please find a way to trigger the Solr update server-side
 		if type is 'kloster'
-			$.post("updateSolrAfterListUpdate", {uuids: respond})
+			$.post("kloster/updateSolrAfterListUpdate", {uuids: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
 		$form.find('.dirty').removeClass('dirty')
 	).fail (jqXHR, textStatus) ->

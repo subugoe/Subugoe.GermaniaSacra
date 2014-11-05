@@ -40,7 +40,7 @@ class Url {
 	protected $urltyp;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl>
 	 * @ORM\OneToMany(mappedBy="url", cascade={"all"})
 	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */

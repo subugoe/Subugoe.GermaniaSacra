@@ -13,7 +13,7 @@ class BistumHasUrl {
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bistum
 	 * @ORM\ManyToOne(inversedBy="bistumHasUrls")
-	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
+	 * @ORM\JoinColumn(onDelete="Cascade", nullable=false)
 	 */
 	protected $bistum;
 

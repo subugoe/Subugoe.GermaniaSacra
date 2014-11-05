@@ -36,9 +36,9 @@ populateSelectsAction = function() {
       var $selects;
       $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid']");
       $selects.empty();
-      return $.each(values, function(uuid, text) {
+      return $.each(values, function(uUID, text) {
         return $selects.append($('<option>', {
-          value: uuid,
+          value: uUID,
           text: text
         }));
       });
@@ -63,8 +63,8 @@ createAction = function(type, data) {
   $form = $('#edit form');
   return $.post(type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
     if (type === 'kloster') {
-      $.get('solrUpdateWhenKlosterCreate', {
-        uuid: respond
+      $.get('kloster/solrUpdateWhenKlosterCreate', {
+        uUID: respond
       });
     }
     message('Ein neuer Eintrag wurde angelegt.');
@@ -143,7 +143,7 @@ editAction = function(type, id) {
             }
           } else if (name === 'ort') {
             return $(this).html($('<option />', {
-              value: value.uuid,
+              value: value.uUID,
               text: value.ort
             }).attr('selected', true));
           } else if (name === 'bistum') {
@@ -213,7 +213,7 @@ updateAction = function(type) {
   return $.post("" + type + "/update/" + uuid, $form.serialize()).done(function(respond, status, jqXHR) {
     if (type === 'kloster') {
       $.post("kloster/updateSolrAfterKlosterUpdate", {
-        uuid: respond
+        uUID: respond
       });
     }
     message('Ihre Änderungen wurden gespeichert.');

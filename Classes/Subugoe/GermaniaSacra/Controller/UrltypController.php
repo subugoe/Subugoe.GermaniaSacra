@@ -3,15 +3,21 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use Subugoe\GermaniaSacra\Domain\Model\Urltyp;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\RestController;
+use TYPO3\Flow\Mvc\Controller\ActionController;
 
-class UrltypController extends RestController {
+class UrltypController extends ActionController {
 
 	/**
 	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\UrltypRepository
 	 */
 	protected $urltypRepository;
+
+	/**
+	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\UrlRepository
+	 */
+	protected $urlRepository;
 
 	/**
 	 * @var array
@@ -37,53 +43,105 @@ class UrltypController extends RestController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Urltyp $urltyp
+	 * Create a new Urltyp entity
 	 * @return void
 	 */
-	public function showAction(Urltyp $urltyp) {
-		$this->view->setVariablesToRender(array('urltyp'));
-		$this->view->assign('urltyp', $urltyp);
+	public function createAction() {
+		$urltypObj = new Urltyp();
+		if (is_object($urltypObj)) {
+			if (!$this->request->hasArgument('name')) {
+				$this->throwStatus(400, 'Url name not provided', Null);
+			}
+			$urltypObj->setName($this->request->getArgument('name'));
+			$this->urltypRepository->add($urltypObj);
+			$this->persistenceManager->persistAll();
+			$this->throwStatus(201, NULL, Null);
+		}
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Urltyp $newUrltyp
-	 * @return void
+	 * Edit an Urltyp entity
+	 * @return array $urltypArr
 	 */
-	public function createAction(Urltyp $newUrltyp) {
-		$this->urltypRepository->add($newUrltyp);
-		$this->response->setStatus(201);
+	public function editAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$urltypArr = array();
+		$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
+		$urltypArr['uUID'] = $urltypObj->getUUID();
+		$urltypArr['name'] = $urltypObj->getName();
+		return json_encode($urltypArr);
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Urltyp $urltyp
+	 * Update an Urltyp entity
 	 * @return void
 	 */
-	public function updateAction(Urltyp $urltyp) {
-		$this->urltypRepository->update($urltyp);
+	public function updateAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
+		if (is_object($urltypObj)) {
+			$urltypObj->setName($this->request->getArgument('name'));
+			$this->urltypRepository->update($urltypObj);
+			$this->persistenceManager->persistAll();
+			$this->throwStatus(200, NULL, Null);
+		}
+		else {
+			$this->throwStatus(400, 'Entity Urltyp not available', Null);
+		}
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Urltyp $urltyp
+	 * Delete an Urltyp entity
 	 * @return void
 	 */
-	public function deleteAction(Urltyp $urltyp) {
-		$this->urltypRepository->remove($urltyp);
+	public function deleteAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$urls = count($this->urlRepository->findByUrltyp($uuid));
+		if ($urls == 0) {
+			$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
+			if (!is_object($urltypObj)) {
+				$this->throwStatus(400, 'Entity Urltyp not available', Null);
+			}
+			$this->urltypRepository->remove($urltypObj);
+			$this->throwStatus(200, NULL, Null);
+		}
+		else {
+			$this->throwStatus(400, 'Due to dependencies Urltyp entity could not be deleted', Null);
+		}
 	}
 
 	/**
-	 * Updates the list of Urltyp
+	 * Update a list of Urltyp entities
 	 * @return void
 	 */
-	public function listupdateAction() {
-		$urltyps = $this->request->getArguments();
-		foreach ($urltyps as $uuid => $urltyp) {
+	public function updateListAction() {
+		if ($this->request->hasArgument('data')) {
+			$urltyplist = $this->request->getArgument('data');
+		}
+		if (empty($urltyplist)) {
+			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+		}
+		foreach ($urltyplist as $uuid => $urltyp) {
 			$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
 			$urltypObj->setName($urltyp['name']);
 			$this->urltypRepository->update($urltypObj);
 		}
-
 		$this->persistenceManager->persistAll();
-
 		$this->throwStatus(200, NULL, Null);
 	}
 }

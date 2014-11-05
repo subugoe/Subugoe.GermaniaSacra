@@ -17,6 +17,7 @@ class Land {
 
 	/**
 	* @var integer
+	 * @ORM\Column(nullable=TRUE)
 	*/
 	protected $uid;
 
