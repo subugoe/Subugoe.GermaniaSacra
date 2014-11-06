@@ -1,0 +1,168 @@
+form {
+	span {
+		font-size: $form-label-font-size;
+		padding: $microformat-padding;
+		&.link {
+			font-size: 1.2em;
+			position: absolute;
+			z-index: 9;
+		}
+	}
+	.highlight {
+		@include clearfix;
+		background: rgba(#000, .1);
+		border: 0;
+		box-shadow: 0 1px 6px rgba(#000, .2) inset;
+		clear: both;
+		margin: 0 (-$fieldset-padding) $fieldset-padding;
+		padding: $fieldset-padding $fieldset-padding $fieldset-padding/2;
+		border-radius: $global-radius;
+	}
+}
+
+fieldset {
+	border-width: $fieldset-border-width 0 0 0;
+	clear: both;
+}
+
+legend {
+	color: $fieldset-border-color;
+}
+
+label {
+	line-height: 2.33333em;
+	&.columns {
+		padding: 0;
+		text-align: right;
+	}
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+textarea {
+	@include radius($input-border-radius);
+	margin-bottom: .5em;
+	th & {
+		margin: 0;
+	}
+	td & {
+		background: none;
+		border: 0;
+		box-shadow: none;
+		float: none;
+		margin: -$table-row-padding 0
+	}
+}
+
+input[type="checkbox"] {
+	margin-bottom: 1rem;
+	td & {
+		height: auto;
+	}
+}
+
+input,
+select,
+textarea,
+div.autocomplete {
+	float: right;
+	label.none & {
+		width: 100% !important;
+	}
+	.large-2 > & {
+		margin-left: 1em;
+		width: 50%;
+	}
+	@for $i from 3 through $total-columns {
+		.large-#{$i} > & {
+			margin-left: 1em;
+			width: percentage(($i - 2) / $i);
+		}
+	}
+}
+
+input,
+select,
+textarea {
+	&:invalid,
+	&:invalid + .autocomplete input {
+		background: lighten($alert-color, 30) !important;
+	}
+}
+
+input[type="checkbox"] {
+	height: $form-label-font-size * 2;
+	margin-left: .5rem;
+}
+
+input.year {
+	background: lighten($info-color, 15);
+	&:focus {
+		background: lighten($info-color, 20);
+	}
+}
+
+textarea {
+	min-height: 0;
+	resize: none;
+}
+
+button[type="submit"] {
+	float: right;
+}
+
+input[type="submit"],
+button {
+	background: none;
+	font-weight: bold;
+	margin: 0 0 .5em 0;
+	min-width: rem-calc(32);
+	padding: rem-calc(8);
+	@include radius($input-border-radius);
+	&:not([disabled]) {
+		&:active, &:focus, &:hover {
+			color: #fff;
+			@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
+		}
+	}
+	&.new {
+		float: left;
+	}
+	&[disabled],
+	&[disabled]:focus,
+	&[disabled]:hover {
+		background: none;
+		color: $pagination-link-unavailable-font-color;
+	}
+	td & {
+		margin: rem-calc(-8) 0;
+	}
+}
+
+.multiple {
+	clear: both;
+}
+
+.multiple.separator + .multiple {
+	border-top: 1px dotted;
+	padding-top: rem-calc(10);
+}
+
+.add-remove-buttons {
+	float: right;
+	white-space: nowrap;
+}

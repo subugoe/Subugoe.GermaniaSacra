@@ -1,0 +1,44 @@
+.bold {
+	&,
+	input,
+	select,
+	textarea {
+		font-weight: bold;
+	}
+}
+
+.clear {
+	clear: both;
+}
+
+.dirty {
+	background: lighten($warning-color, 30);
+}
+
+.hover {
+	cursor: pointer;
+	&:hover {
+		color: $primary-color;
+	}
+}
+
+.narrow {
+	width: 8em;
+}
+
+.no-wrap {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.show-only-on-hover * {
+	opacity: .2;
+	transition: opacity .5s;
+	tr:hover & {
+		opacity: 1;
+	}
+}
+
+.wide {
+	width: 50%;
+}

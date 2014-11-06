@@ -1,0 +1,11 @@
+.top-bar, {
+	// Copied from AdW site
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%));
+}
+
+.top-bar-section a {
+	@include background(linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%) !important);
+	&:active, &:focus, &:hover {
+		background: darken($primary-color, 10) !important;
+	}
+}
