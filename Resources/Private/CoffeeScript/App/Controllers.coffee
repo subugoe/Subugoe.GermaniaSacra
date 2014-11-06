@@ -50,6 +50,9 @@ init = ->
 	$(window).bind "keydown", (e) ->
 		if e.ctrlKey or e.metaKey
 			switch String.fromCharCode(e.which).toLowerCase()
+				when "a"
+					e.preventDefault()
+					$("button.new:visible:last").click()
 				when "s"
 					e.preventDefault()
 					$(":submit[type=submit]:visible:last").click()
