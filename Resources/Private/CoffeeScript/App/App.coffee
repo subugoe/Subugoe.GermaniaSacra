@@ -16,4 +16,5 @@ germaniaSacra.config ($routeProvider, $locationProvider) ->
 	.when('/personallistenstatus', { templateUrl: templatePath + 'Personallistenstatus.html' })
 	.when('/ordenstyp', { templateUrl: templatePath + 'Ordenstyp.html' })
 	.when('/urltyp', { templateUrl: templatePath + 'Urltyp.html' })
+	.when('/bearbeiter', { templateUrl: templatePath + 'Bearbeiter.html' })
 	.otherwise({ redirectTo: '/' })

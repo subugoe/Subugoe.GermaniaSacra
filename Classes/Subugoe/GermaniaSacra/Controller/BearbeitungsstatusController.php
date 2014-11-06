@@ -42,15 +42,6 @@ class BearbeitungsstatusController extends ActionController {
 	}
 
 	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatus
-	 * @return void
-	 */
-	public function showAction(Bearbeitungsstatus $bearbeitungsstatus) {
-		$this->view->setVariablesToRender(array('bearbeitungsstatus'));
-		$this->view->assign('bearbeitungsstatus', $bearbeitungsstatus);
-	}
-
-	/**
 	 * Create a new Bearbeitungsstatus entity
 	 * @return void
 	 */
