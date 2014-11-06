@@ -31,6 +31,8 @@ germaniaSacra.config(function($routeProvider, $locationProvider) {
     templateUrl: templatePath + 'Ordenstyp.html'
   }).when('/urltyp', {
     templateUrl: templatePath + 'Urltyp.html'
+  }).when('/bearbeiter', {
+    templateUrl: templatePath + 'Bearbeiter.html'
   }).otherwise({
     redirectTo: '/'
   });
