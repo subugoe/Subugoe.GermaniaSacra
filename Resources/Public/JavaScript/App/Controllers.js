@@ -52,6 +52,9 @@ init = function() {
   $(window).bind("keydown", function(e) {
     if (e.ctrlKey || e.metaKey) {
       switch (String.fromCharCode(e.which).toLowerCase()) {
+        case "a":
+          e.preventDefault();
+          return $("button.new:visible:last").click();
         case "s":
           e.preventDefault();
           return $(":submit[type=submit]:visible:last").click();
