@@ -213,7 +213,7 @@ class BistumController extends ActionController {
 		$bistumArr['shapefile'] = $bistumObj->getShapefile();
 		$ort = $bistumObj->getOrt();
 		if ( $ort )
-			$bistumArr['ort'] = array('uuid' => $ort->getUUID(), 'name' => $ort->getOrt());
+			$bistumArr['ort'] = array('uUID' => $ort->getUUID(), 'name' => $ort->getOrt());
 		else
 			$bistumArr['ort'] = array();
 		// Bistum Url data

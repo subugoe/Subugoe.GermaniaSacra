@@ -85,6 +85,11 @@ editAction = (type, id) ->
 			if $input.is(':checkbox')
 				$input.val 1
 				if value then $input.prop('checked', true)
+			else if $input.is('select.ajax')
+				$input.html $('<option />',
+					value: value.uUID
+					text: value.name
+				).attr('selected', true)
 			else
 				$input.val value
 
