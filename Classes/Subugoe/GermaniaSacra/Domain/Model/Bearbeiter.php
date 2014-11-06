@@ -18,11 +18,12 @@ class Bearbeiter {
 
 	/**
 	 * @var integer
+	 * @ORM\Column(nullable=true)
 	 */
 	protected $uid;
 
 	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
+	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Kloster>
 	 * @ORM\OneToMany(mappedBy="bearbeiter")
 	 */
 	protected $klosters;

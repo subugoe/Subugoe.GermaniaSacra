@@ -1,0 +1,32 @@
+<section id="list" data-type="bearbeiter">
+	<h2>Bearbeitungsstatus</h2>
+	<form>
+		<table class="large-12 columns display">
+			<thead>
+				<tr>
+					<th data-input="checkbox" data-name="uUID" class="not-sortable"></th>
+					<th data-input="textarea" data-name="bearbeiter">Bearbeiter</th>
+					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
+				</tr>
+			</thead>
+		</table>
+		<input type="submit" value="Änderungen speichern">
+		<button class="new">Neuen Bearbeitungsstatus hinzufügen</button>
+	</form>
+</section>
+
+<section id="edit" data-type="bearbeitungsstatus">
+	<button class="close">Zurück zur Bearbeiterliste</button>
+	<form>
+		<input type="hidden" name="uUID">
+		<label class="large-12 columns">Bearbeiter <textarea name="bearbeiter" required></textarea></label>
+		<label class="large-12 columns">Benutzername <textarea name="username"></textarea></label>
+		<label class="large-12 columns">Passwort <textarea name="password"></textarea></label>
+		<div class="multiple">
+			<label class="large-12 columns">Role
+				<select name="roles[]"></select>
+			</label>
+		</div>
+		<input type="submit" value="Änderungen speichern">
+	</form>
+</section>
