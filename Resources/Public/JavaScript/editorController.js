@@ -90,6 +90,11 @@ editAction = function(type, id) {
         if (value) {
           $input.prop('checked', true);
         }
+      } else if ($input.is('select.ajax')) {
+        $input.html($('<option />', {
+          value: value.uUID,
+          text: value.name
+        }).attr('selected', true));
       } else {
         $input.val(value);
       }

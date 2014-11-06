@@ -8,7 +8,7 @@ initGeopicker = function() {
     if ($container.find("#map").length > 0) {
       return false;
     }
-    $("<div id=\"map-container\"><button class=\"close\">&times;</button></div>").css({
+    $('<div id="map-container"><button class="close">&times;</button></div>').css({
       width: $container.width()
     }).appendTo($container);
     $("#map-container").prepend($("<div id=\"map\"></div>").css({
@@ -28,17 +28,17 @@ initGeopicker = function() {
     });
     layers = [];
     layers.osm = L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors"
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     });
     layers.esri = L.tileLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
       attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
     });
     layers.thunderforest = L.tileLayer("http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png", {
-      attribution: "&copy; <a href=\"http://www.opencyclemap.org\">OpenCycleMap</a>, &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
+      attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
     });
     layers.mapbox = L.tileLayer("https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png", {
       maxZoom: 18,
-      attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"http://mapbox.com\">Mapbox</a>",
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
       id: "examples.map-i86knfo3"
     });
     baseMaps = {

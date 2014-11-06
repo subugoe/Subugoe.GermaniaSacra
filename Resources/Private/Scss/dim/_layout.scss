@@ -1,0 +1,46 @@
+body {
+	overflow-y: scroll;
+	> section {
+		padding: 1rem;
+	}
+}
+
+h2 {
+	margin: 0;
+	padding-bottom: .5em;
+}
+
+#content {
+	@include clearfix;
+	padding: rem-calc(20);
+}
+
+#browse {
+	@include clearfix;
+}
+
+#message {
+	@extend .clearfix;
+	background: #fff;
+	border-bottom: $table-border-size $table-border-style $table-border-color;
+	padding: $tooltip-padding;
+	width: 100%;
+	.spinner-icon {
+		display: inline-block;
+		margin-bottom: -2px;
+	}
+	.timestamp {
+		background: $table-head-bg;
+		float: left;
+		color: $form-label-font-color;
+		margin: -$tooltip-padding $tooltip-padding -$tooltip-padding -$tooltip-padding;
+		padding: $tooltip-padding;
+		white-space: nowrap;
+	}
+	.text {
+		float: left;
+		font-weight: bold;
+		margin: -$tooltip-padding $tooltip-padding;
+		padding: $tooltip-padding;
+	}
+}

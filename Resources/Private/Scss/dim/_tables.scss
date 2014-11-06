@@ -1,0 +1,32 @@
+table {
+	background: none;
+	border: none;
+	border-collapse: collapse;
+	tr {
+		border-bottom: $table-border-size $table-border-style $table-border-color;
+		margin-bottom: -1px;
+		&.even,
+		&:nth-of-type(even) {
+			background: none;
+		}
+		&.new {
+			background: lighten($success-color, 40) !important;
+		}
+	}
+	th {
+		&:first-child {
+			width: 1em;
+		}
+		&:last-child {
+			width: 6em;
+		}
+		div {
+			padding-right: 1em;
+		}
+	}
+	td {
+		&[colspan] {
+			background: $table-even-row-bg;
+		}
+	}
+}

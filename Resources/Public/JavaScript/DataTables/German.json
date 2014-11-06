@@ -11,10 +11,10 @@
 	"sSearch": "Suchen",
 	"sZeroRecords": "Keine Einträge vorhanden.",
 	"oPaginate": {
-		"sFirst": "&laquo;",
-		"sPrevious": "&lsaquo;",
-		"sNext": "&rsaquo;",
-		"sLast": "&raquo;"
+		"sFirst": "<i class='icon-first'></i>",
+		"sPrevious": "<i class='icon-previous'></i>",
+		"sNext": "<i class='icon-next'></i>",
+		"sLast": "<i class='icon-last'></i>"
 	},
 	"oAria": {
 		"sSortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",

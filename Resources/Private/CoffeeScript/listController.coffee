@@ -99,6 +99,8 @@ editListAction = (type) ->
 				# Mark row as dirty on change
 				$(this).find(":input:not([name=uuid]):not([name=uUID])").change ->
 					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
+			# TODO: Before enabling this, find a way to prevent pressing enter from triggering the first edit button
+			# $tr.find('select').autocomplete()
 			$tr.addClass('processed')
 		ajaxSuccess = (json) ->
 			$('#search, #list').slideDown()

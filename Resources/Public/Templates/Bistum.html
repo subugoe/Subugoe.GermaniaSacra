@@ -6,21 +6,21 @@
 				<tr>
 					<th data-input="checkbox" data-name="uUID" class="not-sortable"></th>
 					<th data-input="textarea" data-name="bistum">Bistum</th>
-					<th data-input="textarea" data-name="bemerkung">Bemerkung</th>
 					<th data-input="checkbox" data-name="ist_erzbistum">Erzbistum</th>
 					<th data-input="textarea" data-name="kirchenprovinz">Kirchenprovinz</th>
 					<th data-input="textarea" data-name="shapefile">Shapefile</th>
+					<th data-input="textarea" data-name="bemerkung">Bemerkung</th>
 					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button><button class="delete icon-trash" title="Löschen"></button>'></th>
 				</tr>
 			</thead>
 		</table>
-		<input type="submit" value="Änderungen speichern">
-		<button class="new">Neues Bistum hinzufügen</button>
+		<button type="submit"><i class="icon-disk"></i> Änderungen speichern</button>
+		<button class="new"><i class="icon-plus2"></i> Neues Bistum hinzufügen</button>
 	</form>
 </section>
 
 <section id="edit" data-type="bistum">
-	<button class="close">Zurück zur Bistumliste</button>
+	<button class="close"><i class="icon-back"></i> Zurück zur Bistumliste</button>
 	<form>
 		<input type="hidden" name="uUID">
 		<label class="large-12 columns">Bistum <textarea name="bistum" required></textarea></label>
@@ -28,7 +28,7 @@
 		<label class="large-4 columns">Erzbistum <input type="checkbox" name="ist_erzbistum"></label>
 		<label class="large-6 columns">Kirchenprovinz <textarea name="kirchenprovinz"></textarea></label>
 		<label class="large-6 columns">Shapefile <textarea name="shapefile"></textarea></label>
-		<label class="large-12 columns">Ort <select name="ort" data-type="ort" class="ajax"></select></label>
+		<label class="large-12 columns">Ort <select name="ort" class="ajax"></select></label>
 		<fieldset id="links">
 			<legend>Links</legend>
 			<div class="clearfix">
@@ -62,6 +62,6 @@
 				</label>
 			</div>
 		</fieldset>
-		<input type="submit" value="Änderungen speichern">
+		<button type="submit"><i class="icon-disk"></i> Änderungen speichern</button>
 	</form>
 </section>

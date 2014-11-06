@@ -1,6 +1,7 @@
 .autocomplete {
 	position: relative;
 	&:after {
+		color: #999;
 		content: "\25BC";
 		pointer-events: none;
 		position: absolute;
