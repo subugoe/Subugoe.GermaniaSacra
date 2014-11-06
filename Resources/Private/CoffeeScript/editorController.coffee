@@ -158,7 +158,7 @@ editAction = (type, id) ->
 		if $fieldset.length and obj.literatur?
 			$.each obj.literatur, (index, value) ->
 				if index > 0
-					$fieldset.addInputs 0
+					$fieldset.find('.multiple:last()').addInputs 0
 				$fieldset.find('.multiple:last() label :input').each ->
 					name = $(this).attr('name')
 					if typeof name is 'undefined'

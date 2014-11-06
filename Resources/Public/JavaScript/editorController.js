@@ -184,7 +184,7 @@ editAction = function(type, id) {
     if ($fieldset.length && (obj.literatur != null)) {
       $.each(obj.literatur, function(index, value) {
         if (index > 0) {
-          $fieldset.addInputs(0);
+          $fieldset.find('.multiple:last()').addInputs(0);
         }
         return $fieldset.find('.multiple:last() label :input').each(function() {
           name = $(this).attr('name');
