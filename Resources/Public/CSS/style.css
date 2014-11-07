@@ -7654,6 +7654,10 @@ h2 {
   padding: 0.75rem;
 }
 
+.columns {
+  padding-right: 0 !important;
+}
+
 .top-bar {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #c90230), color-stop(95%, #ac001e), color-stop(100%, #a20019));
   background: -webkit-linear-gradient(top, #c90230 0%, #ac001e 95%, #a20019 100%);
@@ -7707,6 +7711,8 @@ form .highlight:after {
 fieldset {
   border-width: 2px 0 0 0;
   clear: both;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 legend {
