@@ -8,7 +8,7 @@ initList = (type) ->
 	$("#list form").submit (e) ->
 		e.preventDefault()
 		# WORKAROUND for different spelling of uuid
-		if $(this).find("input[name=uuid]:checked, input[name=uUID]:checked").length is 0
+		if $(this).find("input[name=uUID]:checked").length is 0
 			message "Wählen Sie bitte mindestens einen Eintrag aus."
 			return false
 		else
@@ -93,12 +93,14 @@ editListAction = (type) ->
 							$td.text('1')
 					$(this).html( $input.val($(this).text()) )
 			$tr.each ->
-				uuid = $(this).find(':input[name=uuid]').val()
+				uuid = $(this).find(':input[name=uUID]').val()
 				# Since only visible textareas can be autosized, this has to be called after every page render
-				$(this).find("textarea").autosize()
+				$(this).find('textarea').autosize()
 				# Mark row as dirty on change
-				$(this).find(":input:not([name=uuid]):not([name=uUID])").change ->
-					$(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop "checked", true
+				$(this).find(':input:not([name=uUID])').change ->
+					$(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop 'checked', true
+					$('body').addClass('dirty')
+					$("#list :submit").prop('disabled', false)
 			# TODO: Before enabling this, find a way to prevent pressing enter from triggering the first edit button
 			# $tr.find('select').autocomplete()
 			$tr.addClass('processed')
@@ -113,12 +115,12 @@ editListAction = (type) ->
 	$table.on "click", ".edit", (e) ->
 		e.preventDefault()
 		# WORKAROUND: uuid is spelled uUID for Stammdaten
-		uuid = $(this).closest('tr').find(':input[name=uuid], :input[name=uUID]').first().val()
+		uuid = $(this).closest('tr').find(':input[name=uUID]').first().val()
 		editAction(type, uuid)
 	$table.on "click", ".delete", (e) ->
 		e.preventDefault()
 		# WORKAROUND: uuid is spelled uUID for Stammdaten
-		uuid = $(this).closest('tr').find(':input[name=uuid], :input[name=uUID]').first().val()
+		uuid = $(this).closest('tr').find(':input[name=uUID]').first().val()
 		deleteAction(type, uuid)
 
 	# Apply the search
@@ -145,9 +147,9 @@ updateListAction = (type) ->
 	formData = {}
 	formData.data = {}
 	$rows.each (i, row) ->
-		uuid = $(row).find('input[name=uuid], input[name=uUID]').first().val()
+		uuid = $(row).find(':input[name=uUID]').first().val()
 		formData.data[uuid] = {}
-		$(row).find(':input:not([name=uuid]):not([name=uUID])').each (i, input) ->
+		$(row).find(':input:not([name=uUID])').each (i, input) ->
 			if not $(input).is(':checkbox') or $(input).prop('checked')
 				if input.name then formData.data[uuid][input.name] = input.value
 			return
@@ -158,21 +160,28 @@ updateListAction = (type) ->
 			$.post("kloster/updateSolrAfterListUpdate", {uuids: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
 		$form.find('.dirty').removeClass('dirty')
+		$form.find('input[name=uUID]').prop('checked', false)
+		$('body').removeClass('dirty')
+		$("#list :submit").prop('disabled', true)
 	).fail (jqXHR, textStatus) ->
 		message 'Fehler: Daten konnten nicht gespeichert werden.'
 
 	return
 
 # Delete a single entity
-deleteAction = (type, id) ->
+deleteAction = (type, uuid) ->
 	$this = $(this)
 	check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
 	if check is true
 		csrf = $('#csrf').val()
-		$.post(type + '/delete/' + id,
+		$.post(type + '/delete/' + uuid,
 			__csrfToken: csrf
 		).done((respond, status, jqXHR) ->
 			if status is 'success'
+				dataTable
+					.row( $('tr').has("td:first input[value='#{uuid}']") )
+					.remove()
+					.draw()
 				message 'Der Eintrag wurde gelöscht.'
 		).fail (jqXHR, textStatus) ->
 			message 'Fehler: Eintrag konnte nicht gelöscht werden.'

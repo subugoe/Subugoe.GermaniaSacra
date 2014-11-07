@@ -10,10 +10,10 @@ germaniaSacra.controller('listController', function($scope) {
     }
   }), true);
   return $scope.$on('$locationChangeStart', function(e) {
-    var cnfrm;
-    if ($('form .dirty').length) {
-      cnfrm = confirm("Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.");
-      if (cnfrm !== true) {
+    if ($('.dirty').length) {
+      if (confirmDiscardChanges()) {
+        return $('.dirty').removeClass('dirty');
+      } else {
         return e.preventDefault();
       }
     }
@@ -23,14 +23,15 @@ germaniaSacra.controller('listController', function($scope) {
 s_loading = '<i class="spinner spinner-icon"></i> Wird geladen&hellip;';
 
 init = function() {
-  var type;
+  var $saveButton, type;
   type = $('#list').data('type');
   $('#message').hide();
-  if (type == null) {
-    alert('There has to be at least one <section> with data-type set.');
-    return;
-  }
-  $('form').append($('#csrf').clone().removeAttr('id'));
+  $saveButton = $('<button/>', {
+    disabled: 'disabled',
+    type: 'submit',
+    html: '<i class="icon-disk"></i> Änderungen speichern'
+  });
+  $('#edit form, #list form').append($saveButton).append($('#csrf').clone().removeAttr('id'));
   initSearch();
   initList(type);
   initEditor(type);
@@ -67,8 +68,8 @@ init = function() {
     return $(this).closest(".togglable").siblings(".togglable").addBack().slideToggle();
   });
   return window.onbeforeunload = function() {
-    if ($('form .dirty').length) {
-      return 'Sind Sie sicher, dass Sie diese Seite verlassen möchten? Ihre Änderungen wurden nicht gespeichert.';
+    if ($('.dirty').length) {
+      return 'Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.';
     }
   };
 };

@@ -11,7 +11,7 @@
 	clear: both;
 }
 
-.dirty {
+body .dirty {
 	background: lighten($warning-color, 30);
 }
 

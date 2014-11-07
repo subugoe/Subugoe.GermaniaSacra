@@ -11,18 +11,22 @@ initEditor = (type) ->
 
 	$("#edit fieldset .multiple .remove").click()
 
-	$("#edit :input:not([name=uuid]):not([name=uUID])").change ->
+	$("#edit :input:not([name=uUID])").change ->
 		$(this).closest("label").addClass("dirty")
+		$('body').addClass('dirty')
+		$("#edit :submit").prop('disabled', false)
 
 	$("#edit .close").click (e) ->
-		e.preventDefault()
-		$(this).parent().closest("section[id]").slideUp()
-		$("#search, #list").slideDown()
+		if not $('.dirty').length or confirmDiscardChanges()
+			$(this).parent().closest("section[id]").slideUp()
+			$("#search, #list").slideDown()
+			$('.dirty').removeClass('dirty')
+			e.preventDefault()
 
 	$("#edit form").submit (e) ->
 		e.preventDefault()
 		$("select:disabled").prop("disabled", false).addClass "disabled"
-		if $(this).find(":input[name=uuid], :input[name=uUID]").first().val().length
+		if $(this).find(":input[name=uUID]").first().val().length
 			updateAction( type )
 		else
 			createAction( type )
@@ -52,8 +56,8 @@ newAction = ->
 	# Select default value for Personallistenstatus
 	$form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true)
 	$("#edit select").autocomplete()
-	$("#edit").find('input[type=url]').keyup()
-	$("#edit").find('textarea').trigger('autosize.resize')
+	$form.find('input[type=url]').keyup()
+	$form.find('textarea').trigger('autosize.resize')
 
 # Create a new Kloster
 createAction = (type, data) ->
@@ -66,6 +70,7 @@ createAction = (type, data) ->
 			)
 		message 'Ein neuer Eintrag wurde angelegt.'
 		$form.find('.dirty').removeClass('dirty')
+		$('body').removeClass('dirty')
 	).fail ->
 		message 'Fehler: Eintrag konnte nicht angelegt werden.'
 
@@ -184,12 +189,14 @@ editAction = (type, id) ->
 # Update a single entity
 updateAction = (type) ->
 	$form = $("#edit form")
-	uuid = $form.find(':input[name=uuid], :input[name=uUID]').first().val()
+	uuid = $form.find(':input[name=uUID]').first().val()
 	$.post("#{type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) ->
 		# TODO: Find a way to trigger Solr update server-side
 		if type is 'kloster'
 			$.post("kloster/updateSolrAfterKlosterUpdate", {uUID: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
 		$form.find('.dirty').removeClass('dirty')
+		$('body').removeClass('dirty')
+		$("#edit :submit").prop('disabled', true)
 	).fail ->
 		message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'

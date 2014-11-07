@@ -1,3 +1,6 @@
+confirmDiscardChanges = ->
+	return confirm("Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.")
+
 message = (text, withTimestampAndCloseButton = true) ->
 	$message = $('#message')
 	date = new Date()

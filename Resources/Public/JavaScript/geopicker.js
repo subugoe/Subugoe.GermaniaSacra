@@ -36,16 +36,10 @@ initGeopicker = function() {
     layers.thunderforest = L.tileLayer("http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
     });
-    layers.mapbox = L.tileLayer("https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png", {
-      maxZoom: 18,
-      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-      id: "examples.map-i86knfo3"
-    });
     baseMaps = {
-      OpenStreetMap: layers.osm,
+      "OpenStreetMap": layers.osm,
       "ESRI World Imagery": layers.esri,
-      "Thunderforest Landscape": layers.thunderforest,
-      Mapbox: layers.mapbox
+      "Thunderforest Landscape": layers.thunderforest
     };
     overlayMaps = {};
     map = L.map("map", {

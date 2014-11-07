@@ -8008,7 +8008,7 @@ table td[colspan] {
   clear: both;
 }
 
-.dirty {
+body .dirty {
   background: #fad7b3;
 }
 

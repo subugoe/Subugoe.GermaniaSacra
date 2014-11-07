@@ -7,10 +7,12 @@ germaniaSacra.controller 'listController', ($scope) ->
 		if newval? then init()
 	), true
 
+	# Confirm discard changes on view change
 	$scope.$on('$locationChangeStart', (e) ->
-		if $('form .dirty').length
-			cnfrm = confirm("Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.")
-			if cnfrm isnt true
+		if $('.dirty').length
+			if confirmDiscardChanges()
+				$('.dirty').removeClass('dirty')
+			else
 				e.preventDefault()
 	)
 
@@ -23,11 +25,14 @@ init = ->
 
 	$('#message').hide()
 
-	unless type?
-		alert('There has to be at least one <section> with data-type set.')
-		return
-
-	$('form').append( $('#csrf').clone().removeAttr('id') )
+	$saveButton = $('<button/>',
+		disabled: 'disabled'
+		type: 'submit'
+		html: '<i class="icon-disk"></i> Änderungen speichern'
+	)
+	$('#edit form, #list form')
+		.append $saveButton
+		.append $('#csrf').clone().removeAttr('id')
 
 	initSearch()
 	initList(type)
@@ -63,8 +68,7 @@ init = ->
 		e.preventDefault()
 		$(this).closest(".togglable").siblings(".togglable").addBack().slideToggle()
 
-	# Warn if changes not saved
+	# Confirm discard changes on window close/reload
 	window.onbeforeunload = ->
-		if $('form .dirty').length
-			return 'Sind Sie sicher, dass Sie diese Seite verlassen möchten? Ihre Änderungen wurden nicht gespeichert.'
-
+		if $('.dirty').length
+			return 'Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.'
