@@ -129,6 +129,12 @@ class KlosterController extends ActionController {
 	protected $urltypRepository;
 
 	/**
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Security\Policy\RoleRepository
+	 */
+	protected $roleRepository;
+
+	/**
 	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
 	 * @Flow\inject
 	 */
@@ -929,8 +935,6 @@ class KlosterController extends ActionController {
 	 */
 	public function getOptionsAction() {
 
-		$options = array();
-
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
 		$this->bearbeitungsstatusRepository->setDefaultOrderings(
@@ -1049,6 +1053,14 @@ class KlosterController extends ActionController {
 				$landArr[$land->getUUID()] = $land->getLand();
 		}
 
+		// Bearbeiter roles
+		$roleArr = array();
+		foreach ($this->roleRepository->findAll()->toArray() as $role) {
+			if (stristr($role->getIdentifier(), 'Flow.Login')) {
+				$roleValues = explode(':', $role->getIdentifier());
+				$roleArr[$role->getIdentifier()] = $roleValues[1];
+			}
+		}
 
 		$response = array();
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
@@ -1062,6 +1074,7 @@ class KlosterController extends ActionController {
 		$response['bearbeiter'] = $bearbeiterArr;
 		$response['url_typ'] = $urltypArr;
 		$response['land'] = $landArr;
+		$response['role'] = $roleArr;
 		return json_encode($response);
 
 	}

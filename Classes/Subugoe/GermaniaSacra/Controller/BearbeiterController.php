@@ -20,6 +20,12 @@ class BearbeiterController extends ActionController {
 	protected $policyService;
 
 	/**
+	 * @var \TYPO3\Flow\Security\Context
+	 * @Flow\Inject
+	 */
+	protected $securityContext;
+
+	/**
 	 * @var \TYPO3\Flow\Security\Policy\RoleRepository
 	 * @Flow\Inject
 	 */
@@ -81,16 +87,7 @@ class BearbeiterController extends ActionController {
 		$bearbeiterObj = $this->bearbeiterRepository->findByIdentifier($uuid);
 		$bearbeiterArr['uUID'] = $bearbeiterObj->getUUID();
 		$bearbeiterArr['bearbeiter'] = $bearbeiterObj->getBearbeiter();
-		$roles = array();
-		foreach ($this->roleRepository->findAll()->toArray() as $k => $role) {
-			if (stristr($role->getIdentifier(), 'Flow.Login')) {
-
-				$roleValues = explode(':', $role->getIdentifier());
-
-				$roles[$roleValues[1]] = $role->getIdentifier();
-			}
-		}
-		$bearbeiterArr['roles'] = $roles;
+		$bearbeiterArr['role'] = array_keys($this->securityContext->getAccount()->getRoles())[0];
 		return json_encode($bearbeiterArr);
 	}
 

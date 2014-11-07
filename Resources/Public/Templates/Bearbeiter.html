@@ -1,5 +1,5 @@
 <section id="list" data-type="bearbeiter">
-	<h2>Bearbeitungsstatus</h2>
+	<h2>Bearbeiter</h2>
 	<form>
 		<table class="large-12 columns display">
 			<thead>
@@ -10,23 +10,19 @@
 				</tr>
 			</thead>
 		</table>
-		<input type="submit" value="Änderungen speichern">
-		<button class="new">Neuen Bearbeitungsstatus hinzufügen</button>
+		<button type="submit"><i class="icon-disk"></i> Änderungen speichern</button>
+		<button class="new"><i class="icon-plus2"></i> Neuen Bearbeiter hinzufügen</button>
 	</form>
 </section>
 
-<section id="edit" data-type="bearbeitungsstatus">
-	<button class="close">Zurück zur Bearbeiterliste</button>
+<section id="edit" data-type="bearbeiter">
+	<button class="close"><i class="icon-back"></i> Zurück zur Bearbeiterliste</button>
 	<form>
 		<input type="hidden" name="uUID">
-		<label class="large-12 columns">Bearbeiter <textarea name="bearbeiter" required></textarea></label>
-		<label class="large-12 columns">Benutzername <textarea name="username"></textarea></label>
-		<label class="large-12 columns">Passwort <textarea name="password"></textarea></label>
-		<div class="multiple">
-			<label class="large-12 columns">Role
-				<select name="roles[]"></select>
-			</label>
-		</div>
-		<input type="submit" value="Änderungen speichern">
+		<label class="large-6 columns">Bearbeiter <textarea name="bearbeiter" required></textarea></label>
+		<label class="large-6 columns">Benutzername <textarea name="username"></textarea></label>
+		<label class="large-6 columns">Passwort <textarea name="password"></textarea></label>
+		<label class="large-6 columns">Rolle <select name="role"></select></label>
+		<button type="submit"><i class="icon-disk"></i> Änderungen speichern</button>
 	</form>
 </section>
