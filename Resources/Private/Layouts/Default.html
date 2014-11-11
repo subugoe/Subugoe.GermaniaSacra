@@ -28,9 +28,6 @@
 		<section class="top-bar-section">
 			<ul class="left">
 				<li>
-					<f:link.action action="list" controller="Bearbeiter" format="html"><f:translate id="bearbeiter" /></f:link.action>
-				</li>
-				<li>
 					<f:link.action action="list" controller="Orden" format="html"><f:translate id="orden" /></f:link.action>
 				</li>
 				<li>
@@ -65,18 +62,31 @@
 						</li>
 					</ul>
 				</li>
+				<f:security.ifAuthenticated>
+					<f:security.ifHasRole role="Flow.Login:Administrator">
+						<li>
+							<f:link.action action="list" controller="Bearbeiter" format="html"><f:translate id="bearbeiter" /></f:link.action>
+						</li>
+					</f:security.ifHasRole>
+				</f:security.ifAuthenticated>
 			</ul>
 			<ul class="right">
-				<!-- TODO: bearbeiter is only displayed if first page loaded was "kloster" since it's only defined there -->
 				<li class="has-dropdown">
 					<a href="#"><i class="icon-user"></i> {bearbeiter}</a>
 					<ul class="dropdown">
 						<li><a href="/logout" target="_self"><i class="icon-logout"></i> Abmelden</a></li>
 					</ul>
 				</li>
-				<li>
-					<f:link.action controller="Dump" action="dump" target="_self"><i class="icon-download"></i> SQL Dump</f:link.action>
-				</li>
+				<f:security.ifAuthenticated>
+					<f:security.ifHasRole role="Flow.Login:Administrator">
+						<li>
+							<f:link.action controller="Dump" action="dump" target="_self"><i class="icon-download"></i> SQL Dump</f:link.action>
+						</li>
+						<li>
+							<f:link.action controller="DataImport" action="importInkDump" target="_self"> Daten-Import</f:link.action>
+						</li>
+					</f:security.ifHasRole>
+				</f:security.ifAuthenticated>
 			</ul>
 		</section>
 	</nav>

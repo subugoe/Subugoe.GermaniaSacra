@@ -3,9 +3,8 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeiter;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 
-class BearbeiterController extends ActionController {
+class BearbeiterController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -14,16 +13,46 @@ class BearbeiterController extends ActionController {
 	protected $bearbeiterRepository;
 
 	/**
+	 * @Flow\Inject
+	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterRepository
+	 */
+	protected $klosterRepository;
+
+	/**
 	 * @var \TYPO3\Flow\Security\Policy\PolicyService
 	 * @Flow\Inject
 	 */
 	protected $policyService;
 
 	/**
+	 * @var \TYPO3\Flow\Security\Context
+	 * @Flow\Inject
+	 */
+	protected $securityContext;
+
+	/**
 	 * @var \TYPO3\Flow\Security\Policy\RoleRepository
 	 * @Flow\Inject
 	 */
 	protected $roleRepository;
+
+	/**
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Security\AccountRepository
+	 */
+	protected $accountRepository;
+
+	/**
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Security\AccountFactory
+	 */
+	protected $accountFactory;
+
+	/**
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Security\Cryptography\HashService
+	 */
+	protected $hashService;
 
 	/**
 	/**
@@ -47,6 +76,7 @@ class BearbeiterController extends ActionController {
 			$this->view->setVariablesToRender(array('bearbeiters'));
 		}
 		$this->view->assign('bearbeiters', ['data' => $this->bearbeiterRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**
@@ -59,10 +89,27 @@ class BearbeiterController extends ActionController {
 			if (!$this->request->hasArgument('bearbeiter')) {
 				$this->throwStatus(400, 'Bearbeiter name not provided', Null);
 			}
-			$bearbeiterObj->setBearbeiter($this->request->getArgument('bearbeiter'));
-			$this->bearbeiterRepository->add($bearbeiterObj);
-			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
+			if ($this->request->hasArgument('role')) {
+				$role = array($this->request->getArgument('role'));
+			}
+			if ($this->request->hasArgument('password')) {
+				$password = $this->request->getArgument('password');
+			}
+			if ($this->request->hasArgument('username')) {
+				$identifier = $this->request->getArgument('username');
+			}
+			if ((isset($role) && !empty($role)) && (isset($password) && !empty($password)) && (isset($identifier) && !empty($identifier))) {
+				$account = $this->accountFactory->createAccountWithPassword($identifier,$password, $role);
+				$this->accountRepository->add($account);
+				$bearbeiterObj->setBearbeiter($this->request->getArgument('bearbeiter'));
+				$bearbeiterObj->setAccount($account);
+				$this->bearbeiterRepository->add($bearbeiterObj);
+				$this->persistenceManager->persistAll();
+				$this->throwStatus(201, NULL, Null);
+			}
+			else {
+				$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			}
 		}
 	}
 
@@ -81,16 +128,7 @@ class BearbeiterController extends ActionController {
 		$bearbeiterObj = $this->bearbeiterRepository->findByIdentifier($uuid);
 		$bearbeiterArr['uUID'] = $bearbeiterObj->getUUID();
 		$bearbeiterArr['bearbeiter'] = $bearbeiterObj->getBearbeiter();
-		$roles = array();
-		foreach ($this->roleRepository->findAll()->toArray() as $k => $role) {
-			if (stristr($role->getIdentifier(), 'Flow.Login')) {
-
-				$roleValues = explode(':', $role->getIdentifier());
-
-				$roles[$roleValues[1]] = $role->getIdentifier();
-			}
-		}
-		$bearbeiterArr['roles'] = $roles;
+		$bearbeiterArr['role'] = array_keys($this->securityContext->getAccount()->getRoles())[0];
 		return json_encode($bearbeiterArr);
 	}
 
@@ -108,12 +146,66 @@ class BearbeiterController extends ActionController {
 		$bearbeiterObj = $this->bearbeiterRepository->findByIdentifier($uuid);
 		if (is_object($bearbeiterObj)) {
 			$bearbeiterObj->setBearbeiter($this->request->getArgument('bearbeiter'));
+			$account = $bearbeiterObj->getAccount();
 			$this->bearbeiterRepository->update($bearbeiterObj);
+			if ($this->request->hasArgument('role')) {
+				$roleIdentifier = $this->request->getArgument('role');
+				if (!empty($roleIdentifier)) {
+					$role = array($this->roleRepository->findByIdentifier($roleIdentifier));
+					$account->setRoles($role);
+				}
+			}
+			if ($this->request->hasArgument('password')) {
+				$password = $this->request->getArgument('password');
+				if (!empty($password)) {
+					$account->setCredentialsSource($this->hashService->hashPassword($password));
+				}
+			}
+			if ($this->request->hasArgument('username')) {
+				$identifier = $this->request->getArgument('username');
+				if (!empty($identifier)) {
+					$account->setAccountIdentifier($identifier);
+				}
+			}
+
+			$this->accountRepository->update($account);
+
 			$this->persistenceManager->persistAll();
 			$this->throwStatus(200, NULL, Null);
+
 		}
 		else {
 			$this->throwStatus(400, 'Entity Bearbeiter not available', Null);
+		}
+	}
+
+	/**
+	 * Delete a Bearbeiter entity
+	 * @return void
+	 */
+	public function deleteAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+		}
+		if (empty($uuid)) {
+			$this->throwStatus(400, 'Required uUID not provided', Null);
+		}
+		$klosters = count($this->klosterRepository->findByBearbeiter($uuid));
+		if ($klosters == 0) {
+			$bearbeiterObj = $this->bearbeiterRepository->findByIdentifier($uuid);
+			$account = $bearbeiterObj->getAccount();
+			if (!is_object($bearbeiterObj)) {
+				$this->throwStatus(400, 'Entity Bearbeiter not available', Null);
+			}
+			if (!is_object($account)) {
+				$this->throwStatus(400, 'Entity Account not available', Null);
+			}
+			$this->bearbeiterRepository->remove($bearbeiterObj);
+			$this->accountRepository->remove($account);
+			$this->throwStatus(200, NULL, Null);
+		}
+		else {
+			$this->throwStatus(400, 'Due to dependencies Bearbeiter entity could not be deleted', Null);
 		}
 	}
 

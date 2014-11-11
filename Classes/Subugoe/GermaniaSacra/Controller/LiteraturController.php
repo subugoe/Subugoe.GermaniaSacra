@@ -1,11 +1,10 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-use Subugoe\GermaniaSacra\Domain\Model\Literatur;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\RestController;
+use Subugoe\GermaniaSacra\Domain\Model\Literatur;
 
-class LiteraturController extends RestController {
+class LiteraturController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject

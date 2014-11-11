@@ -1,18 +1,16 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-
-use Subugoe\GermaniaSacra\Queue\FileGenerationJob;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Kloster;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterstandort;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterorden;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl;
+use Subugoe\GermaniaSacra\Queue\FileGenerationJob;
 
-class KlosterController extends ActionController {
+class KlosterController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -129,6 +127,12 @@ class KlosterController extends ActionController {
 	protected $urltypRepository;
 
 	/**
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Security\Policy\RoleRepository
+	 */
+	protected $roleRepository;
+
+	/**
 	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
 	 * @Flow\inject
 	 */
@@ -152,11 +156,6 @@ class KlosterController extends ActionController {
 			'json' => 'TYPO3\\Flow\\Mvc\\View\\JsonView',
 			'html' => 'TYPO3\\Fluid\\View\\TemplateView'
 	);
-
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeiter
-	 */
-	protected $bearbeiterObj;
 
 	/**
 	 * @var array
@@ -260,11 +259,7 @@ class KlosterController extends ActionController {
 	 * Fetches all monasteries and assigns them as json to the view
 	 */
 	public function listAction() {
-		if ($this->request->getFormat() === 'json') {
-			$this->view->setVariablesToRender(array('monasteries'));
-		}
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-		//$this->view->assign('monasteries', $this->klosterRepository->findAll());
 	}
 
 	/**
@@ -387,12 +382,6 @@ class KlosterController extends ActionController {
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
 
 		return json_encode($response);
-
-	}
-
-	public function initializeAction() {
-		$account = $this->securityContext->getAccount();
-		$this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
 	}
 
 	/**
@@ -522,7 +511,6 @@ class KlosterController extends ActionController {
 			$uuid = $kloster->getUUID();
 
 			// Add Klosterstandort
-//			$ortArr = array('30f08b75-7df1-82a4-d4ab-e0f88308e7e4');
 			$ortArr = $this->request->getArgument('ort');
 			$bistumArr = $this->request->getArgument('bistum');
 			$gruenderArr = $this->request->getArgument('gruender');
@@ -919,7 +907,6 @@ class KlosterController extends ActionController {
 		$klosterArr['literatur'] = $Literaturs;
 
 		return json_encode($klosterArr);
-
 	}
 
 	/**
@@ -929,7 +916,7 @@ class KlosterController extends ActionController {
 	 */
 	public function getOptionsAction() {
 
-		$options = array();
+		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
 
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
@@ -939,7 +926,12 @@ class KlosterController extends ActionController {
 
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
 		foreach ($bearbeitungsstatuses as $bearbeitungsstatus) {
-			$bearbeitungsstatusArr[$bearbeitungsstatus->getUUID()] = $bearbeitungsstatus->getName();
+			if ($bearbeitungsstatus->getName() == 'Online' && $role != 'Flow.Login:Administrator') {
+				$bearbeitungsstatusArr[] = '';
+			}
+			else {
+				$bearbeitungsstatusArr[$bearbeitungsstatus->getUUID()] = $bearbeitungsstatus->getName();
+			}
 		}
 
 		// Personallistenstatus data
@@ -1049,6 +1041,14 @@ class KlosterController extends ActionController {
 				$landArr[$land->getUUID()] = $land->getLand();
 		}
 
+		// Bearbeiter roles
+		$roleArr = array();
+		foreach ($this->roleRepository->findAll()->toArray() as $role) {
+			if (stristr($role->getIdentifier(), 'Flow.Login')) {
+				$roleValues = explode(':', $role->getIdentifier());
+				$roleArr[$role->getIdentifier()] = $roleValues[1];
+			}
+		}
 
 		$response = array();
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
@@ -1062,8 +1062,9 @@ class KlosterController extends ActionController {
 		$response['bearbeiter'] = $bearbeiterArr;
 		$response['url_typ'] = $urltypArr;
 		$response['land'] = $landArr;
-		return json_encode($response);
+		$response['role'] = $roleArr;
 
+		return json_encode($response);
 	}
 
 	/** Update a Kloster entity
@@ -1432,6 +1433,7 @@ class KlosterController extends ActionController {
 				$this->klosterHasUrlRepository->remove($url);
 			}
 		}
+
 		return $uuid;
 	}
 

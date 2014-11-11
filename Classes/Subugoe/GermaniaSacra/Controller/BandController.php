@@ -3,11 +3,10 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Band;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\BandHasUrl;
 
-class BandController extends ActionController {
+class BandController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -66,6 +65,7 @@ class BandController extends ActionController {
 			$this->view->setVariablesToRender(array('bands'));
 		}
 		$this->view->assign('bands', ['data' => $this->bandRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**

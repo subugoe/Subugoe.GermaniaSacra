@@ -1,4 +1,4 @@
-initEditor = (type) ->
+roleinitEditor = (type) ->
 
 	populateSelectsAction(type)
 

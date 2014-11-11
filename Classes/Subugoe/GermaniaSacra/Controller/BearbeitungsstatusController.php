@@ -3,9 +3,8 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 
-class BearbeitungsstatusController extends ActionController {
+class BearbeitungsstatusController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -18,6 +17,7 @@ class BearbeitungsstatusController extends ActionController {
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterRepository
 	 */
 	protected $klosterRepository;
+
 	/**
 	 * @var array
 	 */
@@ -39,6 +39,7 @@ class BearbeitungsstatusController extends ActionController {
 			$this->view->setVariablesToRender(array('bearbeitungsstatuses'));
 		}
 		$this->view->assign('bearbeitungsstatuses', ['data' => $this->bearbeitungsstatusRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**

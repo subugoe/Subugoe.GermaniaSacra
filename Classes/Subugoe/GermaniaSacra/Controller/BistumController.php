@@ -2,12 +2,11 @@
 namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 use \Subugoe\GermaniaSacra\Domain\Model\Bistum;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl;
 
-class BistumController extends ActionController {
+class BistumController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -71,6 +70,7 @@ class BistumController extends ActionController {
 			$this->view->setVariablesToRender(array('bistum'));
 		}
 		$this->view->assign('bistum', ['data' => $this->bistumRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**

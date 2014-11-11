@@ -1,11 +1,10 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-use Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
+use Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus;
 
-class PersonallistenstatusController extends ActionController {
+class PersonallistenstatusController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -40,6 +39,7 @@ class PersonallistenstatusController extends ActionController {
 			$this->view->setVariablesToRender(array('personallistenstatus'));
 		}
 		$this->view->assign('personallistenstatus', ['data' => $this->personallistenstatusRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**
