@@ -1,11 +1,10 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-use Subugoe\GermaniaSacra\Domain\Model\Ordenstyp;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
+use Subugoe\GermaniaSacra\Domain\Model\Ordenstyp;
 
-class OrdenstypController extends ActionController {
+class OrdenstypController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -40,6 +39,7 @@ class OrdenstypController extends ActionController {
 			$this->view->setVariablesToRender(array('ordenstyp'));
 		}
 		$this->view->assign('ordenstyp', ['data' => $this->ordenstypRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**

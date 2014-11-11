@@ -1,13 +1,10 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-
-
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterstandort;
 
-class KlosterstandortController extends ActionController {
+class KlosterstandortController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject

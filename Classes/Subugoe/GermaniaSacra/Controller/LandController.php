@@ -1,12 +1,10 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-use Subugoe\GermaniaSacra\Domain\Model\Land;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
-use TYPO3\Flow\Mvc\Controller\RestController;
+use Subugoe\GermaniaSacra\Domain\Model\Land;
 
-class LandController extends ActionController {
+class LandController extends AbstractBaseController {
 
 	/**
 	* @Flow\Inject
@@ -41,7 +39,7 @@ class LandController extends ActionController {
 			$this->view->setVariablesToRender(array('land'));
 		}
 		$this->view->assign('land', ['data' => $this->landRepository->findAll()]);
-		return $this->view->render();
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**
