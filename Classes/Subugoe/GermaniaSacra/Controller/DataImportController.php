@@ -424,6 +424,7 @@ class DataImportController extends ActionController {
 		$sql = 'SELECT ID_Bundesland, Land, Deutschland FROM Land';
 		$Lands = $sqlConnection->fetchAll($sql);
 		if (isset($Lands) and is_array($Lands)) {
+			$nLand = 0;
 			foreach ($Lands as $Land) {
 				$uid = $Land['ID_Bundesland'];
 				$land = $Land['Land'];
@@ -434,7 +435,9 @@ class DataImportController extends ActionController {
 				$landObject->setIst_in_deutschland($ist_in_deutschland);
 				$this->landRepository->add($landObject);
 				$this->persistenceManager->persistAll();
+				$nLand++;
 			}
+			return $nLand;
 		}
 	}
 
@@ -468,6 +471,7 @@ class DataImportController extends ActionController {
 		$sql = 'SELECT * FROM Ort ORDER BY ID ASC';
 		$orts = $sqlConnection->fetchAll($sql);
 		if (isset($orts) and is_array($orts)) {
+			$nOrt = 0;
 			foreach ($orts as $ortvalue) {
 				$uid = $ortvalue['ID'];
 				$ort = $ortvalue['Ort'];
@@ -512,7 +516,9 @@ class DataImportController extends ActionController {
 					$this->ortHasUrlRepository->add($orthasurlObject);
 					$this->persistenceManager->persistAll();
 				}
+				$nOrt++;
 			}
+			return $nOrt;
 		}
 	}
 
@@ -552,6 +558,7 @@ class DataImportController extends ActionController {
 		$sql = 'SELECT * FROM Bistum';
 		$Bistums = $sqlConnection->fetchAll($sql);
 		if (isset($Bistums) and is_array($Bistums)) {
+			$nBistum = 0;
 			foreach ($Bistums as $Bistum) {
 				$uid = $Bistum['ID'];
 				$bistum = $Bistum['Bistum'];
@@ -668,6 +675,7 @@ class DataImportController extends ActionController {
 						}
 					}
 				}
+				$nBistum++;
 			}
 		}
 
@@ -684,6 +692,8 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
+
+		return $nBistum;
 	}
 
 	/**
@@ -736,6 +746,7 @@ class DataImportController extends ActionController {
 		$Bands = $sqlConnection->fetchAll($sql);
 		$urltypArr = array();
 		if (isset($Bands) and is_array($Bands)) {
+			$nBand = 0;
 			foreach ($Bands as $Band) {
 				$uid = $Band['ID_GSBand'];
 				$nummer = $Band['Bandnummer'];
@@ -821,6 +832,7 @@ class DataImportController extends ActionController {
 					$this->bandHasUrlRepository->add($bandhasurlObject);
 					$this->persistenceManager->persistAll();
 				}
+				$nBand++;
 			}
 		}
 
@@ -838,6 +850,8 @@ class DataImportController extends ActionController {
 		$bandObject->setKurztitel($kurztitel);
 		$this->bandRepository->add($bandObject);
 		$this->persistenceManager->persistAll();
+
+		return $nBand;
 	}
 
 	/**
@@ -904,6 +918,7 @@ class DataImportController extends ActionController {
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
 		if (isset($klosters) and is_array($klosters)) {
+			$nKloster = 0;
 			foreach ($klosters as $key => $kloster) {
 				$wikipedia = $kloster['Wikipedia'];
 				$gnd = $kloster['GND'];
@@ -1111,7 +1126,9 @@ class DataImportController extends ActionController {
 						$this->logger->log('Personallistenstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
 					}
 				}
+				$nKloster++;
 			}
+			return $nKloster;
 		}
 	}
 
@@ -1156,6 +1173,7 @@ class DataImportController extends ActionController {
 		$buecher = array();
 		$literaturKeyArr = array();
 		if (isset($Klosterstandorts) and is_array($Klosterstandorts)) {
+			$nKlosterstandort = 0;
 			foreach ($Klosterstandorts as $Klosterstandort) {
 				$uid = $Klosterstandort['ID_Kloster'];
 				$klosterObject = $this->klosterRepository->findOneByUid($uid);
@@ -1263,7 +1281,10 @@ class DataImportController extends ActionController {
 						}
 					}
 				}
+				$nKlosterstandort++;
 			}
+
+			return $nKlosterstandort;
 		}
 	}
 
@@ -1277,6 +1298,7 @@ class DataImportController extends ActionController {
 		$ordens = $sqlConnection->fetchAll($sql);
 		$ordenstypArr = array();
 		if (isset($ordens) and is_array($ordens)) {
+			$nOrden = 0;
 			foreach ($ordens as $ordenvalue) {
 				$uid = $ordenvalue['ID_Ordo'];
 				$orden = $ordenvalue['Ordensbezeichnung'];
@@ -1384,7 +1406,10 @@ class DataImportController extends ActionController {
 						}
 					}
 				}
+				$nOrden++;
 			}
+
+			return $nOrden;
 		}
 	}
 
@@ -1398,6 +1423,7 @@ class DataImportController extends ActionController {
 		$klosterordens = $sqlConnection->fetchAll($sql);
 		$klosterstatusArr = array();
 		if (isset($klosterordens) and is_array($klosterordens)) {
+			$nKlosterorden = 0;
 			foreach ($klosterordens as $klosterorden) {
 				$uid = $klosterorden['ID_KlosterOrden'];
 				$kloster = $klosterorden['Klosternummer'];
@@ -1441,9 +1467,10 @@ class DataImportController extends ActionController {
 					$klosterordenObject->setBemerkung($bemerkung);
 					$this->klosterordenRepository->add($klosterordenObject);
 					$this->persistenceManager->persistAll();
-
 				}
+				$nKlosterorden++;
 			}
+			return $nKlosterorden;
 		}
 	}
 
@@ -2122,7 +2149,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function importInkKlosterDataDumpAction() {
+	public function importInkDumpAction() {
 		$this->client->authenticate($this->settings['git']['token'], $password='', $this->method);
 		$inkKlosterDumpHash = $this->getFileHashAction($this->client, self::inkKlosterDumpFilename);
 		$inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
@@ -2137,7 +2164,6 @@ class DataImportController extends ActionController {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the incremental kloster dump file.', 1406721073);
 			}
 		}
-
 		$mode = 'w';
 		$fp = fopen($this->inkKlosterDumpFilenamePath, $mode);
 		if (!$fp) {
@@ -2147,13 +2173,81 @@ class DataImportController extends ActionController {
 			fwrite ($fp, $inkKlosterDumpBlob);
 			fclose($fp);
 		}
-
-		$this->delAccessKlosterTabAction();
-		$this->importAccessInkKlosterDataAction();
-		$this->importKlosterAction();
-		$this->delAccessKlosterTabAction();
-
-		echo "Inkrementelle Kloster-Dump wurde importiert.";
+		$this->delAccessTabsAction();
+		$this->importAccessInkDumpAction();
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
+		$sqlConnection = $this->entityManager->getConnection();
+		$checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bearbeiter');
+		if ($checkIfBearbeiterTableExists) {
+			$this->importBearbeiterAction();
+		}
+		$checkIfLandTableExists = $sqlConnection->getSchemaManager()->tablesExist('Land');
+		if ($checkIfLandTableExists) {
+			$nLand = $this->importLandAction();
+		}
+		$checkIfOrtTableExists = $sqlConnection->getSchemaManager()->tablesExist('Ort');
+		if ($checkIfOrtTableExists) {
+			$nOrt = $this->importOrtAction();
+		}
+		$checkIfBistumTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bistum');
+		if ($checkIfBistumTableExists) {
+			$nBistum = $this->importBistumAction();
+		}
+		$checkIfBandTableExists = $sqlConnection->getSchemaManager()->tablesExist('Band');
+		if ($checkIfBandTableExists) {
+			$nBand = $this->importBandAction();
+		}
+		$checkIfKlosterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Kloster');
+		if ($checkIfKlosterTableExists) {
+			$nKloster = $this->importKlosterAction();
+			$this->addDefaultUrlAction();
+		}
+		$checkIfKlosterstandortTableExists = $sqlConnection->getSchemaManager()->tablesExist('Klosterstandort');
+		if ($checkIfKlosterstandortTableExists) {
+			$nKlosterstandort = $this->importKlosterstandortAction();
+		}
+		$checkIfOrdenTableExists = $sqlConnection->getSchemaManager()->tablesExist('Orden');
+		if ($checkIfOrdenTableExists) {
+			$nOrden = $this->importOrdenAction();
+		}
+		$checkIfKlosterordenTableExists = $sqlConnection->getSchemaManager()->tablesExist('Klosterorden');
+		if ($checkIfKlosterordenTableExists) {
+			$nKlosterorden = $this->importKlosterordenAction();
+		}
+		$this->delAccessTabsAction();
+		$importLogMsg = '########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########' . PHP_EOL;
+		if (isset($nLand) && !empty($nLand)) {
+			$importLogMsg .= $nLand . ' Land Datensätze' . PHP_EOL;
+		}
+		if (isset($nOrt) && !empty($nOrt)) {
+			$importLogMsg .= $nOrt . ' Ort Datensätze' . PHP_EOL;
+		}
+		if (isset($nBistum) && !empty($nBistum)) {
+			$importLogMsg .= $nBistum . ' Bistum Datensätze' . PHP_EOL;
+		}
+		if (isset($nBand) && !empty($nBand)) {
+			$importLogMsg .= $nBand . ' Band Datensätze' . PHP_EOL;
+		}
+		if (isset($nKloster) && !empty($nKloster)) {
+			$importLogMsg .= $nKloster . ' Kloster Datensätze' . PHP_EOL;
+		}
+		if (isset($nKlosterstandort) && !empty($nKlosterstandort)) {
+			$importLogMsg .= $nKlosterstandort . ' Klosterstandort Datensätze' . PHP_EOL;
+		}
+		if (isset($nOrden) && !empty($nOrden)) {
+			$importLogMsg .= $nOrden . ' Orden Datensätze' . PHP_EOL;
+		}
+		if (isset($nKlosterorden) && !empty($nKlosterorden)) {
+			$importLogMsg .= $nKlosterorden . ' Klosterorden Datensätze' . PHP_EOL;
+		}
+		$importLogMsg .= PHP_EOL;
+		$importFEMsg = nl2br(htmlentities($importLogMsg));
+		echo $importFEMsg;
+		$importLogFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/importLogFile.txt';
+		if (!is_dir(dirname($importLogFile))) {
+			mkdir(dirname($importLogFile), 0777, TRUE);
+		}
+		file_put_contents($importLogFile, $importLogMsg,  FILE_APPEND);
 		exit;
 	}
 
@@ -2162,7 +2256,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function importAccessInkKlosterDataAction() {
+	public function importAccessInkDumpAction() {
 		if (!is_dir($this->dumpDirectory)) {
 			throw new \TYPO3\Flow\Resource\Exception;
 		}
@@ -2170,21 +2264,30 @@ class DataImportController extends ActionController {
 			throw new \TYPO3\Flow\Resource\Exception(1398846324);
 		}
 		$sql = file_get_contents($this->inkKlosterDumpFilenamePath);
+		$sql = str_replace('CREATE DATABASE IF NOT EXISTS `Klosterdatenbank`;', '', $sql);
+		$sql = str_replace('USE `Klosterdatenbank`;', '', $sql);
+		$sql = str_replace('Bearbeitet von', 'Bearbeiter', $sql);
+		$sql = str_replace('tblBundesländer', 'Land', $sql);
+		$sql = str_replace('tblalleOrte', 'Ort', $sql);
+		$sql = str_replace('tblBistum', 'Bistum', $sql);
+		$sql = str_replace('tblGSBaende', 'Band', $sql);
 		$sql = str_replace('tblKlosterStammblatt', 'Kloster', $sql);
+		$sql = str_replace('tblKlosterStandort', 'Klosterstandort', $sql);
+		$sql = str_replace('tblOrden', 'Orden', $sql);
+		$sql = str_replace('tblKlosterOrden', 'Klosterorden', $sql);
+		$sql = str_replace('`Wüstung`', '`Wuestung`', $sql);
 		$sql = str_replace('`Datensatz angelegt`', '`Datensatz_angelegt`', $sql);
+		$sql = str_replace('`Ordenszugehörigkeit`', '`Orden`', $sql);
+		$sql = str_replace('`Ordenszugehörigkeit_von_von`', '`von_von`', $sql);
+		$sql = str_replace('`Ordenszugehörigkeitvon__bis`', '`von_bis`', $sql);
+		$sql = str_replace('`OrdenszugehörigkeitVerbal_von`', '`verbal_von`', $sql);
+		$sql = str_replace('`Ordenszugehörigkeit_bis_von`', '`bis_von`', $sql);
+		$sql = str_replace('`Ordenzugehörigkeit_bis_bis`', '`bis_bis`', $sql);
+		$sql = str_replace('`OrdenszugehörigkeitVerbal_bis`', '`verbal_bis`', $sql);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sqlConnection->executeUpdate($sql);
-	}
 
-	/**
-	 * Deletes access Kloster table if exists
-	 * @return void
-	 */
-	public function delAccessKlosterTabAction() {
-		$sqlConnection = $this->entityManager->getConnection();
-		$tbl = 'Kloster';
-		$sql = 'DROP TABLE IF EXISTS  ' . $tbl;
-		$sqlConnection->executeUpdate($sql);
+
 	}
 
 	/**
