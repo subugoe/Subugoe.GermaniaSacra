@@ -7,7 +7,7 @@ use TYPO3\Flow\Mvc\Controller\ActionController;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl;
 
-class OrtController extends ActionController {
+class OrtController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -70,24 +70,10 @@ class OrtController extends ActionController {
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
-			$this->view->setVariablesToRender(array('orts'));
+			$this->view->setVariablesToRender(array('ort'));
 		}
-		$ortArr = array();
-		$orts = $this->ortRepository->findAll();
-		foreach ($orts as $k => $ort) {
-		$ortArr[$k]['uUID'] = $ort->getUUID();
-		$ortArr[$k]['ort'] = $ort->getOrt();
-		$ortArr[$k]['gemeinde'] = $ort->getGemeinde();
-		$ortArr[$k]['kreis'] = $ort->getKreis();
-		$ortArr[$k]['wuestung'] = $ort->getWuestung();
-		$ortArr[$k]['breite'] = $ort->getBreite();
-		$ortArr[$k]['laenge'] = $ort->getLaenge();
-		$land = $ort->getLand();
-		$ortArr[$k]['land'] = is_object($land) ? $land->getUUID() : null;
-		$bistum = $ort->getBistum();
-		$ortArr[$k]['bistum'] = is_object($bistum) ? $bistum->getUUID() : null;
-		}
-		return json_encode(['data' => $ortArr]);
+		$this->view->assign('ort', ['data' => $this->ortRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**

@@ -1,0 +1,28 @@
+<section id="list" data-type="bearbeiter">
+	<h2>Bearbeiter</h2>
+	<form>
+		<table class="large-12 columns display">
+			<thead>
+				<tr>
+					<th data-input="checkbox" data-name="uUID" class="not-sortable"></th>
+					<th data-input="textarea" data-name="bearbeiter">Bearbeiter</th>
+					<th class="not-sortable" data-html='<button class="edit icon-pencil" title="Bearbeiten"></button>	<button class="delete icon-trash" title="Löschen"></button>'></th>
+				</tr>
+			</thead>
+		</table>
+		<button type="submit"><i class="icon-disk"></i> Änderungen speichern</button>
+		<button class="new"><i class="icon-plus2"></i> Neuen Bearbeiter hinzufügen</button>
+	</form>
+</section>
+
+<section id="edit" data-type="bearbeiter">
+	<button class="close"><i class="icon-back"></i> Zurück zur Bearbeiterliste</button>
+	<form>
+		<input type="hidden" name="uUID">
+		<label class="large-6 columns">Bearbeiter <textarea name="bearbeiter" required></textarea></label>
+		<label class="large-6 columns">Benutzername <textarea name="username"></textarea></label>
+		<label class="large-6 columns">Passwort <textarea name="password"></textarea></label>
+		<label class="large-6 columns">Rolle <select name="role"></select></label>
+		<button type="submit"><i class="icon-disk"></i> Änderungen speichern</button>
+	</form>
+</section>

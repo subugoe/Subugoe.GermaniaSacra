@@ -5,9 +5,8 @@ use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Orden;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\OrdenHasUrl;
-use TYPO3\Flow\Mvc\Controller\ActionController;
 
-class OrdenController extends ActionController {
+class OrdenController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -73,6 +72,7 @@ class OrdenController extends ActionController {
 			$this->view->setVariablesToRender(array('orden'));
 		}
 		$this->view->assign('orden', ['data' => $this->ordenRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**

@@ -10,6 +10,10 @@
 				<source>Navigation</source>
 				<target state="signed-off">Navigation</target>
 			</trans-unit>
+			<trans-unit id="bearbeiter" approved="yes">
+				<source>Bearbeiter</source>
+				<target state="signed-off">Bearbeiter</target>
+			</trans-unit>
 			<trans-unit id="orden" approved="yes">
 				<source>Orden</source>
 				<target state="signed-off">Orden</target>

@@ -1,11 +1,10 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-use Subugoe\GermaniaSacra\Domain\Model\Urltyp;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Mvc\Controller\ActionController;
+use Subugoe\GermaniaSacra\Domain\Model\Urltyp;
 
-class UrltypController extends ActionController {
+class UrltypController extends AbstractBaseController {
 
 	/**
 	 * @Flow\Inject
@@ -40,6 +39,7 @@ class UrltypController extends ActionController {
 			$this->view->setVariablesToRender(array('urltyp'));
 		}
 		$this->view->assign('urltyp', ['data' => $this->urltypRepository->findAll()]);
+		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
 	/**
