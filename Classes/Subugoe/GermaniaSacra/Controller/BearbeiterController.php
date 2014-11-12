@@ -172,7 +172,6 @@ class BearbeiterController extends AbstractBaseController {
 
 			$this->persistenceManager->persistAll();
 			$this->throwStatus(200, NULL, Null);
-
 		}
 		else {
 			$this->throwStatus(400, 'Entity Bearbeiter not available', Null);
