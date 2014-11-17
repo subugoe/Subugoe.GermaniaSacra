@@ -62,11 +62,6 @@ createAction = function(type, data) {
   var $form;
   $form = $('#edit form');
   return $.post(type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
-    if (type === 'kloster') {
-      $.get('kloster/solrUpdateWhenKlosterCreate', {
-        uUID: respond
-      });
-    }
     message('Ein neuer Eintrag wurde angelegt.');
     return $form.find('.dirty').removeClass('dirty');
   }).fail(function() {
@@ -216,11 +211,6 @@ updateAction = function(type) {
   $form = $("#edit form");
   uuid = $form.find(':input[name=uuid], :input[name=uUID]').first().val();
   return $.post("" + type + "/update/" + uuid, $form.serialize()).done(function(respond, status, jqXHR) {
-    if (type === 'kloster') {
-      $.post("kloster/updateSolrAfterKlosterUpdate", {
-        uUID: respond
-      });
-    }
     message('Ihre Änderungen wurden gespeichert.');
     return $form.find('.dirty').removeClass('dirty');
   }).fail(function() {
