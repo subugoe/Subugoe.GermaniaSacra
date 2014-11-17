@@ -171,11 +171,6 @@ updateListAction = function(type) {
   });
   formData.__csrfToken = $('#csrf').val();
   $.post(type + '/updateList', formData).done(function(respond, status, jqXHR) {
-    if (type === 'kloster') {
-      $.post("kloster/updateSolrAfterListUpdate", {
-        uuids: respond
-      });
-    }
     message('Ihre Änderungen wurden gespeichert.');
     $form.find('.dirty').removeClass('dirty');
     $form.find('input[name=uUID]').prop('checked', false);
