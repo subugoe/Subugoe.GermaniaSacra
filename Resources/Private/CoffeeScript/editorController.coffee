@@ -1,4 +1,4 @@
-roleinitEditor = (type) ->
+initEditor = (type) ->
 
 	populateSelectsAction(type)
 
@@ -63,11 +63,6 @@ newAction = ->
 createAction = (type, data) ->
 	$form = $('#edit form')
 	$.post(type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
-		if type is 'kloster'
-			# TODO: Please find a way to trigger the Solr update server-side
-			$.get('kloster/solrUpdateWhenKlosterCreate',
-				uUID: respond
-			)
 		message 'Ein neuer Eintrag wurde angelegt.'
 		$form.find('.dirty').removeClass('dirty')
 		$('body').removeClass('dirty')
@@ -191,9 +186,6 @@ updateAction = (type) ->
 	$form = $("#edit form")
 	uuid = $form.find(':input[name=uUID]').first().val()
 	$.post("#{type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) ->
-		# TODO: Find a way to trigger Solr update server-side
-		if type is 'kloster'
-			$.post("kloster/updateSolrAfterKlosterUpdate", {uUID: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
 		$form.find('.dirty').removeClass('dirty')
 		$('body').removeClass('dirty')
