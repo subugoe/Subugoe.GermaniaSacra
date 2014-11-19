@@ -55,7 +55,6 @@ class BearbeiterController extends AbstractBaseController {
 	protected $hashService;
 
 	/**
-	/**
 	 * @var array
 	 */
 	protected $supportedMediaTypes = array('text/html', 'application/json');
@@ -132,7 +131,7 @@ class BearbeiterController extends AbstractBaseController {
 		$bearbeiterArr['role'] = $role;
 		return json_encode($bearbeiterArr);
 	}
-	
+
 	/**
 	 * Update a Bearbeiter entity
 	 * @return void
