@@ -72,6 +72,7 @@ class ProxyController extends ActionController {
 	 */
 	public function literatureAction() {
 		$literatureUrl = $this->settings['data']['literature'];
+		$this->initializeAction();
 		$request = $this->client->get($literatureUrl);
 		$response = $request->send();
 		if ($response->getBody()) {

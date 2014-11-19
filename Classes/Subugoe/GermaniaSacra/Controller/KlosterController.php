@@ -145,6 +145,12 @@ class KlosterController extends AbstractBaseController {
 	protected $securityContext;
 
 	/**
+	 * @var \Subugoe\GermaniaSacra\Controller\ProxyController
+	 * @FLOW\Inject
+	 */
+	protected $proxy;
+
+	/**
 	 * @var array
 	 */
 	protected $supportedMediaTypes = array('text/html', 'application/json');
@@ -209,11 +215,13 @@ class KlosterController extends AbstractBaseController {
 				if (is_object($ort)) {
 					$klosterArr[$k]['ort'][$i] = $ort->getOrt();
 				}
-				else {
-					$klosterArr[$k]['ort'][$i] = '';
-				}
 			}
-			$klosterArr[$k]['ort'] = join("\n", $klosterArr[$k]['ort']);
+			if (!empty($klosterArr[$k]['ort'][$i])) {
+				$klosterArr[$k]['ort'] = implode('\n', $klosterArr[$k]['ort']);
+			}
+			else {
+				$klosterArr[$k]['ort'] = '';
+			}
 			$klosterHasUrls = $kloster->getKlosterHasUrls();
 			$klosterArr[$k]['gnd'] = '';
 			foreach ($klosterHasUrls as $klosterHasUrl) {
@@ -771,18 +779,10 @@ class KlosterController extends AbstractBaseController {
 			}
 			$bandArr[$band->getUUID()] = $bandNummerTitel;
 		}
+
 		// Literature data for select box
-		$literaturArr = array();
-		$this->literaturRepository->setDefaultOrderings(
-				array('citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
-		);
-		$literaturs = $this->literaturRepository->findAll();
-		foreach ($literaturs as $literatur) {
-			$literatur_name = $literatur->getCitekey();
-			$literatur_beschreibung = $literatur->getBeschreibung();
-			if (null !== $literatur_beschreibung && !empty($literatur_beschreibung)) $literatur_name .= "(" . $literatur_beschreibung . ")";
-			$literaturArr[$literatur->getUUID()] = $literatur_name;
-		}
+		$literaturArr = $this->getLiteraturAction();
+
 		// Bistum data for select box
 		$bistumArr = array();
 		$this->bistumRepository->setDefaultOrderings(
@@ -1399,7 +1399,34 @@ class KlosterController extends AbstractBaseController {
 				return json_encode($resultArr);
 			}
 		}
-
 	}
+
+	/** Gets and returns the list of Literature key value pairs
+	 * @param void
+	 * @return array $literaturArr
+	 */
+	public function getLiteraturAction() {
+		$bibliography = $this->proxy->literatureAction();
+		$bibliography = json_decode($bibliography, true);
+		$literaturArr = array();
+		$this->literaturRepository->setDefaultOrderings(
+				array('citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
+		);
+		$literaturs = $this->literaturRepository->findAll();
+		foreach ($literaturs as $q => $literatur) {
+			$citekey = $literatur->getCitekey();
+			$literatur_beschreibung = $literatur->getBeschreibung();
+			$key = array_search($citekey, array_column($bibliography, 'citeid'));
+			$literatur_name = '';
+			if (!empty($bibliography[$key]['title'])) $literatur_name .= $bibliography[$key]['title'] . ' ';
+			if (!empty($bibliography[$key]['editor'])) $literatur_name .= $bibliography[$key]['editor'] . ' ';
+			if (!empty($bibliography[$key]['citeid'])) $literatur_name .= $bibliography[$key]['citeid'] . ' ';
+			if (!empty($literatur_beschreibung)) $literatur_name .= "(" . $literatur_beschreibung . ")";
+			if (!empty($bibliography[$key]['note'])) $literatur_name .= $bibliography[$key]['note'];
+			$literaturArr[$literatur->getUUID()] = $literatur_name;
+		}
+		return $literaturArr;
+	}
+
 }
 ?>
