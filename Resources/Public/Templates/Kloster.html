@@ -95,176 +95,96 @@
 		<fieldset id="klosterdaten">
 			<legend>Kloster</legend>
 			<input type="hidden" name="uUID">
-			<label class="large-9 columns bold">Name
-				<textarea name="kloster_name" required></textarea>
-			</label>
-			<label class="large-3 columns">Kloster-Nr.
-				<input readonly name="kloster_id" type="text">
-			</label>
+			<label class="large-9 columns bold">Name<textarea name="kloster_name" required></textarea></label>
+			<label class="large-3 columns">Kloster-Nr.<input readonly name="kloster_id" type="text"></label>
 			<div class="highlight">
-				<label class="large-4 columns">Status
-					<select name="bearbeitungsstatus" required></select>
-				</label>
-				<label class="large-4 columns">
-					Zuletzt bearbeitet von <textarea readonly name="bearbeiter"></textarea>
-				</label>
-				<label class="large-2 columns">
-					am <textarea name="changeddate" readonly></textarea>
-				</label>
-				<label class="large-2 columns">Erzeugt am
-					<textarea name="creationdate" readonly></textarea>
-				</label>
-				<label class="large-12 columns">Bearbeitungsstand
-					<textarea name="bearbeitungsstand"></textarea>
-				</label>
+				<label class="large-4 columns">Status<select name="bearbeitungsstatus" required></select></label>
+				<label class="large-4 columns">Zuletzt bearbeitet von <textarea readonly name="bearbeiter"></textarea></label>
+				<label class="large-2 columns">am <textarea name="changeddate" readonly></textarea></label>
+				<label class="large-2 columns">Erzeugt am<textarea name="creationdate" readonly></textarea></label>
+				<label class="large-12 columns">Bearbeitungsstand<textarea name="bearbeitungsstand"></textarea></label>
 			</div>
-			<label class="large-12 columns">Patrozinium
-				<textarea name="patrozinium" required></textarea>
-			</label>
-			<label class="large-12 columns">Kommentar online
-				<textarea name="bemerkung"></textarea>
-			</label>
-			<label class="large-9 columns">GS-Band
-				<select name="band"></select>
-			</label>
-			<label class="large-3 columns">Seitenangabe GS-Band
-				<input name="band_seite" type="text">
-			</label>
-			<label class="large-12 columns">Inhalt GS-Band
-				<textarea name="text_gs_band"></textarea>
-			</label>
-			<label class="large-12 columns">Personallistenstatus
-				<select name="personallistenstatus"></select>
-			</label>
+			<label class="large-12 columns">Patrozinium<textarea name="patrozinium" required></textarea></label>
+			<label class="large-12 columns">Kommentar online<textarea name="bemerkung"></textarea></label>
+			<label class="large-9 columns">GS-Band<select name="band"></select></label>
+			<label class="large-3 columns">Seitenangabe GS-Band<input name="band_seite" type="text"></label>
+			<label class="large-12 columns">Inhalt GS-Band<textarea name="text_gs_band"></textarea></label>
+			<label class="large-12 columns">Personallistenstatus<select name="personallistenstatus"></select></label>
 		</fieldset>
 		<fieldset id="klosterstandorte">
 			<legend>Orte</legend>
 			<div class="multiple separator">
-				<label class="large-7 columns">Ort
-					<select class="ajax" name="ort[]"></select>
-				</label>
-				<label class="large-1 columns">Wüstung
-					<input name="wuestung[]" type="checkbox" value="1">
-				</label>
-				<label class="large-4 columns">Bistum
-					<select name="bistum[]"></select>
-				</label>
+				<label class="large-7 columns">Ort<select class="ajax" name="ort[]"></select></label>
+				<label class="large-1 columns">Wüstung<input name="wuestung[]" type="checkbox" value="1"></label>
+				<label class="large-4 columns">Bistum<select name="bistum[]"></select></label>
 				<div class="coordinates">
 					<label class="large-6 columns">Breite
 						<input
 							name="breite[]"
 							type="text"
-							pattern="-?([1-8]?[0-9]|[0-9])(\.\d{1,12})?"
-							title="Breitengrad muss zwischen -90.0 und 90.0 liegen."
+							pattern="(3[6-9]|[4-7][0-9]|80)(\.\d{1,12})?"
+							title="Breitengrad muss zwischen 36.0 und 81.0 liegen."
 						>
 					</label>
 					<label class="large-6 columns">Länge
 						<input
 							name="laenge[]"
 							type="text"
-							pattern="-?([1]?[1-7][0-9]|[1-9]?[0-9])(\.\d{1,12})?"
-							title="Längengrad muss zwischen -180.0 und 180.0 liegen."
+							pattern="(-[1-9]|[0-9]|[1-5][0-9]|6[0-6])(\.\d{1,12})?"
+							title="Längengrad muss zwischen -10.0 und 67.0 liegen."
 						>
 					</label>
 				</div>
-				<label class="large-3 columns">Standort von
-					<input class="year" name="von_von[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-1 columns none">
-					<input class="year" name="von_bis[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-2 columns none">
-					<input name="von_verbal[]" type="text">
-				</label>
-				<label class="large-3 columns">Standort bis
-					<input class="year" name="bis_von[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-1 columns none">
-					<input class="year" name="bis_bis[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-2 columns none">
-					<input name="bis_verbal[]" type="text">
-				</label>
-				<label class="large-12 columns">Gründer
-					<textarea name="gruender[]"></textarea>
-				</label>
-				<label class="large-12 columns">Bemerkung Standort
-					<textarea name="bemerkung_standort[]"></textarea>
-				</label>
-				<label class="large-11 columns">Bemerkung (Kloster)<!-- TODO: Move to Kloser -->
-					<textarea name="standort_interne_bemerkung[]"></textarea>
-				</label>
+				<label class="large-3 columns">Standort von<input class="year" name="von_von[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-1 columns none"><input class="year" name="von_bis[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-2 columns none"><input name="von_verbal[]" type="text"></label>
+				<label class="large-3 columns">Standort bis<input class="year" name="bis_von[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-1 columns none"><input class="year" name="bis_bis[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-2 columns none"><input name="bis_verbal[]" type="text"></label>
+				<label class="large-12 columns">Gründer<textarea name="gruender[]"></textarea></label>
+				<label class="large-12 columns">Bemerkung Standort<textarea name="bemerkung_standort[]"></textarea></label>
+				<!-- TODO: Move to Kloster: -->
+				<label class="large-11 columns">Bemerkung (Kloster)<textarea name="standort_interne_bemerkung[]"></textarea></label>
 			</div>
 		</fieldset>
 		<fieldset id="klosterorden">
 			<legend>Ordenszugehörigkeit</legend>
 			<div class="multiple separator">
-				<label class="large-6 columns">Orden
-					<select name="orden[]"></select>
-				</label>
-				<label class="large-6 columns">Klosterstatus
-					<select name="klosterstatus[]"></select>
-				</label>
-				<label class="large-3 columns">Ordenszugehörigkeit von
-					<input class="year" name="orden_von_von[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-1 columns none">
-					<input class="year" name="orden_von_bis[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-2 columns none">
-					<input name="orden_von_verbal[]" type="text">
-				</label>
-				<label class="large-3 columns">Ordenszugehörigkeit bis
-					<input class="year" name="orden_bis_von[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-1 columns none">
-					<input class="year" name="orden_bis_bis[]" type="text" pattern="\d{2,4}">
-				</label>
-				<label class="large-2 columns none">
-					<input name="orden_bis_verbal[]" type="text">
-				</label>
-				<label class="large-11 columns">
-					Interne Anmerkungen<textarea name="bemerkung_orden[]"></textarea>
-				</label>
+				<label class="large-6 columns">Orden<select name="orden[]"></select></label>
+				<label class="large-6 columns">Klosterstatus<select name="klosterstatus[]"></select></label>
+				<label class="large-3 columns">Ordenszugehörigkeit von<input class="year" name="orden_von_von[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-1 columns none"><input class="year" name="orden_von_bis[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-2 columns none"><input name="orden_von_verbal[]" type="text"></label>
+				<label class="large-3 columns">Ordenszugehörigkeit bis<input class="year" name="orden_bis_von[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-1 columns none"><input class="year" name="orden_bis_bis[]" type="text" pattern="\d{2,4}"></label>
+				<label class="large-2 columns none"><input name="orden_bis_verbal[]" type="text"></label>
+				<label class="large-11 columns">Interne Anmerkungen<textarea name="bemerkung_orden[]"></textarea></label>
 			</div>
 		</fieldset>
 		<fieldset id="links">
 			<legend>Links</legend>
 			<div class="clearfix">
-				<label class="large-6 columns">Wikipedia
-					<input name="wikipedia" type="url">
-				</label>
+				<label class="large-6 columns">Wikipedia<input name="wikipedia" type="url"></label>
 				<span class="link"></span>
-				<label class="large-5 columns">Darstellung
-					<input name="wikipedia_label" type="text">
-				</label>
+				<label class="large-5 columns">Darstellung<input name="wikipedia_label" type="text"></label>
 			</div>
 			<div class="clearfix">
-				<label class="large-6 columns">GND
-					<input name="gnd" type="url">
-				</label>
+				<label class="large-6 columns">GND<input name="gnd" type="url"></label>
 				<span class="link"></span>
-				<label class="large-5 columns">Darstellung
-					<input name="gnd_label" type="text">
-				</label>
+				<label class="large-5 columns">Darstellung<input name="gnd_label" type="text"></label>
 			</div>
 			<div class="multiple">
-				<label class="large-2 columns none">
-					<select name="url_typ[]"></select>
-				</label>
-				<label class="large-4 columns none">
-					<input name="url[]" type="url">
-				</label>
+				<label class="large-2 columns none"><select name="url_typ[]"></select></label>
+				<label class="large-4 columns none"><input name="url[]" type="url"></label>
 				<span class="link"></span>
-				<label class="large-5 columns">Darstellung
-					<input name="links_label[]" type="text">
-				</label>
+				<label class="large-5 columns">Darstellung<input name="links_label[]" type="text"></label>
 			</div>
 		</fieldset>
 		<fieldset id="literatur">
 			<legend>Literatur</legend>
 			<div class="multiple">
-				<label class="large-11 columns">Bezeichnung<select name="literatur[]"></select></label>
+				<label class="large-8 columns">Bezeichnung<select name="literatur[]"></select></label>
+				<label class="large-3 columns">Seite<input name="beschreibung[]" type="text"></label>
 			</div>
 		</fieldset>
 	</form>
