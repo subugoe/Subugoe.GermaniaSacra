@@ -128,10 +128,11 @@ class BearbeiterController extends AbstractBaseController {
 		$bearbeiterObj = $this->bearbeiterRepository->findByIdentifier($uuid);
 		$bearbeiterArr['uUID'] = $bearbeiterObj->getUUID();
 		$bearbeiterArr['bearbeiter'] = $bearbeiterObj->getBearbeiter();
-		$bearbeiterArr['role'] = array_keys($this->securityContext->getAccount()->getRoles())[0];
+		$role = array_keys($bearbeiterObj->getAccount()->getRoles())[0];
+		$bearbeiterArr['role'] = $role;
 		return json_encode($bearbeiterArr);
 	}
-
+	
 	/**
 	 * Update a Bearbeiter entity
 	 * @return void
