@@ -7,7 +7,7 @@ initList = function(type) {
   editListAction(type);
   return $("#list form").submit(function(e) {
     e.preventDefault();
-    if ($(this).find("input[name=uuid]:checked, input[name=uUID]:checked").length === 0) {
+    if ($(this).find("input[name=uUID]:checked").length === 0) {
       message("Wählen Sie bitte mindestens einen Eintrag aus.");
       return false;
     } else {
@@ -111,10 +111,12 @@ editListAction = function(type) {
       });
       $tr.each(function() {
         var uuid;
-        uuid = $(this).find(':input[name=uuid]').val();
-        $(this).find("textarea").autosize();
-        return $(this).find(":input:not([name=uuid]):not([name=uUID])").change(function() {
-          return $(this).closest("td").addClass("dirty").closest("tr").find(":checkbox:eq(0)").prop("checked", true);
+        uuid = $(this).find(':input[name=uUID]').val();
+        $(this).find('textarea').autosize();
+        return $(this).find(':input:not([name=uUID])').change(function() {
+          $(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop('checked', true);
+          $('body').addClass('dirty');
+          return $("#list :submit").prop('disabled', false);
         });
       });
       return $tr.addClass('processed');
@@ -127,13 +129,13 @@ editListAction = function(type) {
   $table.on("click", ".edit", function(e) {
     var uuid;
     e.preventDefault();
-    uuid = $(this).closest('tr').find(':input[name=uuid], :input[name=uUID]').first().val();
+    uuid = $(this).closest('tr').find(':input[name=uUID]').first().val();
     return editAction(type, uuid);
   });
   $table.on("click", ".delete", function(e) {
     var uuid;
     e.preventDefault();
-    uuid = $(this).closest('tr').find(':input[name=uuid], :input[name=uUID]').first().val();
+    uuid = $(this).closest('tr').find(':input[name=uUID]').first().val();
     return deleteAction(type, uuid);
   });
   dataTable.columns().eq(0).each(function(colIdx) {
@@ -157,9 +159,9 @@ updateListAction = function(type) {
   formData.data = {};
   $rows.each(function(i, row) {
     var uuid;
-    uuid = $(row).find('input[name=uuid], input[name=uUID]').first().val();
+    uuid = $(row).find(':input[name=uUID]').first().val();
     formData.data[uuid] = {};
-    return $(row).find(':input:not([name=uuid]):not([name=uUID])').each(function(i, input) {
+    return $(row).find(':input:not([name=uUID])').each(function(i, input) {
       if (!$(input).is(':checkbox') || $(input).prop('checked')) {
         if (input.name) {
           formData.data[uuid][input.name] = input.value;
@@ -175,22 +177,26 @@ updateListAction = function(type) {
       });
     }
     message('Ihre Änderungen wurden gespeichert.');
-    return $form.find('.dirty').removeClass('dirty');
+    $form.find('.dirty').removeClass('dirty');
+    $form.find('input[name=uUID]').prop('checked', false);
+    $('body').removeClass('dirty');
+    return $("#list :submit").prop('disabled', true);
   }).fail(function(jqXHR, textStatus) {
     return message('Fehler: Daten konnten nicht gespeichert werden.');
   });
 };
 
-deleteAction = function(type, id) {
+deleteAction = function(type, uuid) {
   var $this, check, csrf;
   $this = $(this);
   check = confirm('Wollen Sie diesen Eintrag wirklich löschen?');
   if (check === true) {
     csrf = $('#csrf').val();
-    $.post(type + '/delete/' + id, {
+    $.post(type + '/delete/' + uuid, {
       __csrfToken: csrf
     }).done(function(respond, status, jqXHR) {
       if (status === 'success') {
+        dataTable.row($('tr').has("td:first input[value='" + uuid + "']")).remove().draw();
         return message('Der Eintrag wurde gelöscht.');
       }
     }).fail(function(jqXHR, textStatus) {

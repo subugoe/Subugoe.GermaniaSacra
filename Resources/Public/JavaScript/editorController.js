@@ -9,18 +9,23 @@ initEditor = function(type) {
     return $(this).parent().next(".link").html($(this).val() ? '<a class="icon-link" href="' + $(this).val() + '" target="_blank"></a>' : '');
   });
   $("#edit fieldset .multiple .remove").click();
-  $("#edit :input:not([name=uuid]):not([name=uUID])").change(function() {
-    return $(this).closest("label").addClass("dirty");
+  $("#edit :input:not([name=uUID])").change(function() {
+    $(this).closest("label").addClass("dirty");
+    $('body').addClass('dirty');
+    return $("#edit :submit").prop('disabled', false);
   });
   $("#edit .close").click(function(e) {
-    e.preventDefault();
-    $(this).parent().closest("section[id]").slideUp();
-    return $("#search, #list").slideDown();
+    if (!$('.dirty').length || confirmDiscardChanges()) {
+      $(this).parent().closest("section[id]").slideUp();
+      $("#search, #list").slideDown();
+      $('.dirty').removeClass('dirty');
+      return e.preventDefault();
+    }
   });
   $("#edit form").submit(function(e) {
     e.preventDefault();
     $("select:disabled").prop("disabled", false).addClass("disabled");
-    if ($(this).find(":input[name=uuid], :input[name=uUID]").first().val().length) {
+    if ($(this).find(":input[name=uUID]").first().val().length) {
       updateAction(type);
     } else {
       createAction(type);
@@ -54,8 +59,8 @@ newAction = function() {
   $('#edit').slideDown();
   $form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true);
   $("#edit select").autocomplete();
-  $("#edit").find('input[type=url]').keyup();
-  return $("#edit").find('textarea').trigger('autosize.resize');
+  $form.find('input[type=url]').keyup();
+  return $form.find('textarea').trigger('autosize.resize');
 };
 
 createAction = function(type, data) {
@@ -68,7 +73,8 @@ createAction = function(type, data) {
       });
     }
     message('Ein neuer Eintrag wurde angelegt.');
-    return $form.find('.dirty').removeClass('dirty');
+    $form.find('.dirty').removeClass('dirty');
+    return $('body').removeClass('dirty');
   }).fail(function() {
     return message('Fehler: Eintrag konnte nicht angelegt werden.');
   });
@@ -214,7 +220,7 @@ editAction = function(type, id) {
 updateAction = function(type) {
   var $form, uuid;
   $form = $("#edit form");
-  uuid = $form.find(':input[name=uuid], :input[name=uUID]').first().val();
+  uuid = $form.find(':input[name=uUID]').first().val();
   return $.post("" + type + "/update/" + uuid, $form.serialize()).done(function(respond, status, jqXHR) {
     if (type === 'kloster') {
       $.post("kloster/updateSolrAfterKlosterUpdate", {
@@ -222,7 +228,9 @@ updateAction = function(type) {
       });
     }
     message('Ihre Änderungen wurden gespeichert.');
-    return $form.find('.dirty').removeClass('dirty');
+    $form.find('.dirty').removeClass('dirty');
+    $('body').removeClass('dirty');
+    return $("#edit :submit").prop('disabled', true);
   }).fail(function() {
     return message('Fehler: Ihre Änderungen konnten nicht gespeichert werden.');
   });
