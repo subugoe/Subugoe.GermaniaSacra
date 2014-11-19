@@ -736,8 +736,7 @@ class KlosterController extends AbstractBaseController {
 		$klosterHasLiteraturs = $kloster->getKlosterHasLiteraturs();
 		foreach ($klosterHasLiteraturs as $l => $klosterHasLiteratur) {
 			$literaturObj = $klosterHasLiteratur->getLiteratur();
-			$literatur = $literaturObj->getUUID();
-			$Literaturs[$l] = $literatur;
+			$Literaturs[$l] = array($literaturObj->getUUID(), $literaturObj->getCitekey() . ' - ' . $literaturObj->getBeschreibung());
 		}
 		$klosterArr['literatur'] = $Literaturs;
 		return json_encode($klosterArr);
@@ -1423,23 +1422,17 @@ class KlosterController extends AbstractBaseController {
 	 */
 	public function getLiteraturAction() {
 		$bibliography = $this->proxy->literatureAction();
-		$bibliography = json_decode($bibliography, true);
+		$bibliographyArr = json_decode($bibliography, true);
 		$literaturArr = array();
-		$this->literaturRepository->setDefaultOrderings(
-				array('citekey' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING)
-		);
-		$literaturs = $this->literaturRepository->findAll();
-		foreach ($literaturs as $q => $literatur) {
-			$citekey = $literatur->getCitekey();
-			$literatur_beschreibung = $literatur->getBeschreibung();
-			$key = array_search($citekey, array_column($bibliography, 'citeid'));
+		foreach ($bibliographyArr as $bibliography) {
 			$literatur_name = '';
-			if (!empty($bibliography[$key]['title'])) $literatur_name .= $bibliography[$key]['title'] . ' ';
-			if (!empty($bibliography[$key]['editor'])) $literatur_name .= $bibliography[$key]['editor'] . ' ';
-			if (!empty($bibliography[$key]['citeid'])) $literatur_name .= $bibliography[$key]['citeid'] . ' ';
-			if (!empty($literatur_beschreibung)) $literatur_name .= "(" . $literatur_beschreibung . ")";
-			if (!empty($bibliography[$key]['note'])) $literatur_name .= $bibliography[$key]['note'];
-			$literaturArr[$literatur->getUUID()] = $literatur_name;
+			if (!empty($bibliography['title'])) $literatur_name .= $bibliography['title'] . ' ';
+			if (!empty($bibliography['editor'])) $literatur_name .= $bibliography['editor'] . ' ';
+			if (!empty($bibliography['citeid'])) $literatur_name .= $bibliography['citeid'] . ' ';
+			if (!empty($bibliography['note'])) $literatur_name .= $bibliography['note'];
+			if (!empty($bibliography['citeid'])) {
+				$literaturArr[$bibliography['citeid']] = $literatur_name;
+			}
 		}
 		return $literaturArr;
 	}
