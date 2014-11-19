@@ -155,9 +155,6 @@ updateListAction = (type) ->
 			return
 	formData.__csrfToken = $('#csrf').val()
 	$.post(type + '/updateList', formData).done((respond, status, jqXHR) ->
-		# TODO: Please find a way to trigger the Solr update server-side
-		if type is 'kloster'
-			$.post("kloster/updateSolrAfterListUpdate", {uuids: respond})
 		message 'Ihre Änderungen wurden gespeichert.'
 		$form.find('.dirty').removeClass('dirty')
 		$form.find('input[name=uUID]').prop('checked', false)
