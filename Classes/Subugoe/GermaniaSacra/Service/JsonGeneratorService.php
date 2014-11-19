@@ -26,11 +26,23 @@ namespace Subugoe\GermaniaSacra\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Mvc\View\JsonView;
 
 /**
  * Generates json files from entities
  */
 class JsonGeneratorService {
+
+	/**
+	 * @var array
+	 */
+	protected $configuration = array();
+
+	/**
+	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+	 * @Flow\Inject
+	 */
+	protected $persistenceManager;
 
 	/**
 	 * @param $entityName
@@ -52,31 +64,61 @@ class JsonGeneratorService {
 			if ($entityName === 'kloster') {
 				file_put_contents($entityFile, $entityController->allAsJson());
 			} else {
-				file_put_contents($entityFile, $this->getJsonFromHttpRequest($entityName));
+				file_put_contents($entityFile, $this->getJsonRepresentation($entityName));
 
 				// generate master entity file when some entities change
 				$this->generateJsonFile('kloster');
 			}
 			return TRUE;
 		} catch (\Exception $e) {
+			echo $e->getTraceAsString();
 			return FALSE;
 		}
 	}
 
 	/**
-	 * Retrieve a json file by using http requests
-	 *
-	 * @param string $entityName
-	 * @return string
+	 * @param $entityName
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface
 	 */
-	protected function getJsonFromHttpRequest($entityName) {
-
-		$browser = new \Guzzle\Http\Client();
-		$request = $browser->createRequest('POST', 'http://germaniasacra.sub.uni-goettingen.de/subugoe.germaniasacra/' . $entityName . '/list.json');
-		$request->setHeader('Accept', 'application/json');
-
-		$body =  $request->send();
-		return $body->getBody();
+	protected function getObjectsFromRepository($entityName) {
+		$entityRepositoryName = '\\Subugoe\\GermaniaSacra\\Domain\\Repository\\' . ucfirst($entityName) . 'Repository';
+		/** @var \TYPO3\Flow\Persistence\Repository $entityModel */
+		$entityModel = new $entityRepositoryName();
+		return $entityModel->findAll();
 	}
 
-} 
+	/**
+	 * @param $entityName
+	 * @return string
+	 */
+	protected function getJsonRepresentation($entityName) {
+
+		$entityData = $this->getObjectsFromRepository($entityName);
+
+		$entityArray = [];
+
+		foreach ($entityData as $object) {
+			$propertyNames = \TYPO3\Flow\Reflection\ObjectAccess::getGettablePropertyNames($object);
+
+			$identifier = \TYPO3\Flow\Reflection\ObjectAccess::getProperty($object, 'uUID');
+
+			foreach ($propertyNames as $propertyName) {
+
+				$propertyValue = \TYPO3\Flow\Reflection\ObjectAccess::getProperty($object, $propertyName);
+
+				if (!is_array($propertyValue) && !is_object($propertyValue)) {
+					$propertiesToRender[$propertyName] = $propertyValue;
+				} elseif (isset($configuration['_descend']) && array_key_exists($propertyName, $configuration['_descend'])) {
+					$propertiesToRender[$propertyName] = $this->transformValue($propertyValue, $configuration['_descend'][$propertyName]);
+				}
+				$entityArray[] = $propertiesToRender;
+
+			}
+
+		}
+
+		return json_encode(['data' => array($entityArray)]);
+
+	}
+
+}

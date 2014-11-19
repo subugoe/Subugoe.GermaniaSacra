@@ -194,10 +194,10 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Ort not available', Null);
+			$this->throwStatus(400, 'Entity Ort not available', NULL);
 		}
 	}
 
@@ -210,7 +210,7 @@ class OrtController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$ortArr = array();
 		$ort = $this->ortRepository->findByIdentifier($uuid);
@@ -222,9 +222,9 @@ class OrtController extends AbstractBaseController {
 		$ortArr['breite'] = $ort->getBreite();
 		$ortArr['laenge'] = $ort->getLaenge();
 		$land = $ort->getLand();
-		$ortArr['land'] = is_object($land) ? $land->getUUID() : null;
+		$ortArr['land'] = is_object($land) ? $land->getUUID() : NULL;
 		$bistum = $ort->getBistum();
-		$ortArr['bistum'] = is_object($bistum) ? $bistum->getUUID() : null;
+		$ortArr['bistum'] = is_object($bistum) ? $bistum->getUUID() : NULL;
 		// Ort Url data
 		$Urls = array();
 		$ortHasUrls = $ort->getOrtHasUrls();
@@ -260,7 +260,7 @@ class OrtController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$ortObj = $this->ortRepository->findByIdentifier($uuid);
 		if (is_object($ortObj)) {
@@ -420,10 +420,10 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Ort not available', Null);
+			$this->throwStatus(400, 'Entity Ort not available', NULL);
 		}
 	}
 
@@ -436,7 +436,7 @@ class OrtController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$klosterstandorte = count($this->klosterstandortRepository->findByOrt($uuid));
 		$orthasurls = count($this->ortHasUrlRepository->findByOrt($uuid));
@@ -444,7 +444,7 @@ class OrtController extends AbstractBaseController {
 		if ($klosterstandorte == 0 && $orthasurls == 0 && $bistums == 0) {
 			$ortObj = $this->ortRepository->findByIdentifier($uuid);
 			if (!is_object($ortObj)) {
-				$this->throwStatus(400, 'Entity Ort not available', Null);
+				$this->throwStatus(400, 'Entity Ort not available', NULL);
 			}
 			$this->ortRepository->remove($ortObj);
 			// Fetch Ort Urls
@@ -454,10 +454,10 @@ class OrtController extends AbstractBaseController {
 					$this->ortHasUrlRepository->remove($ortHasUrl);
 				}
 			}
-			$this->throwStatus(200, NULL, Null);
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', NULL);
 		}
 	}
 
@@ -470,7 +470,7 @@ class OrtController extends AbstractBaseController {
 			$ortlist = $this->request->getArgument('data');
 		}
 		if (empty($ortlist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($ortlist as $uuid => $ort) {
 			$ortObj = $this->ortRepository->findByIdentifier($uuid);
@@ -489,7 +489,7 @@ class OrtController extends AbstractBaseController {
 			$this->ortRepository->update($ortObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
 ?>
