@@ -2,18 +2,17 @@
 namespace Subugoe\GermaniaSacra\Command;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "TYPO3.Surf".            *
+ * This script belongs to the TYPO3 Flow package "Subugoe.GermaniaSacra". *
  *                                                                        *
  *                                                                        */
 
 use Subugoe\GermaniaSacra\Controller\DataImportController;
 use Subugoe\GermaniaSacra\Controller\DataExportController;
-use Subugoe\GermaniaSacra\Controller\KlosterController;
 use Subugoe\GermaniaSacra\Utility\JsonGeneratorUtility;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Log\LoggerFactory;
 /**
- * Surf command controller
+ * GermaniaSacra command controller
  */
 class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 

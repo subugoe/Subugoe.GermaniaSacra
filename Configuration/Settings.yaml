@@ -22,3 +22,5 @@ TYPO3:
       queues:
         'kloster':
           className: 'Subugoe\Jobqueue\Redis\Queue\RedisQueue'
+        'solr':
+          className: 'Subugoe\Jobqueue\Redis\Queue\RedisQueue'

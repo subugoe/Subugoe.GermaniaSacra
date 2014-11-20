@@ -195,7 +195,7 @@ class DataExportController extends ActionController {
 
 		$this->logger->log('Data export completed in ' . round($result->getQueryTime() / 100) . ' seconds.');
 
-		return;
+		return TRUE;
 	}
 
 	/**
