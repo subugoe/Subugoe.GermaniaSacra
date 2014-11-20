@@ -31,11 +31,11 @@
 		z-index: 999;
 	}
 	li {
+		border-bottom: 1px solid $input-border-color;
 		cursor: pointer;
 		margin: 0;
 		overflow: hidden;
 		padding: rem-calc(5);
-		white-space: nowrap;
 		&.current, {
 			background: $primary-color;
 			color: white;
