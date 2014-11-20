@@ -730,8 +730,7 @@ class KlosterController extends AbstractBaseController {
 		$klosterHasLiteraturs = $kloster->getKlosterHasLiteraturs();
 		foreach ($klosterHasLiteraturs as $l => $klosterHasLiteratur) {
 			$literaturObj = $klosterHasLiteratur->getLiteratur();
-			$literatur = $literaturObj->getUUID();
-			$Literaturs[$l] = $literatur;
+			$Literaturs[$l] = array('literatur' => $literaturObj->getCitekey(), 'fundstelle' => (string)$literaturObj->getBeschreibung());
 		}
 		$klosterArr['literatur'] = $Literaturs;
 		return json_encode($klosterArr);
@@ -743,7 +742,9 @@ class KlosterController extends AbstractBaseController {
 	 * @return array $response select options as JSON
 	 */
 	public function getOptionsAction() {
+
 		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
+
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
 		$this->bearbeitungsstatusRepository->setDefaultOrderings(
@@ -838,6 +839,7 @@ class KlosterController extends AbstractBaseController {
 			if ( $urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND' )
 				$urltypArr[$urltyp->getUUID()] = $urltyp->getName();
 		}
+
 		// Land data for select box
 		$landArr = array();
 		$this->landRepository->setDefaultOrderings(
@@ -847,6 +849,7 @@ class KlosterController extends AbstractBaseController {
 		foreach ($lands as $land) {
 				$landArr[$land->getUUID()] = $land->getLand();
 		}
+
 		// Bearbeiter roles
 		$roleArr = array();
 		foreach ($this->roleRepository->findAll()->toArray() as $role) {
@@ -855,6 +858,7 @@ class KlosterController extends AbstractBaseController {
 				$roleArr[$role->getIdentifier()] = $roleValues[1];
 			}
 		}
+
 		$response = array();
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
 		$response['personallistenstatus'] = $personallistenstatusArr;
@@ -1034,7 +1038,6 @@ class KlosterController extends AbstractBaseController {
 		foreach ($literaturs as $literatur) {
 			$this->klosterHasLiteraturRepository->remove($literatur);
 		}
-
 		if ($this->request->hasArgument('literatur')) {
 			$literaturArr = $this->request->getArgument('literatur');
 			if (isset($literaturArr) && !empty($literaturArr) && is_array($literaturArr)) {
@@ -1046,6 +1049,8 @@ class KlosterController extends AbstractBaseController {
 						$klosterHasLiteratur->setKloster($kloster);
 						$klosterHasLiteratur->setLiteratur($literatur);
 						$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+						// TODO: Check if Literatur entry with CiteKey/Seitenangabe already exists
+						// TODO: Set Seitenangabe (Beschreibung)
 					}
 				}
 			}
@@ -1418,12 +1423,17 @@ class KlosterController extends AbstractBaseController {
 			$literatur_beschreibung = $literatur->getBeschreibung();
 			$key = array_search($citekey, array_column($bibliography, 'citeid'));
 			$literatur_name = '';
-			if (!empty($bibliography[$key]['title'])) $literatur_name .= $bibliography[$key]['title'] . ' ';
-			if (!empty($bibliography[$key]['editor'])) $literatur_name .= $bibliography[$key]['editor'] . ' ';
-			if (!empty($bibliography[$key]['citeid'])) $literatur_name .= $bibliography[$key]['citeid'] . ' ';
-			if (!empty($literatur_beschreibung)) $literatur_name .= "(" . $literatur_beschreibung . ")";
-			if (!empty($bibliography[$key]['note'])) $literatur_name .= $bibliography[$key]['note'];
-			$literaturArr[$literatur->getUUID()] = $literatur_name;
+			if (!empty($bibliography['citeid'])) $literatur_name .= $bibliography['citeid'] . ' – ';
+			if (!empty($bibliography['title'])) {
+				$literatur_name .= $bibliography['title'];
+			} else {
+				$literatur_name .= '[ohne Titel]';
+			}
+			if (!empty($bibliography['editor'])) $literatur_name .= ' – ' . $bibliography['editor'];
+			if (!empty($bibliography['note'])) $literatur_name .= ' (' . $bibliography['note'] . ')';
+			if (!empty($bibliography['citeid'])) {
+				$literaturArr[$bibliography['citeid']] = $literatur_name;
+			}
 		}
 		return $literaturArr;
 	}
