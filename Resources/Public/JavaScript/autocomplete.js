@@ -38,11 +38,11 @@ $.fn.autocomplete = function() {
       } else {
         $select.val($(this).data('uuid'));
       }
-      return $input.blur();
+      return $(document).click();
     });
     oldVal = '';
     $input.on('keyup', function(e) {
-      var $current, $newCurrent, $visibleItems, liHeight;
+      var $current, $newCurrent, $visibleItems;
       if (isAjax) {
         if ($input.val().length > 0 && $input.val() !== oldVal) {
           oldVal = $input.val();
@@ -80,7 +80,6 @@ $.fn.autocomplete = function() {
       }
       if ($list.is(':visible')) {
         $visibleItems = $list.children(':visible');
-        liHeight = $list.children(':first').outerHeight();
         $visibleItems.filter('.current:gt(0)').removeClass('current');
         $current = $visibleItems.filter('.current');
         if (!$current.length) {
@@ -97,7 +96,7 @@ $.fn.autocomplete = function() {
             }
             $current.removeClass('current');
             $newCurrent.addClass('current');
-            $list.scrollTop($visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2);
+            $list.scrollTop($newCurrent.offset().top - $list.offset().top + $list.scrollTop() - $list.height() / 3);
             return false;
           case 9:
           case 40:
@@ -107,19 +106,22 @@ $.fn.autocomplete = function() {
             }
             $current.removeClass('current');
             $newCurrent.addClass('current');
-            $list.scrollTop($visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2);
+            $list.scrollTop($newCurrent.offset().top - $list.offset().top + $list.scrollTop() - $list.height() / 3);
             return false;
           case 35:
           case 36:
           case 27:
-            return $input.blur();
+            return $(document).click();
         }
       }
     });
-    return $input.blur(function() {
+    $(document).click(function() {
       $list.slideUp();
       $list.find('.current').removeClass('current');
       return $input.val($select.find(':selected').text());
+    });
+    return $($input, $list).click(function(e) {
+      return e.stopPropagation();
     });
   });
 };

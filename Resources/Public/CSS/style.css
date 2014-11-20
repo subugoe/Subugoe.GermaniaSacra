@@ -8081,11 +8081,11 @@ tr:hover .show-only-on-hover * {
   z-index: 999;
 }
 .autocomplete li {
+  border-bottom: 1px solid #cccccc;
   cursor: pointer;
   margin: 0;
   overflow: hidden;
   padding: 0.3125rem;
-  white-space: nowrap;
 }
 .autocomplete li.current {
   background: #c90230;

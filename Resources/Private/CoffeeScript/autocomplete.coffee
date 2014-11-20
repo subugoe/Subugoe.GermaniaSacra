@@ -39,7 +39,7 @@ $.fn.autocomplete = ->
 				$select.empty().append("<option value='#{$(this).data('uuid')}' selected>#{$(this).text()}</option>")
 			else
 				$select.val( $(this).data('uuid') )
-			$input.blur()
+			$(document).click()
 
 		oldVal = ''
 
@@ -73,7 +73,6 @@ $.fn.autocomplete = ->
 
 			if $list.is ':visible'
 				$visibleItems = $list.children(':visible')
-				liHeight = $list.children(':first').outerHeight();
 				$visibleItems.filter('.current:gt(0)').removeClass('current')
 				$current = $visibleItems.filter('.current')
 				unless $current.length then $current = $visibleItems.first().addClass('current')
@@ -86,22 +85,25 @@ $.fn.autocomplete = ->
 						unless $newCurrent.length then $newCurrent = $visibleItems.last()
 						$current.removeClass('current')
 						$newCurrent.addClass('current')
-						$list.scrollTop( $visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2 )
+						$list.scrollTop $newCurrent.offset().top - $list.offset().top + $list.scrollTop() - $list.height() / 3
 						false
 					when 9, 40 # tab, down
 						$newCurrent = $current.nextAll(':visible').first()
 						unless $newCurrent.length then $newCurrent = $visibleItems.first()
 						$current.removeClass('current')
 						$newCurrent.addClass('current')
-						$list.scrollTop( $visibleItems.index($newCurrent) * liHeight - ($list.height() - liHeight) / 2 )
+						$list.scrollTop $newCurrent.offset().top - $list.offset().top + $list.scrollTop() - $list.height() / 3
 						false
 					when 35, 36, 27 # esc
-						$input.blur()
+						$(document).click()
 
-		$input.blur ->
+		$(document).click ->
 			$list.slideUp()
 			$list.find('.current').removeClass('current')
 			$input.val $select.find(':selected').text()
+
+		$($input, $list).click (e) ->
+			e.stopPropagation()
 
 delay = (->
 	timer = 0
