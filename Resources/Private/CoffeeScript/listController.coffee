@@ -100,7 +100,7 @@ editListAction = (type) ->
 				$(this).find(':input:not([name=uUID])').change ->
 					$(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop 'checked', true
 					$('body').addClass('dirty')
-					$("#list :submit").prop('disabled', false)
+					$("#list :submit[type=submit]").prop('disabled', false)
 			# TODO: Before enabling this, find a way to prevent pressing enter from triggering the first edit button
 			# $tr.find('select').autocomplete()
 			$tr.addClass('processed')
@@ -159,7 +159,7 @@ updateListAction = (type) ->
 		$form.find('.dirty').removeClass('dirty')
 		$form.find('input[name=uUID]').prop('checked', false)
 		$('body').removeClass('dirty')
-		$("#list :submit").prop('disabled', true)
+		$("#list :submit[type=submit]").prop('disabled', true)
 	).fail (jqXHR, textStatus) ->
 		message 'Fehler: Daten konnten nicht gespeichert werden.'
 

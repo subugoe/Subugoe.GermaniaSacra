@@ -116,7 +116,7 @@ editListAction = function(type) {
         return $(this).find(':input:not([name=uUID])').change(function() {
           $(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop('checked', true);
           $('body').addClass('dirty');
-          return $("#list :submit").prop('disabled', false);
+          return $("#list :submit[type=submit]").prop('disabled', false);
         });
       });
       return $tr.addClass('processed');
@@ -175,7 +175,7 @@ updateListAction = function(type) {
     $form.find('.dirty').removeClass('dirty');
     $form.find('input[name=uUID]').prop('checked', false);
     $('body').removeClass('dirty');
-    return $("#list :submit").prop('disabled', true);
+    return $("#list :submit[type=submit]").prop('disabled', true);
   }).fail(function(jqXHR, textStatus) {
     return message('Fehler: Daten konnten nicht gespeichert werden.');
   });

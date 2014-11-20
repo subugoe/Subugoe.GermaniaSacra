@@ -14,7 +14,7 @@ initEditor = (type) ->
 	$("#edit :input:not([name=uUID])").change ->
 		$(this).closest("label").addClass("dirty")
 		$('body').addClass('dirty')
-		$("#edit :submit").prop('disabled', false)
+		$("#edit :submit[type=submit]").prop('disabled', false)
 
 	$("#edit .close").click (e) ->
 		if not $('.dirty').length or confirmDiscardChanges()
@@ -169,7 +169,7 @@ editAction = (type, id) ->
 					if typeof name is 'undefined'
 						return
 					name = name.replace('[]', '')
-					$(this).val value
+					$(this).val value[name]
 
 		$('#edit').slideDown()
 		$('#message').slideUp()
@@ -189,6 +189,6 @@ updateAction = (type) ->
 		message 'Ihre Änderungen wurden gespeichert.'
 		$form.find('.dirty').removeClass('dirty')
 		$('body').removeClass('dirty')
-		$("#edit :submit").prop('disabled', true)
+		$("#edit :submit[type=submit]").prop('disabled', true)
 	).fail ->
 		message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'
