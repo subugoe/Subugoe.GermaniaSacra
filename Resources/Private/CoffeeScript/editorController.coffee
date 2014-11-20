@@ -145,11 +145,11 @@ editAction = (type, id) ->
 			$fieldset.find('.multiple:eq(0)').removeInputs 0
 			$.each obj.url, (index, value) ->
 				if value.url_typ_name is 'GND'
-					$(':input[name=gnd]').val value.url
-					$(':input[name=gnd_label]').val value.url_label
+					$form.find(':input[name=gnd]').val value.url
+					$form.find(':input[name=gnd_label]').val value.url_label
 				else if value.url_typ_name is 'Wikipedia'
-					$(':input[name=wikipedia]').val value.url
-					$(':input[name=wikipedia_label]').val value.url_label
+					$form.find(':input[name=wikipedia]').val value.url
+					$form.find(':input[name=wikipedia_label]').val value.url_label
 				else
 					$fieldset.find('.multiple:last()').addInputs 0
 					$fieldset.find('.multiple:last() label :input').each ->
