@@ -1339,6 +1339,7 @@ class DataImportController extends ActionController {
 				$ordenObject->setOrdenstyp($ordenstypObject);
 				$this->ordenRepository->add($ordenObject);
 				$this->persistenceManager->persistAll();
+				unset($ordenstypUUID);
 				$ordenUUID = $ordenObject->getUUID();
 				if (isset($gnd) && !empty($gnd)) {
 					$gnd = str_replace("\t", " ", $gnd);
