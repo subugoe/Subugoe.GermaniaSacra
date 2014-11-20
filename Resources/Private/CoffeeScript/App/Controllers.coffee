@@ -19,11 +19,13 @@ germaniaSacra.controller 'listController', ($scope) ->
 # TODO: Move this
 s_loading = '<i class="spinner spinner-icon"></i> Wird geladen&hellip;'
 
+selectOptions = {}
+
 init = ->
 
 	type = $('#list').data('type')
 
-	$('#message').hide()
+	$('#message, #search, #list').hide()
 
 	$saveButton = $('<button/>',
 		disabled: 'disabled'
@@ -35,8 +37,21 @@ init = ->
 		.append $('#csrf').clone().removeAttr('id')
 
 	initSearch()
-	initList(type)
 	initEditor(type)
+
+	# Load options for select before initializing list
+	$.getJSON 'getOptions', (response) ->
+		$.each response, (name, values) ->
+			$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
+			$selects.empty()
+			$.each values, (uUID, text) ->
+				$selects.append $('<option/>',
+					value: uUID
+					text: text
+				)
+		selectOptions = response
+		initList(type)
+
 
 	$("fieldset .multiple").append "<div class='add-remove-buttons'><span class='button remove'>-</span><span class='button add'>+</span></div>"
 	$("fieldset .multiple button").click (e) ->

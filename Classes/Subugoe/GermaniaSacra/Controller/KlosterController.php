@@ -241,15 +241,9 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 		}
-		$bearbeitungsstatusArr = array();
-		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
-		foreach ($bearbeitungsstatuses as $bearbeitungsstatus) {
-			$bearbeitungsstatusArr[] = array('uuid' => $bearbeitungsstatus->getUUID(), 'name' => $bearbeitungsstatus->getName());
-		}
+
 		$response = array();
 		$response['data'] = $klosterArr;
-		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
-
 		$viewRendered = json_encode($response);
 
 		$this->cacheInterface->set('kloster', $viewRendered);
