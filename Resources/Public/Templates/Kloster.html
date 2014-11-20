@@ -15,7 +15,6 @@
 	<form id="advanced-search" class="togglable">
 		<fieldset>
 			<legend>Erweiterte Suche</legend>
-			<div class="text-right clear"><button class="toggle">Suche über alle Felder</button></div>
 			<div class="multiple">
 				<label class="large-3 column none">
 					<select name="filter[]">
@@ -58,12 +57,9 @@
 					</select>
 				</label>
 			</div>
-
-			<div class="text-right clear">
-				<button class="reset left"><i class="icon-arrow"></i> Zurücksetzen</button>
-				&nbsp;
-				<button type="submit"><i class="icon-search"></i> Suchen</button>
-			</div>
+			<div class="large-2 columns"><button type="submit" class="left"><i class="icon-search"></i> Suchen</button></div>
+			<div class="large-2 columns"><button class="reset"><i class="icon-arrow"></i> Zurücksetzen</button></div>
+			<div class="large-8 columns"><button class="right toggle">Suche über alle Felder</button></div>
 		</fieldset>
 	</form>
 
@@ -184,7 +180,7 @@
 			<legend>Literatur</legend>
 			<div class="multiple">
 				<label class="large-8 columns">Bezeichnung<select name="literatur[]"></select></label>
-				<label class="large-3 columns">Seite<input name="beschreibung[]" type="text"></label>
+				<label class="large-3 columns">Fundstelle<textarea name="fundstelle[]"></textarea></label>
 			</div>
 		</fieldset>
 	</form>

@@ -12,7 +12,7 @@ initEditor = function(type) {
   $("#edit :input:not([name=uUID])").change(function() {
     $(this).closest("label").addClass("dirty");
     $('body').addClass('dirty');
-    return $("#edit :submit").prop('disabled', false);
+    return $("#edit :submit[type=submit]").prop('disabled', false);
   });
   $("#edit .close").click(function(e) {
     if (!$('.dirty').length || confirmDiscardChanges()) {
@@ -198,7 +198,7 @@ editAction = function(type, id) {
             return;
           }
           name = name.replace('[]', '');
-          return $(this).val(value);
+          return $(this).val(value[name]);
         });
       });
     }
@@ -220,7 +220,7 @@ updateAction = function(type) {
     message('Ihre Änderungen wurden gespeichert.');
     $form.find('.dirty').removeClass('dirty');
     $('body').removeClass('dirty');
-    return $("#edit :submit").prop('disabled', true);
+    return $("#edit :submit[type=submit]").prop('disabled', true);
   }).fail(function() {
     return message('Fehler: Ihre Änderungen konnten nicht gespeichert werden.');
   });
