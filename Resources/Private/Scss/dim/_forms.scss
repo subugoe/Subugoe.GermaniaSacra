@@ -128,7 +128,8 @@ button[type="submit"] {
 }
 
 input[type="submit"],
-button {
+button,
+.button {
 	background: none;
 	font-weight: bold;
 	margin: 0 0 .5em 0;

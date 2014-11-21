@@ -38,7 +38,7 @@ init = ->
 	initList(type)
 	initEditor(type)
 
-	$("fieldset .multiple").append "<div class='add-remove-buttons'><button class='remove'>-</button><button class='add'>+</button></div>"
+	$("fieldset .multiple").append "<div class='add-remove-buttons'><span class='button remove'>-</span><span class='button add'>+</span></div>"
 	$("fieldset .multiple button").click (e) ->
 		e.preventDefault()
 		div = $(this).closest(".multiple")
