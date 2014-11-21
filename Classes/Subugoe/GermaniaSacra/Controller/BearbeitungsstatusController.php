@@ -50,12 +50,14 @@ class BearbeitungsstatusController extends AbstractBaseController {
 		$bearbeitungsstatusObj = new Bearbeitungsstatus();
 		if (is_object($bearbeitungsstatusObj)) {
 			if (!$this->request->hasArgument('name')) {
-				$this->throwStatus(400, 'Bearbeitungsstatus name not provided', Null);
+				$this->throwStatus(400, 'Bearbeitungsstatus name not provided', NULL);
 			}
 			$bearbeitungsstatusObj->setName($this->request->getArgument('name'));
 			$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
+			$this->clearCachesFor('bearbeitungsstatus');
+
+			$this->throwStatus(201, NULL, NULL);
 		}
 	}
 
@@ -68,7 +70,7 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$bearbeitungsstatusArr = array();
 		$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
@@ -86,17 +88,19 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
 		if (is_object($bearbeitungsstatusObj)) {
 			$bearbeitungsstatusObj->setName($this->request->getArgument('name'));
 			$this->bearbeitungsstatusRepository->update($bearbeitungsstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('bearbeitungsstatus');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', Null);
+			$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', NULL);
 		}
 	}
 
@@ -109,19 +113,21 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$klosters = count($this->klosterRepository->findByBearbeitungsstatus($uuid));
 		if ($klosters == 0) {
 			$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
 			if (!is_object($bearbeitungsstatusObj)) {
-				$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', Null);
+				$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', NULL);
 			}
 			$this->bearbeitungsstatusRepository->remove($bearbeitungsstatusObj);
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('bearbeitungsstatus');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Due to dependencies Bearbeitungsstatus entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Bearbeitungsstatus entity could not be deleted', NULL);
 		}
 	}
 
@@ -134,7 +140,7 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$bearbeitungsstatuslist = $this->request->getArgument('data');
 		}
 		if (empty($bearbeitungsstatuslist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($bearbeitungsstatuslist as $uuid => $bearbeitungsstatus) {
 			$bearbeitungsstatusObj = $this->bearbeitungsstatusRepository->findByIdentifier($uuid);
@@ -142,7 +148,9 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$this->bearbeitungsstatusRepository->update($bearbeitungsstatusObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->clearCachesFor('bearbeitungsstatus');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
 ?>

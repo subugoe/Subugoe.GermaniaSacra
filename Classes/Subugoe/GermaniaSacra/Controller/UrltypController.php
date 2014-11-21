@@ -50,12 +50,14 @@ class UrltypController extends AbstractBaseController {
 		$urltypObj = new Urltyp();
 		if (is_object($urltypObj)) {
 			if (!$this->request->hasArgument('name')) {
-				$this->throwStatus(400, 'Url name not provided', Null);
+				$this->throwStatus(400, 'Url name not provided', NULL);
 			}
 			$urltypObj->setName($this->request->getArgument('name'));
 			$this->urltypRepository->add($urltypObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
+			$this->clearCachesFor('urlyp');
+
+			$this->throwStatus(201, NULL, NULL);
 		}
 	}
 
@@ -68,7 +70,7 @@ class UrltypController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$urltypArr = array();
 		$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
@@ -86,17 +88,19 @@ class UrltypController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
 		if (is_object($urltypObj)) {
 			$urltypObj->setName($this->request->getArgument('name'));
 			$this->urltypRepository->update($urltypObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('urlyp');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Urltyp not available', Null);
+			$this->throwStatus(400, 'Entity Urltyp not available', NULL);
 		}
 	}
 
@@ -109,19 +113,21 @@ class UrltypController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$urls = count($this->urlRepository->findByUrltyp($uuid));
 		if ($urls == 0) {
 			$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
 			if (!is_object($urltypObj)) {
-				$this->throwStatus(400, 'Entity Urltyp not available', Null);
+				$this->throwStatus(400, 'Entity Urltyp not available', NULL);
 			}
 			$this->urltypRepository->remove($urltypObj);
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('urlyp');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Due to dependencies Urltyp entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Urltyp entity could not be deleted', NULL);
 		}
 	}
 
@@ -134,7 +140,7 @@ class UrltypController extends AbstractBaseController {
 			$urltyplist = $this->request->getArgument('data');
 		}
 		if (empty($urltyplist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($urltyplist as $uuid => $urltyp) {
 			$urltypObj = $this->urltypRepository->findByIdentifier($uuid);
@@ -142,7 +148,9 @@ class UrltypController extends AbstractBaseController {
 			$this->urltypRepository->update($urltypObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->clearCachesFor('urlyp');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
 ?>

@@ -58,14 +58,28 @@ class BandController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @return string
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bands'));
 		}
+
 		$this->view->assign('bands', ['data' => $this->bandRepository->findAll()]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+
+		if ($this->request->getFormat() === 'json') {
+
+			if ($this->cacheInterface->has('band')) {
+				return $this->cacheInterface->get('band');
+			}
+
+			$viewRendered = $this->view->render();
+
+			$this->cacheInterface->set('band', $viewRendered);
+			return $viewRendered;
+		}
+
 	}
 
 	/**
@@ -162,8 +176,7 @@ class BandController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -177,9 +190,9 @@ class BandController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
-		}
-		else {
+			$this->clearCachesFor('band');
+			$this->throwStatus(201, NULL, NULL);
+		} else {
 			$this->throwStatus(400, 'Entity Band not available', Null);
 		}
 	}
@@ -203,10 +216,12 @@ class BandController extends AbstractBaseController {
 		$bandArr['kurztitel'] = $bandObj->getKurztitel();
 		$bandArr['sortierung'] = $bandObj->getSortierung();
 		$bistum = $bandObj->getBistum();
-		if ( $bistum )
+		if ($bistum) {
 			$bandArr['bistum'] = array('uuid' => $bistum->getUUID(), 'bistum' => $bistum->getBistum());
-		else
+		}
+		else {
 			$bandArr['bistum'] = array();
+		}
 		// Band Url data
 		$Urls = array();
 		$bandHasUrls = $bandObj->getBandHasUrls();
@@ -221,8 +236,7 @@ class BandController extends AbstractBaseController {
 					$urlTypName = $urlTypObj->getName();
 					if ($urlTypName == 'GND' || $urlTypName == 'Wikipedia') {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
-					}
-					else {
+					} else {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'links_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
 					}
 				}
@@ -378,8 +392,7 @@ class BandController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -393,9 +406,10 @@ class BandController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
-		}
-		else {
+			$this->clearCachesFor('band');
+
+			$this->throwStatus(200, NULL, NULL);
+		} else {
 			$this->throwStatus(400, 'Entity Band not available', Null);
 		}
 	}
@@ -413,7 +427,7 @@ class BandController extends AbstractBaseController {
 		}
 		$klosters = count($this->klosterRepository->findByBand($uuid));
 		$bandhasurls = count($this->bandHasUrlRepository->findByOrt($uuid));
-			if ($klosters == 0 && $bandhasurls == 0) {
+		if ($klosters == 0 && $bandhasurls == 0) {
 
 			$bandObj = $this->bandRepository->findByIdentifier($uuid);
 			if (!is_object($bandObj)) {
@@ -427,10 +441,11 @@ class BandController extends AbstractBaseController {
 					$this->bandHasUrlRepository->remove($bandHasUrl);
 				}
 			}
-			$this->throwStatus(200, NULL, Null);
-		}
-		else {
-			$this->throwStatus(400, 'Due to dependencies Band entity could not be deleted', Null);
+			$this->clearCachesFor('band');
+
+			$this->throwStatus(200, NULL, NULL);
+		} else {
+			$this->throwStatus(400, 'Due to dependencies Band entity could not be deleted', NULL);
 		}
 	}
 
@@ -454,7 +469,10 @@ class BandController extends AbstractBaseController {
 			$this->bandRepository->update($bandObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->clearCachesFor('band');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>

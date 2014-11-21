@@ -83,7 +83,7 @@ class OrdenController extends AbstractBaseController {
 		$ordenObj = new Orden();
 		if (is_object($ordenObj)) {
 			if (!$this->request->hasArgument('orden')) {
-				$this->throwStatus(400, 'Orden name not provided', Null);
+				$this->throwStatus(400, 'Orden name not provided', NULL);
 			}
 			$ordenObj->setOrden($this->request->getArgument('orden'));
 			$ordenObj->setOrdo($this->request->getArgument('ordo'));
@@ -185,10 +185,12 @@ class OrdenController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
+			$this->clearCachesFor('orden');
+
+			$this->throwStatus(201, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity not available', Null);
+			$this->throwStatus(400, 'Entity not available', NULL);
 		}
 	}
 
@@ -201,7 +203,7 @@ class OrdenController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$ordenArr = array();
 		$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
@@ -251,7 +253,7 @@ class OrdenController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
 		if (is_object($ordenObj)) {
@@ -404,10 +406,12 @@ class OrdenController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('orden');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Orden not available', Null);
+			$this->throwStatus(400, 'Entity Orden not available', NULL);
 		}
 	}
 
@@ -420,14 +424,14 @@ class OrdenController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$klosterordens = count($this->klosterordenRepository->findByOrden($uuid));
 		$ordenhasurls = count($this->ordenHasUrlRepository->findByOrden($uuid));
 		if ($klosterordens == 0 && $ordenhasurls == 0) {
 			$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
 			if (!is_object($ordenObj)) {
-				$this->throwStatus(400, 'Entity Orden not available', Null);
+				$this->throwStatus(400, 'Entity Orden not available', NULL);
 			}
 			$this->ordenRepository->remove($ordenObj);
 			// Fetch Orden Urls
@@ -437,10 +441,12 @@ class OrdenController extends AbstractBaseController {
 					$this->ordenHasUrlRepository->remove($ordenHasUrl);
 				}
 			}
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('orden');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Due to dependencies Orden entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Orden entity could not be deleted', NULL);
 		}
 	}
 
@@ -453,7 +459,7 @@ class OrdenController extends AbstractBaseController {
 			$ordenlist = $this->request->getArgument('data');
 		}
 		if (empty($ordenlist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($ordenlist as $uuid => $orden) {
 			$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
@@ -464,7 +470,9 @@ class OrdenController extends AbstractBaseController {
 			$this->ordenRepository->update($ordenObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->clearCachesFor('orden');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
 ?>

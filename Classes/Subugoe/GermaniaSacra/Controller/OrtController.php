@@ -66,14 +66,29 @@ class OrtController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @return string
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ort'));
 		}
+
 		$this->view->assign('ort', ['data' => $this->ortRepository->findAll()]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+
+		if ($this->request->getFormat() === 'json') {
+
+			if ($this->cacheInterface->has('ort')) {
+				return $this->cacheInterface->get('ort');
+			}
+
+			$viewRendered = $this->view->render();
+
+			$this->cacheInterface->set('ort', $viewRendered);
+			return $viewRendered;
+		}
+
+		return $this->view->render();
 	}
 
 	/**
@@ -179,8 +194,7 @@ class OrtController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -194,11 +208,13 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
+			$this->clearCachesFor('ort');
+
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Ort not available', NULL);
 		}
+
 	}
 
 	/**
@@ -239,8 +255,7 @@ class OrtController extends AbstractBaseController {
 					$urlTypName = $urlTypObj->getName();
 					if ($urlTypName == 'GND' || $urlTypName == 'Wikipedia') {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
-					}
-					else {
+					} else {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'links_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
 					}
 				}
@@ -405,8 +420,7 @@ class OrtController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -420,9 +434,10 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+			$this->clearCachesFor('ort');
+
+			$this->throwStatus(200, NULL, NUll);
+		} else {
 			$this->throwStatus(400, 'Entity Ort not available', NULL);
 		}
 	}
@@ -454,11 +469,13 @@ class OrtController extends AbstractBaseController {
 					$this->ortHasUrlRepository->remove($ortHasUrl);
 				}
 			}
+			$this->clearCachesFor('ort');
 			$this->throwStatus(200, NULL, NULL);
+
+		} else {
+			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', Null);
 		}
-		else {
-			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', NULL);
-		}
+
 	}
 
 	/**
@@ -481,15 +498,17 @@ class OrtController extends AbstractBaseController {
 			$ortObj->setLaenge($ort['laenge']);
 			if (isset($ort['wuestung']) && !empty($ort['wuestung'])) {
 				$wuestung = $ort['wuestung'];
-			}
-			else {
+			} else {
 				$wuestung = 0;
 			}
 			$ortObj->setWuestung($wuestung);
 			$this->ortRepository->update($ortObj);
 		}
 		$this->persistenceManager->persistAll();
+		$this->clearCachesFor('ort');
+
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>

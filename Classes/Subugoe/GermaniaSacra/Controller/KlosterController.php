@@ -9,6 +9,7 @@ use Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl;
 use Subugoe\GermaniaSacra\Queue\FileGenerationJob;
+use TYPO3\Flow\Persistence\QueryInterface;
 
 class KlosterController extends AbstractBaseController {
 
@@ -165,26 +166,26 @@ class KlosterController extends AbstractBaseController {
 
 	/**
 	 * @var array
-	*/
-	protected  $joinParamArr = array(
-									'band.nummer' => array('join' => array(array('kloster','band','band')), 'parameter' => 'band', 'duplicateJoinCheck' => array('band')),
-									'bearbeitungsstatus.name' => array('join' => array(array('kloster', 'bearbeitungsstatus', 'bearbeitungsstatus')), 'parameter' => 'name', 'duplicateJoinCheck' => array('bearbeitungsstatus')),
-									'personallistenstatus.name' => array('join' => array(array('kloster', 'personallistenstatus', 'personallistenstatus')), 'parameter' => 'pname', 'duplicateJoinCheck' => array('personallitenstatus')),
-									'kloster.kloster' => array('' => array(array('','','')), 'parameter' => 'kloster', 'duplicateJoinCheck' => ''),
-									'kloster.kloster_id' => array('' => array(array('','','')), 'parameter' => 'kloster_id', 'duplicateJoinCheck' => ''),
-									'kloster.patrozinium' => array('' => array(array('','','')), 'parameter' => 'patrozinium', 'duplicateJoinCheck' => ''),
-									'klosterstandort.breite' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'breite', 'duplicateJoinCheck' => array('klosterstandorts')),
-									'klosterstandort.laenge' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'laenge', 'duplicateJoinCheck' => array('klosterstandorts')),
-									'klosterstandort.von_von' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'von_von', 'duplicateJoinCheck' => array('klosterstandorts')),
-									'klosterstandort.bis_bis' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'bis_bis', 'duplicateJoinCheck' => array('klosterstandorts')),
-									'ort.ort' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'parameter' => 'ort', 'duplicateJoinCheck' => array('klosterstandorts', 'ort')),
-									'bistum.bistum' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'thirdjoin' => array(array('ort', 'bistum', 'bistum')), 'parameter' => 'bistum', 'duplicateJoinCheck' => array('klosterstandorts', 'ort', 'bistum')),
-									'land.land' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'thirdjoin' => array(array('ort', 'land', 'land')), 'parameter' => 'land', 'duplicateJoinCheck' => array('klosterstandorts', 'ort', 'land')),
-									'orden.orden' => array('join' => array(array('kloster', 'klosterordens', 'klosterorden')), 'secondjoin' => array(array('klosterorden', 'orden', 'orden')), 'parameter' => 'orden', 'duplicateJoinCheck' => array('klosterorden', 'orden')),
-									'klosterstatus.status' => array('join' => array(array('kloster', 'klosterordens', 'klosterorden')), 'secondjoin' => array(array('klosterorden', 'klosterstatus', 'klosterstatus')), 'parameter' => 'status', 'duplicateJoinCheck' => array('klosterorden', 'klosterstatus')),
-									'url.url' => array('join' => array(array('kloster', 'klosterHasUrls', 'klosterhasurl')), 'secondjoin' => array(array('klosterhasurl', 'url', 'url')), 'parameter' => 'url', 'duplicateJoinCheck' => array('klosterhasurl', 'url')),
-									'bundesland.bundesland' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'thirdjoin' => array(array('ort', 'land', 'land')), 'parameter' => 'land', 'secondparameter' => array('entity' => 'land', 'property' => 'ist_in_deutschland', 'operator' => '=', 'value_alias' => 'bundesland', 'value' => '1'), 'duplicateJoinCheck' => array('klosterstandorts', 'ort', 'land')),
-									);
+	 */
+	protected $joinParamArr = array(
+			'band.nummer' => array('join' => array(array('kloster', 'band', 'band')), 'parameter' => 'band', 'duplicateJoinCheck' => array('band')),
+			'bearbeitungsstatus.name' => array('join' => array(array('kloster', 'bearbeitungsstatus', 'bearbeitungsstatus')), 'parameter' => 'name', 'duplicateJoinCheck' => array('bearbeitungsstatus')),
+			'personallistenstatus.name' => array('join' => array(array('kloster', 'personallistenstatus', 'personallistenstatus')), 'parameter' => 'pname', 'duplicateJoinCheck' => array('personallitenstatus')),
+			'kloster.kloster' => array('' => array(array('', '', '')), 'parameter' => 'kloster', 'duplicateJoinCheck' => ''),
+			'kloster.kloster_id' => array('' => array(array('', '', '')), 'parameter' => 'kloster_id', 'duplicateJoinCheck' => ''),
+			'kloster.patrozinium' => array('' => array(array('', '', '')), 'parameter' => 'patrozinium', 'duplicateJoinCheck' => ''),
+			'klosterstandort.breite' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'breite', 'duplicateJoinCheck' => array('klosterstandorts')),
+			'klosterstandort.laenge' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'laenge', 'duplicateJoinCheck' => array('klosterstandorts')),
+			'klosterstandort.von_von' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'von_von', 'duplicateJoinCheck' => array('klosterstandorts')),
+			'klosterstandort.bis_bis' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'parameter' => 'bis_bis', 'duplicateJoinCheck' => array('klosterstandorts')),
+			'ort.ort' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'parameter' => 'ort', 'duplicateJoinCheck' => array('klosterstandorts', 'ort')),
+			'bistum.bistum' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'thirdjoin' => array(array('ort', 'bistum', 'bistum')), 'parameter' => 'bistum', 'duplicateJoinCheck' => array('klosterstandorts', 'ort', 'bistum')),
+			'land.land' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'thirdjoin' => array(array('ort', 'land', 'land')), 'parameter' => 'land', 'duplicateJoinCheck' => array('klosterstandorts', 'ort', 'land')),
+			'orden.orden' => array('join' => array(array('kloster', 'klosterordens', 'klosterorden')), 'secondjoin' => array(array('klosterorden', 'orden', 'orden')), 'parameter' => 'orden', 'duplicateJoinCheck' => array('klosterorden', 'orden')),
+			'klosterstatus.status' => array('join' => array(array('kloster', 'klosterordens', 'klosterorden')), 'secondjoin' => array(array('klosterorden', 'klosterstatus', 'klosterstatus')), 'parameter' => 'status', 'duplicateJoinCheck' => array('klosterorden', 'klosterstatus')),
+			'url.url' => array('join' => array(array('kloster', 'klosterHasUrls', 'klosterhasurl')), 'secondjoin' => array(array('klosterhasurl', 'url', 'url')), 'parameter' => 'url', 'duplicateJoinCheck' => array('klosterhasurl', 'url')),
+			'bundesland.bundesland' => array('join' => array(array('kloster', 'klosterstandorts', 'klosterstandort')), 'secondjoin' => array(array('klosterstandort', 'ort', 'ort')), 'thirdjoin' => array(array('ort', 'land', 'land')), 'parameter' => 'land', 'secondparameter' => array('entity' => 'land', 'property' => 'ist_in_deutschland', 'operator' => '=', 'value_alias' => 'bundesland', 'value' => '1'), 'duplicateJoinCheck' => array('klosterstandorts', 'ort', 'land')),
+	);
 
 	/**
 	 * Fetches the actual Bearbeiter and assigns it to the view
@@ -197,8 +198,13 @@ class KlosterController extends AbstractBaseController {
 	 * @return array $response The Kloster array
 	 */
 	public function allAsJson() {
+
+		if ($this->cacheInterface->has('kloster')) {
+			return $this->cacheInterface->get('kloster');
+		}
+
 		$this->klosterRepository->setDefaultOrderings(
-				array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
+				array('uid' => QueryInterface::ORDER_DESCENDING)
 		);
 		$klosters = $this->klosterRepository->findAll();
 		$klosterArr = array();
@@ -218,8 +224,7 @@ class KlosterController extends AbstractBaseController {
 			}
 			if (!empty($klosterArr[$k]['ort'][$i])) {
 				$klosterArr[$k]['ort'] = implode('\n', $klosterArr[$k]['ort']);
-			}
-			else {
+			} else {
 				$klosterArr[$k]['ort'] = '';
 			}
 			$klosterHasUrls = $kloster->getKlosterHasUrls();
@@ -244,7 +249,12 @@ class KlosterController extends AbstractBaseController {
 		$response = array();
 		$response['data'] = $klosterArr;
 		$response['bearbeitungsstatus'] = $bearbeitungsstatusArr;
-		return json_encode($response);
+
+		$viewRendered = json_encode($response);
+
+		$this->cacheInterface->set('kloster', $viewRendered);
+
+		return $viewRendered;
 	}
 
 	/**
@@ -318,6 +328,9 @@ class KlosterController extends AbstractBaseController {
 		$response[] = $ordenArr;
 		$response[] = $klosterstatusArr;
 		$response[] = $bearbeiterArr;
+
+		$this->cacheInterface->remove('kloster');
+
 		return json_encode($response);
 	}
 
@@ -333,12 +346,12 @@ class KlosterController extends AbstractBaseController {
 			$kloster->setUid($kloster_uid);
 			$kloster->setKloster_id($kloster_uid);
 			// Add Kloster
-			$kloster->setKloster( $this->request->getArgument('kloster_name') );
-			$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
-			$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
-			$kloster->setBand_seite( $this->request->getArgument('band_seite') );
-			$kloster->setText_gs_band( $this->request->getArgument('text_gs_band') );
-			$kloster->setBearbeitungsstand( $this->request->getArgument('bearbeitungsstand') );
+			$kloster->setKloster($this->request->getArgument('kloster_name'));
+			$kloster->setPatrozinium($this->request->getArgument('patrozinium'));
+			$kloster->setBemerkung($this->request->getArgument('bemerkung'));
+			$kloster->setBand_seite($this->request->getArgument('band_seite'));
+			$kloster->setText_gs_band($this->request->getArgument('text_gs_band'));
+			$kloster->setBearbeitungsstand($this->request->getArgument('bearbeitungsstand'));
 			$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 			$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 			$kloster->setBearbeitungsstatus($bearbeitungsstatus);
@@ -379,8 +392,7 @@ class KlosterController extends AbstractBaseController {
 			}
 			if (isset($ortArr) && !empty($ortArr)) {
 				$klosterstandortNumber = count($ortArr);
-			}
-			else {
+			} else {
 				$klosterstandortNumber = count($bistumArr);
 			}
 			$klosterstandortArr = array();
@@ -596,10 +608,11 @@ class KlosterController extends AbstractBaseController {
 					}
 				}
 			}
-			$this->throwStatus(201, NULL, Null);
-		}
-		else {
-			$this->throwStatus(400, 'Kloster id could not be set', Null);
+			$this->cacheInterface->remove('kloster');
+
+			$this->throwStatus(201, NULL, NULL);
+		} else {
+			$this->throwStatus(400, 'Kloster id could not be set', NULL);
 		}
 	}
 
@@ -612,11 +625,11 @@ class KlosterController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		if (!is_object($kloster)) {
-			$this->throwStatus(400, 'Entity Kloster not available', Null);
+			$this->throwStatus(400, 'Entity Kloster not available', NULL);
 		}
 		// Kloster data
 		$klosterArr = array();
@@ -717,8 +730,7 @@ class KlosterController extends AbstractBaseController {
 					$urlTypName = $urlTypObj->getName();
 					if ($urlTypName == 'GND' || $urlTypName == 'Wikipedia') {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
-					}
-					else {
+					} else {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'links_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
 					}
 				}
@@ -743,6 +755,11 @@ class KlosterController extends AbstractBaseController {
 	 * @return array $response select options as JSON
 	 */
 	public function getOptionsAction() {
+
+		if ($this->cacheInterface->has('getOptions')) {
+			return $this->cacheInterface->get('getOptions');
+		}
+
 		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
@@ -753,8 +770,7 @@ class KlosterController extends AbstractBaseController {
 		foreach ($bearbeitungsstatuses as $bearbeitungsstatus) {
 			if ($bearbeitungsstatus->getName() == 'Online' && $role != 'Flow.Login:Administrator') {
 				$bearbeitungsstatusArr[] = '';
-			}
-			else {
+			} else {
 				$bearbeitungsstatusArr[$bearbeitungsstatus->getUUID()] = $bearbeitungsstatus->getName();
 			}
 		}
@@ -773,9 +789,8 @@ class KlosterController extends AbstractBaseController {
 		foreach ($bands as $band) {
 			if ($band->getTitel() != 'keine Angabe') {
 				$bandNummerTitel = $band->getNummer() . '-' . $band->getTitel();
-			}
-			else {
-				 $bandNummerTitel = $band->getTitel();
+			} else {
+				$bandNummerTitel = $band->getTitel();
 			}
 			$bandArr[$band->getUUID()] = $bandNummerTitel;
 		}
@@ -835,7 +850,7 @@ class KlosterController extends AbstractBaseController {
 		);
 		$urltyps = $this->urltypRepository->findAll();
 		foreach ($urltyps as $urltyp) {
-			if ( $urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND' )
+			if ($urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND')
 				$urltypArr[$urltyp->getUUID()] = $urltyp->getName();
 		}
 		// Land data for select box
@@ -845,7 +860,7 @@ class KlosterController extends AbstractBaseController {
 		);
 		$lands = $this->landRepository->findAll();
 		foreach ($lands as $land) {
-				$landArr[$land->getUUID()] = $land->getLand();
+			$landArr[$land->getUUID()] = $land->getLand();
 		}
 		// Bearbeiter roles
 		$roleArr = array();
@@ -868,7 +883,12 @@ class KlosterController extends AbstractBaseController {
 		$response['url_typ'] = $urltypArr;
 		$response['land'] = $landArr;
 		$response['role'] = $roleArr;
-		return json_encode($response);
+
+		$getOptions = json_encode($response);
+
+		$this->cacheInterface->set('getOptions', $getOptions);
+
+		return $getOptions;
 	}
 
 	/** Update a Kloster entity
@@ -880,18 +900,18 @@ class KlosterController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		if (!is_object($kloster)) {
-			$this->throwStatus(400, 'Entity Kloster not available', Null);
+			$this->throwStatus(400, 'Entity Kloster not available', NULL);
 		}
-		$kloster->setKloster( $this->request->getArgument('kloster_name') );
-		$kloster->setPatrozinium( $this->request->getArgument('patrozinium') );
-		$kloster->setBemerkung( $this->request->getArgument('bemerkung') );
-		$kloster->setBand_seite( $this->request->getArgument('band_seite') );
-		$kloster->setText_gs_band( $this->request->getArgument('text_gs_band') );
-		$kloster->setBearbeitungsstand( $this->request->getArgument('bearbeitungsstand') );
+		$kloster->setKloster($this->request->getArgument('kloster_name'));
+		$kloster->setPatrozinium($this->request->getArgument('patrozinium'));
+		$kloster->setBemerkung($this->request->getArgument('bemerkung'));
+		$kloster->setBand_seite($this->request->getArgument('band_seite'));
+		$kloster->setText_gs_band($this->request->getArgument('text_gs_band'));
+		$kloster->setBearbeitungsstand($this->request->getArgument('bearbeitungsstand'));
 		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
 		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
@@ -1181,7 +1201,9 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 		}
-		$this->throwStatus(200, NULL, Null);
+		$this->cacheInterface->remove('kloster');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 
 	/**
@@ -1191,11 +1213,11 @@ class KlosterController extends AbstractBaseController {
 	public function deleteAction() {
 		$uuid = $this->request->getArgument('uUID');
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$kloster = $this->klosterRepository->findByIdentifier($uuid);
 		if (!is_object($kloster)) {
-			$this->throwStatus(400, 'Entity Kloster not available', Null);
+			$this->throwStatus(400, 'Entity Kloster not available', NULL);
 		}
 		$this->klosterRepository->remove($kloster);
 		$klosterordens = $kloster->getKlosterordens();
@@ -1222,7 +1244,9 @@ class KlosterController extends AbstractBaseController {
 				$this->klosterHasUrlRepository->remove($url);
 			}
 		}
-		$this->throwStatus(200, NULL, Null);
+		$this->cacheInterface->remove('kloster');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 
 	/** Updates the list of Kloster
@@ -1234,7 +1258,7 @@ class KlosterController extends AbstractBaseController {
 			$klosterlist = $this->request->getArgument('data');
 		}
 		if (empty($klosterlist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		$uuids = array();
 		if (is_array($klosterlist) && !empty($klosterlist)) {
@@ -1257,8 +1281,7 @@ class KlosterController extends AbstractBaseController {
 							if (!empty($v['gnd'])) {
 								$urlObject->setUrl($v['gnd']);
 								$this->urlRepository->update($urlObject);
-							}
-							elseif (isset($v['gnd']) && empty($v['gnd'])) {
+							} elseif (isset($v['gnd']) && empty($v['gnd'])) {
 								$this->klosterHasUrlRepository->remove($klosterHasUrl);
 								$this->urlRepository->remove($urlObject);
 							}
@@ -1283,7 +1306,9 @@ class KlosterController extends AbstractBaseController {
 			}
 			$this->persistenceManager->persistAll();
 		}
-		$this->throwStatus(200, NULL, Null);
+		$this->cacheInterface->remove('kloster');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 
 	/** Gets and returns the list of Orte as per search string
@@ -1298,8 +1323,8 @@ class KlosterController extends AbstractBaseController {
 			$orte = array();
 			foreach ($searchResult as $res) {
 				$orte[] = array(
-					'uUID' => $res->getUUID(),
-					'name' => $res->getFullOrt()
+						'uUID' => $res->getUUID(),
+						'name' => $res->getFullOrt()
 				);
 			}
 			return json_encode($orte);
@@ -1368,14 +1393,12 @@ class KlosterController extends AbstractBaseController {
 				$joinParams = $this->joinParamArr[$v];
 				if (isset($concat[$k]) && !empty($concat[$k])) {
 					$cc = $concat[$k];
-				}
-				else {
+				} else {
 					$cc = null;
 				}
 				if (trim($v) == 'bundesland.bundesland') {
 					$filter = 'land.land';
-				}
-				else {
+				} else {
 					$filter = $v;
 				}
 				$searchArr[] = array('filter' => $filter, 'operator' => $operator[$k], 'text' => $text[$k], 'joinParams' => $joinParams, 'concat' => $cc);
@@ -1388,8 +1411,7 @@ class KlosterController extends AbstractBaseController {
 				$resultArr[] = $v['Persistence_Object_Identifier'];
 			}
 			return json_encode($resultArr);
-		}
-		else {
+		} else {
 			if (isset($searchArr) && is_array($searchArr)) {
 				$searchResult = $this->klosterRepository->findKlosterByAdvancedSearch($searchArr);
 				$resultArr = array();
@@ -1429,4 +1451,5 @@ class KlosterController extends AbstractBaseController {
 	}
 
 }
+
 ?>
