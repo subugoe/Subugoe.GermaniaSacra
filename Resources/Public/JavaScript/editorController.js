@@ -168,11 +168,11 @@ editAction = function(type, id) {
       $fieldset.find('.multiple:eq(0)').removeInputs(0);
       $.each(obj.url, function(index, value) {
         if (value.url_typ_name === 'GND') {
-          $(':input[name=gnd]').val(value.url);
-          return $(':input[name=gnd_label]').val(value.url_label);
+          $form.find(':input[name=gnd]').val(value.url);
+          return $form.find(':input[name=gnd_label]').val(value.url_label);
         } else if (value.url_typ_name === 'Wikipedia') {
-          $(':input[name=wikipedia]').val(value.url);
-          return $(':input[name=wikipedia_label]').val(value.url_label);
+          $form.find(':input[name=wikipedia]').val(value.url);
+          return $form.find(':input[name=wikipedia_label]').val(value.url_label);
         } else {
           $fieldset.find('.multiple:last()').addInputs(0);
           return $fieldset.find('.multiple:last() label :input').each(function() {
