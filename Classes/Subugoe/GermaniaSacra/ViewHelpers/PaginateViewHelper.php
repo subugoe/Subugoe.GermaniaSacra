@@ -43,6 +43,7 @@ use TYPO3\Fluid\Core\Widget\AbstractWidgetViewHelper;
  * So, there is no negative performance overhead in using the Paginate Widget.
  *
  * @api
+ * @deprecated
  */
 class PaginateViewHelper extends AbstractWidgetViewHelper {
 

@@ -98,8 +98,7 @@ class OrdenstypController extends AbstractBaseController {
 			$this->clearCachesFor('ordenstyp');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Ordenstyp not available', NULL);
 		}
 	}
@@ -125,8 +124,7 @@ class OrdenstypController extends AbstractBaseController {
 			$this->clearCachesFor('ordenstyp');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Due to dependencies Ordenstyp entity could not be deleted', NULL);
 		}
 	}
@@ -153,4 +151,5 @@ class OrdenstypController extends AbstractBaseController {
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>

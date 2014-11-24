@@ -473,7 +473,7 @@ class OrtController extends AbstractBaseController {
 			$this->throwStatus(200, NULL, NULL);
 
 		} else {
-			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', NULL);
 		}
 
 	}

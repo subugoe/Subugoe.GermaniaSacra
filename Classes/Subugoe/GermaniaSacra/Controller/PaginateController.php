@@ -16,6 +16,7 @@ use TYPO3\Fluid\Core\Widget\AbstractWidgetController;
 
 /**
  * Controller for the paginate widget
+ * @deprecated
  */
 class PaginateController extends AbstractWidgetController {
 

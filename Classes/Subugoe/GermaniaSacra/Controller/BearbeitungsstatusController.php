@@ -98,8 +98,7 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$this->clearCachesFor('bearbeitungsstatus');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', NULL);
 		}
 	}
@@ -125,8 +124,7 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$this->clearCachesFor('bearbeitungsstatus');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Due to dependencies Bearbeitungsstatus entity could not be deleted', NULL);
 		}
 	}
@@ -153,4 +151,5 @@ class BearbeitungsstatusController extends AbstractBaseController {
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>

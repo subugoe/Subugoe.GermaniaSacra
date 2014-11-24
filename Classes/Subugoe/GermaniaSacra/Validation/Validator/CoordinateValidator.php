@@ -29,6 +29,7 @@ use TYPO3\Flow\Annotations as Flow;
 
 /**
  * Validator for coordinates
+ * @deprecated
  */
 class CoordinateValidator extends \TYPO3\Flow\Validation\Validator\AbstractValidator {
 	/**

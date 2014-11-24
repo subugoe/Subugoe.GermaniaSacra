@@ -17,13 +17,13 @@ class KlosterstandortController extends AbstractBaseController {
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterRepository
 	 */
 	protected $klosterRepository;
-	
+
 	/**
 	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\OrtRepository
 	 */
 	protected $ortRepository;
-	
+
 	/**
 	 * @return void
 	 */

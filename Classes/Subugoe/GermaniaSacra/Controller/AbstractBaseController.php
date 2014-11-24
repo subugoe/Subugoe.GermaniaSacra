@@ -6,8 +6,8 @@ use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
 /**
-* An action controller with base functionality for all action controllers
-*/
+ * An action controller with base functionality for all action controllers
+ */
 abstract class AbstractBaseController extends ActionController {
 
 	/**

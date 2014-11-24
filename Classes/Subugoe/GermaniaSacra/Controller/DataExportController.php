@@ -203,7 +203,7 @@ class DataExportController extends ActionController {
 	 */
 	public function klosterListAllAction() {
 
-		if ($this->personen === Null) {
+		if ($this->personen === NULL) {
 			$this->logger->log('Personendatenbank ist nicht verfügbar.');
 			exit;
 		}
@@ -441,13 +441,11 @@ class DataExportController extends ActionController {
 								if ($von_von != self::DISTANT_PAST && $von_von != self::DISTANT_FUTURE) {
 									$von_verbalArr[] = (string)$von_von;
 									$von_verbal = (string)$von_von;
-								}
-								else {
+								} else {
 									$von_verbalArr[] = '';
 									$von_verbal = '';
 								}
-							}
-							else {
+							} else {
 								$von_verbalArr[] = '';
 								$von_verbal = '';
 							}
@@ -496,13 +494,11 @@ class DataExportController extends ActionController {
 										$bis_verbalArr[] = (string)$bis_von;
 										$bis_verbal = (string)$bis_von;
 									}
-								}
-								else {
+								} else {
 									$bis_verbalArr[] = '';
 									$bis_verbal = '';
 								}
-							}
-							else {
+							} else {
 								$bis_verbalArr[] = '';
 								$bis_verbal = '';
 							}
@@ -584,8 +580,7 @@ class DataExportController extends ActionController {
 								if (!empty($bistum)) {
 									$bistumArr[] = $bistum;
 									$klosterstandorte[$k][$i]['bistum'] = $bistum;
-								}
-								else {
+								} else {
 									$bistumArr[] = '';
 									$klosterstandorte[$k][$i]['bistum'] = '';
 								}
@@ -620,8 +615,7 @@ class DataExportController extends ActionController {
 										}
 									}
 								}
-							}
-							else {
+							} else {
 								$bistumArr[] = '';
 								$klosterstandorte[$k][$i]['bistum'] = '';
 								$ist_erzbistumArr[] = '';
@@ -755,13 +749,11 @@ class DataExportController extends ActionController {
 							if ($ko_von_von != self::DISTANT_PAST && $ko_von_von != self::DISTANT_FUTURE) {
 								$ko_von_verbalArr[] = (string)$ko_von_von;
 								$ko_von_verbal = (string)$ko_von_von;
-							}
-							else {
+							} else {
 								$ko_von_verbalArr[] = '';
 								$ko_von_verbal = '';
 							}
-						}
-						else {
+						} else {
 							$ko_von_verbalArr[] = '';
 							$ko_von_verbal = '';
 						}
@@ -807,13 +799,11 @@ class DataExportController extends ActionController {
 							if ($ko_bis_von != self::DISTANT_PAST && $ko_bis_von != self::DISTANT_FUTURE) {
 								$ko_bis_verbalArr[] = (string)$ko_bis_von;
 								$ko_bis_verbal = (string)$ko_bis_von;
-							}
-							else {
+							} else {
 								$ko_bis_verbalArr[] = '';
 								$ko_bis_verbal = '';
 							}
-						}
-						else {
+						} else {
 							$ko_bis_verbalArr[] = '';
 							$ko_bis_verbal = '';
 						}
@@ -1299,8 +1289,7 @@ class DataExportController extends ActionController {
 
 				if (isset($bistumArr) && !empty($bistumArr)) {
 					$klosterArr[$k]['bistum'] = $bistumArr;
-				}
-				else {
+				} else {
 					$klosterArr[$k]['bistum'] = '';
 				}
 

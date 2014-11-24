@@ -98,8 +98,7 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$this->clearCachesFor('personallistenstatus');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Personallistenstatus not available', NULL);
 		}
 	}
@@ -125,8 +124,7 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$this->clearCachesFor('personallistenstatus');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Due to dependencies Personallistenstatus entity could not be deleted', NULL);
 		}
 	}
@@ -153,4 +151,5 @@ class PersonallistenstatusController extends AbstractBaseController {
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>

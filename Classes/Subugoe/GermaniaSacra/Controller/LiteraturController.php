@@ -4,6 +4,11 @@ namespace Subugoe\GermaniaSacra\Controller;
 use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Literatur;
 
+/**
+ * Class LiteraturController
+ * @package Subugoe\GermaniaSacra\Controller
+ * @deprecated
+ */
 class LiteraturController extends AbstractBaseController {
 
 	/**

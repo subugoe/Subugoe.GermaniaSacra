@@ -98,8 +98,7 @@ class UrltypController extends AbstractBaseController {
 			$this->clearCachesFor('urlyp');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Urltyp not available', NULL);
 		}
 	}
@@ -125,8 +124,7 @@ class UrltypController extends AbstractBaseController {
 			$this->clearCachesFor('urlyp');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Due to dependencies Urltyp entity could not be deleted', NULL);
 		}
 	}
@@ -153,4 +151,5 @@ class UrltypController extends AbstractBaseController {
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>

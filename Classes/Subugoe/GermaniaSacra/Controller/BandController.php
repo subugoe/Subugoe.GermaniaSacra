@@ -193,7 +193,7 @@ class BandController extends AbstractBaseController {
 			$this->clearCachesFor('band');
 			$this->throwStatus(201, NULL, NULL);
 		} else {
-			$this->throwStatus(400, 'Entity Band not available', Null);
+			$this->throwStatus(400, 'Entity Band not available', NULL);
 		}
 	}
 
@@ -206,7 +206,7 @@ class BandController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$bandArr = array();
 		$bandObj = $this->bandRepository->findByIdentifier($uuid);
@@ -218,8 +218,7 @@ class BandController extends AbstractBaseController {
 		$bistum = $bandObj->getBistum();
 		if ($bistum) {
 			$bandArr['bistum'] = array('uuid' => $bistum->getUUID(), 'bistum' => $bistum->getBistum());
-		}
-		else {
+		} else {
 			$bandArr['bistum'] = array();
 		}
 		// Band Url data
@@ -256,7 +255,7 @@ class BandController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$bandObj = $this->bandRepository->findByIdentifier($uuid);
 		if (is_object($bandObj)) {
@@ -410,7 +409,7 @@ class BandController extends AbstractBaseController {
 
 			$this->throwStatus(200, NULL, NULL);
 		} else {
-			$this->throwStatus(400, 'Entity Band not available', Null);
+			$this->throwStatus(400, 'Entity Band not available', NULL);
 		}
 	}
 
@@ -423,7 +422,7 @@ class BandController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$klosters = count($this->klosterRepository->findByBand($uuid));
 		$bandhasurls = count($this->bandHasUrlRepository->findByOrt($uuid));
@@ -431,7 +430,7 @@ class BandController extends AbstractBaseController {
 
 			$bandObj = $this->bandRepository->findByIdentifier($uuid);
 			if (!is_object($bandObj)) {
-				$this->throwStatus(400, 'Entity Band not available', Null);
+				$this->throwStatus(400, 'Entity Band not available', NULL);
 			}
 			$this->bandRepository->remove($bandObj);
 			// Fetch Band Urls
@@ -458,7 +457,7 @@ class BandController extends AbstractBaseController {
 			$bandlist = $this->request->getArgument('data');
 		}
 		if (empty($bandlist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($bandlist as $uuid => $band) {
 			$bandObj = $this->bandRepository->findByIdentifier($uuid);

@@ -105,21 +105,21 @@ class BistumController extends AbstractBaseController {
 					$gnd_label = $this->request->getArgument('bistum') . ' [' . $gndid . ']';
 				}
 				if (isset($gnd) && !empty($gnd)) {
-						$url = new Url();
-						$url->setUrl($gnd);
-						if (!empty($gnd_label)) {
-							$url->setBemerkung($gnd_label);
-						}
-						$urlTypObj = $this->urltypRepository->findOneByName('GND');
-						$url->setUrltyp($urlTypObj);
-						$this->urlRepository->add($url);
-						$urlUUID = $url->getUUID();
-						$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
-						$bistumhasurl = new BistumHasUrl();
-						$bistumhasurl->setBistum($bistumObj);
-						$bistumhasurl->setUrl($urlObj);
-						$this->bistumHasUrlRepository->add($bistumhasurl);
+					$url = new Url();
+					$url->setUrl($gnd);
+					if (!empty($gnd_label)) {
+						$url->setBemerkung($gnd_label);
 					}
+					$urlTypObj = $this->urltypRepository->findOneByName('GND');
+					$url->setUrltyp($urlTypObj);
+					$this->urlRepository->add($url);
+					$urlUUID = $url->getUUID();
+					$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
+					$bistumhasurl = new BistumHasUrl();
+					$bistumhasurl->setBistum($bistumObj);
+					$bistumhasurl->setUrl($urlObj);
+					$this->bistumHasUrlRepository->add($bistumhasurl);
+				}
 			}
 			//Update Wikipedia if set
 			$bistumHasWiki = false;
@@ -134,21 +134,21 @@ class BistumController extends AbstractBaseController {
 					$wikipedia_label = rawurldecode($wikipedia_label);
 				}
 				if (isset($wikipedia) && !empty($wikipedia)) {
-						$url = new Url();
-						$url->setUrl($wikipedia);
-						if (!empty($wikipedia_label)) {
-							$url->setBemerkung($wikipedia_label);
-						}
-						$urlTypObj = $this->urltypRepository->findOneByName('Wikipedia');
-						$url->setUrltyp($urlTypObj);
-						$this->urlRepository->add($url);
-						$urlUUID = $url->getUUID();
-						$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
-						$bistumhasurl = new BistumHasUrl();
-						$bistumhasurl->setBistum($bistumObj);
-						$bistumhasurl->setUrl($urlObj);
-						$this->bistumHasUrlRepository->add($bistumhasurl);
+					$url = new Url();
+					$url->setUrl($wikipedia);
+					if (!empty($wikipedia_label)) {
+						$url->setBemerkung($wikipedia_label);
 					}
+					$urlTypObj = $this->urltypRepository->findOneByName('Wikipedia');
+					$url->setUrltyp($urlTypObj);
+					$this->urlRepository->add($url);
+					$urlUUID = $url->getUUID();
+					$urlObj = $this->urlRepository->findByIdentifier($urlUUID);
+					$bistumhasurl = new BistumHasUrl();
+					$bistumhasurl->setBistum($bistumObj);
+					$bistumhasurl->setUrl($urlObj);
+					$this->bistumHasUrlRepository->add($bistumhasurl);
+				}
 			}
 			// Add Url if set
 			if ($this->request->hasArgument('url')) {
@@ -170,8 +170,7 @@ class BistumController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -189,8 +188,7 @@ class BistumController extends AbstractBaseController {
 			$this->clearCachesFor('bistum');
 
 			$this->throwStatus(201, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Bistum not available', NULL);
 		}
 	}
@@ -204,7 +202,7 @@ class BistumController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$bistumArr = array();
 		$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
@@ -215,7 +213,7 @@ class BistumController extends AbstractBaseController {
 		$bistumArr['ist_erzbistum'] = $bistumObj->getIst_erzbistum();
 		$bistumArr['shapefile'] = $bistumObj->getShapefile();
 		$ort = $bistumObj->getOrt();
-		if ( $ort )
+		if ($ort)
 			$bistumArr['ort'] = array('uUID' => $ort->getUUID(), 'name' => $ort->getOrt());
 		else
 			$bistumArr['ort'] = array();
@@ -233,8 +231,7 @@ class BistumController extends AbstractBaseController {
 					$urlTypName = $urlTypObj->getName();
 					if ($urlTypName == 'GND' || $urlTypName == 'Wikipedia') {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
-					}
-					else {
+					} else {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'links_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
 					}
 				}
@@ -254,7 +251,7 @@ class BistumController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
 		if (is_object($bistumObj)) {
@@ -391,8 +388,7 @@ class BistumController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -409,8 +405,7 @@ class BistumController extends AbstractBaseController {
 			$this->clearCachesFor('bistum');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Bistum not available', NULL);
 		}
 	}
@@ -424,7 +419,7 @@ class BistumController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$orte = count($this->ortRepository->findByBistum($uuid));
 		$bistumhasurls = count($this->bistumHasUrlRepository->findByBistum($uuid));
@@ -432,7 +427,7 @@ class BistumController extends AbstractBaseController {
 		if ($orte == 0 && $bistumhasurls == 0 && $bands == 0) {
 			$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
 			if (!is_object($bistumObj)) {
-				$this->throwStatus(400, 'Entity Bistum not available', Null);
+				$this->throwStatus(400, 'Entity Bistum not available', NULL);
 			}
 			$this->bistumRepository->remove($bistumObj);
 			// Fetch Bistum Urls
@@ -445,8 +440,7 @@ class BistumController extends AbstractBaseController {
 			$this->clearCachesFor('bistum');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Due to dependencies Bistum entity could not be deleted', NULL);
 		}
 	}
@@ -460,7 +454,7 @@ class BistumController extends AbstractBaseController {
 			$bistumlist = $this->request->getArgument('data');
 		}
 		if (empty($bistumlist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($bistumlist as $uuid => $bistum) {
 			$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
@@ -469,8 +463,7 @@ class BistumController extends AbstractBaseController {
 			$bistumObj->setBemerkung($bistum['bemerkung']);
 			if (isset($bistum['ist_erzbistum']) && !empty($bistum['ist_erzbistum'])) {
 				$ist_erzbistum = $bistum['ist_erzbistum'];
-			}
-			else {
+			} else {
 				$ist_erzbistum = 0;
 			}
 			$bistumObj->setIst_erzbistum($ist_erzbistum);
@@ -483,4 +476,5 @@ class BistumController extends AbstractBaseController {
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>

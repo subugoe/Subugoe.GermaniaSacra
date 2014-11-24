@@ -682,7 +682,7 @@ class DataImportController extends ActionController {
 		// Added to prevent wrong search result
 		$ortBistum = $this->bistumRepository->findOneByBistum('keine Angabe');
 		$ortTbl = 'subugoe_germaniasacra_domain_model_ort';
-		$sql = 'SELECT * FROM ' . $ortTbl . ' WHERE bistum IS Null';
+		$sql = 'SELECT * FROM ' . $ortTbl . ' WHERE bistum IS NULL';
 		$orts = $sqlConnection->fetchAll($sql);
 		if (!empty($orts)) {
 			foreach ($orts as $ort) {
