@@ -2359,7 +2359,7 @@ class DataImportController extends ActionController {
 		if (!is_dir(dirname($usernamePasswordFile))) {
 			mkdir(dirname($usernamePasswordFile), 0777, TRUE);
 		}
-		file_put_contents($usernamePasswordFile, $usernamePassword,  FILE_APPEND);
+		file_put_contents($usernamePasswordFile, $usernamePassword);
 	}
 }
 ?>
