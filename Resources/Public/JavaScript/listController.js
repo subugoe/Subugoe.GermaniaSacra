@@ -18,7 +18,7 @@ initList = function(type) {
 };
 
 editListAction = function(type) {
-  var $table, $this, $ths, ajaxSuccess, columns, orderBy, selectOptions;
+  var $table, $this, $ths, ajaxSuccess, columns, orderBy;
   $this = $('#list');
   if (!$this.length) {
     alert('There has to be a <section> whose id equals type');
@@ -48,7 +48,6 @@ editListAction = function(type) {
   if (orderBy < 0) {
     orderBy = 1;
   }
-  selectOptions = {};
   dataTable = $table.DataTable({
     sAjaxSource: '/entity/' + type,
     columns: columns,
@@ -79,7 +78,7 @@ editListAction = function(type) {
       var $tr;
       $tr = $table.find('tbody tr:not(.processed)');
       $tr.children().each(function() {
-        var $input, $td, $th, obj, selectName, _i, _len, _ref;
+        var $input, $td, $th, name, option, option_uuid, selectName, uuid, _ref, _ref1;
         $td = $(this);
         $th = $table.find('th[data-name]').eq($td.index());
         if ($th.length) {
@@ -93,9 +92,17 @@ editListAction = function(type) {
             selectName = $th.data('name');
             if (selectOptions[selectName] != null) {
               _ref = selectOptions[selectName];
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                obj = _ref[_i];
-                $input.append($('<option/>').text(obj.name).attr('value', obj.uuid));
+              for (uuid in _ref) {
+                name = _ref[uuid];
+                $input.append($('<option/>').text(name).attr('value', uuid));
+              }
+            }
+            _ref1 = selectOptions[selectName];
+            for (option_uuid in _ref1) {
+              option = _ref1[option_uuid];
+              if (option === $(this).text()) {
+                $(this).text(option_uuid);
+                break;
               }
             }
           } else if ($th.data('input') === 'checkbox') {
@@ -122,9 +129,16 @@ editListAction = function(type) {
       return $tr.addClass('processed');
     }
   }, ajaxSuccess = function(json) {
+    var index, kloster, _ref, _results;
     $('#search, #list').slideDown();
     $('#message').slideUp();
-    return selectOptions.bearbeitungsstatus = json.bearbeitungsstatus;
+    _ref = json.data;
+    _results = [];
+    for (index in _ref) {
+      kloster = _ref[index];
+      _results.push(json.data[index].bearbeitungsstatus = selectOptions.bearbeitungsstatus[kloster.bearbeitungsstatus]);
+    }
+    return _results;
   });
   $table.on("click", ".edit", function(e) {
     var uuid;

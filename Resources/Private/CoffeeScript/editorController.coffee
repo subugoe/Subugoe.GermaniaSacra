@@ -1,7 +1,6 @@
 initEditor = (type) ->
 
-	populateSelectsAction(type)
-
+	$("#edit textarea").autosize()
 	$("#edit textarea").autosize()
 	$('#edit').hide()
 
@@ -33,19 +32,6 @@ initEditor = (type) ->
 		$("select.disabled").prop "disabled", true
 
 	initGeopicker()
-
-# Fill the select fields with options
-# TODO: Use generalized function, only populate one type at a time and fetch separately
-populateSelectsAction = ->
-	$.getJSON 'getOptions', (response) ->
-		$.each response, (name, values) ->
-			$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
-			$selects.empty()
-			$.each values, (uUID, text) ->
-				$selects.append $('<option>',
-					value: uUID
-					text: text
-				)
 
 # Clear the edit form for a new Kloster
 newAction = ->

@@ -47,7 +47,6 @@ editListAction = (type) ->
 	orderBy = $table.find('th.order-by').index()
 	if orderBy < 0 then orderBy = 1
 
-	selectOptions = {}
 	dataTable = $table.DataTable(
 		sAjaxSource: '/entity/' + type
 		columns: columns
@@ -85,13 +84,17 @@ editListAction = (type) ->
 					if $th.data('input') is 'select'
 						selectName = $th.data('name')
 						if selectOptions[selectName]?
-							for obj in selectOptions[selectName]
-								$input.append $('<option/>').text(obj.name).attr('value', obj.uuid)
+							for uuid, name of selectOptions[selectName]
+								$input.append $('<option/>').text(name).attr('value', uuid)
+						for option_uuid, option of selectOptions[selectName]
+							if option is $(this).text()
+								$(this).text(option_uuid)
+								break
 					else if $th.data('input') is 'checkbox'
 						if $td.text() is '1' then $input.prop('checked', true)
 						if $input.attr('name') isnt 'uuid' and $input.attr('name') isnt 'uUID'
 							$td.text('1')
-					$(this).html( $input.val($(this).text()) )
+					$(this).html $input.val( $(this).text() )
 			$tr.each ->
 				uuid = $(this).find(':input[name=uUID]').val()
 				# Since only visible textareas can be autosized, this has to be called after every page render
@@ -107,8 +110,9 @@ editListAction = (type) ->
 		ajaxSuccess = (json) ->
 			$('#search, #list').slideDown()
 			$('#message').slideUp()
-			# TODO: Get select options for each select type
-			selectOptions.bearbeitungsstatus = json.bearbeitungsstatus
+			# TODO: Find a more elegant way to use text instead of uuid for filtering and sorting
+			for index, kloster of json.data
+				json.data[index].bearbeitungsstatus = selectOptions.bearbeitungsstatus[kloster.bearbeitungsstatus]
 	)
 
 	# Click handlers for edit and delete
