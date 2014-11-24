@@ -1,6 +1,7 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
+use Subugoe\GermaniaSacra\Queue\SolrUpdateJob;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
@@ -38,6 +39,12 @@ abstract class AbstractBaseController extends ActionController {
 	protected $cacheInterface;
 
 	/**
+	 * @Flow\Inject
+	 * @var \TYPO3\Jobqueue\Common\Job\JobManager
+	 */
+	protected $jobManager;
+
+	/**
 	 * Initializes the controller before invoking an action method.
 	 *
 	 * @return void
@@ -59,10 +66,26 @@ abstract class AbstractBaseController extends ActionController {
 			$this->cacheInterface->remove($entity);
 		}
 
+		$this->clearKlosterCache();
+
+		$this->triggerSolrUpdate();
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function triggerSolrUpdate() {
+		$job = new SolrUpdateJob('solr');
+		$this->jobManager->queue('solr', $job);
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function clearKlosterCache() {
 		if ($this->cacheInterface->has('kloster')) {
 			$this->cacheInterface->remove('kloster');
 		}
 	}
 
 }
-?>

@@ -99,6 +99,6 @@ class SolrUpdateJob implements JobInterface {
 	 * @return string A label for the job
 	 */
 	public function getLabel() {
-		return 'solr';
+		return 'Solr Update Queue';
 	}
 }

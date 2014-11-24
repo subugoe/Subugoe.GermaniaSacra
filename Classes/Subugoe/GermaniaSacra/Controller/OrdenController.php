@@ -170,8 +170,7 @@ class OrdenController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -188,8 +187,7 @@ class OrdenController extends AbstractBaseController {
 			$this->clearCachesFor('orden');
 
 			$this->throwStatus(201, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity not available', NULL);
 		}
 	}
@@ -213,8 +211,7 @@ class OrdenController extends AbstractBaseController {
 		$ordenstyp = $ordenObj->getOrdenstyp();
 		if ($ordenstyp) {
 			$ordenArr['ordenstyp'] = $ordenstyp->getUUID();
-		}
-		else {
+		} else {
 			$ordenArr['ordenstyp'] = '';
 		}
 		$ordenArr['graphik'] = $ordenObj->getGraphik();
@@ -232,8 +229,7 @@ class OrdenController extends AbstractBaseController {
 					$urlTypName = $urlTypObj->getName();
 					if ($urlTypName == 'GND' || $urlTypName == 'Wikipedia') {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'url_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
-					}
-					else {
+					} else {
 						$Urls[$k] = array('url_typ' => $urlTyp, 'url' => $url, 'links_label' => $url_bemerkung, 'url_typ_name' => $urlTypName);
 					}
 				}
@@ -391,8 +387,7 @@ class OrdenController extends AbstractBaseController {
 								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
-								}
-								else {
+								} else {
 									$urlObj->setBemerkung($urlTyp);
 								}
 								$this->urlRepository->add($urlObj);
@@ -409,8 +404,7 @@ class OrdenController extends AbstractBaseController {
 			$this->clearCachesFor('orden');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Entity Orden not available', NULL);
 		}
 	}
@@ -444,8 +438,7 @@ class OrdenController extends AbstractBaseController {
 			$this->clearCachesFor('orden');
 
 			$this->throwStatus(200, NULL, NULL);
-		}
-		else {
+		} else {
 			$this->throwStatus(400, 'Due to dependencies Orden entity could not be deleted', NULL);
 		}
 	}
@@ -475,4 +468,5 @@ class OrdenController extends AbstractBaseController {
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
+
 ?>
