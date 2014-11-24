@@ -11,7 +11,7 @@ class OrdenHasUrl {
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Orden
-	 * @ORM\ManyToOne
+	 * @ORM\ManyToOne(inversedBy="ordenHasUrls")
 	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $orden;
