@@ -50,12 +50,14 @@ class OrdenstypController extends AbstractBaseController {
 		$ordenstypObj = new Ordenstyp();
 		if (is_object($ordenstypObj)) {
 			if (!$this->request->hasArgument('ordenstyp')) {
-				$this->throwStatus(400, 'Ordenstyp not provided', Null);
+				$this->throwStatus(400, 'Ordenstyp not provided', NULL);
 			}
 			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
 			$this->ordenstypRepository->add($ordenstypObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
+			$this->clearCachesFor('ordenstyp');
+
+			$this->throwStatus(201, NULL, NULL);
 		}
 	}
 
@@ -68,7 +70,7 @@ class OrdenstypController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$ordenstypArr = array();
 		$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
@@ -86,17 +88,19 @@ class OrdenstypController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
 		if (is_object($ordenstypObj)) {
 			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
 			$this->ordenstypRepository->update($ordenstypObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('ordenstyp');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Ordenstyp not available', Null);
+			$this->throwStatus(400, 'Entity Ordenstyp not available', NULL);
 		}
 	}
 
@@ -109,19 +113,21 @@ class OrdenstypController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$ordens = count($this->ordenRepository->findByOrdenstyp($uuid));
 		if ($ordens == 0) {
 			$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
 			if (!is_object($ordenstypObj)) {
-				$this->throwStatus(400, 'Entity Ordenstyp not available', Null);
+				$this->throwStatus(400, 'Entity Ordenstyp not available', NULL);
 			}
 			$this->ordenstypRepository->remove($ordenstypObj);
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('ordenstyp');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Due to dependencies Ordenstyp entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Ordenstyp entity could not be deleted', NULL);
 		}
 	}
 
@@ -134,7 +140,7 @@ class OrdenstypController extends AbstractBaseController {
 			$ordenstyplist = $this->request->getArgument('data');
 		}
 		if (empty($ordenstyplist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($ordenstyplist as $uuid => $ordenstyp) {
 			$ordenstypObj = $this->ordenstypRepository->findByIdentifier($uuid);
@@ -142,7 +148,9 @@ class OrdenstypController extends AbstractBaseController {
 			$this->ordenstypRepository->update($ordenstypObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->clearCachesFor('ordenstyp');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
 ?>

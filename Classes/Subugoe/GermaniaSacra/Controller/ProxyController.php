@@ -34,7 +34,7 @@ use TYPO3\Flow\Annotations as Flow;
 /**
  * Proxy for remote origins
  */
-class ProxyController extends ActionController {
+class ProxyController extends AbstractBaseController {
 
 	/**
 	 * @var string
@@ -50,6 +50,7 @@ class ProxyController extends ActionController {
 	 * Initializes defaults
 	 */
 	public function initializeAction() {
+		parent::initializeAction();
 		$this->client = new \Guzzle\Http\Client();
 	}
 
@@ -92,6 +93,8 @@ class ProxyController extends ActionController {
 		$controller = ucfirst($entityName) . 'Controller';
 		$controllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . $controller;
 
+		$this->response->setHeader('Content-Type', 'application/json');
+
 		if (!class_exists($controllerName)) {
 			throw new Exception('Class ' . $controllerName . ' not found.', 1409817407);
 		}
@@ -100,16 +103,26 @@ class ProxyController extends ActionController {
 		$controllerInstance = new $controllerName();
 		$controllerInstance->initializeAction();
 
+		if ($this->cacheInterface->has($entityName)) {
+			return $this->cacheInterface->get($entityName);
+		} else {
+			if ($entityName === 'kloster') {
+				return $controllerInstance->allAsJson();
+			} else {
+				$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
+			}
+		}
+
 		if (file_exists($entityFile)) {
 			$date = new \DateTime();
 			$date->setTimestamp(filemtime($entityFile));
 			$this->response->setLastModified(gmdate('D, d M Y H:i:s', filemtime($entityFile)) . '  GMT');
-			$this->response->setHeader('Content-Type', 'application/json');
 			return \TYPO3\Flow\Utility\Files::getFileContents($entityFile);
 		} else {
 			// TODO generate for all entities
 			if ($entityName === 'kloster') {
 				JsonGeneratorUtility::generateJsonFile($entityName);
+				return \TYPO3\Flow\Utility\Files::getFileContents($entityFile);
 			}
 			$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
 		}

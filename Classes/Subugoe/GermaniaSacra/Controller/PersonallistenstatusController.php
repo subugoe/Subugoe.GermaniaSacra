@@ -50,12 +50,14 @@ class PersonallistenstatusController extends AbstractBaseController {
 		$personallistenstatusObj = new Personallistenstatus();
 		if (is_object($personallistenstatusObj)) {
 			if (!$this->request->hasArgument('name')) {
-				$this->throwStatus(400, 'Personallistenstatus name not provided', Null);
+				$this->throwStatus(400, 'Personallistenstatus name not provided', NULL);
 			}
 			$personallistenstatusObj->setName($this->request->getArgument('name'));
 			$this->personallistenstatusRepository->add($personallistenstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
+			$this->clearCachesFor('personallistenstatus');
+
+			$this->throwStatus(201, NULL, NULL);
 		}
 	}
 
@@ -68,7 +70,7 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$personallistenstatusArr = array();
 		$personallistenstatusObj = $this->personallistenstatusRepository->findByIdentifier($uuid);
@@ -86,17 +88,19 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$personallistenstatusObj = $this->personallistenstatusRepository->findByIdentifier($uuid);
 		if (is_object($personallistenstatusObj)) {
 			$personallistenstatusObj->setName($this->request->getArgument('name'));
 			$this->personallistenstatusRepository->update($personallistenstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('personallistenstatus');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Personallistenstatus not available', Null);
+			$this->throwStatus(400, 'Entity Personallistenstatus not available', NULL);
 		}
 	}
 
@@ -109,19 +113,21 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$uuid = $this->request->getArgument('uUID');
 		}
 		if (empty($uuid)) {
-			$this->throwStatus(400, 'Required uUID not provided', Null);
+			$this->throwStatus(400, 'Required uUID not provided', NULL);
 		}
 		$klosters = count($this->klosterRepository->findByPersonallistenstatus($uuid));
 		if ($klosters == 0) {
 			$personallistenstatusObj = $this->personallistenstatusRepository->findByIdentifier($uuid);
 			if (!is_object($personallistenstatusObj)) {
-				$this->throwStatus(400, 'Entity Personallistenstatus not available', Null);
+				$this->throwStatus(400, 'Entity Personallistenstatus not available', NULL);
 			}
 			$this->personallistenstatusRepository->remove($personallistenstatusObj);
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('personallistenstatus');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Due to dependencies Personallistenstatus entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Personallistenstatus entity could not be deleted', NULL);
 		}
 	}
 
@@ -134,7 +140,7 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$personallistenstatuslist = $this->request->getArgument('data');
 		}
 		if (empty($personallistenstatuslist)) {
-			$this->throwStatus(400, 'Required data arguemnts not provided', Null);
+			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($personallistenstatuslist as $uuid => $personallistenstatus) {
 			$personallistenstatusObj = $this->personallistenstatusRepository->findByIdentifier($uuid);
@@ -142,7 +148,9 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$this->personallistenstatusRepository->update($personallistenstatusObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->clearCachesFor('personallistenstatus');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
 ?>

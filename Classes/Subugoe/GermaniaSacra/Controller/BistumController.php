@@ -185,10 +185,13 @@ class BistumController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(201, NULL, Null);
+
+			$this->clearCachesFor('bistum');
+
+			$this->throwStatus(201, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Bistum not available', Null);
+			$this->throwStatus(400, 'Entity Bistum not available', NULL);
 		}
 	}
 
@@ -403,10 +406,12 @@ class BistumController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('bistum');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Entity Bistum not available', Null);
+			$this->throwStatus(400, 'Entity Bistum not available', NULL);
 		}
 	}
 
@@ -437,10 +442,12 @@ class BistumController extends AbstractBaseController {
 					$this->bistumHasUrlRepository->remove($bistumHasUrl);
 				}
 			}
-			$this->throwStatus(200, NULL, Null);
+			$this->clearCachesFor('bistum');
+
+			$this->throwStatus(200, NULL, NULL);
 		}
 		else {
-			$this->throwStatus(400, 'Due to dependencies Bistum entity could not be deleted', Null);
+			$this->throwStatus(400, 'Due to dependencies Bistum entity could not be deleted', NULL);
 		}
 	}
 
@@ -471,7 +478,9 @@ class BistumController extends AbstractBaseController {
 			$this->bistumRepository->update($bistumObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->throwStatus(200, NULL, Null);
+		$this->clearCachesFor('bistum');
+
+		$this->throwStatus(200, NULL, NULL);
 	}
 }
 ?>

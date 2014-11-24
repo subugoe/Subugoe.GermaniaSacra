@@ -27,6 +27,17 @@ abstract class AbstractBaseController extends ActionController {
 	protected $bearbeiterObj;
 
 	/**
+	 * @var \TYPO3\Flow\Cache\CacheManager
+	 * @Flow\Inject
+	 */
+	protected $cacheManager;
+
+	/**
+	 * @var \TYPO3\Flow\Cache\Frontend\FrontendInterface
+	 */
+	protected $cacheInterface;
+
+	/**
 	 * Initializes the controller before invoking an action method.
 	 *
 	 * @return void
@@ -34,6 +45,23 @@ abstract class AbstractBaseController extends ActionController {
 	public function initializeAction() {
 		$account = $this->securityContext->getAccount();
 		$this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
+		$this->cacheInterface = $this->cacheManager->getCache('GermaniaSacra_SheytanCache');
+	}
+
+	/**
+	 * @param string $entity
+	 * @return void
+	 */
+	protected function clearCachesFor($entity) {
+		$this->cacheInterface->remove($entity);
+
+		if ($this->cacheInterface->has($entity)) {
+			$this->cacheInterface->remove($entity);
+		}
+
+		if ($this->cacheInterface->has('kloster')) {
+			$this->cacheInterface->remove('kloster');
+		}
 	}
 
 }
