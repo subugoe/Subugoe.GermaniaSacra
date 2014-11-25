@@ -39,6 +39,7 @@ $.fn.autocomplete = ->
 				$select.empty().append("<option value='#{$(this).data('uuid')}' selected>#{$(this).text()}</option>")
 			else
 				$select.val( $(this).data('uuid') )
+			$select.trigger('change')
 			$(document).click()
 
 		oldVal = ''

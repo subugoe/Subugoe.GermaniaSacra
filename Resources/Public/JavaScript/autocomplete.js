@@ -38,6 +38,7 @@ $.fn.autocomplete = function() {
       } else {
         $select.val($(this).data('uuid'));
       }
+      $select.trigger('change');
       return $(document).click();
     });
     oldVal = '';
