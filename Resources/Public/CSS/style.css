@@ -7610,8 +7610,20 @@ h2 {
   padding-bottom: .5em;
 }
 
+footer {
+  border-radius: 0 2px 0 0;
+  background: #fff;
+  border-top: 1px solid #bbbbbb;
+  border-right: 1px solid #bbbbbb;
+  left: 0;
+  bottom: 0;
+  font-size: 0.875rem;
+  padding: 0.625rem 0.75rem;
+  position: fixed;
+}
+
 #content {
-  padding: 1.25rem;
+  padding: 1.25rem 1.25rem 2.5rem;
 }
 #content:before, #content:after {
   content: " ";
@@ -7948,13 +7960,15 @@ button.new,
 .button.new {
   float: left;
 }
-input[type="submit"][disabled], input[type="submit"][disabled]:focus, input[type="submit"][disabled]:hover,
+input[type="submit"][disabled], input[type="submit"][disabled]:focus, input[type="submit"][disabled]:hover, input[type="submit"].disabled,
 button[disabled],
 button[disabled]:focus,
 button[disabled]:hover,
+button.disabled,
 .button[disabled],
 .button[disabled]:focus,
-.button[disabled]:hover {
+.button[disabled]:hover,
+.button.disabled {
   background: none;
   color: #999999;
 }

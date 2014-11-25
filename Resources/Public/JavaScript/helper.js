@@ -42,7 +42,7 @@ $.fn.addInputs = function(slideTime) {
     $clone.clearForm();
     $clone.find("select").autocomplete();
     $clone.insertAfter($(this)).hide().slideDown(slideTime);
-    return $fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1);
+    return $fieldset.find(".remove").toggleClass("disabled", $fieldset.find(".multiple:not(.dying)").length === 1);
   });
 };
 
@@ -54,7 +54,7 @@ $.fn.removeInputs = function(slideTime) {
     var $fieldset;
     $fieldset = $(this).closest("fieldset");
     $fieldset.find(".multiple").length > 1 && $(this).addClass("dying").slideUp(slideTime, this.remove);
-    return $fieldset.find("button.remove").prop("disabled", $fieldset.find(".multiple:not(.dying)").length === 1);
+    return $fieldset.find(".remove").toggleClass("disabled", $fieldset.find(".multiple:not(.dying)").length === 1);
   });
 };
 

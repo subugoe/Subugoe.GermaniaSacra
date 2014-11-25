@@ -101,18 +101,18 @@ editAction = (type, id) ->
 
 		$fieldset = $('#klosterstandorte')
 		if $fieldset.length and obj.klosterstandorte?
+			$fieldset.find('.multiple:eq(0)').removeInputs 0
 			$.each obj.klosterstandorte, (index, value) ->
 				if index > 0
 					$fieldset.find('.multiple:last()').addInputs 0
 				$fieldset.find('.multiple:last() label :input').each ->
 					name = $(this).attr('name')
-					return	if typeof name is 'undefined'
+					if typeof name is 'undefined' then return
 					name = name.replace('[]', '')
 					val = value[name]
 					if name is 'wuestung'
-						if name is 'wuestung'
-							checkedCondition = value[name] is 1
-							$(this).prop 'checked', checkedCondition
+						checkedCondition = value[name] is 1
+						$(this).prop 'checked', checkedCondition
 					else if name is 'ort'
 						$(this).html $('<option />',
 							value: value.uUID

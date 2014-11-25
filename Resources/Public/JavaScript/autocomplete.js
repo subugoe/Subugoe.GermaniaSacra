@@ -121,7 +121,7 @@ $.fn.autocomplete = function() {
       return $input.val($select.find(':selected').text());
     });
     return $($input, $list).click(function(e) {
-      return e.stopPropagation();
+      return false;
     });
   });
 };
