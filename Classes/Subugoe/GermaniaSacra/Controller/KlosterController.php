@@ -5,6 +5,7 @@ use TYPO3\Flow\Annotations as Flow;
 use Subugoe\GermaniaSacra\Domain\Model\Kloster;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterstandort;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterorden;
+use Subugoe\GermaniaSacra\Domain\Model\Literatur;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl;
@@ -96,12 +97,6 @@ class KlosterController extends AbstractBaseController {
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterstatusRepository
 	 */
 	protected $klosterstatusRepository;
-
-	/**
-	 * @Flow\Inject
-	 * @var \Subugoe\GermaniaSacra\Domain\Repository\ZeitraumRepository
-	 */
-	protected $zeitraumRepository;
 
 	/**
 	 * @Flow\Inject
@@ -502,17 +497,39 @@ class KlosterController extends AbstractBaseController {
 				$this->klosterordenRepository->add($klosterorden);
 			}
 			if ($this->request->hasArgument('literatur')) {
-				$kloster_uuid = $uuid;
 				$literaturArr = $this->request->getArgument('literatur');
-
-				if (is_array(($laengeArr) && !empty($literaturArr))) {
-					foreach ($literaturArr as $lit) {
-						$klosterHasLiteratur = new KlosterHasLiteratur();
-						$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
-						$literatur = $this->literaturRepository->findByIdentifier($lit);
-						$klosterHasLiteratur->setKloster($kloster);
-						$klosterHasLiteratur->setLiteratur($literatur);
-						$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+				if ($this->request->hasArgument('fundstelle')) {
+					$fundstelleArr = $this->request->getArgument('fundstelle');
+				}
+				if (isset($literaturArr) && !empty($literaturArr) && is_array($literaturArr)) {
+					foreach ($literaturArr as $k => $lit) {
+						if (isset($lit) && !empty($lit)) {
+							$lit = trim($lit);
+							$fundstelle = trim($fundstelleArr[$k]);
+							if (!empty($fundstelle)) {
+								$literatur = $this->literaturRepository->findByProperties(array('citekey' => $lit, 'beschreibung' => $fundstelle));
+								if (count($literatur) > 0) {
+									$litUUID = $literatur->getFirst()->getUUID();
+									if (!empty($litUUID)) {
+										$literatur = $this->literaturRepository->findByIdentifier($litUUID);
+									}
+								}
+								else {
+									$literatur = new Literatur();
+									$literatur->setCitekey($lit);
+									$literatur->setBeschreibung($fundstelle);
+									$this->literaturRepository->add($literatur);
+								}
+								$kloster_uuid = $uuid;
+								$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
+								if (is_object($kloster) && is_object($literatur)) {
+									$klosterHasLiteratur = new KlosterHasLiteratur();
+									$klosterHasLiteratur->setKloster($kloster);
+									$klosterHasLiteratur->setLiteratur($literatur);
+									$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -662,12 +679,14 @@ class KlosterController extends AbstractBaseController {
 			$klosterstandorte[$i]['bemerkung_standort'] = $klosterstandort->getBemerkung_standort();
 			$klosterstandorte[$i]['standort_interne_bemerkung'] = $klosterstandort->getBemerkung();
 			$ort = $klosterstandort->getOrt();
-			$klosterstandorte[$i]['uUID'] = $ort->getUUID();
-			$klosterstandorte[$i]['ort'] = $ort->getFullOrt();
-			$klosterstandorte[$i]['wuestung'] = $ort->getWuestung();
-			$bistumObject = $ort->getBistum();
-			if (is_object($bistumObject)) {
-				$klosterstandorte[$i]['bistum'] = $bistumObject->getUUID();
+			if (is_object($ort)) {
+				$klosterstandorte[$i]['uUID'] = $ort->getUUID();
+				$klosterstandorte[$i]['ort'] = $ort->getFullOrt();
+				$klosterstandorte[$i]['wuestung'] = $ort->getWuestung();
+				$bistumObject = $ort->getBistum();
+				if (is_object($bistumObject)) {
+					$klosterstandorte[$i]['bistum'] = $bistumObject->getUUID();
+				}
 			}
 			if ($klosterstandort->getVon_von()) {
 				$klosterstandorte[$i]['von_von'] = $klosterstandort->getVon_von();
@@ -736,7 +755,7 @@ class KlosterController extends AbstractBaseController {
 		$klosterHasLiteraturs = $kloster->getKlosterHasLiteraturs();
 		foreach ($klosterHasLiteraturs as $l => $klosterHasLiteratur) {
 			$literaturObj = $klosterHasLiteratur->getLiteratur();
-			$Literaturs[$l] = array($literaturObj->getUUID(), $literaturObj->getCitekey() . ' - ' . $literaturObj->getBeschreibung());
+			$Literaturs[$l] = array('literatur' => $literaturObj->getCitekey(), 'fundstelle' => (string)$literaturObj->getBeschreibung());
 		}
 		$klosterArr['literatur'] = $Literaturs;
 		return json_encode($klosterArr);
@@ -916,8 +935,12 @@ class KlosterController extends AbstractBaseController {
 		$this->klosterRepository->update($kloster);
 
 		// Update Klosterstandort
-		$ortArr = $this->request->getArgument('ort');
-		$bistumArr = $this->request->getArgument('bistum');
+		if ($this->request->hasArgument('ort')) {
+			$ortArr = $this->request->getArgument('ort');
+		}
+		if ($this->request->hasArgument('bistum')) {
+			$bistumArr = $this->request->getArgument('bistum');
+		}
 		$gruenderArr = $this->request->getArgument('gruender');
 		$breiteArr = $this->request->getArgument('breite');
 		$laengeArr = $this->request->getArgument('laenge');
@@ -936,8 +959,12 @@ class KlosterController extends AbstractBaseController {
 		$klosterstandortArr = array();
 		for ($i = 0; $i < $klosterstandortNumber; $i++) {
 			$klosterstandortArr[$i]['kloster'] = $uuid;
-			$klosterstandortArr[$i]['ort'] = $ortArr[$i];
-			$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
+			if (!empty($ortArr[$i])) {
+				$klosterstandortArr[$i]['ort'] = $ortArr[$i];
+			}
+			if (!empty($bistumArr[$i])) {
+				$klosterstandortArr[$i]['bistum'] = $bistumArr[$i];
+			}
 			$klosterstandortArr[$i]['gruender'] = $gruenderArr[$i];
 			$klosterstandortArr[$i]['breite'] = $breiteArr[$i];
 			$klosterstandortArr[$i]['laenge'] = $laengeArr[$i];
@@ -967,9 +994,11 @@ class KlosterController extends AbstractBaseController {
 				$kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
 				$klosterstandort->setUid(++$lastKlosterstandortId);
 				$klosterstandort->setKloster($kloster);
-				$ort_uuid = $ko['ort'];
-				$ort = $this->ortRepository->findByIdentifier($ort_uuid);
-				$klosterstandort->setOrt($ort);
+				if (!empty($ko['ort'])) {
+					$ort_uuid = $ko['ort'];
+					$ort = $this->ortRepository->findByIdentifier($ort_uuid);
+					$klosterstandort->setOrt($ort);
+				}
 				$klosterstandort->setGruender($ko['gruender']);
 				$klosterstandort->setBreite($ko['breite']);
 				$klosterstandort->setLaenge($ko['laenge']);
@@ -982,12 +1011,18 @@ class KlosterController extends AbstractBaseController {
 				$klosterstandort->setBemerkung_standort($ko['bemerkung_standort']);
 				$klosterstandort->setBemerkung($ko['bemerkung']);
 				$this->klosterstandortRepository->add($klosterstandort);
-				$ort->setWuestung($ko['wuestung']);
-				$bistumObject = $this->bistumRepository->findByIdentifier($ko['bistum']);
-				if (is_object($bistumObject)) {
-					$ort->setBistum($bistumObject);
+				if (isset($ort) && is_object($ort)) {
+					$ort->setWuestung($ko['wuestung']);
 				}
-				$this->ortRepository->update($ort);
+				if (!empty($ko['bistum'])) {
+					$bistumObject = $this->bistumRepository->findByIdentifier($ko['bistum']);
+					if (is_object($bistumObject) && isset($ort) && is_object($ort)) {
+						$ort->setBistum($bistumObject);
+					}
+				}
+				if (isset($ort) && is_object($ort)) {
+					$this->ortRepository->update($ort);
+				}
 			}
 		}
 		// Update Orden
@@ -1042,27 +1077,51 @@ class KlosterController extends AbstractBaseController {
 				$this->klosterordenRepository->add($klosterorden);
 			}
 		}
+
 		// Update literatur
 		$literaturs = $kloster->getKlosterHasLiteraturs();
-		foreach ($literaturs as $literatur) {
-			$this->klosterHasLiteraturRepository->remove($literatur);
+		if (!empty($literaturs)) {
+			foreach ($literaturs as $literatur) {
+				$this->klosterHasLiteraturRepository->remove($literatur);
+			}
 		}
-
 		if ($this->request->hasArgument('literatur')) {
 			$literaturArr = $this->request->getArgument('literatur');
+			if ($this->request->hasArgument('fundstelle')) {
+				$fundstelleArr = $this->request->getArgument('fundstelle');
+			}
 			if (isset($literaturArr) && !empty($literaturArr) && is_array($literaturArr)) {
-				foreach ($literaturArr as $lit) {
+				foreach ($literaturArr as $k => $lit) {
 					if (isset($lit) && !empty($lit)) {
-						$klosterHasLiteratur = new KlosterHasLiteratur();
-						$kloster = $this->klosterRepository->findByIdentifier($uuid);
-						$literatur = $this->literaturRepository->findByIdentifier($lit);
-						$klosterHasLiteratur->setKloster($kloster);
-						$klosterHasLiteratur->setLiteratur($literatur);
-						$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+						$lit = trim($lit);
+						$fundstelle = trim($fundstelleArr[$k]);
+						if (!empty($fundstelle)) {
+							$literatur = $this->literaturRepository->findByProperties(array('citekey' => $lit, 'beschreibung' => $fundstelle));
+							if (count($literatur) > 0) {
+								$litUUID = $literatur->getFirst()->getUUID();
+								if (!empty($litUUID)) {
+									$literatur = $this->literaturRepository->findByIdentifier($litUUID);
+								}
+							}
+							else {
+								$literatur = new Literatur();
+								$literatur->setCitekey($lit);
+								$literatur->setBeschreibung($fundstelle);
+								$this->literaturRepository->add($literatur);
+								$litUUID = $literatur->getUUID();
+							}
+							if (is_object($kloster) && is_object($literatur)) {
+								$klosterHasLiteratur = new KlosterHasLiteratur();
+								$klosterHasLiteratur->setKloster($kloster);
+								$klosterHasLiteratur->setLiteratur($literatur);
+								$this->klosterHasLiteraturRepository->add($klosterHasLiteratur);
+							}
+						}
 					}
 				}
 			}
 		}
+
 		// Fetch Kloster Urls
 		$klosterHasUrls = $kloster->getKlosterHasUrls();
 		$klosterHasGND = false;
@@ -1426,17 +1485,21 @@ class KlosterController extends AbstractBaseController {
 		$literaturArr = array();
 		foreach ($bibliographyArr as $bibliography) {
 			$literatur_name = '';
-			if (!empty($bibliography['title'])) $literatur_name .= $bibliography['title'] . ' ';
-			if (!empty($bibliography['editor'])) $literatur_name .= $bibliography['editor'] . ' ';
-			if (!empty($bibliography['citeid'])) $literatur_name .= $bibliography['citeid'] . ' ';
-			if (!empty($bibliography['note'])) $literatur_name .= $bibliography['note'];
+			if (!empty($bibliography['citeid'])) $literatur_name .= $bibliography['citeid'] . ' – ';
+			if (!empty($bibliography['title'])) {
+				$literatur_name .= $bibliography['title'];
+			}
+			else {
+				$literatur_name .= '[ohne Titel]';
+			}
+			if (!empty($bibliography['editor'])) $literatur_name .= ' – ' . $bibliography['editor'];
+			if (!empty($bibliography['note'])) $literatur_name .= ' (' . $bibliography['note'] . ')';
 			if (!empty($bibliography['citeid'])) {
 				$literaturArr[$bibliography['citeid']] = $literatur_name;
 			}
 		}
 		return $literaturArr;
 	}
-
 }
 
 ?>
