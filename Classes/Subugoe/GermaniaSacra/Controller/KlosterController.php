@@ -1500,6 +1500,7 @@ class KlosterController extends AbstractBaseController {
 		}
 		return $literaturArr;
 	}
+
 }
 
 ?>
