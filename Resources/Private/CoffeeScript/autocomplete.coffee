@@ -103,7 +103,7 @@ $.fn.autocomplete = ->
 			$input.val $select.find(':selected').text()
 
 		$($input, $list).click (e) ->
-			e.stopPropagation()
+			return false
 
 delay = (->
 	timer = 0

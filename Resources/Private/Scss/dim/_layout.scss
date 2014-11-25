@@ -10,9 +10,21 @@ h2 {
 	padding-bottom: .5em;
 }
 
+footer {
+	@include radius(0 $input-border-radius 0 0);
+	background: #fff;
+	border-top: $table-border-size $table-border-style $table-border-color;
+	border-right: $table-border-size $table-border-style $table-border-color;
+	left: 0;
+	bottom: 0;
+	font-size: $form-label-font-size;
+	padding: $microformat-padding;
+	position: fixed;
+}
+
 #content {
 	@include clearfix;
-	padding: rem-calc(20);
+	padding: rem-calc(20) rem-calc(20) rem-calc(40);
 }
 
 #browse {

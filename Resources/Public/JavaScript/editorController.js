@@ -114,6 +114,7 @@ editAction = function(type, id) {
     }
     $fieldset = $('#klosterstandorte');
     if ($fieldset.length && (obj.klosterstandorte != null)) {
+      $fieldset.find('.multiple:eq(0)').removeInputs(0);
       $.each(obj.klosterstandorte, function(index, value) {
         if (index > 0) {
           $fieldset.find('.multiple:last()').addInputs(0);
@@ -127,10 +128,8 @@ editAction = function(type, id) {
           name = name.replace('[]', '');
           val = value[name];
           if (name === 'wuestung') {
-            if (name === 'wuestung') {
-              checkedCondition = value[name] === 1;
-              return $(this).prop('checked', checkedCondition);
-            }
+            checkedCondition = value[name] === 1;
+            return $(this).prop('checked', checkedCondition);
           } else if (name === 'ort') {
             return $(this).html($('<option />', {
               value: value.uUID,

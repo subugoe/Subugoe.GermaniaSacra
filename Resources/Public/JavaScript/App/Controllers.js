@@ -52,7 +52,7 @@ init = function() {
     return initList(type);
   });
   $("fieldset .multiple").append("<div class='add-remove-buttons'><span class='button remove'>-</span><span class='button add'>+</span></div>");
-  $("fieldset .multiple button").click(function(e) {
+  $("fieldset .multiple .button").click(function(e) {
     var div;
     e.preventDefault();
     div = $(this).closest(".multiple");

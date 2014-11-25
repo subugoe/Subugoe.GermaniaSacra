@@ -83,7 +83,7 @@
 							<f:link.action controller="Dump" action="dump" target="_self"><i class="icon-download"></i> SQL Dump</f:link.action>
 						</li>
 						<li>
-							<f:link.action controller="DataImport" action="importInkDump" target="_self"> Daten-Import</f:link.action>
+							<f:link.action controller="DataImport" action="importInkDump" target="_self"><i class="icon-upload"></i> Daten-Import</f:link.action>
 						</li>
 					</f:security.ifHasRole>
 				</f:security.ifAuthenticated>
@@ -95,7 +95,9 @@
 	<div id="message"></div>
 	<div id="content" ng-view=""></div>
 
-	<footer><f:link.external class="icon-new" target="_blank" uri="https://docs.google.com/forms/d/17C1uZpuvUCbQja7V0ybf_nZ6BrWfGEpREsqNjeZJG48/viewform">Report a bug</f:link.external></footer>
+	<footer>
+		<f:link.external class="icon-bolt" target="_blank" uri="https://docs.google.com/forms/d/17C1uZpuvUCbQja7V0ybf_nZ6BrWfGEpREsqNjeZJG48/viewform">Problem melden</f:link.external>
+	</footer>
 	<!-- Append this to every form via JavaScript -->
 	<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 

@@ -147,7 +147,8 @@ button,
 	}
 	&[disabled],
 	&[disabled]:focus,
-	&[disabled]:hover {
+	&[disabled]:hover,
+	&.disabled {
 		background: none;
 		color: $pagination-link-unavailable-font-color;
 	}

@@ -26,14 +26,14 @@ $.fn.addInputs = (slideTime) ->
 		$clone.clearForm()
 		$clone.find("select").autocomplete()
 		$clone.insertAfter( $(this) ).hide().slideDown slideTime
-		$fieldset.find("button.remove").prop "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
+		$fieldset.find(".remove").toggleClass "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
 
 $.fn.removeInputs = (slideTime) ->
 	unless slideTime? then slideTime = 0
 	@each ->
 		$fieldset = $(this).closest("fieldset")
 		$fieldset.find(".multiple").length > 1 and $(this).addClass("dying").slideUp(slideTime, @remove)
-		$fieldset.find("button.remove").prop "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
+		$fieldset.find(".remove").toggleClass "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
 
 $.fn.clearForm = ->
 	@each ->
