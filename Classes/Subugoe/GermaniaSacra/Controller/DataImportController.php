@@ -176,12 +176,6 @@ class DataImportController extends ActionController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \Subugoe\GermaniaSacra\Domain\Repository\ZeitraumRepository
-	 */
-	protected $zeitraumRepository;
-
-	/**
-	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterHasLiteraturRepository
 	 */
 	protected $klosterHasLiteraturRepository;
