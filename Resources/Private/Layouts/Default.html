@@ -27,43 +27,43 @@
 		</ul>
 		<section class="top-bar-section">
 			<ul class="left">
-				<li>
-					<f:link.action action="list" controller="Orden" format="html"><f:translate id="orden" /></f:link.action>
-				</li>
-				<li>
-					<f:link.action action="list" controller="Ort" format="html"><f:translate id="orte" /></f:link.action>
-				</li>
-				<li>
-					<f:link.action action="list" controller="Band"><f:translate id="baende" /></f:link.action>
-				</li>
-				<li>
-					<f:link.action action="list" controller="Bistum"><f:translate id="bistuemer" /></f:link.action>
-				</li>
-				<li>
-					<f:link.action action="list" controller="Land"><f:translate id="countries" /></f:link.action>
-				</li>
-				<li class="has-dropdown"><f:link.action action="list" controller="Bearbeitungsstatus"><f:translate id="states" /></f:link.action>
-					<ul class="dropdown">
-						<li>
-							<f:link.action action="list" controller="Bearbeitungsstatus"><f:translate id="datasetstatus" /></f:link.action>
-						</li>
-						<li>
-							<f:link.action action="list" controller="Personallistenstatus"><f:translate id="personalliststatus" /></f:link.action>
-						</li>
-					</ul>
-				</li>
-				<li class="has-dropdown"><f:link.action action="list" controller="Ordenstyp"><f:translate id="types" /></f:link.action>
-					<ul class="dropdown">
-						<li>
-							<f:link.action action="list" controller="Ordenstyp"><f:translate id="ordentype" /></f:link.action>
-						</li>
-						<li>
-							<f:link.action action="list" controller="Urltyp"><f:translate id="urltype" /></f:link.action>
-						</li>
-					</ul>
-				</li>
 				<f:security.ifAuthenticated>
 					<f:security.ifHasRole role="Flow.Login:Administrator">
+					<li>
+						<f:link.action action="list" controller="Orden" format="html"><f:translate id="orden" /></f:link.action>
+					</li>
+					<li>
+						<f:link.action action="list" controller="Ort" format="html"><f:translate id="orte" /></f:link.action>
+					</li>
+					<li>
+						<f:link.action action="list" controller="Band"><f:translate id="baende" /></f:link.action>
+					</li>
+					<li>
+						<f:link.action action="list" controller="Bistum"><f:translate id="bistuemer" /></f:link.action>
+					</li>
+					<li>
+						<f:link.action action="list" controller="Land"><f:translate id="countries" /></f:link.action>
+					</li>
+					<li class="has-dropdown"><f:link.action action="list" controller="Bearbeitungsstatus"><f:translate id="states" /></f:link.action>
+						<ul class="dropdown">
+							<li>
+								<f:link.action action="list" controller="Bearbeitungsstatus"><f:translate id="datasetstatus" /></f:link.action>
+							</li>
+							<li>
+								<f:link.action action="list" controller="Personallistenstatus"><f:translate id="personalliststatus" /></f:link.action>
+							</li>
+						</ul>
+					</li>
+					<li class="has-dropdown"><f:link.action action="list" controller="Ordenstyp"><f:translate id="types" /></f:link.action>
+						<ul class="dropdown">
+							<li>
+								<f:link.action action="list" controller="Ordenstyp"><f:translate id="ordentype" /></f:link.action>
+							</li>
+							<li>
+								<f:link.action action="list" controller="Urltyp"><f:translate id="urltype" /></f:link.action>
+							</li>
+						</ul>
+					</li>
 						<li>
 							<f:link.action action="list" controller="Bearbeiter" format="html"><f:translate id="bearbeiter" /></f:link.action>
 						</li>
