@@ -51,8 +51,7 @@ editListAction = (type) ->
 		sAjaxSource: '/entity/' + type
 		columns: columns
 		autoWidth: false
-		pageLength: 10
-		#pageLength: 100
+		pageLength: 100
 		columnDefs: [
 			bSortable: false
 			aTargets: [ "not-sortable" ]
