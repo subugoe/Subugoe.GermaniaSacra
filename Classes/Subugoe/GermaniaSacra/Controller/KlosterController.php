@@ -603,17 +603,20 @@ class KlosterController extends AbstractBaseController {
 							if (!empty($url)) {
 								$urlObj = new Url();
 								$urlObj->setUrl($url);
+								$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
+								$urlTyp = $urlTypObj->getName();
+								$urlObj->setUrltyp($urlTypObj);
 								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 									$urlObj->setBemerkung($linksLabelArr[$k]);
 								}
-								$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
-								$urlObj->setUrltyp($urlTypObj);
+								else {
+									$urlObj->setBemerkung($urlTyp);
+								}
 								$this->urlRepository->add($urlObj);
 								$klosterhasurlObj = new KlosterHasUrl();
 								$klosterhasurlObj->setKloster($kloster);
 								$klosterhasurlObj->setUrl($urlObj);
 								$this->klosterHasUrlRepository->add($klosterhasurlObj);
-
 							}
 						}
 					}
@@ -622,7 +625,8 @@ class KlosterController extends AbstractBaseController {
 			$this->cacheInterface->remove('kloster');
 
 			$this->throwStatus(201, NULL, NULL);
-		} else {
+		}
+		else {
 			$this->throwStatus(400, 'Kloster id could not be set', NULL);
 		}
 	}
@@ -1238,11 +1242,15 @@ class KlosterController extends AbstractBaseController {
 						if (!empty($url)) {
 							$urlObj = new Url();
 							$urlObj->setUrl($url);
+							$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
+							$urlTyp = $urlTypObj->getName();
+							$urlObj->setUrltyp($urlTypObj);
 							if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
 								$urlObj->setBemerkung($linksLabelArr[$k]);
 							}
-							$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
-							$urlObj->setUrltyp($urlTypObj);
+							else {
+								$urlObj->setBemerkung($urlTyp);
+							}
 							$this->urlRepository->add($urlObj);
 							$klosterhasurlObj = new KlosterHasUrl();
 							$klosterhasurlObj->setKloster($kloster);
