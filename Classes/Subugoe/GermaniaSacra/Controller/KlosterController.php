@@ -771,11 +771,9 @@ class KlosterController extends AbstractBaseController {
 	 * @return array $response select options as JSON
 	 */
 	public function getOptionsAction() {
-
 		if ($this->cacheInterface->has('getOptions')) {
 			return $this->cacheInterface->get('getOptions');
 		}
-
 		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
@@ -805,15 +803,14 @@ class KlosterController extends AbstractBaseController {
 		foreach ($bands as $band) {
 			if ($band->getTitel() != 'keine Angabe') {
 				$bandNummerTitel = $band->getNummer() . '-' . $band->getTitel();
-			} else {
-				$bandNummerTitel = $band->getTitel();
+			}
+			else {
+				$bandNummerTitel = '––';
 			}
 			$bandArr[$band->getUUID()] = $bandNummerTitel;
 		}
-
 		// Literature data for select box
 		$literaturArr = $this->getLiteraturAction();
-
 		// Bistum data for select box
 		$bistumArr = array();
 		$this->bistumRepository->setDefaultOrderings(
@@ -821,7 +818,12 @@ class KlosterController extends AbstractBaseController {
 		);
 		$bistums = $this->bistumRepository->findAll();
 		foreach ($bistums as $bistum) {
-			$bistumArr[$bistum->getUUID()] = $bistum->getBistum();
+			if ($bistum->getBistum() != 'keine Angabe') {
+				$bistumArr[$bistum->getUUID()] = $bistum->getBistum();
+			}
+			else {
+				$bistumArr[$bistum->getUUID()] = '––';
+			}
 		}
 		// Orden data for select box
 		$ordenArr = array();
@@ -848,7 +850,12 @@ class KlosterController extends AbstractBaseController {
 		);
 		$klosterstatuses = $this->klosterstatusRepository->findAll();
 		foreach ($klosterstatuses as $klosterstatus) {
-			$klosterstatusArr[$klosterstatus->getUUID()] = $klosterstatus->getStatus();
+			if ($klosterstatus->getStatus() != 'keine Angabe') {
+				$klosterstatusArr[$klosterstatus->getUUID()] = $klosterstatus->getStatus();
+			}
+			else {
+				$klosterstatusArr[$klosterstatus->getUUID()] = '––';
+			}
 		}
 		// Bearbeiter data for select box
 		$bearbeiterArr = array();
@@ -866,8 +873,12 @@ class KlosterController extends AbstractBaseController {
 		);
 		$urltyps = $this->urltypRepository->findAll();
 		foreach ($urltyps as $urltyp) {
-			if ($urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND')
+			if ($urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND' && $urltyp->getName() != 'keine Angabe') {
 				$urltypArr[$urltyp->getUUID()] = $urltyp->getName();
+			}
+			else {
+				$urltypArr[$urltyp->getUUID()] = '––';
+			}
 		}
 		// Land data for select box
 		$landArr = array();
@@ -899,11 +910,8 @@ class KlosterController extends AbstractBaseController {
 		$response['url_typ'] = $urltypArr;
 		$response['land'] = $landArr;
 		$response['role'] = $roleArr;
-
 		$getOptions = json_encode($response);
-
 		$this->cacheInterface->set('getOptions', $getOptions);
-
 		return $getOptions;
 	}
 
