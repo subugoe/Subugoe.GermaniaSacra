@@ -1399,6 +1399,32 @@ class KlosterController extends AbstractBaseController {
 		}
 	}
 
+	/*
+	 * Gets and return the uuid of the selected ort
+	 * @param void
+	 * @return string $bistumUUID uuid of the bistum of the selected ort
+	 */
+	public function searchBistumAction() {
+		if ($this->request->hasArgument('uUID')) {
+			$uuid = $this->request->getArgument('uUID');
+			if (!empty($uuid)) {
+				$ort = $this->ortRepository->findByIdentifier($uuid);
+				if (is_object($ort)) {
+					$bistumObj = $ort->getBistum();
+					if(is_object($bistumObj)) {
+						$bistumUUID = $bistumObj->getUUID();
+					}
+				}
+			}
+			if (!empty($bistumUUID)) {
+				return $bistumUUID;
+			}
+			else {
+				return '';
+			}
+		}
+	}
+
 	/**
 	 * @return integer $lastKlosterId The last insert id
 	 */
