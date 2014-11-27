@@ -162,6 +162,8 @@ editAction = (type, id) ->
 		$form.find('select').autocomplete()
 		$form.find('input[type=url]').keyup()
 		$form.find('textarea').trigger('autosize.resize')
+		# TODO: This should not be necessary, so why is it?
+		$('#edit :submit[type=submit]').prop('disabled', true)
 
 	).fail( ->
 		message 'Fehler: Daten konnten nicht geladen werden.'

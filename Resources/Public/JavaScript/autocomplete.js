@@ -7,49 +7,56 @@ var delay;
 
 $.fn.autocomplete = function() {
   return this.each(function() {
-    var $input, $list, $overlay, $select, $spinner, isAjax, name, oldVal;
+    var $fakeSelect, $filter, $filterContainer, $list, $overlay, $popup, $select, $spinner, isAjax, name, oldVal;
     $select = $(this);
+    $select.css({
+      opacity: 0
+    });
     name = $select.data('type') ? $select.data('type') : $select.attr('name').replace('[]', '');
     isAjax = $select.hasClass('ajax');
-    $select.hide().siblings('.autocomplete').remove();
-    $input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val($select.find(':selected').text());
+    $select.siblings('.autocomplete').remove();
+    $fakeSelect = $('<input class="select" type="text">').val($select.find(':selected').text());
     $spinner = $('<i class="spinner spinner-icon"/>');
-    $spinner.hide();
+    $filter = $('<input type="text" placeholder="Filter">');
+    $filterContainer = $('<div class="filter"/>').append($filter);
     $list = $('<ol class="list"/>');
-    $list.css({
+    $popup = $('<div class="popup"/>').append($filterContainer, $list);
+    $popup.css({
       top: $('select:eq(0)').outerHeight()
     });
-    $overlay = $('<div class="overlay autocomplete"/>').append($input, $spinner, $list);
+    $overlay = $('<div class="overlay autocomplete"/>').append($fakeSelect, $spinner, $popup);
     $overlay.insertAfter($select);
     if (!$select.hasClass('ajax')) {
       $.each($select.find('option'), function(index, element) {
         return $list.append("<li data-uuid='" + ($(element).val()) + "'>" + ($(element).text()) + "</li>");
       });
     }
-    $input.click(function() {
-      $input.val('');
+    $fakeSelect.focus(function() {
+      $fakeSelect.blur();
       $list.find('li').show().first().addClass('current');
-      return $list.slideDown();
+      $popup.slideDown();
+      return $filter.focus();
     });
     $list.on('click', 'li', function() {
-      $input.val($(this).text());
       if (isAjax) {
         $select.empty().append("<option value='" + ($(this).data('uuid')) + "' selected>" + ($(this).text()) + "</option>");
       } else {
         $select.val($(this).data('uuid'));
       }
+      $fakeSelect.val($(this).text());
+      $select.trigger('change');
       return $(document).click();
     });
     oldVal = '';
-    $input.on('keyup', function(e) {
+    $filter.on('keydown', function(e) {
       var $current, $newCurrent, $visibleItems;
       if (isAjax) {
-        if ($input.val().length > 0 && $input.val() !== oldVal) {
-          oldVal = $input.val();
+        if ($filter.val().length > 0 && $filter.val() !== oldVal) {
+          oldVal = $filter.val();
           delay((function() {
             $spinner.show();
             return $.ajax({
-              url: "/search" + (ucfirst(name)) + "?searchString=" + (encodeURIComponent($input.val())),
+              url: "/search" + (ucfirst(name)) + "?searchString=" + (encodeURIComponent($filter.val())),
               type: 'GET',
               complete: function() {
                 return $spinner.hide();
@@ -71,7 +78,7 @@ $.fn.autocomplete = function() {
         }
       } else {
         $.each($list.find('li'), function(index, item) {
-          if ($(item).text().toLowerCase().indexOf($input.val().toLowerCase()) > -1) {
+          if ($(item).text().toLowerCase().indexOf($filter.val().toLowerCase()) > -1) {
             return $(item).show();
           } else {
             return $(item).hide();
@@ -88,7 +95,8 @@ $.fn.autocomplete = function() {
         switch (e.which) {
           case 13:
             e.preventDefault();
-            return $current.click();
+            $current.click();
+            return false;
           case 38:
             $newCurrent = $current.prevAll(':visible').first();
             if (!$newCurrent.length) {
@@ -116,11 +124,11 @@ $.fn.autocomplete = function() {
       }
     });
     $(document).click(function() {
-      $list.slideUp();
+      $popup.slideUp();
       $list.find('.current').removeClass('current');
-      return $input.val($select.find(':selected').text());
+      return $filter.val('');
     });
-    return $($input, $list).click(function(e) {
+    return $overlay.click(function(e) {
       return false;
     });
   });

@@ -189,7 +189,8 @@ editAction = function(type, id) {
     $('#message').slideUp();
     $form.find('select').autocomplete();
     $form.find('input[type=url]').keyup();
-    return $form.find('textarea').trigger('autosize.resize');
+    $form.find('textarea').trigger('autosize.resize');
+    return $('#edit :submit[type=submit]').prop('disabled', true);
   }).fail(function() {
     return message('Fehler: Daten konnten nicht geladen werden.');
   });
