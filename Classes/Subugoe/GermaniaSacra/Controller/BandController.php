@@ -92,7 +92,7 @@ class BandController extends AbstractBaseController {
 			$bandObj->setNummer($this->request->getArgument('nummer'));
 			$bandObj->setTitel($this->request->getArgument('titel'));
 			$bandObj->setKurztitel($this->request->getArgument('kurztitel'));
-			$bandObj->setSortierung($this->request->hasArgument('sortierung'));
+			$bandObj->setSortierung($this->request->getArgument('sortierung'));
 			if ($this->request->hasArgument('bistum')) {
 				$bistumUUID = $this->request->getArgument('bistum');
 				$bistumObj = $this->bistumRepository->findByIdentifier($bistumUUID);
@@ -262,7 +262,7 @@ class BandController extends AbstractBaseController {
 			$bandObj->setNummer($this->request->getArgument('nummer'));
 			$bandObj->setTitel($this->request->getArgument('titel'));
 			$bandObj->setKurztitel($this->request->getArgument('kurztitel'));
-			$bandObj->setSortierung($this->request->hasArgument('sortierung'));
+			$bandObj->setSortierung($this->request->getArgument('sortierung'));
 			if ($this->request->hasArgument('bistum')) {
 				$bistumUUID = $this->request->getArgument('bistum');
 				$bistumObj = $this->bistumRepository->findByIdentifier($bistumUUID);
