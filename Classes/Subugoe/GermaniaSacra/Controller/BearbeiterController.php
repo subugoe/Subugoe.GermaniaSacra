@@ -126,7 +126,10 @@ class BearbeiterController extends AbstractBaseController {
 		$bearbeiterObj = $this->bearbeiterRepository->findByIdentifier($uuid);
 		$bearbeiterArr['uUID'] = $bearbeiterObj->getUUID();
 		$bearbeiterArr['bearbeiter'] = $bearbeiterObj->getBearbeiter();
-		$role = array_keys($bearbeiterObj->getAccount()->getRoles())[0];
+		$account = $bearbeiterObj->getAccount();
+		$username = $account->getAccountidentifier();
+		$bearbeiterArr['username'] = $username;
+		$role = array_keys($account->getRoles())[0];
 		$bearbeiterArr['role'] = $role;
 		return json_encode($bearbeiterArr);
 	}
