@@ -145,7 +145,6 @@ class DataExportController extends ActionController {
 		$klosterordenArr = $klosterData[2];
 		$standort_ordenArr = $klosterData[3];
 
-		$this->deleteAction();
 		$update = $this->client->createUpdate();
 		$docs = array();
 
@@ -191,6 +190,7 @@ class DataExportController extends ActionController {
 
 		$update->addDocuments($docs);
 		$update->addCommit();
+		$this->deleteAction();
 		$result = $this->client->update($update);
 
 		$this->logger->log('Data export completed in ' . round($result->getQueryTime() / 100) . ' seconds.');
