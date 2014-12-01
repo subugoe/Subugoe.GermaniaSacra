@@ -6808,11 +6808,11 @@ table.dataTable thead .sorting {
 }
 
 table.dataTable thead .sorting_asc {
-  background: url("../Images/sort_asc.png") no-repeat center right;
+  background: rgba(0, 0, 0, 0.05) url("../Images/sort_asc.png") no-repeat center right;
 }
 
 table.dataTable thead .sorting_desc {
-  background: url("../Images/sort_desc.png") no-repeat center right;
+  background: rgba(0, 0, 0, 0.05) url("../Images/sort_desc.png") no-repeat center right;
 }
 
 table.dataTable thead .sorting_asc_disabled {
