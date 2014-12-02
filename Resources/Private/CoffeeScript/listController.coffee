@@ -21,7 +21,7 @@ editListAction = (type) ->
 	$this = $('#list')
 
 	if ! $this.length
-		alert('There has to be a <section> whose id equals type')
+		alert('There has to be a <section> with an ID equal to the data type.')
 		return
 
 	$('#search, #list').hide()
