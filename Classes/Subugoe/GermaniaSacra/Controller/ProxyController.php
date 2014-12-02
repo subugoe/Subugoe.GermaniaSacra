@@ -82,7 +82,7 @@ class ProxyController extends AbstractBaseController {
 		if ($response->getBody()) {
 			$literature = $response->getBody();
 			$this->cacheInterface->set('literature', $literature);
-			return $response->getBody();
+			return $literature;
 		}
 		return '';
 	}
