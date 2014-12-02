@@ -1,5 +1,7 @@
 .autocomplete {
-	position: relative;
+	position: absolute;
+	right: 0;
+	top: 0;
 	&:after {
 		color: #999;
 		content: "\25BC";
@@ -10,25 +12,15 @@
 	}
 	input {
 		width: 100%;
-		&:active, &:focus, &:hover {
-			+ button {
-				@include background(linear-gradient(left, rgba($input-focus-bg-color, 0) 0%, rgba($input-focus-bg-color, 1) 60%));
-			}
-		}
 	}
 	ol {
 		background: #fff;
-		border: 1px solid $input-border-color;
-		display: none;
 		font-size: inherit;
 		list-style: none;
 		margin: 0;
 		max-height: rem-calc(300);
-		overflow-y: auto;
-		position: absolute;
+		overflow-y: scroll;
 		text-align: left;
-		width: 100%;
-		z-index: 999;
 	}
 	li {
 		border-bottom: 1px solid $input-border-color;
@@ -45,7 +37,24 @@
 			color: white;
 		}
 	}
+	.filter {
+		background: #eee;
+		padding: rem-calc(5);
+		@include clearfix;
+		input {
+			margin: 0;
+		}
+	}
+	.popup {
+		background: #fff;
+		border: 1px solid $input-border-color;
+		display: none;
+		position: absolute;
+		width: 100%;
+		z-index: 999;
+	}
 	.spinner-icon {
+		display: none;
 		position: absolute;
 		right: rem-calc(28);
 		top: rem-calc(12);

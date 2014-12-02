@@ -7,20 +7,24 @@ $.fn.autocomplete = ->
 	@each ->
 
 		$select = $(this)
+		$select.css
+			opacity: 0
 		name = if $select.data('type') then $select.data('type') else $select.attr('name').replace('[]', '')
 		isAjax = $select.hasClass('ajax')
 
 		# If already autocomplete-enabled, remove autocomplete first
-		$select.hide().siblings('.autocomplete').remove()
+		$select.siblings('.autocomplete').remove()
 
-		$input = $('<input type="text" placeholder="Zum Suchen tippen&hellip;">').val $select.find(':selected').text()
-		$spinner = $ '<i class="spinner spinner-icon"/>'
-		$spinner.hide()
+		$fakeSelect = $('<input class="select" type="text">').val $select.find(':selected').text()
+		$spinner = $('<i class="spinner spinner-icon"/>')
+		$filter = $('<input type="text" placeholder="Filter">')
+		$filterContainer = $('<div class="filter"/>').append $filter
 		$list = $('<ol class="list"/>')
-		$list.css
+		$popup = $('<div class="popup"/>').append $filterContainer, $list
+		$popup.css
 			# We are relying on all selects being the same height; cannot get height for elements not yet visible
 			top: $('select:eq(0)').outerHeight()
-		$overlay = $('<div class="overlay autocomplete"/>').append $input, $spinner, $list
+		$overlay = $('<div class="overlay autocomplete"/>').append $fakeSelect, $spinner, $popup
 		$overlay.insertAfter $select
 
 		# If list items aren't ajaxed, populate list with select options
@@ -28,30 +32,32 @@ $.fn.autocomplete = ->
 			$.each $select.find('option'), (index, element) ->
 				$list.append "<li data-uuid='#{$(element).val()}'>#{$(element).text()}</li>"
 
-		$input.click ->
-			$input.val('')
+		$fakeSelect.focus ->
+			$fakeSelect.blur()
 			$list.find('li').show().first().addClass('current')
-			$list.slideDown()
+			$popup.slideDown()
+			$filter.focus()
 
 		$list.on 'click', 'li', ->
-			$input.val $(this).text()
 			if isAjax
 				$select.empty().append("<option value='#{$(this).data('uuid')}' selected>#{$(this).text()}</option>")
 			else
 				$select.val( $(this).data('uuid') )
+			$fakeSelect.val $(this).text()
+			$select.trigger('change')
 			$(document).click()
 
 		oldVal = ''
 
-		$input.on 'keyup', (e) ->
+		$filter.on 'keydown', (e) ->
 
 			if isAjax
-				if $input.val().length > 0 and $input.val() isnt oldVal
-					oldVal = $input.val()
+				if $filter.val().length > 0 and $filter.val() isnt oldVal
+					oldVal = $filter.val()
 					delay (->
 						$spinner.show()
 						$.ajax
-							url: "/search#{ucfirst(name)}?searchString=#{encodeURIComponent($input.val())}"
+							url: "/search#{ucfirst(name)}?searchString=#{encodeURIComponent($filter.val())}"
 							type: 'GET'
 							complete: ->
 								$spinner.hide()
@@ -66,7 +72,7 @@ $.fn.autocomplete = ->
 					), 500
 			else
 				$.each $list.find('li'), (index, item) ->
-					if $(item).text().toLowerCase().indexOf( $input.val().toLowerCase() ) > -1
+					if $(item).text().toLowerCase().indexOf( $filter.val().toLowerCase() ) > -1
 						$(item).show()
 					else
 						$(item).hide()
@@ -80,6 +86,7 @@ $.fn.autocomplete = ->
 					when 13 # enter
 						e.preventDefault()
 						$current.click()
+						false
 					when 38 # up
 						$newCurrent = $current.prevAll(':visible').first()
 						unless $newCurrent.length then $newCurrent = $visibleItems.last()
@@ -97,12 +104,13 @@ $.fn.autocomplete = ->
 					when 35, 36, 27 # esc
 						$(document).click()
 
+		# Close popup
 		$(document).click ->
-			$list.slideUp()
+			$popup.slideUp()
 			$list.find('.current').removeClass('current')
-			$input.val $select.find(':selected').text()
+			$filter.val ''
 
-		$($input, $list).click (e) ->
+		$overlay.click (e) ->
 			return false
 
 delay = (->

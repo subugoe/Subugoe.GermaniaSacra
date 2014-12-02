@@ -1503,13 +1503,16 @@ class KlosterController extends AbstractBaseController {
 			$literatur_name = '';
 			if (!empty($bibliography['citeid'])) $literatur_name .= $bibliography['citeid'] . ' – ';
 			if (!empty($bibliography['title'])) {
-				$literatur_name .= $bibliography['title'];
+				$literatur_name .= $bibliography['title'] . ' – ';
 			}
 			else {
-				$literatur_name .= '[ohne Titel]';
+				$literatur_name .= '[ohne Titel]' . ' – ';
+			}
+			if (!empty($bibliography['forename']) && !empty($bibliography['surname'])) {
+				$literatur_name .= $bibliography['forename'] . ' ' . $bibliography['surname'];
 			}
 			if (!empty($bibliography['editor'])) $literatur_name .= ' – ' . $bibliography['editor'];
-			if (!empty($bibliography['note'])) $literatur_name .= ' (' . $bibliography['note'] . ')';
+			if (!empty($bibliography['note'])) $literatur_name .= ' –  (' . $bibliography['note'] . ')';
 			if (!empty($bibliography['citeid'])) {
 				$literaturArr[$bibliography['citeid']] = $literatur_name;
 			}

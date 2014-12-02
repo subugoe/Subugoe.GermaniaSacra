@@ -74,10 +74,15 @@ class ProxyController extends AbstractBaseController {
 	public function literatureAction() {
 		$literatureUrl = $this->settings['data']['literature'];
 		$this->initializeAction();
+		if ($this->cacheInterface->has('literature')) {
+			return $this->cacheInterface->get('literature');
+		}
 		$request = $this->client->get($literatureUrl);
 		$response = $request->send();
 		if ($response->getBody()) {
-			return $response->getBody();
+			$literature = $response->getBody();
+			$this->cacheInterface->set('literature', $literature);
+			return $literature;
 		}
 		return '';
 	}
