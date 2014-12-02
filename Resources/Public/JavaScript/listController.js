@@ -113,7 +113,7 @@ editListAction = function(type) {
               $td.text('1');
             }
           }
-          return $(this).html($input.val($(this).text()));
+          return $(this).html($input.val($(this).text().trim()));
         }
       });
       $tr.each(function() {
@@ -129,14 +129,27 @@ editListAction = function(type) {
       return $tr.addClass('processed');
     }
   }, ajaxSuccess = function(json) {
-    var index, kloster, _ref, _results;
+    var entity, index, key, value, _ref, _results;
     $('#search, #list').slideDown();
     $('#message').slideUp();
     _ref = json.data;
     _results = [];
     for (index in _ref) {
-      kloster = _ref[index];
-      _results.push(json.data[index].bearbeitungsstatus = selectOptions.bearbeitungsstatus[kloster.bearbeitungsstatus]);
+      entity = _ref[index];
+      json.data[index].bearbeitungsstatus = selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus];
+      _results.push((function() {
+        var _results1;
+        _results1 = [];
+        for (key in entity) {
+          value = entity[key];
+          if (!value) {
+            _results1.push(json.data[index][key] = ' ');
+          } else {
+            _results1.push(void 0);
+          }
+        }
+        return _results1;
+      })());
     }
     return _results;
   });
