@@ -15,7 +15,7 @@ $.fn.autocomplete = function() {
     name = $select.data('type') ? $select.data('type') : $select.attr('name').replace('[]', '');
     isAjax = $select.hasClass('ajax');
     $select.siblings('.autocomplete').remove();
-    $fakeSelect = $('<input class="select" type="text">').val($select.find(':selected').text());
+    $fakeSelect = $('<input class="select" type="text">').val($select.find(':selected').text()).attr('title', $select.find(':selected').text());
     $spinner = $('<i class="spinner spinner-icon"/>');
     $filter = $('<input type="text" placeholder="Filter">');
     $filterContainer = $('<div class="filter"/>').append($filter);
@@ -43,7 +43,7 @@ $.fn.autocomplete = function() {
       } else {
         $select.val($(this).data('uuid'));
       }
-      $fakeSelect.val($(this).text());
+      $fakeSelect.val($(this).text()).attr('title', $select.find(':selected').text());
       $select.trigger('change');
       return $(document).click();
     });
