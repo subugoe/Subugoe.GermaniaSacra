@@ -9,7 +9,6 @@ use Subugoe\GermaniaSacra\Domain\Model\Literatur;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasLiteratur;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl;
-use Subugoe\GermaniaSacra\Queue\FileGenerationJob;
 use TYPO3\Flow\Persistence\QueryInterface;
 
 class KlosterController extends AbstractBaseController {
