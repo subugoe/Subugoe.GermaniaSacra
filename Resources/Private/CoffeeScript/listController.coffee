@@ -93,7 +93,7 @@ editListAction = (type) ->
 						if $td.text() is '1' then $input.prop('checked', true)
 						if $input.attr('name') isnt 'uuid' and $input.attr('name') isnt 'uUID'
 							$td.text('1')
-					$(this).html $input.val( $(this).text() )
+					$(this).html $input.val( $(this).text().trim() )
 			$tr.each ->
 				uuid = $(this).find(':input[name=uUID]').val()
 				# Since only visible textareas can be autosized, this has to be called after every page render
@@ -110,8 +110,12 @@ editListAction = (type) ->
 			$('#search, #list').slideDown()
 			$('#message').slideUp()
 			# TODO: Find a more elegant way to use text instead of uuid for filtering and sorting
-			for index, kloster of json.data
-				json.data[index].bearbeitungsstatus = selectOptions.bearbeitungsstatus[kloster.bearbeitungsstatus]
+			# Prepare data for selects. Currently only this one is used within the lists.
+			for index, entity of json.data
+				json.data[index].bearbeitungsstatus = selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus]
+				# WORKAROUND: Fix table filtering. Empty values are a problem.
+				for key, value of entity
+					if not value then json.data[index][key] = ' '
 	)
 
 	# Click handlers for edit and delete
@@ -128,7 +132,7 @@ editListAction = (type) ->
 
 	# Apply the search
 	dataTable.columns().eq(0).each (colIdx) ->
-		$("input", dataTable.column(colIdx).header()).click((e) ->
+		$( "input", dataTable.column(colIdx).header() ).click((e) ->
 			e.stopPropagation()
 		).on "keyup change", ->
 			dataTable.column(colIdx).search(@value).draw()
