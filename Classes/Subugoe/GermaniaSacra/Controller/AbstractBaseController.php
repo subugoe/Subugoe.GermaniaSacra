@@ -52,7 +52,7 @@ abstract class AbstractBaseController extends ActionController {
 	public function initializeAction() {
 		$account = $this->securityContext->getAccount();
 		$this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
-		$this->cacheInterface = $this->cacheManager->getCache('GermaniaSacra_SheytanCache');
+		$this->cacheInterface = $this->cacheManager->getCache('GermaniaSacra_GermaniaCache');
 	}
 
 	/**

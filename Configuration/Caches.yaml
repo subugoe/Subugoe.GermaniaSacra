@@ -1,4 +1,2 @@
-GermaniaSacra_SheytanCache:
-  backend: 'TYPO3\Flow\Cache\Backend\RedisBackend'
-  backendOptions:
-    database: 3
+GermaniaSacra_GermaniaCache:
+  backend: 'TYPO3\Flow\Cache\Backend\FileBackend'
