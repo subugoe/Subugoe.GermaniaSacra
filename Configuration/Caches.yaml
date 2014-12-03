@@ -1,2 +1,4 @@
 GermaniaSacra_GermaniaCache:
   backend: 'TYPO3\Flow\Cache\Backend\FileBackend'
+  backendOptions:
+      defaultLifetime: 86400

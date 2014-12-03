@@ -42,16 +42,23 @@ class ProxyController extends AbstractBaseController {
 	protected $geoJsonUrl;
 
 	/**
-	 * @var \Guzzle\Http\Client
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Http\Client\Browser
 	 */
-	protected $client;
+	protected $browser;
+
+	/**
+	 * @Flow\Inject
+	 * @var \TYPO3\Flow\Http\Client\CurlEngine
+	 */
+	protected $browserRequestEngine;
 
 	/**
 	 * Initializes defaults
 	 */
 	public function initializeAction() {
 		parent::initializeAction();
-		$this->client = new \Guzzle\Http\Client();
+		$this->browser->setRequestEngine($this->browserRequestEngine);
 	}
 
 	/**
@@ -59,13 +66,19 @@ class ProxyController extends AbstractBaseController {
 	 */
 	public function geoJsonAction() {
 		$geoJsonUrl = $this->settings['data']['geoJson'];
-		$request = $this->client->get($geoJsonUrl);
-		$response = $request->send();
-		if ($response->getBody()) {
-			$geoJson = $response->getBody();
-			return $geoJson;
+		$this->initializeAction();
+
+		if ($this->cacheInterface->has('geoJson')) {
+			return $this->cacheInterface->get('geoJson');
 		}
-		return '';
+		try {
+			$geoJson = $this->browser->request($geoJsonUrl)->getContent();
+			$this->cacheInterface->set('geoJson', $geoJson);
+			return $geoJson;
+		} catch (\Exception $e) {
+			$this->systemLogger->logException($e);
+			return '';
+		}
 	}
 
 	/**
@@ -77,14 +90,15 @@ class ProxyController extends AbstractBaseController {
 		if ($this->cacheInterface->has('literature')) {
 			return $this->cacheInterface->get('literature');
 		}
-		$request = $this->client->get($literatureUrl);
-		$response = $request->send();
-		if ($response->getBody()) {
-			$literature = $response->getBody();
+
+		try {
+			$literature = $this->browser->request($literatureUrl)->getContent();
 			$this->cacheInterface->set('literature', $literature);
 			return $literature;
+		} catch (\Exception $e) {
+			$this->systemLogger->logException($e);
+			return '';
 		}
-		return '';
 	}
 
 	/**
@@ -94,7 +108,6 @@ class ProxyController extends AbstractBaseController {
 
 		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
 
-		$entityFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/' . $entityName . '.json';
 		$controller = ucfirst($entityName) . 'Controller';
 		$controllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . $controller;
 
@@ -116,20 +129,6 @@ class ProxyController extends AbstractBaseController {
 			} else {
 				$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
 			}
-		}
-
-		if (file_exists($entityFile)) {
-			$date = new \DateTime();
-			$date->setTimestamp(filemtime($entityFile));
-			$this->response->setLastModified(gmdate('D, d M Y H:i:s', filemtime($entityFile)) . '  GMT');
-			return \TYPO3\Flow\Utility\Files::getFileContents($entityFile);
-		} else {
-			// TODO generate for all entities
-			if ($entityName === 'kloster') {
-				JsonGeneratorUtility::generateJsonFile($entityName);
-				return \TYPO3\Flow\Utility\Files::getFileContents($entityFile);
-			}
-			$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
 		}
 	}
 } 
