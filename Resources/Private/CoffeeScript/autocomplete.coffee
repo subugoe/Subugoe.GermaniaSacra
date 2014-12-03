@@ -15,7 +15,9 @@ $.fn.autocomplete = ->
 		# If already autocomplete-enabled, remove autocomplete first
 		$select.siblings('.autocomplete').remove()
 
-		$fakeSelect = $('<input class="select" type="text">').val $select.find(':selected').text()
+		$fakeSelect = $('<input class="select" type="text">')
+			.val $select.find(':selected').text()
+			.attr 'title', $select.find(':selected').text()
 		$spinner = $('<i class="spinner spinner-icon"/>')
 		$filter = $('<input type="text" placeholder="Filter">')
 		$filterContainer = $('<div class="filter"/>').append $filter
@@ -43,7 +45,9 @@ $.fn.autocomplete = ->
 				$select.empty().append("<option value='#{$(this).data('uuid')}' selected>#{$(this).text()}</option>")
 			else
 				$select.val( $(this).data('uuid') )
-			$fakeSelect.val $(this).text()
+			$fakeSelect
+				.val $(this).text()
+				.attr 'title', $select.find(':selected').text()
 			$select.trigger('change')
 			$(document).click()
 
