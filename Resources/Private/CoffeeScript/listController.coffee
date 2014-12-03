@@ -21,7 +21,7 @@ editListAction = (type) ->
 	$this = $('#list')
 
 	if ! $this.length
-		alert('There has to be a <section> with an ID equal to the data type.')
+		alert('Defektes Template: <section> mit ID entsprechend dem Entitätstypen fehlt.')
 		return
 
 	$('#search, #list').hide()
