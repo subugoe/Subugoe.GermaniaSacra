@@ -72,8 +72,64 @@ class OrtController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ort'));
 		}
+		$ortArr = array();
+		$orts = $this->ortRepository->findAll();
+		foreach ($orts as $k => $ort) {
+			if (is_object($ort)) {
+				$ortName = $ort->getOrt();
+				if (!empty($ort)) {
+					$ortArr[$k]['ort'] = $ortName;
+				}
+				else {
+					$ortArr[$k]['ort'] = '';
+				}
+				$gemeinde = $ort->getGemeinde();
+				if (!empty($gemeinde)) {
+					$ortArr[$k]['gemeinde'] = $gemeinde;
+				}
+				else {
+					$ortArr[$k]['gemeinde'] = '';
+				}
+				$kreis = $ort->getKreis();
+				if (!empty($kreis)) {
+					$ortArr[$k]['kreis'] = $kreis;
+				}
+				else {
+					$ortArr[$k]['kreis'] = '';
+				}
+				$wuestung = $ort->getWuestung();
+				if (!empty($wuestung)) {
+					$ortArr[$k]['wuestung'] = $wuestung;
+				}
+				else {
+					$ortArr[$k]['wuestung'] = '';
+				}
 
-		$this->view->assign('ort', ['data' => $this->ortRepository->findAll()]);
+				$breite = $ort->getBreite();
+				if (!empty($breite)) {
+					$ortArr[$k]['breite'] = $breite;
+				}
+				else {
+					$ortArr[$k]['breite'] = '';
+				}
+				$laenge = $ort->getLaenge();
+				if (!empty($laenge)) {
+					$ortArr[$k]['laenge'] = $laenge;
+				}
+				else {
+					$ortArr[$k]['laenge'] = '';
+				}
+				$bistumObj = $ort->getBistum();
+				$bistum = $bistumObj->getUUID();
+				if (!empty($bistum)) {
+					$ortArr[$k]['bistum'] = $bistum;
+				}
+				else {
+					$ortArr[$k]['bistum'] = '';
+				}
+			}
+		}
+		$this->view->assign('ort', ['data' => $ortArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 
 		if ($this->request->getFormat() === 'json') {
@@ -490,19 +546,28 @@ class OrtController extends AbstractBaseController {
 			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($ortlist as $uuid => $ort) {
-			$ortObj = $this->ortRepository->findByIdentifier($uuid);
-			$ortObj->setOrt($ort['ort']);
-			$ortObj->setGemeinde($ort['gemeinde']);
-			$ortObj->setKreis($ort['kreis']);
-			$ortObj->setBreite($ort['breite']);
-			$ortObj->setLaenge($ort['laenge']);
-			if (isset($ort['wuestung']) && !empty($ort['wuestung'])) {
-				$wuestung = $ort['wuestung'];
-			} else {
-				$wuestung = 0;
+			if (isset($uuid) && !empty($uuid)) {
+				$ortObj = $this->ortRepository->findByIdentifier($uuid);
+				$ortObj->setOrt($ort['ort']);
+				$ortObj->setGemeinde($ort['gemeinde']);
+				$ortObj->setKreis($ort['kreis']);
+				$ortObj->setBreite($ort['breite']);
+				$ortObj->setLaenge($ort['laenge']);
+				if (isset($ort['wuestung']) && !empty($ort['wuestung'])) {
+					$wuestung = $ort['wuestung'];
+				}
+				else {
+					$wuestung = 0;
+				}
+				$ortObj->setWuestung($wuestung);
+				$bistumUUID = $ort['bistum'];
+				$bistum = $this->bistumRepository->findByIdentifier($bistumUUID);
+				$ortObj->setBistum($bistum);
+				$this->ortRepository->update($ortObj);
 			}
-			$ortObj->setWuestung($wuestung);
-			$this->ortRepository->update($ortObj);
+			else {
+				$this->throwStatus(400, 'Required uUID not provided', NULL);
+			}
 		}
 		$this->persistenceManager->persistAll();
 		$this->clearCachesFor('ort');
