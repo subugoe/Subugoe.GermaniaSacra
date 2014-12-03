@@ -60,7 +60,6 @@ abstract class AbstractBaseController extends ActionController {
 	 * @return void
 	 */
 	protected function clearCachesFor($entity) {
-		$this->cacheInterface->remove($entity);
 
 		if ($this->cacheInterface->has($entity)) {
 			$this->cacheInterface->remove($entity);
