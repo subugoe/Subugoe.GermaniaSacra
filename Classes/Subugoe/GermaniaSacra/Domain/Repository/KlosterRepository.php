@@ -151,7 +151,7 @@ class KlosterRepository extends Repository {
 						if ($value !== Null) {
 							$secondparameter = $v['joinParams']['secondparameter'];
 							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
-								$queryBuilder->andwhere($filter . ' ' . $operator . ' :' . $parameter . ' OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter);
+								$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter . ' AND ' . $filter . ' !=  0 OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter . ' AND ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' !=  0');
 							}
 							else {
 								$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
@@ -170,7 +170,7 @@ class KlosterRepository extends Repository {
 						if ($value !== Null) {
 							$secondparameter = $v['joinParams']['secondparameter'];
 							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
-								$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter . ' OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter);
+								$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter . ' AND ' . $filter . ' !=  0 OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter . ' AND ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' !=  0');
 							}
 							else {
 								$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter);
@@ -188,13 +188,13 @@ class KlosterRepository extends Repository {
 				}
 				else {
 					if ($value !== Null) {
-						$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
 						if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
 							$secondparameter = $v['joinParams']['secondparameter'];
 							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
-								$queryBuilder->orWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter);
+								$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter . ' AND ' . $filter . ' !=  0 OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter . ' AND ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' !=  0');
 							}
 							else {
+								$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
 								$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
 								$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
 							}
