@@ -174,9 +174,10 @@ updateAction = (type) ->
 	$form = $("#edit form")
 	uuid = $form.find(':input[name=uUID]').first().val()
 	$.post("#{type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) ->
-		message 'Ihre Änderungen wurden gespeichert.'
+		message 'Ihre Änderungen wurden gespeichert. Liste wird neu geladen &hellip;'
 		$form.find('.dirty').removeClass('dirty')
 		$('body').removeClass('dirty')
 		$("#edit :submit[type=submit]").prop('disabled', true)
+		dataTable.ajax.reload()
 	).fail ->
 		message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'
