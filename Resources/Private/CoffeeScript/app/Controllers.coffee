@@ -36,10 +36,10 @@ init = ->
 		.append $saveButton
 		.append $('#csrf').clone().removeAttr('id')
 
-	initSearch()
-	initEditor(type)
+	germaniaSacra.search = new Search()
+	germaniaSacra.editor = new Editor(type)
 
-	# Load options for select before initializing list
+	# Load options for selects before initializing list
 	$.getJSON 'getOptions', (response) ->
 		$.each response, (name, values) ->
 			$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
@@ -50,39 +50,41 @@ init = ->
 					text: text
 				)
 		selectOptions = response
-		initList(type)
+		germaniaSacra.list = new List(type)
 
-	$("fieldset .multiple").append "<div class='add-remove-buttons'><span class='button remove'>-</span><span class='button add'>+</span></div>"
-	$("fieldset .multiple .button").click (e) ->
-		e.preventDefault()
-		div = $(this).closest(".multiple")
-		if $(this).hasClass("remove")
-			div.removeInputs 250
-		else if $(this).hasClass("add")
-			div.addInputs 250
+	$('fieldset .multiple').append '<div class="add-remove-buttons"><span class="button remove">&minus;</span><span class="button add">+</span></div>'
+	$('fieldset .multiple .button').click (e) ->
+		if not $(this).hasClass('disabled')
+			e.preventDefault()
+			div = $(this).closest('.multiple')
+			if $(this).hasClass('remove')
+				doit = confirm("Sind Sie sicher, dass Sie dieses Feld löschen möchten?")
+				if doit then div.removeInputs 250
+			else if $(this).hasClass('add')
+				div.addInputs 250
 
-	$(".new").click (e) ->
+	$('.new').click (e) ->
 		e.preventDefault()
-		newAction()
+		germaniaSacra.editor.new()
 
 	# Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
-	$(window).bind "keydown", (e) ->
+	$(window).bind 'keydown', (e) ->
 		if e.ctrlKey or e.metaKey
 			switch String.fromCharCode(e.which).toLowerCase()
-				when "a"
+				when 'a'
 					e.preventDefault()
-					$("button.new:visible:last").click()
-				when "s"
+					$('button.new:visible:last').click()
+				when 's'
 					e.preventDefault()
-					$(":submit[type=submit]:visible:last").click()
+					$(':submit[type=submit]:visible:last').click()
 
-	$(".togglable + .togglable").hide()
+	$('.togglable + .togglable').hide()
 
-	$(".toggle").click (e) ->
+	$('.toggle').click (e) ->
 		e.preventDefault()
-		$(this).closest(".togglable").siblings(".togglable").addBack().slideToggle()
+		$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
 
 	# Confirm discard changes on window close/reload
 	window.onbeforeunload = ->
 		if $('.dirty').length
-			return 'Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.'
+			return 'Sind Sie sicher, dass Sie diese Ansicht verlassen wollen? Ihre Änderungen wurden nicht gespeichert.'

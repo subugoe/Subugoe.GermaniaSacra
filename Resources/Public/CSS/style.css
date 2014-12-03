@@ -8016,6 +8016,9 @@ table th:last-child {
 table th div {
   padding-right: 1em;
 }
+table td {
+  position: relative;
+}
 table td[colspan] {
   background: #f9f9f9;
 }
@@ -8043,7 +8046,7 @@ body .dirty {
 }
 
 .narrow {
-  width: 8em;
+  width: 9em;
 }
 
 .no-wrap {
@@ -8099,6 +8102,10 @@ tr:hover .show-only-on-hover * {
   position: absolute;
   right: 0;
   top: 0;
+}
+td .autocomplete {
+  top: auto;
+  margin-top: -21px;
 }
 .autocomplete:after {
   color: #999;
@@ -8160,8 +8167,8 @@ tr:hover .show-only-on-hover * {
 .autocomplete .spinner-icon {
   display: none;
   position: absolute;
-  right: 1.75rem;
-  top: 0.75rem;
+  right: 1rem;
+  top: 1rem;
 }
 
 @font-face {

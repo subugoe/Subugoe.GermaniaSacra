@@ -2,6 +2,10 @@
 	position: absolute;
 	right: 0;
 	top: 0;
+	td & {
+		top: auto;
+		margin-top: -21px;
+	}
 	&:after {
 		color: #999;
 		content: "\25BC";
@@ -56,7 +60,7 @@
 	.spinner-icon {
 		display: none;
 		position: absolute;
-		right: rem-calc(28);
-		top: rem-calc(12);
+		right: rem-calc(16);
+		top: rem-calc(16);
 	}
 }

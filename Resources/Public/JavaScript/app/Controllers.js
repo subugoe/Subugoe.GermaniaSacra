@@ -34,8 +34,8 @@ init = function() {
     html: '<i class="icon-disk"></i> Änderungen speichern'
   });
   $('#edit form, #list form').append($saveButton).append($('#csrf').clone().removeAttr('id'));
-  initSearch();
-  initEditor(type);
+  germaniaSacra.search = new Search();
+  germaniaSacra.editor = new Editor(type);
   $.getJSON('getOptions', function(response) {
     $.each(response, function(name, values) {
       var $selects;
@@ -49,43 +49,48 @@ init = function() {
       });
     });
     selectOptions = response;
-    return initList(type);
+    return germaniaSacra.list = new List(type);
   });
-  $("fieldset .multiple").append("<div class='add-remove-buttons'><span class='button remove'>-</span><span class='button add'>+</span></div>");
-  $("fieldset .multiple .button").click(function(e) {
-    var div;
-    e.preventDefault();
-    div = $(this).closest(".multiple");
-    if ($(this).hasClass("remove")) {
-      return div.removeInputs(250);
-    } else if ($(this).hasClass("add")) {
-      return div.addInputs(250);
-    }
-  });
-  $(".new").click(function(e) {
-    e.preventDefault();
-    return newAction();
-  });
-  $(window).bind("keydown", function(e) {
-    if (e.ctrlKey || e.metaKey) {
-      switch (String.fromCharCode(e.which).toLowerCase()) {
-        case "a":
-          e.preventDefault();
-          return $("button.new:visible:last").click();
-        case "s":
-          e.preventDefault();
-          return $(":submit[type=submit]:visible:last").click();
+  $('fieldset .multiple').append('<div class="add-remove-buttons"><span class="button remove">&minus;</span><span class="button add">+</span></div>');
+  $('fieldset .multiple .button').click(function(e) {
+    var div, doit;
+    if (!$(this).hasClass('disabled')) {
+      e.preventDefault();
+      div = $(this).closest('.multiple');
+      if ($(this).hasClass('remove')) {
+        doit = confirm("Sind Sie sicher, dass Sie dieses Feld löschen möchten?");
+        if (doit) {
+          return div.removeInputs(250);
+        }
+      } else if ($(this).hasClass('add')) {
+        return div.addInputs(250);
       }
     }
   });
-  $(".togglable + .togglable").hide();
-  $(".toggle").click(function(e) {
+  $('.new').click(function(e) {
     e.preventDefault();
-    return $(this).closest(".togglable").siblings(".togglable").addBack().slideToggle();
+    return germaniaSacra.editor["new"]();
+  });
+  $(window).bind('keydown', function(e) {
+    if (e.ctrlKey || e.metaKey) {
+      switch (String.fromCharCode(e.which).toLowerCase()) {
+        case 'a':
+          e.preventDefault();
+          return $('button.new:visible:last').click();
+        case 's':
+          e.preventDefault();
+          return $(':submit[type=submit]:visible:last').click();
+      }
+    }
+  });
+  $('.togglable + .togglable').hide();
+  $('.toggle').click(function(e) {
+    e.preventDefault();
+    return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
   });
   return window.onbeforeunload = function() {
     if ($('.dirty').length) {
-      return 'Sind Sie sicher, dass Sie diese Seite verlassen wollen? Ihre Änderungen wurden nicht gespeichert.';
+      return 'Sind Sie sicher, dass Sie diese Ansicht verlassen wollen? Ihre Änderungen wurden nicht gespeichert.';
     }
   };
 };
