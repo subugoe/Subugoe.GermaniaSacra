@@ -218,7 +218,7 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 			if (!empty($klosterArr[$k]['ort'][$i])) {
-				$klosterArr[$k]['ort'] = implode('\n', $klosterArr[$k]['ort']);
+				$klosterArr[$k]['ort'] = implode(' / ', $klosterArr[$k]['ort']);
 			} else {
 				$klosterArr[$k]['ort'] = '';
 			}
