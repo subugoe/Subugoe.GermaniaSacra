@@ -149,11 +149,17 @@ class KlosterRepository extends Repository {
 				if (isset($concat) && !empty($concat)) {
 					if ($concat == 'und') {
 						if ($value !== Null) {
-							$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
-							if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
-								$secondparameter = $v['joinParams']['secondparameter'];
-								$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
-								$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
+							$secondparameter = $v['joinParams']['secondparameter'];
+							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
+								$queryBuilder->andwhere($filter . ' ' . $operator . ' :' . $parameter . ' OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter);
+							}
+							else {
+								$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
+								if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
+									$secondparameter = $v['joinParams']['secondparameter'];
+									$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
+									$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
+								}
 							}
 						}
 						else {
@@ -162,11 +168,17 @@ class KlosterRepository extends Repository {
 					}
 					elseif ($concat == 'oder') {
 						if ($value !== Null) {
-							$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter);
-							if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
-								$secondparameter = $v['joinParams']['secondparameter'];
-								$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
-								$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
+							$secondparameter = $v['joinParams']['secondparameter'];
+							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
+								$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter . ' OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter);
+							}
+							else {
+								$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter);
+								if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
+									$secondparameter = $v['joinParams']['secondparameter'];
+									$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
+									$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
+								}
 							}
 						}
 						else {
@@ -179,8 +191,13 @@ class KlosterRepository extends Repository {
 						$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
 						if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
 							$secondparameter = $v['joinParams']['secondparameter'];
-							$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
-							$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
+							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
+								$queryBuilder->orWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter);
+							}
+							else {
+								$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
+								$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
+							}
 						}
 					}
 					else {
