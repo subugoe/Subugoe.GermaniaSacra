@@ -25,6 +25,7 @@ table {
 		}
 	}
 	td {
+		position: relative;
 		&[colspan] {
 			background: $table-even-row-bg;
 		}
