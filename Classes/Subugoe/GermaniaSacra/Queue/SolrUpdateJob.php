@@ -72,6 +72,11 @@ class SolrUpdateJob implements JobInterface {
 	 */
 	public function execute(QueueInterface $queue, Message $message) {
 
+		// only one at the time to avoid stacking of requests
+		if ($queue->count() > 0) {
+			return TRUE;
+		}
+
 		$solrExporter = new DataExportController();
 		$solrExporter->injectSettings($this->settings);
 		$solrExporter->initializeAction();
