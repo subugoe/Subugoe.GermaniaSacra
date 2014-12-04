@@ -8066,35 +8066,35 @@ tr:hover .show-only-on-hover * {
   width: 50%;
 }
 
-#map-container,
-#map {
+.map-container,
+.map {
   height: 560px;
 }
 
-#map-container {
+.map-container {
   clear: both;
   display: none;
   margin: 1rem 0;
   position: relative;
 }
-#map-container form {
+.map-container form {
   margin: 0;
 }
-#map-container input[type=radio] {
+.map-container input[type=radio] {
   float: left;
   margin: .5rem;
 }
-#map-container .close {
+.map-container .close {
   position: absolute;
   right: 1rem;
   top: 1rem;
   z-index: 9;
 }
-#map-container .leaflet-container {
+.map-container .leaflet-container {
   cursor: crosshair;
 }
 
-#map {
+.map {
   border: 1px solid #ccc;
 }
 

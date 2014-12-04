@@ -36,7 +36,7 @@ Editor = (function() {
       }
       return $('select.disabled', self.scope).prop('disabled', true);
     });
-    new Geopicker();
+    $('.coordinates').geopicker();
   }
 
   Editor.prototype["new"] = function() {

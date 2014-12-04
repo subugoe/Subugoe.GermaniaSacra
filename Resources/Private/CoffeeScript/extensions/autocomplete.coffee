@@ -1,32 +1,3 @@
-$.fn.addInputs = (slideTime) ->
-	unless slideTime? then slideTime = 0
-	@each ->
-		$fieldset = $(this).closest("fieldset")
-		$clone = $(this).clone(true)
-		$clone.clearForm()
-		$clone.find("select").autocomplete()
-		$clone.insertAfter( $(this) ).hide().slideDown slideTime
-		$fieldset.find(".remove").toggleClass "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
-
-$.fn.removeInputs = (slideTime) ->
-	if not slideTime? then slideTime = 0
-	@each ->
-		$fieldset = $(this).closest("fieldset")
-		$fieldset.find(".multiple").length > 1 and $(this).addClass("dying").slideUp(slideTime, @remove)
-		$fieldset.find(".remove").toggleClass "disabled", $fieldset.find(".multiple:not(.dying)").length is 1
-
-$.fn.clearForm = ->
-	@each ->
-		$form = $(this)
-		$form.find("label").removeClass('dirty')
-		$form.find(":input").prop('disabled', false)
-		$form.find(":input:not([name=__csrfToken]):not(:checkbox):not(:submit)").val('')
-		$form.find(":checkbox, :radio").prop('checked', false)
-		# Select "keine Angabe" or "unbekannt" as default if available
-		$form.find('select option:contains("––"), select option:contains("keine Angabe"), select option:contains("unbekannt")').prop('selected', true)
-		$form.find(".multiple:gt(0)").removeInputs()
-		$form.find("button.remove").prop 'disabled', true
-
 $.fn.autocomplete = ->
 
 	@each ->
@@ -34,7 +5,14 @@ $.fn.autocomplete = ->
 		$select = $(this)
 		$select.css
 			opacity: 0
-		name = if $select.data('type') then $select.data('type') else $select.attr('name').replace('[]', '')
+
+		if $select.data('type')
+			name = $select.data('type')
+		else if $select.attr('name')
+			name = $select.attr('name').replace('[]', '')
+		else
+			return false
+
 		isAjax = $select.hasClass('ajax')
 
 		# If already autocomplete-enabled, remove autocomplete first
