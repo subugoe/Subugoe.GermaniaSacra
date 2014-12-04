@@ -76,6 +76,13 @@ class OrtController extends AbstractBaseController {
 		$orts = $this->ortRepository->findAll();
 		foreach ($orts as $k => $ort) {
 			if (is_object($ort)) {
+				$uUID = $ort->getUUID();
+				if (!empty($uUID)) {
+					$ortArr[$k]['uUID'] = $uUID;
+				}
+				else {
+					$ortArr[$k]['uUID'] = '';
+				}
 				$ortName = $ort->getOrt();
 				if (!empty($ort)) {
 					$ortArr[$k]['ort'] = $ortName;
@@ -120,12 +127,14 @@ class OrtController extends AbstractBaseController {
 					$ortArr[$k]['laenge'] = '';
 				}
 				$bistumObj = $ort->getBistum();
-				$bistum = $bistumObj->getUUID();
-				if (!empty($bistum)) {
-					$ortArr[$k]['bistum'] = $bistum;
-				}
-				else {
-					$ortArr[$k]['bistum'] = '';
+				if (is_object($bistumObj)) {
+					$bistum = $bistumObj->getUUID();
+					if (!empty($bistum)) {
+						$ortArr[$k]['bistum'] = $bistum;
+					}
+					else {
+						$ortArr[$k]['bistum'] = '';
+					}
 				}
 			}
 		}

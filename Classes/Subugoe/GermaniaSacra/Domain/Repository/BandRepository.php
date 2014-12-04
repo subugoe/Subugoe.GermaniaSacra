@@ -11,7 +11,17 @@ use TYPO3\Flow\Persistence\Repository;
  */
 class BandRepository extends Repository {
 
-	// add customized methods here
+	/**
+	 * Finds bands
+	 *
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The ort
+	 */
+	public function findBands() {
+		$query = $this->createQuery();
+		return $query->matching($query->logicalNot($query->like('nummer', 'keine Angabe')))
+				->setOrderings(array('sortierung' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING))
+				->execute();
+	}
 
 }
 ?>

@@ -64,8 +64,58 @@ class BandController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bands'));
 		}
-
-		$this->view->assign('bands', ['data' => $this->bandRepository->findAll()]);
+		$bandArr = array();
+		$bands = $this->bandRepository->findBands();
+		foreach ($bands as $k => $band) {
+			if (is_object($band)) {
+				$uUID = $band->getUUID();
+				if (!empty($uUID)) {
+					$bandArr[$k]['uUID'] = $uUID;
+				}
+				else {
+					$bandArr[$k]['uUID'] = '';
+				}
+				$nummer = $band->getNummer();
+				if (!empty($nummer)) {
+					$bandArr[$k]['nummer'] = $nummer;
+				}
+				else {
+					$bandArr[$k]['nummer'] = '';
+				}
+				$titel = $band->getTitel();
+				if (!empty($titel)) {
+					$bandArr[$k]['titel'] = $titel;
+				}
+				else {
+					$bandArr[$k]['titel'] = '';
+				}
+				$kurztitel = $band->getKurztitel();
+				if (!empty($kurztitel)) {
+					$bandArr[$k]['kurztitel'] = $kurztitel;
+				}
+				else {
+					$bandArr[$k]['kurztitel'] = '';
+				}
+				$sortierung = $band->getSortierung();
+				if (!empty($sortierung)) {
+					$bandArr[$k]['sortierung'] = $sortierung;
+				}
+				else {
+					$bandArr[$k]['sortierung'] = '';
+				}
+				$bistumObj = $band->getBistum();
+				if (is_object($bistumObj)) {
+					$bistum = $bistumObj->getUUID();
+					if (!empty($bistum)) {
+						$bandArr[$k]['bistum'] = $bistum;
+					}
+					else {
+						$bandArr[$k]['bistum'] = '';
+					}
+				}
+			}
+		}
+		$this->view->assign('bands', ['data' => $bandArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 
 		if ($this->request->getFormat() === 'json') {
@@ -79,6 +129,8 @@ class BandController extends AbstractBaseController {
 			$this->cacheInterface->set('band', $viewRendered);
 			return $viewRendered;
 		}
+
+		return $this->view->render();
 
 	}
 
@@ -460,12 +512,20 @@ class BandController extends AbstractBaseController {
 			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($bandlist as $uuid => $band) {
-			$bandObj = $this->bandRepository->findByIdentifier($uuid);
-			$bandObj->setNummer($band['nummer']);
-			$bandObj->setTitel($band['titel']);
-			$bandObj->setKurztitel($band['kurztitel']);
-			$bandObj->setSortierung($band['sortierung']);
-			$this->bandRepository->update($bandObj);
+			if (isset($uuid) && !empty($uuid)) {
+				$bandObj = $this->bandRepository->findByIdentifier($uuid);
+				$bandObj->setNummer($band['nummer']);
+				$bandObj->setTitel($band['titel']);
+				$bandObj->setKurztitel($band['kurztitel']);
+				$bandObj->setSortierung($band['sortierung']);
+				$bistumUUID = $band['bistum'];
+				$bistum = $this->bistumRepository->findByIdentifier($bistumUUID);
+				$bandObj->setBistum($bistum);
+				$this->bandRepository->update($bandObj);
+			}
+			else {
+				$this->throwStatus(400, 'Required uUID not provided', NULL);
+			}
 		}
 		$this->persistenceManager->persistAll();
 		$this->clearCachesFor('band');
