@@ -54,8 +54,8 @@ $.fn.geopicker = ->
 			event.stopPropagation()
 
 		# Get current coordinates, required for determining zoom level
-		lat = $('input[name$="breite[]"]', scope).val() or 0
-		lng = $('input[name$="laenge[]"]', scope).val() or 0
+		lat = parseFloat( $('input[name$="breite[]"]', scope).val() ) or 0
+		lng = parseFloat( $('input[name$="laenge[]"]', scope).val() ) or 0
 
 		# Draw the map and add controls, center over and zoom to Germany
 		map = L.map( id,

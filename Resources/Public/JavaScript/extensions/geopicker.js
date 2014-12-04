@@ -46,8 +46,8 @@ $.fn.geopicker = function() {
       scope.click(function(event) {
         return event.stopPropagation();
       });
-      lat = $('input[name$="breite[]"]', scope).val() || 0;
-      lng = $('input[name$="laenge[]"]', scope).val() || 0;
+      lat = parseFloat($('input[name$="breite[]"]', scope).val()) || 0;
+      lng = parseFloat($('input[name$="laenge[]"]', scope).val()) || 0;
       map = L.map(id, {
         center: [(lat === 0 ? 51.163 : lat), (lng === 0 ? 10.448 : lng)],
         zoom: (lat === 0 && lng === 0 ? 6 : 18),
