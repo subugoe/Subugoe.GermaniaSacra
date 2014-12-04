@@ -54,13 +54,6 @@
     '@action': 'getOptions'
 
 -
-  name: 'Update Solr after list update URI'
-  uriPattern: 'updateSolrAfterListUpdate'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'updateSolrAfterListUpdate'
-
--
   name: 'Default list routes (controller only)'
   uriPattern: '{@controller}'
   defaults:
