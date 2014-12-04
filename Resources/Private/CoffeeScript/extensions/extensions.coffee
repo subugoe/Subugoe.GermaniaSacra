@@ -1,3 +1,27 @@
+$.fn.appendSaveButton = ->
+	@each ->
+		$button = $('<button/>',
+			disabled: 'disabled'
+			type: 'submit'
+			html: '<i class="icon-disk"></i> Änderungen speichern'
+		)
+		$(this)
+			.append $button
+			.append $('#csrf').clone().removeAttr('id')
+
+$.fn.appendAddRemoveButtons = ->
+	@each ->
+		$(this).append '<div class="add-remove-buttons"><span class="button remove">&minus;</span><span class="button add">+</span></div>'
+		$('.button', $(this)).click (e) ->
+			if not $(this).hasClass('disabled')
+				e.preventDefault()
+				div = $(this).closest('.multiple')
+				if $(this).hasClass('remove')
+					doit = confirm germaniaSacra.messages.askRemove
+					if doit then div.removeInputs 250
+				else if $(this).hasClass('add')
+					div.addInputs 250
+
 $.fn.addInputs = (slideTime) ->
 	unless slideTime? then slideTime = 0
 	@each ->
@@ -26,4 +50,4 @@ $.fn.clearForm = ->
 		$form.find('select option:contains("––"), select option:contains("keine Angabe"), select option:contains("unbekannt")').prop('selected', true)
 		$form.find('.multiple:gt(0)').removeInputs()
 		$form.find('.map-container').remove()
-		$form.find('button.remove').prop 'disabled', true
+		$form.find('button.remove').prop('disabled', true)

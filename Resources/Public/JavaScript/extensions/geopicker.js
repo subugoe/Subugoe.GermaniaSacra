@@ -27,7 +27,6 @@ $.fn.geopicker = function() {
       };
       overlayMaps = {};
       id = "map-" + (Math.random());
-      console.dir(id);
       $map = $("<div id='" + id + "' class='map'/>").css({
         width: scope.width()
       });
@@ -70,7 +69,7 @@ $.fn.geopicker = function() {
         var doit;
         lat = e.latlng.lat.toFixed(6);
         lng = e.latlng.lng.toFixed(6);
-        doit = confirm("Sollen die Koordinaten " + lat + ", " + lng + " übernommen werden?");
+        doit = confirm('Sollen die Koordinaten #{lat}, #{lng} übernommen werden?');
         if (doit === true) {
           $(':input[name$="breite[]"]', scope).val(lat);
           $(':input[name$="laenge[]"]', scope).val(lng);

@@ -4,41 +4,38 @@ germaniaSacra.controller 'listController', ($scope) ->
 	$scope.$watch (->
 		$('#list').data('type')
 	), ((newval, oldval) ->
-		if newval? then init()
+		if newval?
+			type = $('#list').data('type')
+			$('#message, #search, #list').hide()
+			$('.togglable + .togglable').hide()
+			germaniaSacra.search = new germaniaSacra.Search()
+			germaniaSacra.editor = new germaniaSacra.Editor(type)
+			$.when( germaniaSacra.getOptions() ).then(
+				(selectOptions) ->
+					germaniaSacra.selectOptions = selectOptions
+					germaniaSacra.list = new germaniaSacra.List(type)
+					$('.toggle').click (e) ->
+						e.preventDefault()
+						$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
+					germaniaSacra.bindKeys()
+					$('#edit form, #list form').appendSaveButton()
+					$('fieldset .multiple').appendAddRemoveButtons()
+				,
+				->
+					germaniaSacra.message 'Fehler: Optionen können nicht geladen werden'
+			)
 	), true
 
 	# Confirm discard changes on view change
-	$scope.$on('$locationChangeStart', (e) ->
+	$scope.$on '$locationChangeStart', (e) ->
 		if $('.dirty').length
-			if confirmDiscardChanges()
+			if confirm(germaniaSacra.messages.askUnsavedChanges)
 				$('.dirty').removeClass('dirty')
 			else
 				e.preventDefault()
-	)
 
-# TODO: Move this
-s_loading = '<i class="spinner spinner-icon"></i> Wird geladen&hellip;'
-
-selectOptions = {}
-
-init = ->
-
-	type = $('#list').data('type')
-
-	$('#message, #search, #list').hide()
-
-	$saveButton = $('<button/>',
-		disabled: 'disabled'
-		type: 'submit'
-		html: '<i class="icon-disk"></i> Änderungen speichern'
-	)
-	$('#edit form, #list form')
-		.append $saveButton
-		.append $('#csrf').clone().removeAttr('id')
-
-	germaniaSacra.search = new Search()
-	germaniaSacra.editor = new Editor(type)
-
+germaniaSacra.getOptions = ->
+	dfd = $.Deferred()
 	# Load options for selects before initializing list
 	$.getJSON 'getOptions', (response) ->
 		$.each response, (name, values) ->
@@ -49,25 +46,10 @@ init = ->
 					value: uUID
 					text: text
 				)
-		selectOptions = response
-		germaniaSacra.list = new List(type)
+		dfd.resolve(response)
+	return dfd.promise()
 
-	$('fieldset .multiple').append '<div class="add-remove-buttons"><span class="button remove">&minus;</span><span class="button add">+</span></div>'
-	$('fieldset .multiple .button').click (e) ->
-		if not $(this).hasClass('disabled')
-			e.preventDefault()
-			div = $(this).closest('.multiple')
-			if $(this).hasClass('remove')
-				doit = confirm("Sind Sie sicher, dass Sie dieses Feld löschen möchten?")
-				if doit then div.removeInputs 250
-			else if $(this).hasClass('add')
-				div.addInputs 250
-
-	$('.new').click (e) ->
-		e.preventDefault()
-		germaniaSacra.editor.new()
-
-	# Submit by pressing Ctrl-S (PC) or Meta-S (Mac)
+germaniaSacra.bindKeys = ->
 	$(window).bind 'keydown', (e) ->
 		if e.ctrlKey or e.metaKey
 			switch String.fromCharCode(e.which).toLowerCase()
@@ -78,13 +60,20 @@ init = ->
 					e.preventDefault()
 					$(':submit[type=submit]:visible:last').click()
 
-	$('.togglable + .togglable').hide()
+germaniaSacra.message = (text, withTimestampAndCloseButton = true) ->
+	$message = $('#message')
+	date = new Date()
+	timestamp = if withTimestampAndCloseButton then "<span class='timestamp'>#{date.toLocaleString()}</span>" else ''
+	text = "<span class='text'>#{text}</span>"
+	# TODO: No animation since it freezes during DataTables render
+	$message.hide().html(timestamp + text).show()
+	if withTimestampAndCloseButton
+		$close = $("<i class='hover close icon-close right'>&times;</i>")
+		$close.appendTo($message).click (e) ->
+			e.preventDefault()
+			$message.hide()
+	$('html, body').animate
+		scrollTop: $message.offset().top
 
-	$('.toggle').click (e) ->
-		e.preventDefault()
-		$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
-
-	# Confirm discard changes on window close/reload
-	window.onbeforeunload = ->
-		if $('.dirty').length
-			return 'Sind Sie sicher, dass Sie diese Ansicht verlassen wollen? Ihre Änderungen wurden nicht gespeichert.'
+# Confirm discard changes on window close/reload
+window.onbeforeunload = -> if $('.dirty').length then return germaniaSacra.messages.askUnsavedChanges

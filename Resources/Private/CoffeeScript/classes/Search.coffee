@@ -1,4 +1,4 @@
-class Search
+class germaniaSacra.Search
 
 	constructor: ->
 

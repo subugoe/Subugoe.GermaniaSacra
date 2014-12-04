@@ -101,7 +101,7 @@ $.fn.autocomplete = function() {
               return delay((function() {
                 $spinner.show();
                 return $.ajax({
-                  url: "/search" + (ucfirst(name)) + "?searchString=" + (encodeURIComponent($filter.val())),
+                  url: "/search" + (name.charAt(0).toUpperCase() + name.slice(1)) + "?searchString=" + (encodeURIComponent($filter.val())),
                   type: 'GET',
                   complete: function() {
                     return $spinner.hide();

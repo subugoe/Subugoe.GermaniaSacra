@@ -1,4 +1,4 @@
-class List
+class germaniaSacra.List
 
 	constructor: (type) ->
 
@@ -9,10 +9,14 @@ class List
 
 		@editList(type)
 
+		$('.new', @scope).click (e) ->
+			e.preventDefault()
+			germaniaSacra.editor.new()
+
 		$('form', @scope).submit (e) ->
 			e.preventDefault()
-			if $(this).find("input[name=uUID]:checked").length is 0
-				message "Wählen Sie bitte mindestens einen Eintrag aus."
+			if $(this).find('input[name=uUID]:checked').length is 0
+				germaniaSacra.message 'Wählen Sie bitte mindestens einen Eintrag aus.'
 				return false
 			else
 				self.updateList(type)
@@ -23,7 +27,7 @@ class List
 		self = @
 
 		$('#search, #list').hide()
-		message s_loading, false
+		germaniaSacra.message germaniaSacra.messages.loading, false
 
 		$table = @scope.find('table:eq(0)')
 
@@ -66,32 +70,44 @@ class List
 					url: sSource
 					data: aoData
 					success: [ajaxSuccess, fnCallback]
+					error: -> germaniaSacra.message 'Fehler: Daten konnten nicht geladen werden.'
 			fnDrawCallback: ->
+
 				$tr = $table.find('tbody tr:not(.processed)')
+
 				$tr.children().each ->
+
 					$td = $(this)
 					$th = $table.find('th[data-name]').eq( $td.index() )
+
 					if $th.length
-						if $th.data('input') is 'checkbox'
+
+						dataInput = $th.data('input')
+						name = $th.data('name')
+
+						if dataInput is 'checkbox'
 							$input = $('<input type="checkbox"/>')
+							if $td.text() is '1' then $input.prop('checked', true)
+							if name isnt 'uUID'
+								$td.text('1')
 						else
 							$input = $("<#{$th.data('input')}/>")
-						$input.attr('name', $th.data('name'))
+
 						# Fill selects
-						if $th.data('input') is 'select'
-							selectName = $th.data('name')
-							if selectOptions[selectName]?
-								for uuid, name of selectOptions[selectName]
-									$input.append $('<option/>').text(name).attr('value', uuid)
-							for option_uuid, option of selectOptions[selectName]
-								if option is $(this).text()
-									$(this).text(option_uuid)
-									break
-						else if $th.data('input') is 'checkbox'
-							if $td.text() is '1' then $input.prop('checked', true)
-							if $input.attr('name') isnt 'uuid' and $input.attr('name') isnt 'uUID'
-								$td.text('1')
-						$(this).html $input.val( $(this).text().trim() )
+						if dataInput.indexOf('select') is 0
+							if germaniaSacra.selectOptions[name]?
+								for uuid, value of germaniaSacra.selectOptions[name]
+									$input.append $('<option/>').text(value).attr('value', uuid)
+								for optionUuid, option of germaniaSacra.selectOptions[name]
+									if option is $(this).text()
+										$(this).text(optionUuid)
+										break
+							else # name is not in selectOptions, assume <uuid>:<text>, other options will be ajaxed
+								[uuid, value] = $(this).text().split(':', 2)
+								$input.append $('<option/>').text(value).attr('value', uuid)
+
+						$(this).html $input.attr('name', name).val( $(this).text().trim() )
+
 				$tr.each ->
 					uuid = $(this).find(':input[name=uUID]').val()
 					# Since only visible textareas can be autosized, this has to be called after every page render
@@ -101,16 +117,17 @@ class List
 						$(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop 'checked', true
 						$('body').addClass('dirty')
 						$(':submit[type=submit]', self.scope).prop('disabled', false)
-				# TODO: Before enabling this, find a way to prevent pressing enter from triggering the first edit button
+
 				$tr.find('select').autocomplete()
 				$tr.addClass('processed')
+
 			ajaxSuccess = (json) ->
 				$('#search, #list').slideDown()
 				$('#message').slideUp()
 				# TODO: Find a more elegant way to use text instead of uuid for filtering and sorting
 				# Prepare data for selects. Currently only this one is used within the lists.
 				for index, entity of json.data
-					json.data[index].bearbeitungsstatus = selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus]
+					json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus]
 					# WORKAROUND: Fix table filtering. Empty values are a problem.
 					for key, value of entity
 						if not value then json.data[index][key] = ' '
@@ -134,10 +151,8 @@ class List
 				self.dataTable.column(colIdx).search(@value).draw()
 
 		# Filter table by "search all" return values
-		$uuidFilter = $('<input id="uuid-filter" type="hidden">')
-		$("body").append $uuidFilter
-		$uuidFilter.change ->
-			# enable regex, disable smart search (enabling both will not work)
+		$('#uuid-filter').change ->
+			# Enable regex, disable smart search (enabling both will not work)
 			self.dataTable.column(0).search(@value, true, false).draw()
 
 		return
@@ -158,19 +173,19 @@ class List
 				return
 		formData.__csrfToken = $('#csrf').val()
 		$.post(type + '/updateList', formData).done((respond, status, jqXHR) =>
-			message 'Ihre Änderungen wurden gespeichert.'
+			germaniaSacra.message 'Ihre Änderungen wurden gespeichert.'
 			$form.find('.dirty').removeClass('dirty')
 			$form.find('input[name=uUID]').prop('checked', false)
 			$('body').removeClass('dirty')
 			$(':submit[type=submit]', @scope).prop('disabled', true)
 		).fail (jqXHR, textStatus) ->
-			message 'Fehler: Daten konnten nicht gespeichert werden.'
+			germaniaSacra.message 'Fehler: Daten konnten nicht gespeichert werden.'
 
 		return
 
 	# Delete a single entity
 	delete: (type, uuid) ->
-		check = confirm 'Wollen Sie diesen Eintrag wirklich löschen?'
+		check = confirm germaniaSacra.messages.askDelete
 		if check is true
 			csrf = $('#csrf').val()
 			$.post(type + '/delete/' + uuid,
@@ -181,9 +196,9 @@ class List
 						.row( $('tr').has("td:first input[value='#{uuid}']") )
 						.remove()
 						.draw()
-					message 'Der Eintrag wurde gelöscht.'
+					germaniaSacra.message 'Der Eintrag wurde gelöscht.'
 			).fail (jqXHR, textStatus) ->
-				message 'Fehler: Eintrag konnte nicht gelöscht werden.'
+				germaniaSacra.message 'Fehler: Eintrag konnte nicht gelöscht werden.'
 		return
 
 	reload: ->
