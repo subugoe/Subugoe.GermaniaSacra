@@ -36,7 +36,7 @@ class Editor
 				self.create type
 			$('select.disabled', self.scope).prop 'disabled', true
 
-		new Geopicker()
+		$('.coordinates').geopicker()
 
 	# Clear the edit form for a new Kloster
 	new: ->

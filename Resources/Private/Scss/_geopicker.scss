@@ -1,9 +1,9 @@
-#map-container,
-#map {
+.map-container,
+.map {
 	height: 560px;
 }
 
-#map-container {
+.map-container {
 	clear: both;
 	display: none;
 	margin: 1rem 0;
@@ -26,6 +26,6 @@
 	}
 }
 
-#map {
+.map {
 	border: 1px solid #ccc;
 }
