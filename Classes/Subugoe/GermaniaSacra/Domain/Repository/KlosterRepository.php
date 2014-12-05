@@ -199,6 +199,9 @@ class KlosterRepository extends Repository {
 								$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
 							}
 						}
+						else {
+							$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
+						}
 					}
 					else {
 						$queryBuilder->where($filter . ' ' . $operator);
