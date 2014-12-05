@@ -58,7 +58,7 @@ class BandController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return string
+	 * List of all Band entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
@@ -117,21 +117,15 @@ class BandController extends AbstractBaseController {
 		}
 		$this->view->assign('bands', ['data' => $bandArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-
 		if ($this->request->getFormat() === 'json') {
-
 			if ($this->cacheInterface->has('band')) {
 				return $this->cacheInterface->get('band');
 			}
-
 			$viewRendered = $this->view->render();
-
 			$this->cacheInterface->set('band', $viewRendered);
 			return $viewRendered;
 		}
-
 		return $this->view->render();
-
 	}
 
 	/**

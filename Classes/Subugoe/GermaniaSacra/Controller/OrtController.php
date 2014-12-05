@@ -66,7 +66,7 @@ class OrtController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return string
+	 * List of all Ort entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
@@ -140,19 +140,14 @@ class OrtController extends AbstractBaseController {
 		}
 		$this->view->assign('ort', ['data' => $ortArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-
 		if ($this->request->getFormat() === 'json') {
-
 			if ($this->cacheInterface->has('ort')) {
 				return $this->cacheInterface->get('ort');
 			}
-
 			$viewRendered = $this->view->render();
-
 			$this->cacheInterface->set('ort', $viewRendered);
 			return $viewRendered;
 		}
-
 		return $this->view->render();
 	}
 

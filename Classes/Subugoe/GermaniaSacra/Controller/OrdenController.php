@@ -65,14 +65,73 @@ class OrdenController extends AbstractBaseController {
 
 	/**
 	 * List of all Orden entities
-	 * @return void
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
-		$this->view->assign('orden', ['data' => $this->ordenRepository->findAll()]);
+		$ordenArr = array();
+		$ordens = $this->ordenRepository->findAll();
+		foreach ($ordens as $k => $orden) {
+			if (is_object($orden)) {
+				$uUID = $orden->getUUID();
+				if (!empty($uUID)) {
+					$ordenArr[$k]['uUID'] = $uUID;
+				}
+				else {
+					$ordenArr[$k]['uUID'] = '';
+				}
+				$ordenName = $orden->getOrden();
+				if (!empty($ordenName)) {
+					$ordenArr[$k]['orden'] = $ordenName;
+				}
+				else {
+					$ordenArr[$k]['orden'] = '';
+				}
+				$ordo = $orden->getOrdo();
+				if (!empty($ordo)) {
+					$ordenArr[$k]['ordo'] = $ordo;
+				}
+				else {
+					$ordenArr[$k]['ordo'] = '';
+				}
+				$symbol = $orden->getSymbol();
+				if (!empty($symbol)) {
+					$ordenArr[$k]['symbol'] = $symbol;
+				}
+				else {
+					$ordenArr[$k]['symbol'] = '';
+				}
+				$graphik = $orden->getGraphik();
+				if (!empty($graphik)) {
+					$ordenArr[$k]['graphik'] = $graphik;
+				}
+				else {
+					$ordenArr[$k]['graphik'] = '';
+				}
+				$ordenstypObj = $orden->getOrdenstyp();
+				if (is_object($ordenstypObj)) {
+					$ordenstyp = $ordenstypObj->getUUID();
+					if (!empty($ordenstyp)) {
+						$ordenArr[$k]['ordenstyp'] = $ordenstyp;
+					}
+					else {
+						$ordenArr[$k]['ordenstyp'] = '';
+					}
+				}
+			}
+		}
+		$this->view->assign('orden', ['data' => $ordenArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		if ($this->request->getFormat() === 'json') {
+			if ($this->cacheInterface->has('orden')) {
+				return $this->cacheInterface->get('orden');
+			}
+			$viewRendered = $this->view->render();
+			$this->cacheInterface->set('orden', $viewRendered);
+			return $viewRendered;
+		}
+		return $this->view->render();
 	}
 
 	/**
@@ -455,11 +514,19 @@ class OrdenController extends AbstractBaseController {
 			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($ordenlist as $uuid => $orden) {
-			$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
-			$ordenObj->setOrden($orden['orden']);
-			$ordenObj->setOrdo($orden['ordo']);
-			$ordenObj->setSymbol($orden['symbol']);
-			$ordenObj->setGraphik($orden['graphik']);
+			if (isset($uuid) && !empty($uuid)) {
+				$ordenObj = $this->ordenRepository->findByIdentifier($uuid);
+				$ordenObj->setOrden($orden['orden']);
+				$ordenObj->setOrdo($orden['ordo']);
+				$ordenObj->setSymbol($orden['symbol']);
+				$ordenObj->setGraphik($orden['graphik']);
+				$ordenstypUUID = $orden['ordenstyp'];
+				$ordenstyp = $this->ordenstypRepository->findByIdentifier($ordenstypUUID);
+				$ordenObj->setOrdenstyp($ordenstyp);
+			}
+			else {
+				$this->throwStatus(400, 'Required uUID not provided', NULL);
+			}
 			$this->ordenRepository->update($ordenObj);
 		}
 		$this->persistenceManager->persistAll();
