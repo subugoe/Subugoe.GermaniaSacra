@@ -84,7 +84,7 @@ class OrtController extends AbstractBaseController {
 					$ortArr[$k]['uUID'] = '';
 				}
 				$ortName = $ort->getOrt();
-				if (!empty($ort)) {
+				if (!empty($ortName)) {
 					$ortArr[$k]['ort'] = $ortName;
 				}
 				else {
@@ -111,7 +111,6 @@ class OrtController extends AbstractBaseController {
 				else {
 					$ortArr[$k]['wuestung'] = '';
 				}
-
 				$breite = $ort->getBreite();
 				if (!empty($breite)) {
 					$ortArr[$k]['breite'] = $breite;

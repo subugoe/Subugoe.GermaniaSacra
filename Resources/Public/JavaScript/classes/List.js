@@ -2,10 +2,11 @@
 germaniaSacra.List = (function() {
   function List(type) {
     var self;
+    this.type = type;
     this.scope = $('#list');
     self = this;
     this.dataTable = null;
-    this.editList(type);
+    this.editList();
     $('.new', this.scope).click(function(e) {
       e.preventDefault();
       return germaniaSacra.editor["new"]();
@@ -16,13 +17,13 @@ germaniaSacra.List = (function() {
         germaniaSacra.message('Wählen Sie bitte mindestens einen Eintrag aus.');
         return false;
       } else {
-        self.updateList(type);
+        self.updateList();
         return true;
       }
     });
   }
 
-  List.prototype.editList = function(type) {
+  List.prototype.editList = function() {
     var $table, $ths, ajaxSuccess, columns, orderBy, self;
     self = this;
     $('#search, #list').hide();
@@ -50,7 +51,7 @@ germaniaSacra.List = (function() {
       orderBy = 1;
     }
     this.dataTable = $table.DataTable({
-      sAjaxSource: '/entity/' + type,
+      sAjaxSource: '/entity/' + this.type,
       columns: columns,
       autoWidth: false,
       pageLength: 100,
@@ -115,8 +116,10 @@ germaniaSacra.List = (function() {
                   }
                 }
               } else {
-                _ref2 = $(this).text().split(':', 2), uuid = _ref2[0], value = _ref2[1];
-                $input.append($('<option/>').text(value).attr('value', uuid));
+                _ref2 = $(this).text().trim().split(':', 2), uuid = _ref2[0], value = _ref2[1];
+                if (uuid) {
+                  $input.append($('<option/>').text(value).attr('value', uuid));
+                }
               }
             }
             return $(this).html($input.attr('name', name).val($(this).text().trim()));
@@ -164,13 +167,13 @@ germaniaSacra.List = (function() {
       var uuid;
       e.preventDefault();
       uuid = $(this).closest('tr').find(':input[name=uUID]').first().val();
-      return germaniaSacra.editor.edit(type, uuid);
+      return germaniaSacra.editor.edit(uuid);
     });
     $table.on('click', '.delete', function(e) {
       var uuid;
       e.preventDefault();
       uuid = $(this).closest('tr').find(':input[name=uUID]').first().val();
-      return self["delete"](type, uuid);
+      return self["delete"](uuid);
     });
     this.dataTable.columns().eq(0).each(function(colIdx) {
       return $('input', self.dataTable.column(colIdx).header()).click(function(e) {
@@ -184,7 +187,7 @@ germaniaSacra.List = (function() {
     });
   };
 
-  List.prototype.updateList = function(type) {
+  List.prototype.updateList = function() {
     var $form, $rows, formData;
     $form = $('form', this.scope);
     $rows = this.dataTable.$('tr').has('td:first input:checked');
@@ -203,7 +206,7 @@ germaniaSacra.List = (function() {
       });
     });
     formData.__csrfToken = $('#csrf').val();
-    $.post(type + '/updateList', formData).done((function(_this) {
+    $.post(this.type + '/updateList', formData).done((function(_this) {
       return function(respond, status, jqXHR) {
         germaniaSacra.message('Ihre Änderungen wurden gespeichert.');
         $form.find('.dirty').removeClass('dirty');
@@ -216,12 +219,12 @@ germaniaSacra.List = (function() {
     });
   };
 
-  List.prototype["delete"] = function(type, uuid) {
+  List.prototype["delete"] = function(uuid) {
     var check, csrf;
     check = confirm(germaniaSacra.messages.askDelete);
     if (check === true) {
       csrf = $('#csrf').val();
-      $.post(type + '/delete/' + uuid, {
+      $.post(this.type + '/delete/' + uuid, {
         __csrfToken: csrf
       }).done((function(_this) {
         return function(respond, status, jqXHR) {

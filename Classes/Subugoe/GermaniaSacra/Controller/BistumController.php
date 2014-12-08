@@ -63,14 +63,83 @@ class BistumController extends AbstractBaseController {
 	protected $defaultViewObjectName = 'TYPO3\\Flow\\Mvc\\View\\JsonView';
 
 	/**
-	 * @return void
+	 * List of all Bistum entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bistum'));
 		}
-		$this->view->assign('bistum', ['data' => $this->bistumRepository->findAll()]);
+		$bistumArr = array();
+		$bistums = $this->bistumRepository->findAll();
+		foreach ($bistums as $k => $bistum) {
+			if (is_object($bistum)) {
+				$uUID = $bistum->getUUID();
+				if (!empty($uUID)) {
+					$bistumArr[$k]['uUID'] = $uUID;
+				}
+				else {
+					$bistumArr[$k]['uUID'] = '';
+				}
+				$bistumName = $bistum->getBistum();
+				if (!empty($bistumName)) {
+					$bistumArr[$k]['bistum'] = $bistumName;
+				}
+				else {
+					$bistumArr[$k]['bistum'] = '';
+				}
+				$kirchenprovinz = $bistum->getKirchenprovinz();
+				if (!empty($kirchenprovinz)) {
+					$bistumArr[$k]['kirchenprovinz'] = $kirchenprovinz;
+				}
+				else {
+					$bistumArr[$k]['kirchenprovinz'] = '';
+				}
+				$ist_erzbistum = $bistum->getIst_erzbistum();
+				if (!empty($ist_erzbistum)) {
+					$bistumArr[$k]['ist_erzbistum'] = $ist_erzbistum;
+				}
+				else {
+					$bistumArr[$k]['ist_erzbistum'] = '';
+				}
+				$shapefile = $bistum->getShapefile();
+				if (!empty($shapefile)) {
+					$bistumArr[$k]['shapefile'] = $shapefile;
+				}
+				else {
+					$bistumArr[$k]['shapefile'] = '';
+				}
+				$bemerkung = $bistum->getBemerkung();
+				if (!empty($bemerkung)) {
+					$bistumArr[$k]['bemerkung'] = $bemerkung;
+				}
+				else {
+					$bistumArr[$k]['bemerkung'] = '';
+				}
+				$ortObj = $bistum->getOrt();
+				if (is_object($ortObj)) {
+					$ort = $ortObj->getUUID(). ':' . $ortObj->getOrt();
+					if (!empty($ort)) {
+						$bistumArr[$k]['ort'] = $ort;
+					}
+					else {
+						$bistumArr[$k]['ort'] = '';
+					}
+				} else {
+					$bistumArr[$k]['ort'] = '';
+				}
+			}
+		}
+		$this->view->assign('bistum', ['data' => $bistumArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		if ($this->request->getFormat() === 'json') {
+			if ($this->cacheInterface->has('bistum')) {
+				return $this->cacheInterface->get('bistum');
+			}
+			$viewRendered = $this->view->render();
+			$this->cacheInterface->set('bistum', $viewRendered);
+			return $viewRendered;
+		}
+		return $this->view->render();
 	}
 
 	/**
@@ -457,18 +526,26 @@ class BistumController extends AbstractBaseController {
 			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
 		foreach ($bistumlist as $uuid => $bistum) {
-			$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
-			$bistumObj->setBistum($bistum['bistum']);
-			$bistumObj->setKirchenprovinz($bistum['kirchenprovinz']);
-			$bistumObj->setBemerkung($bistum['bemerkung']);
-			if (isset($bistum['ist_erzbistum']) && !empty($bistum['ist_erzbistum'])) {
-				$ist_erzbistum = $bistum['ist_erzbistum'];
-			} else {
-				$ist_erzbistum = 0;
+			if (isset($uuid) && !empty($uuid)) {
+				$bistumObj = $this->bistumRepository->findByIdentifier($uuid);
+				$bistumObj->setBistum($bistum['bistum']);
+				$bistumObj->setKirchenprovinz($bistum['kirchenprovinz']);
+				$bistumObj->setBemerkung($bistum['bemerkung']);
+				if (isset($bistum['ist_erzbistum']) && !empty($bistum['ist_erzbistum'])) {
+					$ist_erzbistum = $bistum['ist_erzbistum'];
+				} else {
+					$ist_erzbistum = 0;
+				}
+				$bistumObj->setIst_erzbistum($ist_erzbistum);
+				$bistumObj->setShapefile($bistum['shapefile']);
+				$ortUUID = $bistum['ort'];
+				$ort = $this->ortRepository->findByIdentifier($ortUUID);
+				$bistumObj->setOrt($ort);
+				$this->bistumRepository->update($bistumObj);
 			}
-			$bistumObj->setIst_erzbistum($ist_erzbistum);
-			$bistumObj->setShapefile($bistum['shapefile']);
-			$this->bistumRepository->update($bistumObj);
+			else {
+				$this->throwStatus(400, 'Required uUID not provided', NULL);
+			}
 		}
 		$this->persistenceManager->persistAll();
 		$this->clearCachesFor('bistum');
