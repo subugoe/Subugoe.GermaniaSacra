@@ -31,7 +31,6 @@ $.fn.geopicker = ->
 		overlayMaps = {}
 
 		id = "map-#{Math.random()}"
-		console.dir id
 		$map = $("<div id='#{id}' class='map'/>").css
 			width: scope.width()
 		$container = $('<div class="map-container"><button class="close">&times;</button></div>').css
@@ -82,7 +81,7 @@ $.fn.geopicker = ->
 		map.on 'click', onMapClick = (e) =>
 			lat = e.latlng.lat.toFixed(6)
 			lng = e.latlng.lng.toFixed(6)
-			doit = confirm("Sollen die Koordinaten #{lat}, #{lng} übernommen werden?")
+			doit = confirm 'Sollen die Koordinaten #{lat}, #{lng} übernommen werden?'
 			if doit is true
 				# Insert values into input fields, cut to 6 decimals (corresponds to a precision of about 10 cm)
 				$(':input[name$="breite[]"]', scope).val lat

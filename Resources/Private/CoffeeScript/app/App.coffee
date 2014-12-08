@@ -18,3 +18,9 @@ germaniaSacra.config ($routeProvider, $locationProvider) ->
 	.when('/urltyp', { templateUrl: templatePath + 'Urltyp.html' })
 	.when('/bearbeiter', { templateUrl: templatePath + 'Bearbeiter.html' })
 	.otherwise({ redirectTo: '/' })
+
+germaniaSacra.messages =
+	loading: '<i class="spinner spinner-icon"></i> Wird geladen&hellip;'
+	askUnsavedChanges: 'Sind Sie sicher, dass Sie diese Ansicht verlassen möchten? Ihre Änderungen wurden nicht gespeichert.'
+	askDelete: 'Möchten Sie diesen Eintrag wirklich löschen?'
+	askRemove: 'Möchten Sie dieses Feld wirklich entfernen?'

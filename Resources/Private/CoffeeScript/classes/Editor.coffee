@@ -1,11 +1,10 @@
-class Editor
+class germaniaSacra.Editor
 
 	constructor: (type) ->
 
 		@scope = $('#edit')
 		self = @
 
-		$('textarea', @scope).autosize()
 		$('textarea', @scope).autosize()
 		@scope.hide()
 
@@ -21,7 +20,7 @@ class Editor
 			$(':submit[type=submit]', self.scope).prop('disabled', false)
 
 		$('.close', @scope).click (e) ->
-			if not $('.dirty', self.scope).length or confirmDiscardChanges()
+			if not $('.dirty', self.scope).length or confirm(germaniaSacra.messages.askUnsavedChanges)
 				$(this).parent().closest('section[id]').slideUp()
 				$('#search, #list').slideDown()
 				$('.dirty', self.scope).removeClass('dirty')
@@ -54,11 +53,11 @@ class Editor
 	create: (type, data) ->
 		$form = $('form', @scope)
 		$.post(type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
-			message 'Ein neuer Eintrag wurde angelegt.'
+			germaniaSacra.message 'Ein neuer Eintrag wurde angelegt.'
 			$form.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')
 		).fail ->
-			message 'Fehler: Eintrag konnte nicht angelegt werden.'
+			germaniaSacra.message 'Fehler: Eintrag konnte nicht angelegt werden.'
 
 	# Load a single entity into the edit form
 	edit: (type, id) ->
@@ -67,7 +66,7 @@ class Editor
 		$form.clearForm()
 
 		$('#search, #list').slideUp()
-		message s_loading, false
+		germaniaSacra.message germaniaSacra.messages.loading, false
 
 		$.getJSON("#{type}/edit/#{id}").done( (obj) =>
 
@@ -174,7 +173,7 @@ class Editor
 			$(':submit[type=submit]', @scope).prop('disabled', true)
 
 		).fail( ->
-			message 'Fehler: Daten konnten nicht geladen werden.'
+			germaniaSacra.message 'Fehler: Daten konnten nicht geladen werden.'
 		)
 
 	# Update a single entity
@@ -182,11 +181,11 @@ class Editor
 		$form = $('form', @scope)
 		uuid = $form.find(':input[name=uUID]').first().val()
 		$.post("#{type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) =>
-			message 'Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;'
+			germaniaSacra.message 'Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;'
 			$form.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')
 			$(':submit[type=submit]', @scope).prop('disabled', true)
 			$('.close', @scope).click()
 			germaniaSacra.list.reload()
 		).fail ->
-			message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'
+			germaniaSacra.message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'
