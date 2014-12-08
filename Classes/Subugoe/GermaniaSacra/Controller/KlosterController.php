@@ -783,11 +783,7 @@ class KlosterController extends AbstractBaseController {
 		);
 		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->findAll();
 		foreach ($bearbeitungsstatuses as $bearbeitungsstatus) {
-			if ($bearbeitungsstatus->getName() == 'Online' && $role != 'Flow.Login:Administrator') {
-				$bearbeitungsstatusArr[] = '';
-			} else {
-				$bearbeitungsstatusArr[$bearbeitungsstatus->getUUID()] = $bearbeitungsstatus->getName();
-			}
+			$bearbeitungsstatusArr[$bearbeitungsstatus->getUUID()] = $bearbeitungsstatus->getName();
 		}
 		// Personallistenstatus data
 		$personallistenstatusArr = array();

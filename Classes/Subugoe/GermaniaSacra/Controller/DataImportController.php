@@ -255,9 +255,9 @@ class DataImportController extends ActionController {
 
 	const inkKlosterDumpFilename = 'inkKlosterDump.sql';
 
-	const cacertSource = 'Packages/Libraries/guzzle/guzzle/src/Guzzle/Http/Resources/cacert.pem';
+	const cacertSource = 'Packages/Libraries/guzzle/guzzle/src/Guzzle/Http/Resources/';
 
-	const cacertDest = 'Persistent/GermaniaSacra/Dump/cacert.pem';
+	const cacertDest = 'Data/Temporary/Development/Cache/Code/Flow_Object_Classes/Resources/';
 
 	const  githubUser = 'subugoe';
 
@@ -265,14 +265,13 @@ class DataImportController extends ActionController {
 
 	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
-		$this->dumpDirectory = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump';
-		$this->accessDumpFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::accessDumpFilename;
-		$this->citekeysFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::citekeysFilename;
-		$this->citekeysFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::citekeysFilename;
-		$this->inkKlosterDumpFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::inkKlosterDumpFilename;
-		$this->cacertFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::cacertFilename;
-		$this->cacertSourcePath = FLOW_PATH_ROOT . self::cacertSource;
-		$this->cacertDestPath = FLOW_PATH_DATA . self::cacertDest;
+		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/Persistent/GermaniaSacra/Dump/';
+		$this->accessDumpFilenamePath = $this->dumpDirectory . self::accessDumpFilename;
+		$this->citekeysFilenamePath = $this->dumpDirectory . self::citekeysFilename;
+		$this->inkKlosterDumpFilenamePath = $this->dumpDirectory . self::inkKlosterDumpFilename;
+		$this->cacertFilenamePath = FLOW_PATH_ROOT . self::cacertDest . self::cacertFilename;
+		$this->cacertSourcePath = FLOW_PATH_ROOT . self::cacertSource . self::cacertFilename;
+		$this->cacertDestPath = FLOW_PATH_ROOT . self::cacertDest . self::cacertFilename;
 		$this->logger = $logger;
 		$this->settings = $settings;
 		$this->client = new \Github\Client();
@@ -2009,7 +2008,7 @@ class DataImportController extends ActionController {
 		$logger = new \TYPO3\Flow\Log\Logger();
 		$dumpFileName = 'klosterdatenbankdump.sql';
 		if (!is_dir($this->dumpDirectory)) {
-			throw new \TYPO3\Flow\Resource\Exception;
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
 		if (!file_exists($this->dumpDirectory . '/' . $dumpFileName)) {
 			throw new \TYPO3\Flow\Resource\Exception(1398846324);
@@ -2045,7 +2044,6 @@ class DataImportController extends ActionController {
 	 * @throws \Exception
 	 */
 	public function importDumpFromGithubAction() {
-
 		if (!is_dir($this->dumpDirectory)) {
 			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
@@ -2063,6 +2061,9 @@ class DataImportController extends ActionController {
 		}
 
 		if (!is_file($this->cacertFilenamePath)) {
+			if (!is_dir(self::cacertDest)) {
+				\TYPO3\Flow\Utility\Files::createDirectoryRecursively(self::cacertDest);
+			}
 			if (!copy($this->cacertSourcePath, $this->cacertDestPath)) {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
 			}
@@ -2210,7 +2211,7 @@ class DataImportController extends ActionController {
 	 */
 	public function importAccessInkDumpAction() {
 		if (!is_dir($this->dumpDirectory)) {
-			throw new \TYPO3\Flow\Resource\Exception;
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
 		if (!file_exists($this->inkKlosterDumpFilenamePath)) {
 			throw new \TYPO3\Flow\Resource\Exception(1398846324);
@@ -2238,8 +2239,6 @@ class DataImportController extends ActionController {
 		$sql = str_replace('`OrdenszugehörigkeitVerbal_bis`', '`verbal_bis`', $sql);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sqlConnection->executeUpdate($sql);
-
-
 	}
 
 	/**
@@ -2292,7 +2291,6 @@ class DataImportController extends ActionController {
 	 * @param string $password
 	 */
 	private function createUsernamePasswordFile($userName, $password, $uid) {
-
 		if ($uid == 1) {
 			$usernamePassword = '########## New username-password list dated ' . date('d.m.Y H:i:s') . ' ##########' . PHP_EOL;
 		}
@@ -2302,7 +2300,6 @@ class DataImportController extends ActionController {
 		$usernamePassword .= 'Benutzername: ' . $userName . PHP_EOL;
 		$usernamePassword .= 'Password: ' . $password . PHP_EOL;
 		$usernamePassword .= PHP_EOL;
-
 		$usernamePasswordFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data/usernamePassword.txt';
 		if (!is_dir(dirname($usernamePasswordFile))) {
 			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($usernamePasswordFile);
