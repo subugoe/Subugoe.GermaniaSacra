@@ -895,20 +895,6 @@ class DataImportController extends ActionController {
 			$wikiurltypUUID = $urltypObject->getUUID();
 		}
 
-		// Added to prevent wrong search result
-		$defaultUrlTypeName = "keine Angabe";
-		$defaultUrltypObject = new Urltyp();
-		$defaultUrltypObject->setName($defaultUrlTypeName);
-		$this->urltypRepository->add($defaultUrltypObject);
-		$this->persistenceManager->persistAll();
-
-		$defaultUrl = "keine Angabe";
-		$defaultUrlObject = new Url();
-		$defaultUrlObject->setUrl($defaultUrl);
-		$defaultUrlObject->setUrltyp($defaultUrltypObject);
-		$this->urlRepository->add($defaultUrlObject);
-		$this->persistenceManager->persistAll();
-
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
 		if (isset($klosters) and is_array($klosters)) {
@@ -1126,35 +1112,6 @@ class DataImportController extends ActionController {
 				}
 			}
 			return $nKloster;
-		}
-	}
-
-	/**
-	* Add a default URL for to prevent wrong search result
-	* @return void
-	*/
-	public function addDefaultUrlAction() {
-		$defaultUrlTypeName = "keine Angabe";
-		$defaultUrltypObject = new Urltyp();
-		$defaultUrltypObject->setName($defaultUrlTypeName);
-		$this->urltypRepository->add($defaultUrltypObject);
-		$this->persistenceManager->persistAll();
-		$defaultUrl = "keine Angabe";
-		$defaultUrlObject = new Url();
-		$defaultUrlObject->setUrl($defaultUrl);
-		$defaultUrlObject->setUrltyp($defaultUrltypObject);
-		$this->urlRepository->add($defaultUrlObject);
-		$this->persistenceManager->persistAll();
-		$klosters = $this->klosterRepository->findAll();
-		foreach ($klosters as $kloster) {
-			$urls = $kloster->getKlosterHasUrls();
-			if (count($urls) == 0) {
-				$klosterHasUrlObject = new KlosterHasUrl();
-				$klosterHasUrlObject->setKloster($kloster);
-				$klosterHasUrlObject->setUrl($defaultUrlObject);
-				$this->klosterHasUrlRepository->add($klosterHasUrlObject);
-				$this->persistenceManager->persistAll();
-			}
 		}
 	}
 

@@ -185,7 +185,9 @@ class KlosterController extends AbstractBaseController {
 	 * Fetches the actual Bearbeiter and assigns it to the view
 	 */
 	public function listAction() {
-		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		if (isset($this->bearbeiterObj) && is_object($this->bearbeiterObj)) {
+			$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		}
 	}
 
 	/**

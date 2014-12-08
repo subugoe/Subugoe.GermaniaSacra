@@ -83,7 +83,6 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 		$importer->importBistumAction();
 		$importer->importBandAction();
 		$importer->importKlosterAction();
-		$importer->addDefaultUrlAction();
 		$importer->importKlosterstandortAction();
 		$importer->importOrdenAction();
 		$importer->importKlosterordenAction();
