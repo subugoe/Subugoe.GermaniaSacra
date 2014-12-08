@@ -257,7 +257,7 @@ class DataImportController extends ActionController {
 
 	const cacertSource = 'Packages/Libraries/guzzle/guzzle/src/Guzzle/Http/Resources/cacert.pem';
 
-	const cacertDest = 'Data/GermaniaSacra/Dump/cacert.pem';
+	const cacertDest = 'GermaniaSacra/Dump/cacert.pem';
 
 	const  githubUser = 'subugoe';
 
@@ -265,13 +265,14 @@ class DataImportController extends ActionController {
 
 	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
-		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump';
-		$this->accessDumpFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::accessDumpFilename;
-		$this->citekeysFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::citekeysFilename;
-		$this->inkKlosterDumpFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::inkKlosterDumpFilename;
-		$this->cacertFilenamePath = FLOW_PATH_ROOT . 'Data/GermaniaSacra/Dump/' . self::cacertFilename;
+		$this->dumpDirectory = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump';
+		$this->accessDumpFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::accessDumpFilename;
+		$this->citekeysFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::citekeysFilename;
+		$this->citekeysFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::citekeysFilename;
+		$this->inkKlosterDumpFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::inkKlosterDumpFilename;
+		$this->cacertFilenamePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/' . self::cacertFilename;
 		$this->cacertSourcePath = FLOW_PATH_ROOT . self::cacertSource;
-		$this->cacertDestPath = FLOW_PATH_ROOT . self::cacertDest;
+		$this->cacertDestPath = FLOW_PATH_DATA . self::cacertDest;
 		$this->logger = $logger;
 		$this->settings = $settings;
 		$this->client = new \Github\Client();
@@ -283,7 +284,7 @@ class DataImportController extends ActionController {
 										'TYPO3\Flow\Log\Logger',
 										'\TYPO3\Flow\Log\Backend\FileBackend',
 										array(
-										'logFileUrl' => FLOW_PATH_DATA . 'GermaniaSacra/Log/inkKlosterDump.log',
+										'logFileUrl' => FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Log/inkKlosterDump.log',
 										'createParentDirectories' => TRUE
 										)
 									);
@@ -2046,9 +2047,7 @@ class DataImportController extends ActionController {
 	public function importDumpFromGithubAction() {
 
 		if (!is_dir($this->dumpDirectory)) {
-			if (!mkdir($this->dumpDirectory, 0755)) {
-				throw new \TYPO3\Flow\Resource\Exception('Can\'t create the dump directory.', 1406720986);
-			}
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
 
 		if (is_file($this->accessDumpFilenamePath)) {
@@ -2110,9 +2109,7 @@ class DataImportController extends ActionController {
 		$inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
 		$inkKlosterDumpBlob = base64_decode($inkKlosterDumpBlob['content']);
 		if (!is_dir($this->dumpDirectory)) {
-			if (!mkdir($this->dumpDirectory, 0755)) {
-				throw new \TYPO3\Flow\Resource\Exception('Can\'t create the dump directory.', 1406721061);
-			}
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
 		if (is_file($this->inkKlosterDumpFilenamePath)) {
 			if (!unlink($this->inkKlosterDumpFilenamePath)) {
@@ -2198,9 +2195,9 @@ class DataImportController extends ActionController {
 		$importLogMsg .= PHP_EOL;
 		$importFEMsg = nl2br(htmlentities($importLogMsg));
 		echo $importFEMsg;
-		$importLogFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/importLogFile.txt';
+		$importLogFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data/importLogFile.txt';
 		if (!is_dir(dirname($importLogFile))) {
-			mkdir(dirname($importLogFile), 0777, TRUE);
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($importLogFile);
 		}
 		file_put_contents($importLogFile, $importLogMsg,  FILE_APPEND);
 		exit;
@@ -2308,7 +2305,7 @@ class DataImportController extends ActionController {
 
 		$usernamePasswordFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/usernamePassword.txt';
 		if (!is_dir(dirname($usernamePasswordFile))) {
-			mkdir(dirname($usernamePasswordFile), 0777, TRUE);
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($usernamePasswordFile);
 		}
 		file_put_contents($usernamePasswordFile, $usernamePassword);
 	}
