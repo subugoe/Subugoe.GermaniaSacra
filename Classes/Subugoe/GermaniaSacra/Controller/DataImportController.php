@@ -257,7 +257,7 @@ class DataImportController extends ActionController {
 
 	const cacertSource = 'Packages/Libraries/guzzle/guzzle/src/Guzzle/Http/Resources/cacert.pem';
 
-	const cacertDest = 'GermaniaSacra/Dump/cacert.pem';
+	const cacertDest = 'Persistent/GermaniaSacra/Dump/cacert.pem';
 
 	const  githubUser = 'subugoe';
 
