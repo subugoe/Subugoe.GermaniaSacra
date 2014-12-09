@@ -329,6 +329,19 @@ class KlosterController extends AbstractBaseController {
 	 * @return void
 	 */
 	public function createAction() {
+		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
+		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
+		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
+		if (trim($role) == 'Flow.Login:Hiwi') {
+			if (is_object($bearbeitungsstatus)) {
+				$bearbeitungsstatusName = $bearbeitungsstatus->getName();
+			}
+			if (isset($bearbeitungsstatusName) && !empty($bearbeitungsstatusName)) {
+				if (trim($bearbeitungsstatusName) == 'Online') {
+					$this->throwStatus(400, 'You are not allowed to set a Kloster entry online', NULL);
+				}
+			}
+		}
 		$lastKlosterId = $this->getLastKlosterIdAction();
 		if (!empty($lastKlosterId)) {
 			$kloster_uid = $lastKlosterId + 1;
@@ -927,14 +940,25 @@ class KlosterController extends AbstractBaseController {
 		if (!is_object($kloster)) {
 			$this->throwStatus(400, 'Entity Kloster not available', NULL);
 		}
+		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
+		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
+		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
+		if (trim($role) == 'Flow.Login:Hiwi') {
+			if (is_object($bearbeitungsstatus)) {
+				$bearbeitungsstatusName = $bearbeitungsstatus->getName();
+			}
+			if (isset($bearbeitungsstatusName) && !empty($bearbeitungsstatusName)) {
+				if (trim($bearbeitungsstatusName) == 'Online') {
+					$this->throwStatus(400, 'You are not allowed to set a Kloster entry online', NULL);
+				}
+			}
+		}
 		$kloster->setKloster($this->request->getArgument('kloster_name'));
 		$kloster->setPatrozinium($this->request->getArgument('patrozinium'));
 		$kloster->setBemerkung($this->request->getArgument('bemerkung'));
 		$kloster->setBand_seite($this->request->getArgument('band_seite'));
 		$kloster->setText_gs_band($this->request->getArgument('text_gs_band'));
 		$kloster->setBearbeitungsstand($this->request->getArgument('bearbeitungsstand'));
-		$bearbeitungsstatus_uuid = $this->request->getArgument('bearbeitungsstatus');
-		$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatus_uuid);
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
 		$bearbeiter = $this->bearbeiterObj;
 		$kloster->setBearbeiter($bearbeiter);
@@ -1325,10 +1349,28 @@ class KlosterController extends AbstractBaseController {
 		if (empty($klosterlist)) {
 			$this->throwStatus(400, 'Required data arguemnts not provided', NULL);
 		}
-		$uuids = array();
+		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
+		if (trim($role) == 'Flow.Login:Hiwi') {
+			if (is_array($klosterlist) && !empty($klosterlist)) {
+				$error = 0;
+				foreach ($klosterlist as $k => $v) {
+					$bearbeitungsstatus = $this->bearbeitungsstatusRepository->findByIdentifier($v['bearbeitungsstatus']);
+					if (is_object($bearbeitungsstatus)) {
+						$bearbeitungsstatusName = $bearbeitungsstatus->getName();
+					}
+					if (isset($bearbeitungsstatusName) && !empty($bearbeitungsstatusName)) {
+						if (trim($bearbeitungsstatusName) == 'Online') {
+							$error++;
+						}
+					}
+				}
+			}
+			if ($error > 0) {
+				$this->throwStatus(400, 'You are not allowed to set a Kloster entry online', NULL);
+			}
+		}
 		if (is_array($klosterlist) && !empty($klosterlist)) {
 			foreach ($klosterlist as $k => $v) {
-				$uuids[] = (string)$k;
 				$klosterObject = $this->klosterRepository->findByIdentifier((string)$k);
 				$klosterObject->setKloster($v['kloster']);
 				$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($v['bearbeitungsstatus']);
