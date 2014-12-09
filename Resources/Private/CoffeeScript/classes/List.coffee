@@ -79,6 +79,7 @@ class germaniaSacra.List
 
 					$td = $(this)
 					$th = $table.find('th[data-name]').eq( $td.index() )
+					value = $td.text()
 
 					if $th.length
 
@@ -87,9 +88,8 @@ class germaniaSacra.List
 
 						if dataInput is 'checkbox'
 							$input = $('<input type="checkbox"/>')
-							if $td.text() is '1' then $input.prop('checked', true)
-							if name isnt 'uUID'
-								$td.text('1')
+							if value is '1' then $input.prop('checked', true)
+							if name isnt 'uUID' then value = 1
 						else
 							$input = $("<#{$th.data('input')}/>")
 
@@ -97,16 +97,17 @@ class germaniaSacra.List
 
 						if dataInput.indexOf('select') is 0
 							if germaniaSacra.selectOptions[name]?
-								for uuid, value of germaniaSacra.selectOptions[name]
-									$input.append $('<option/>').text(value).attr('value', uuid)
+								for uuid, text of germaniaSacra.selectOptions[name]
+									$input.append $('<option/>').text(text).attr('value', uuid)
 								for optionUuid, option of germaniaSacra.selectOptions[name]
-									if option is $(this).text()
-										$(this).text(optionUuid)
+									if option is value
+										value = optionUuid
 										break
 							else # name is not in selectOptions, assume <uuid>:<text>, other options will be ajaxed
-								[uuid, value] = $(this).text().trim().split(':', 2)
-								if uuid then $input.append $('<option/>').text(value).attr('value', uuid)
-						$(this).html $input.attr('name', name).val( $(this).text().trim() )
+								[uuid, text] = value.trim().split(':', 2)
+								if uuid then $input.append $('<option/>').text(text).attr('value', uuid)
+								value = uuid
+						$(this).html $input.attr('name', name).val( value.trim() )
 
 				$tr.each ->
 					uuid = $(this).find(':input[name=uUID]').val()

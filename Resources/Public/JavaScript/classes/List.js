@@ -83,19 +83,20 @@ germaniaSacra.List = (function() {
         var $tr;
         $tr = $table.find('tbody tr:not(.processed)');
         $tr.children().each(function() {
-          var $input, $td, $th, dataInput, name, option, optionUuid, uuid, value, _ref, _ref1, _ref2;
+          var $input, $td, $th, dataInput, name, option, optionUuid, text, uuid, value, _ref, _ref1, _ref2;
           $td = $(this);
           $th = $table.find('th[data-name]').eq($td.index());
+          value = $td.text();
           if ($th.length) {
             dataInput = $th.data('input');
             name = $th.data('name');
             if (dataInput === 'checkbox') {
               $input = $('<input type="checkbox"/>');
-              if ($td.text() === '1') {
+              if (value === '1') {
                 $input.prop('checked', true);
               }
               if (name !== 'uUID') {
-                $td.text('1');
+                value = 1;
               }
             } else {
               $input = $("<" + ($th.data('input')) + "/>");
@@ -104,25 +105,26 @@ germaniaSacra.List = (function() {
               if (germaniaSacra.selectOptions[name] != null) {
                 _ref = germaniaSacra.selectOptions[name];
                 for (uuid in _ref) {
-                  value = _ref[uuid];
-                  $input.append($('<option/>').text(value).attr('value', uuid));
+                  text = _ref[uuid];
+                  $input.append($('<option/>').text(text).attr('value', uuid));
                 }
                 _ref1 = germaniaSacra.selectOptions[name];
                 for (optionUuid in _ref1) {
                   option = _ref1[optionUuid];
-                  if (option === $(this).text()) {
-                    $(this).text(optionUuid);
+                  if (option === value) {
+                    value = optionUuid;
                     break;
                   }
                 }
               } else {
-                _ref2 = $(this).text().trim().split(':', 2), uuid = _ref2[0], value = _ref2[1];
+                _ref2 = value.trim().split(':', 2), uuid = _ref2[0], text = _ref2[1];
                 if (uuid) {
-                  $input.append($('<option/>').text(value).attr('value', uuid));
+                  $input.append($('<option/>').text(text).attr('value', uuid));
                 }
+                value = uuid;
               }
             }
-            return $(this).html($input.attr('name', name).val($(this).text().trim()));
+            return $(this).html($input.attr('name', name).val(value.trim()));
           }
         });
         $tr.each(function() {
