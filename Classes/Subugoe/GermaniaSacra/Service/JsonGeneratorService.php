@@ -52,7 +52,7 @@ class JsonGeneratorService {
 		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
 
 		$entityControllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . ucfirst($entityName) . 'Controller';
-		$entityFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/' . $entityName . '.json';
+		$entityFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data/' . $entityName . '.json';
 
 		if (!is_dir(dirname($entityFile))) {
 			mkdir(dirname($entityFile), 0777, TRUE);

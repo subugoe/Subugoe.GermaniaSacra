@@ -284,8 +284,8 @@ class DataImportController extends ActionController {
 										'TYPO3\Flow\Log\Logger',
 										'\TYPO3\Flow\Log\Backend\FileBackend',
 										array(
-										'logFileUrl' => FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Log/inkKlosterDump.log',
-										'createParentDirectories' => TRUE
+											'logFileUrl' => FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Log/inkKlosterDump.log',
+											'createParentDirectories' => TRUE
 										)
 									);
 		}
@@ -2303,7 +2303,7 @@ class DataImportController extends ActionController {
 		$usernamePassword .= 'Password: ' . $password . PHP_EOL;
 		$usernamePassword .= PHP_EOL;
 
-		$usernamePasswordFile = FLOW_PATH_DATA . 'GermaniaSacra/Data/usernamePassword.txt';
+		$usernamePasswordFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data/usernamePassword.txt';
 		if (!is_dir(dirname($usernamePasswordFile))) {
 			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($usernamePasswordFile);
 		}

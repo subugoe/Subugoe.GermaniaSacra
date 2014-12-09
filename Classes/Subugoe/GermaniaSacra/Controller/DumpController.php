@@ -3,6 +3,7 @@ namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
+use TYPO3\Flow\Utility\Files;
 
 define('MSX_VERSION', '1.1.0');
 define('MSX_NL', "\n");
@@ -111,9 +112,9 @@ class DumpController extends ActionController {
 
 	public function __construct() {
 		parent::__construct();
-		$this->dumpDirectory = FLOW_PATH_DATA . 'GermaniaSacra/Dump/';
+		$this->dumpDirectory = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Dump/';
 		if (!file_exists($this->dumpDirectory)) {
-			mkdir($this->dumpDirectory, 0777, TRUE);
+			Files::createDirectoryRecursively($this->dumpDirectory);
 		}
 	}
 
