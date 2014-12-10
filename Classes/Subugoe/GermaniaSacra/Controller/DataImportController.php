@@ -1,6 +1,8 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
+ini_set('memory_limit', '2048M');
+
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
@@ -2305,7 +2307,7 @@ class DataImportController extends ActionController {
 
 		$usernamePasswordFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data/usernamePassword.txt';
 		if (!is_dir(dirname($usernamePasswordFile))) {
-			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($usernamePasswordFile);
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively(dirname($usernamePasswordFile));
 		}
 		file_put_contents($usernamePasswordFile, $usernamePassword);
 	}
