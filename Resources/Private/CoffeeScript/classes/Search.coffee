@@ -4,7 +4,10 @@ class germaniaSacra.Search
 
 		@scope = $('#simple-search, #advanced-search')
 
+		$('select', @scope).autocomplete()
+
 		@scope.submit ->
+			germaniaSacra.message germaniaSacra.messages.loading, false
 			json = $(this).serializeArray()
 			search = $.post '/search', json
 			search.success (data) ->
@@ -14,7 +17,9 @@ class germaniaSacra.Search
 				else
 					# WORKAROUND: Server does return 500 if search term is empty
 					$('#uuid-filter').val('```').change()
+				$('#message').slideUp()
 			search.fail (data) ->
+				$('#message').slideUp()
 				alert 'Suche fehlgeschlagen'
 
 		$('.reset', @scope).click (e) ->

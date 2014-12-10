@@ -2,19 +2,23 @@
 germaniaSacra.Search = (function() {
   function Search() {
     this.scope = $('#simple-search, #advanced-search');
+    $('select', this.scope).autocomplete();
     this.scope.submit(function() {
       var json, search;
+      germaniaSacra.message(germaniaSacra.messages.loading, false);
       json = $(this).serializeArray();
       search = $.post('/search', json);
       search.success(function(data) {
         data = $.parseJSON(data);
         if (data.length) {
-          return $('#uuid-filter').val(data.join('|')).change();
+          $('#uuid-filter').val(data.join('|')).change();
         } else {
-          return $('#uuid-filter').val('```').change();
+          $('#uuid-filter').val('```').change();
         }
+        return $('#message').slideUp();
       });
       return search.fail(function(data) {
+        $('#message').slideUp();
         return alert('Suche fehlgeschlagen');
       });
     });

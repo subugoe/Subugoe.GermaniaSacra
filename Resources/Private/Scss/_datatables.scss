@@ -4,16 +4,16 @@
 	}
 }
 
-.dataTables_length select,
-.dataTables_filter input {
+.dataTables_length select {
 	margin-top: rem-calc(-3);
-	width: auto;
+	width: 4.5em;
 }
 
 .dataTables_filter {
 	float: right;
 	input {
 		margin-left: rem-calc(8);
+		margin-top: rem-calc(-3);
 	}
 }
 
