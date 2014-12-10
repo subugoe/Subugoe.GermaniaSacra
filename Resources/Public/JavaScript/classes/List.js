@@ -86,7 +86,7 @@ germaniaSacra.List = (function() {
           var $input, $td, $th, dataInput, name, option, optionUuid, text, uuid, value, _ref, _ref1, _ref2;
           $td = $(this);
           $th = $table.find('th[data-name]').eq($td.index());
-          value = $td.text();
+          value = $td.text().trim();
           if ($th.length) {
             dataInput = $th.data('input');
             name = $th.data('name');
@@ -99,7 +99,7 @@ germaniaSacra.List = (function() {
                 value = 1;
               }
             } else {
-              $input = $("<" + ($th.data('input')) + "/>");
+              $input = $("<" + dataInput + "/>");
             }
             if (dataInput.indexOf('select') === 0) {
               if (germaniaSacra.selectOptions[name] != null) {
@@ -120,11 +120,13 @@ germaniaSacra.List = (function() {
                 _ref2 = value.trim().split(':', 2), uuid = _ref2[0], text = _ref2[1];
                 if (uuid) {
                   $input.append($('<option/>').text(text).attr('value', uuid));
+                  value = uuid;
+                } else {
+                  value = '';
                 }
-                value = uuid;
               }
             }
-            return $(this).html($input.attr('name', name).val(value.trim()));
+            return $(this).html($input.attr('name', name).val(value));
           }
         });
         $tr.each(function() {

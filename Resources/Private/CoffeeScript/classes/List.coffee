@@ -71,6 +71,7 @@ class germaniaSacra.List
 					data: aoData
 					success: [ajaxSuccess, fnCallback]
 					error: -> germaniaSacra.message 'Fehler: Daten konnten nicht geladen werden.'
+
 			fnDrawCallback: ->
 
 				$tr = $table.find('tbody tr:not(.processed)')
@@ -79,7 +80,7 @@ class germaniaSacra.List
 
 					$td = $(this)
 					$th = $table.find('th[data-name]').eq( $td.index() )
-					value = $td.text()
+					value = $td.text().trim()
 
 					if $th.length
 
@@ -91,7 +92,7 @@ class germaniaSacra.List
 							if value is '1' then $input.prop('checked', true)
 							if name isnt 'uUID' then value = 1
 						else
-							$input = $("<#{$th.data('input')}/>")
+							$input = $("<#{dataInput}/>")
 
 						# Fill selects
 
@@ -103,11 +104,15 @@ class germaniaSacra.List
 									if option is value
 										value = optionUuid
 										break
-							else # name is not in selectOptions, assume <uuid>:<text>, other options will be ajaxed
+							else # name is not in selectOptions, assume <uuid>:<text>, options will be ajaxed on change
 								[uuid, text] = value.trim().split(':', 2)
-								if uuid then $input.append $('<option/>').text(text).attr('value', uuid)
-								value = uuid
-						$(this).html $input.attr('name', name).val( value.trim() )
+								if uuid
+									$input.append $('<option/>').text(text).attr('value', uuid)
+									value = uuid
+								else
+									value = ''
+
+						$(this).html $input.attr('name', name).val( value )
 
 				$tr.each ->
 					uuid = $(this).find(':input[name=uUID]').val()
