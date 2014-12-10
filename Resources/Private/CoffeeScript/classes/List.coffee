@@ -1,13 +1,13 @@
 class germaniaSacra.List
 
-	constructor: (type) ->
+	constructor: (@type) ->
 
 		@scope = $('#list')
 		self = @
 
 		@dataTable = null
 
-		@editList(type)
+		@editList()
 
 		$('.new', @scope).click (e) ->
 			e.preventDefault()
@@ -19,10 +19,10 @@ class germaniaSacra.List
 				germaniaSacra.message 'Wählen Sie bitte mindestens einen Eintrag aus.'
 				return false
 			else
-				self.updateList(type)
+				self.updateList()
 				return true
 
-	editList: (type) ->
+	editList: ->
 
 		self = @
 
@@ -50,7 +50,7 @@ class germaniaSacra.List
 		if orderBy < 0 then orderBy = 1
 
 		@dataTable = $table.DataTable
-			sAjaxSource: '/entity/' + type
+			sAjaxSource: '/entity/' + @type
 			columns: columns
 			autoWidth: false
 			pageLength: 100
@@ -79,6 +79,7 @@ class germaniaSacra.List
 
 					$td = $(this)
 					$th = $table.find('th[data-name]').eq( $td.index() )
+					value = $td.text()
 
 					if $th.length
 
@@ -87,26 +88,26 @@ class germaniaSacra.List
 
 						if dataInput is 'checkbox'
 							$input = $('<input type="checkbox"/>')
-							if $td.text() is '1' then $input.prop('checked', true)
-							if name isnt 'uUID'
-								$td.text('1')
+							if value is '1' then $input.prop('checked', true)
+							if name isnt 'uUID' then value = 1
 						else
 							$input = $("<#{$th.data('input')}/>")
 
 						# Fill selects
+
 						if dataInput.indexOf('select') is 0
 							if germaniaSacra.selectOptions[name]?
-								for uuid, value of germaniaSacra.selectOptions[name]
-									$input.append $('<option/>').text(value).attr('value', uuid)
+								for uuid, text of germaniaSacra.selectOptions[name]
+									$input.append $('<option/>').text(text).attr('value', uuid)
 								for optionUuid, option of germaniaSacra.selectOptions[name]
-									if option is $(this).text()
-										$(this).text(optionUuid)
+									if option is value
+										value = optionUuid
 										break
 							else # name is not in selectOptions, assume <uuid>:<text>, other options will be ajaxed
-								[uuid, value] = $(this).text().split(':', 2)
-								$input.append $('<option/>').text(value).attr('value', uuid)
-
-						$(this).html $input.attr('name', name).val( $(this).text().trim() )
+								[uuid, text] = value.trim().split(':', 2)
+								if uuid then $input.append $('<option/>').text(text).attr('value', uuid)
+								value = uuid
+						$(this).html $input.attr('name', name).val( value.trim() )
 
 				$tr.each ->
 					uuid = $(this).find(':input[name=uUID]').val()
@@ -125,10 +126,10 @@ class germaniaSacra.List
 				$('#search, #list').slideDown()
 				$('#message').slideUp()
 				# TODO: Find a more elegant way to use text instead of uuid for filtering and sorting
-				# Prepare data for selects. Currently only this one is used within the lists.
 				for index, entity of json.data
+					# Prepare options data for selects. Currently only this one is used within the lists.
 					json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus]
-					# WORKAROUND: Fix table filtering. Empty values are a problem.
+					# WORKAROUND: Fix table filtering. Empty values pose a problem.
 					for key, value of entity
 						if not value then json.data[index][key] = ' '
 
@@ -137,11 +138,11 @@ class germaniaSacra.List
 		$table.on 'click', '.edit', (e) ->
 			e.preventDefault()
 			uuid = $(this).closest('tr').find(':input[name=uUID]').first().val()
-			germaniaSacra.editor.edit(type, uuid)
+			germaniaSacra.editor.edit(uuid)
 		$table.on 'click', '.delete', (e) ->
 			e.preventDefault()
 			uuid = $(this).closest('tr').find(':input[name=uUID]').first().val()
-			self.delete(type, uuid)
+			self.delete(uuid)
 
 		# Apply the search
 		@dataTable.columns().eq(0).each (colIdx) ->
@@ -157,7 +158,7 @@ class germaniaSacra.List
 
 		return
 
-	updateList: (type) ->
+	updateList: ->
 
 		$form = $('form', @scope)
 
@@ -172,7 +173,7 @@ class germaniaSacra.List
 					if input.name then formData.data[uuid][input.name] = input.value
 				return
 		formData.__csrfToken = $('#csrf').val()
-		$.post(type + '/updateList', formData).done((respond, status, jqXHR) =>
+		$.post(@type + '/updateList', formData).done((respond, status, jqXHR) =>
 			germaniaSacra.message 'Ihre Änderungen wurden gespeichert.'
 			$form.find('.dirty').removeClass('dirty')
 			$form.find('input[name=uUID]').prop('checked', false)
@@ -184,11 +185,11 @@ class germaniaSacra.List
 		return
 
 	# Delete a single entity
-	delete: (type, uuid) ->
+	delete: (uuid) ->
 		check = confirm germaniaSacra.messages.askDelete
 		if check is true
 			csrf = $('#csrf').val()
-			$.post(type + '/delete/' + uuid,
+			$.post(@type + '/delete/' + uuid,
 				__csrfToken: csrf
 			).done((respond, status, jqXHR) =>
 				if status is 'success'

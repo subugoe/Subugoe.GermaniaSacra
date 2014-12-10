@@ -2,6 +2,7 @@
 germaniaSacra.Editor = (function() {
   function Editor(type) {
     var self;
+    this.type = type;
     this.scope = $('#edit');
     self = this;
     $('textarea', this.scope).autosize();
@@ -27,9 +28,9 @@ germaniaSacra.Editor = (function() {
       e.preventDefault();
       $('select:disabled', this.scope).prop('disabled', false).addClass('disabled');
       if ($(this).find(':input[name=uUID]').first().val().length) {
-        self.update(type);
+        self.update();
       } else {
-        self.create(type);
+        self.create();
       }
       return $('select.disabled', self.scope).prop('disabled', true);
     });
@@ -48,10 +49,10 @@ germaniaSacra.Editor = (function() {
     return $form.find('textarea').trigger('autosize.resize');
   };
 
-  Editor.prototype.create = function(type, data) {
+  Editor.prototype.create = function(data) {
     var $form;
     $form = $('form', this.scope);
-    return $.post(type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
+    return $.post(this.type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
       germaniaSacra.message('Ein neuer Eintrag wurde angelegt.');
       $form.find('.dirty').removeClass('dirty');
       return $('body').removeClass('dirty');
@@ -60,8 +61,9 @@ germaniaSacra.Editor = (function() {
     });
   };
 
-  Editor.prototype.edit = function(type, id) {
-    var $form;
+  Editor.prototype.edit = function(id) {
+    var $form, type;
+    type = this.type;
     $form = $('form', this.scope);
     $form.clearForm();
     $('#search, #list').slideUp();
@@ -206,11 +208,11 @@ germaniaSacra.Editor = (function() {
     });
   };
 
-  Editor.prototype.update = function(type) {
+  Editor.prototype.update = function() {
     var $form, uuid;
     $form = $('form', this.scope);
     uuid = $form.find(':input[name=uUID]').first().val();
-    return $.post("" + type + "/update/" + uuid, $form.serialize()).done((function(_this) {
+    return $.post("" + this.type + "/update/" + uuid, $form.serialize()).done((function(_this) {
       return function(respond, status, jqXHR) {
         germaniaSacra.message('Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;');
         $form.find('.dirty').removeClass('dirty');

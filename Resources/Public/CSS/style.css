@@ -8102,6 +8102,7 @@ tr:hover .show-only-on-hover * {
   position: absolute;
   right: 0;
   top: 0;
+  width: 100%;
 }
 td .autocomplete {
   top: auto;
@@ -8159,6 +8160,7 @@ td .autocomplete {
 .autocomplete .popup {
   background: #fff;
   border: 1px solid #cccccc;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
   display: none;
   position: absolute;
   width: 100%;

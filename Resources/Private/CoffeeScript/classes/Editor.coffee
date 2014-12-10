@@ -1,6 +1,6 @@
 class germaniaSacra.Editor
 
-	constructor: (type) ->
+	constructor: (@type) ->
 
 		@scope = $('#edit')
 		self = @
@@ -30,9 +30,9 @@ class germaniaSacra.Editor
 			e.preventDefault()
 			$('select:disabled', @scope).prop('disabled', false).addClass 'disabled'
 			if $(this).find(':input[name=uUID]').first().val().length
-				self.update type
+				self.update()
 			else
-				self.create type
+				self.create()
 			$('select.disabled', self.scope).prop 'disabled', true
 
 		$('.coordinates').geopicker()
@@ -50,9 +50,9 @@ class germaniaSacra.Editor
 		$form.find('textarea').trigger('autosize.resize')
 
 	# Create a new Kloster
-	create: (type, data) ->
+	create: (data) ->
 		$form = $('form', @scope)
-		$.post(type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
+		$.post(@type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
 			germaniaSacra.message 'Ein neuer Eintrag wurde angelegt.'
 			$form.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')
@@ -60,7 +60,9 @@ class germaniaSacra.Editor
 			germaniaSacra.message 'Fehler: Eintrag konnte nicht angelegt werden.'
 
 	# Load a single entity into the edit form
-	edit: (type, id) ->
+	edit: (id) ->
+
+		type = @type
 
 		$form = $('form', @scope)
 		$form.clearForm()
@@ -177,10 +179,10 @@ class germaniaSacra.Editor
 		)
 
 	# Update a single entity
-	update: (type) ->
+	update: ->
 		$form = $('form', @scope)
 		uuid = $form.find(':input[name=uUID]').first().val()
-		$.post("#{type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) =>
+		$.post("#{@type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) =>
 			germaniaSacra.message 'Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;'
 			$form.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')

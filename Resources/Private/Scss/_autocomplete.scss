@@ -2,6 +2,7 @@
 	position: absolute;
 	right: 0;
 	top: 0;
+	width: 100%;
 	td & {
 		top: auto;
 		margin-top: -21px;
@@ -52,6 +53,7 @@
 	.popup {
 		background: #fff;
 		border: 1px solid $input-border-color;
+		box-shadow: 0 5px 5px rgba(#000, .2);
 		display: none;
 		position: absolute;
 		width: 100%;
