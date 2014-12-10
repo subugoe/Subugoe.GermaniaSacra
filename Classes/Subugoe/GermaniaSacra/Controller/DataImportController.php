@@ -447,7 +447,6 @@ class DataImportController extends ActionController {
 		$sql = "ANALYZE LOCAL TABLE " . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sqlConnection->close();
-
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Geonames"';
@@ -463,7 +462,6 @@ class DataImportController extends ActionController {
 			$this->persistenceManager->persistAll();
 			$urltypUUID = $urltypObject->getUUID();
 		}
-
 		$sql = 'SELECT * FROM Ort ORDER BY ID ASC';
 		$orts = $sqlConnection->fetchAll($sql);
 		if (isset($orts) and is_array($orts)) {
@@ -674,7 +672,6 @@ class DataImportController extends ActionController {
 				$nBistum++;
 			}
 		}
-
 		// Added to prevent wrong search result
 		$ortBistum = $this->bistumRepository->findOneByBistum('keine Angabe');
 		$ortTbl = 'subugoe_germaniasacra_domain_model_ort';
@@ -688,7 +685,6 @@ class DataImportController extends ActionController {
 				$this->persistenceManager->persistAll();
 			}
 		}
-
 		return $nBistum;
 	}
 
@@ -831,7 +827,6 @@ class DataImportController extends ActionController {
 				$nBand++;
 			}
 		}
-
 		// This is added to prevent wrong search result
 		$uid = $Band['ID_GSBand'] + 1;
 		$nummer = 'keine Angabe';
@@ -846,7 +841,6 @@ class DataImportController extends ActionController {
 		$bandObject->setKurztitel($kurztitel);
 		$this->bandRepository->add($bandObject);
 		$this->persistenceManager->persistAll();
-
 		return $nBand;
 	}
 
@@ -896,7 +890,6 @@ class DataImportController extends ActionController {
 			$this->persistenceManager->persistAll();
 			$wikiurltypUUID = $urltypObject->getUUID();
 		}
-
 		$sql = 'SELECT * FROM Kloster ORDER BY Klosternummer ASC';
 		$klosters = $sqlConnection->fetchAll($sql);
 		if (isset($klosters) and is_array($klosters)) {
@@ -915,15 +908,12 @@ class DataImportController extends ActionController {
 					$bearbeiter = $kloster['Bearbeiter'];
 					$bearbeitungsstatus = $kloster['Status'];
 					$personallistenstatus = trim($kloster['Personallisten']);
-
 					if (!empty($bearbeiter)) {
 						/** @var Bearbeiter $bearbeiterObject */
 						$bearbeiterObject = $this->bearbeiterRepository->findOneByUid($bearbeiter);
-
 						if (!empty($bearbeitungsstatus)) {
 							/** @var Bearbeitungsstatus $bearbeitungsstatusObject */
 							$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findOneByName($bearbeitungsstatus);
-
 								if (!empty($personallistenstatus)) {
 									/** @var Personallistenstatus $personallistenstatusObject */
 									$personallistenstatusObject = $this->personallistenstatusRepository->findOneByName($personallistenstatus);
@@ -989,28 +979,41 @@ class DataImportController extends ActionController {
 												$urltypObject->setName($urlTypeName);
 												$this->urltypRepository->add($urltypObject);
 												$this->persistenceManager->persistAll();
+												$urltypUUID = $urltypObject->getUUID();
 											}
-											$urlObject = new Url();
-											$urlObject->setUrl($parts[1]);
-											$urlObject->setBemerkung($parts[0]);
-											/** @var UrlTyp $urltypObject */
-											$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
-											$urlObject->setUrltyp($urltypObject);
-											$this->urlRepository->add($urlObject);
-											$this->persistenceManager->persistAll();
-											$urlUUID = $urlObject->getUUID();
-											$klosterhasurlObject = new Klosterhasurl();
-											/** @var Kloster $klosterObject */
-											$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
-											$klosterhasurlObject->setKloster($klosterObject);
-											/** @var Url $urlObject */
-											$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
-											$klosterhasurlObject->setUrl($urlObject);
-											$this->klosterHasUrlRepository->add($klosterhasurlObject);
-											$this->persistenceManager->persistAll();
+											foreach ($parts as $k => $value) {
+												if (!($k % 2)) {
+													if (!empty($value)) $urlBemerkung = $value;
+												}
+												if ($k % 2) {
+													if (!empty($value)) $url = $value;
+												}
+												if ((isset($url) && !empty($url)) ) {
+													$urlObject = new Url();
+													$urlObject->setUrl($url);
+													$urlObject->setBemerkung($urlBemerkung);
+													/** @var UrlTyp $urltypObject */
+													$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
+													$urlObject->setUrltyp($urltypObject);
+													$this->urlRepository->add($urlObject);
+													$this->persistenceManager->persistAll();
+													$urlUUID = $urlObject->getUUID();
+													$klosterhasurlObject = new Klosterhasurl();
+													/** @var Kloster $klosterObject */
+													$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
+													$klosterhasurlObject->setKloster($klosterObject);
+													/** @var Url $urlObject */
+													$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
+													$klosterhasurlObject->setUrl($urlObject);
+													$this->klosterHasUrlRepository->add($klosterhasurlObject);
+													$this->persistenceManager->persistAll();
+												}
+												if (isset($url)) {
+													unset($url);
+												}
+											}
 										}
 									}
-
 									if (isset($gnd) && !empty($gnd)) {
 										$gnd = str_replace("\t", " ", $gnd);
 										$gnd = str_replace("http:// ", " ", $gnd);
@@ -1145,7 +1148,6 @@ class DataImportController extends ActionController {
 				$bemerkung = $Klosterstandort['interne_Anmerkungen'];
 				$breite = $Klosterstandort['Breite'];
 				$laenge = $Klosterstandort['Laenge'];
-
 				if ($laenge > 180 || $laenge < -180) {
 					$laenge = '';
 				}
@@ -1153,7 +1155,6 @@ class DataImportController extends ActionController {
 				if ($breite > 90 || $breite < -90) {
 					$breite = '';
 				}
-
 				$bemerkung_standort = $Klosterstandort['BemerkungenStandort'];
 				$temp_literatur_alt = $Klosterstandort['Literaturnachweise'];
 				$lit = $temp_literatur_alt;
@@ -1239,7 +1240,6 @@ class DataImportController extends ActionController {
 				}
 				$nKlosterstandort++;
 			}
-
 			return $nKlosterstandort;
 		}
 	}
@@ -1365,7 +1365,6 @@ class DataImportController extends ActionController {
 				}
 				$nOrden++;
 			}
-
 			return $nOrden;
 		}
 	}
@@ -1478,13 +1477,11 @@ class DataImportController extends ActionController {
 						'createParentDirectories' => TRUE
 				)
 		);
-
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
-
 		$this->delAccessTabsAction();
 		$this->importAccessAction();
 		$this->emptyTabsAction();
@@ -1500,7 +1497,6 @@ class DataImportController extends ActionController {
 		$this->importOrdenAction();
 		$this->importKlosterordenAction();
 		$this->delAccessTabsAction();
-
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
 	}
@@ -2049,19 +2045,16 @@ class DataImportController extends ActionController {
 		if (!is_dir($this->dumpDirectory)) {
 			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
-
 		if (is_file($this->accessDumpFilenamePath)) {
 			if (!unlink($this->accessDumpFilenamePath)) {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the access dump file.', 1406721004);
 			}
 		}
-
 		if (is_file($this->citekeysFilenamePath)) {
 			if (!unlink($this->citekeysFilenamePath)) {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the citekeys file.', 1406721013);
 			}
 		}
-
 		if (!is_file($this->cacertFilenamePath)) {
 			if (!is_dir(self::cacertDest)) {
 				\TYPO3\Flow\Utility\Files::createDirectoryRecursively(self::cacertDest);
@@ -2070,7 +2063,6 @@ class DataImportController extends ActionController {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
 			}
 		}
-
 		$this->client->authenticate($this->settings['git']['token'], $password='', $this->method);
 		$accessDumpHash = $this->getFileHashAction($this->client, self::accessDumpFilename);
 		$accessDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $accessDumpHash);
@@ -2078,7 +2070,6 @@ class DataImportController extends ActionController {
 		$citekeysHash = $this->getFileHashAction($this->client, self::citekeysFilename);
 		$citekeysBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $citekeysHash);
 		$citekeysBlob = base64_decode($citekeysBlob['content']);
-
 		$mode = 'w';
 		$fp = fopen($this->accessDumpFilenamePath, $mode);
 		if (!$fp) {
@@ -2088,7 +2079,6 @@ class DataImportController extends ActionController {
 			fwrite ($fp, $accessDumpBlob);
 			fclose($fp);
 		}
-
 		$fp = fopen($this->citekeysFilenamePath, $mode);
 		if (!$fp) {
 			throw new \TYPO3\Flow\Resource\Exception('Can\'t create the citekeys csv file.', 1406721048);
@@ -2097,7 +2087,6 @@ class DataImportController extends ActionController {
 			fwrite ($fp, $citekeysBlob);
 			fclose($fp);
 		}
-
 		return true;
 	}
 
@@ -2155,7 +2144,6 @@ class DataImportController extends ActionController {
 		$checkIfKlosterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Kloster');
 		if ($checkIfKlosterTableExists) {
 			$nKloster = $this->importKlosterAction();
-			$this->addDefaultUrlAction();
 		}
 		$checkIfKlosterstandortTableExists = $sqlConnection->getSchemaManager()->tablesExist('Klosterstandort');
 		if ($checkIfKlosterstandortTableExists) {
@@ -2198,9 +2186,10 @@ class DataImportController extends ActionController {
 		$importLogMsg .= PHP_EOL;
 		$importFEMsg = nl2br(htmlentities($importLogMsg));
 		echo $importFEMsg;
+		$importLogFilePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data';
 		$importLogFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data/importLogFile.txt';
-		if (!is_dir(dirname($importLogFile))) {
-			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($importLogFile);
+		if (!is_dir(dirname($importLogFilePath))) {
+			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($importLogFilePath);
 		}
 		file_put_contents($importLogFile, $importLogMsg,  FILE_APPEND);
 		exit;
