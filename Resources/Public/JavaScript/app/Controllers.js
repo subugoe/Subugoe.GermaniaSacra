@@ -6,10 +6,10 @@ germaniaSacra.controller('listController', function($scope) {
     var type;
     if (newval != null) {
       type = $('#list').data('type');
-      $('#message, #search, #list').hide();
-      $('.togglable + .togglable').hide();
       germaniaSacra.search = new germaniaSacra.Search();
       germaniaSacra.editor = new germaniaSacra.Editor(type);
+      $('#message, #search, #list').hide();
+      $('.togglable + .togglable').hide();
       return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
         germaniaSacra.selectOptions = selectOptions;
         germaniaSacra.list = new germaniaSacra.List(type);
@@ -89,7 +89,7 @@ germaniaSacra.message = function(text, withTimestampAndCloseButton) {
     });
   }
   return $('html, body').animate({
-    scrollTop: $message.offset().top
+    scrollTop: 0
   });
 };
 

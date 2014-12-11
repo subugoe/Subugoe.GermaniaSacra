@@ -6,10 +6,10 @@ germaniaSacra.controller 'listController', ($scope) ->
 	), ((newval, oldval) ->
 		if newval?
 			type = $('#list').data('type')
-			$('#message, #search, #list').hide()
-			$('.togglable + .togglable').hide()
 			germaniaSacra.search = new germaniaSacra.Search()
 			germaniaSacra.editor = new germaniaSacra.Editor(type)
+			$('#message, #search, #list').hide()
+			$('.togglable + .togglable').hide()
 			$.when( germaniaSacra.getOptions() ).then(
 				(selectOptions) ->
 					germaniaSacra.selectOptions = selectOptions
@@ -73,7 +73,7 @@ germaniaSacra.message = (text, withTimestampAndCloseButton = true) ->
 			e.preventDefault()
 			$message.hide()
 	$('html, body').animate
-		scrollTop: $message.offset().top
+		scrollTop: 0
 
 # Confirm discard changes on window close/reload
 window.onbeforeunload = -> if $('.dirty').length then return germaniaSacra.messages.askUnsavedChanges

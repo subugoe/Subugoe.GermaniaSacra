@@ -6765,10 +6765,9 @@ th.hide-for-touch {
   margin-left: 1.5rem;
 }
 
-.dataTables_length select,
-.dataTables_filter input {
+.dataTables_length select {
   margin-top: -0.1875rem;
-  width: auto;
+  width: 4.5em;
 }
 
 .dataTables_filter {
@@ -6776,6 +6775,7 @@ th.hide-for-touch {
 }
 .dataTables_filter input {
   margin-left: 0.5rem;
+  margin-top: -0.1875rem;
 }
 
 .dataTables_info {
