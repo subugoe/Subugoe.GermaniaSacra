@@ -7757,6 +7757,7 @@ input[type="radio"],
 select,
 textarea {
   border-radius: 2px;
+  font-weight: bold;
   margin-bottom: .5em;
 }
 th input[type="text"], th
