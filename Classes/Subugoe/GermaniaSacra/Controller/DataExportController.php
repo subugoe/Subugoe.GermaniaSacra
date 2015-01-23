@@ -2,6 +2,7 @@
 namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Log\LoggerFactory;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
 ini_set('memory_limit', '-1');
@@ -92,7 +93,7 @@ class DataExportController extends ActionController {
 		);
 
 		if (!$this->logger) {
-			$log = new \TYPO3\Flow\Log\LoggerFactory();
+			$log = new LoggerFactory();
 
 			$this->logger = $log->create(
 					'GermaniaSacra',
@@ -110,8 +111,11 @@ class DataExportController extends ActionController {
 
 		$personenFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/personen.json';
 
+		$http = new \Guzzle\Http\Client();
+
 		try {
-			file_put_contents($personenFile, fopen(self::PERSONEN_URL, 'r'));
+			$personenData = $http->get(self::PERSONEN_URL)->send()->getBody();
+			file_put_contents($personenFile, $personenData);
 		} catch (\Exception $e) {
 			$this->logger->logException($e);
 		}
@@ -120,6 +124,9 @@ class DataExportController extends ActionController {
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function deleteAction() {
 		// get an update query instance
 		$update = $this->client->createUpdate();
@@ -129,13 +136,14 @@ class DataExportController extends ActionController {
 		$update->addCommit();
 
 		// this executes the query and returns the result
-		$result = $this->client->update($update);
+		$this->client->execute($update);
 	}
 
 	/**
 	 * Exports Kloster data from mysql into solr
+	 *
+	 * @return bool
 	 */
-
 	public function mysql2solrExportAction() {
 
 		$klosterData = $this->klosterListAllAction();
@@ -191,7 +199,8 @@ class DataExportController extends ActionController {
 		$update->addDocuments($docs);
 		$update->addCommit();
 		$this->deleteAction();
-		$result = $this->client->update($update);
+		/** @var \Solarium\Core\Query\Result\ResultInterface $result */
+		$result = $this->client->execute($update);
 
 		$this->logger->log('Data export completed in ' . round($result->getQueryTime() / 100) . ' seconds.');
 
@@ -239,10 +248,11 @@ class DataExportController extends ActionController {
 				$band_seite = $kloster->getBand_seite();
 				$klosterArr[$k]['band_seite'] = $band_seite;
 
+				/** @var \Subugoe\GermaniaSacra\Domain\Model\Bearbeitungsstatus $bearbeitungsstatusObj */
 				$bearbeitungsstatusObj = $kloster->getBearbeitungsstatus();
 				$bearbeitungsstatus = $bearbeitungsstatusObj->getName();
 				$klosterArr[$k]['bearbeitungsstatus'] = $bearbeitungsstatus;
-
+				/** @var \Subugoe\GermaniaSacra\Domain\Model\Personallistenstatus $personallistenstatusObj */
 				$personallistenstatusObj = $kloster->getPersonallistenstatus();
 				$personallistenstatus = $personallistenstatusObj->getName();
 				$klosterArr[$k]['personallistenstatus'] = $personallistenstatus;
@@ -250,6 +260,7 @@ class DataExportController extends ActionController {
 				$klosterArr[$k]['typ'] = 'kloster';
 				$klosterArr[$k]['id'] = (string)$kloster->getKloster_id();
 
+				/** @var \Subugoe\GermaniaSacra\Domain\Model\Band $band */
 				$band = $kloster->getBand();
 				if (is_object($band) && $band->getNummer() !== 'keine Angabe') {
 					$klosterArr[$k]['band_id'] = $band->getUid();
@@ -264,6 +275,7 @@ class DataExportController extends ActionController {
 
 					$bandHasUrls = $band->getBandHasUrls();
 					foreach ($bandHasUrls as $bandHasUrl) {
+						/** @var \Subugoe\GermaniaSacra\Domain\Model\Url $urlObj */
 						$urlObj = $bandHasUrl->getUrl();
 						$bandUrl = $urlObj->getUrl();
 						$urlTypObj = $urlObj->getUrltyp();
@@ -283,6 +295,7 @@ class DataExportController extends ActionController {
 
 				if (isset($klosterHasUrls) && !empty($klosterHasUrls)) {
 					foreach ($klosterHasUrls as $klosterHasUrl) {
+						/** @var \Subugoe\GermaniaSacra\Domain\Model\Url $urlObj */
 						$urlObj = $klosterHasUrl->getUrl();
 						$klosterUrl = $urlObj->getUrl();
 
@@ -370,7 +383,7 @@ class DataExportController extends ActionController {
 
 				$klosterstandorts = $kloster->getKlosterstandorts();
 				foreach ($klosterstandorts as $i => $klosterstandort) {
-
+					/** @var /** @var \Subugoe\GermaniaSacra\Domain\Model\Ort $ortObj */
 					$ortObj = $klosterstandort->getOrt();
 					if (is_object($ortObj)) {
 						$standortuid = $klosterstandort->getUid();
