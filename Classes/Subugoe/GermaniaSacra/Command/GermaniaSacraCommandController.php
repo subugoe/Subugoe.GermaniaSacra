@@ -63,32 +63,10 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	 * @return void
 	 */
 	public function alisImportCommand() {
-		$this->logger->log('Data import may take over 5 minutes. Do not exit.');
+		$this->logger->log('Data import may take well over 30 minutes depending on the environment used. Do not exit.');
 		/** @var DataImportController $importer */
 		$importer = new DataImportController($this->logger, $this->settings);
-		$sqlConnection = $this->entityManager->getConnection();
-		$sql = 'SET unique_checks = 0';
-		$sqlConnection->executeUpdate($sql);
-		$sql = 'SET foreign_key_checks = 0';
-		$sqlConnection->executeUpdate($sql);
-		$importer->importDumpFromGithubAction();
-		$importer->delAccessTabsAction();
-		$importer->importAccessAction();
-		$importer->emptyTabsAction();
-		$importer->importBearbeitungsstatusAction();
-		$importer->importBearbeiterAction();
-		$importer->importPersonallistenstatusAction();
-		$importer->importLandAction();
-		$importer->importOrtAction();
-		$importer->importBistumAction();
-		$importer->importBandAction();
-		$importer->importKlosterAction();
-		$importer->importKlosterstandortAction();
-		$importer->importOrdenAction();
-		$importer->importKlosterordenAction();
-		$importer->delAccessTabsAction();
-		$sql = 'SET foreign_key_checks = 1';
-		$sqlConnection->executeUpdate($sql);
+		$importer->access2mysqlAction();
 		$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
 		$this->logger->log('Import completed in ' . round($time/60, 2) . ' minutes.');
 	}
