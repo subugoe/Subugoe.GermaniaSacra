@@ -112,12 +112,6 @@ class DataImportController extends ActionController {
 
 	/**
 	 * @Flow\Inject
-	 * @var \Subugoe\GermaniaSacra\Domain\Repository\BibitemRepository
-	 */
-	protected $bibitemRepository;
-
-	/**
-	 * @Flow\Inject
 	 * @var \Subugoe\GermaniaSacra\Domain\Repository\KlosterstandortRepository
 	 */
 	protected $klosterstandortRepository;
@@ -205,6 +199,16 @@ class DataImportController extends ActionController {
 	protected $logger;
 
 	/**
+	 * @var \TYPO3\Flow\Log\Logger
+	 */
+	protected $dumpImportlogger;
+
+	/**
+	 * @var \TYPO3\Flow\Log\Logger
+	 */
+	protected $inkDumpImportlogger;
+
+	/**
 	 * @var array
 	 */
 	protected $settings;
@@ -265,6 +269,10 @@ class DataImportController extends ActionController {
 
 	const githubRepository = 'GermaniaSacra-dumps';
 
+	const inklDumpLogFile = 'Persistent/GermaniaSacra/Log/inkKlosterDumpImport.log';
+
+	const dumpLogFile = 'Persistent/GermaniaSacra/Log/klosterDumpImport.log';
+
 	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
 		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/Persistent/GermaniaSacra/Dump/';
@@ -279,17 +287,25 @@ class DataImportController extends ActionController {
 		$this->client = new \Github\Client();
 		$this->method = \Github\Client::AUTH_URL_TOKEN;
 
-		if (!$this->logger) {
-			$log = new \TYPO3\Flow\Log\LoggerFactory();
-			$this->logger = $log->create('GermaniaSacra',
-										'TYPO3\Flow\Log\Logger',
-										'\TYPO3\Flow\Log\Backend\FileBackend',
-										array(
-											'logFileUrl' => FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Log/inkKlosterDump.log',
-											'createParentDirectories' => TRUE
-										)
-									);
-		}
+		$log = new \TYPO3\Flow\Log\LoggerFactory();
+		if (file_exists(FLOW_PATH_DATA . self::inklDumpLogFile)) unlink(FLOW_PATH_DATA . self::inklDumpLogFile);
+		if (file_exists(FLOW_PATH_DATA . self::dumpLogFile)) unlink(FLOW_PATH_DATA . self::dumpLogFile);
+		$this->inkDumpImportlogger = $log->create('GermaniaSacra',
+									'TYPO3\Flow\Log\Logger',
+									'\TYPO3\Flow\Log\Backend\FileBackend',
+									array(
+										'logFileUrl' => FLOW_PATH_DATA . self::inklDumpLogFile,
+										'createParentDirectories' => TRUE
+									)
+								);
+		$this->dumpImportlogger = $log->create('GermaniaSacra',
+									'TYPO3\Flow\Log\Logger',
+									'\TYPO3\Flow\Log\Backend\FileBackend',
+									array(
+										'logFileUrl' => FLOW_PATH_DATA . self::dumpLogFile,
+										'createParentDirectories' => TRUE
+									)
+								);
 	}
 
 	/**
@@ -297,23 +313,30 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importBearbeitungsstatusAction() {
-		$bearbeitungsstatusArr = array(1 => 'Angaben unklar',
+		$bearbeitungsstatusArr = array(
+				1 => 'Angaben unklar',
 				2 => 'Daten importiert',
 				3 => 'Quellenlage unvollständig',
 				4 => 'Geprüft (bei Eingabe)',
 				5 => 'Redaktionell geprüft',
 				6 => 'Neuaufnahme, unvollständig',
 				7 => 'Online',
-				8 => 'Dublette BW'
+				8 => 'Dublette BW',
+				9 => 'Zum internen Gebrauch',
+				10 => 'Zisterzienser importiert',
+				11 => 'Wikipedia ungeprüft'
 		);
 		if (isset($bearbeitungsstatusArr) and is_array($bearbeitungsstatusArr)) {
+			$nBearbeitungsstatus = 0;
 			foreach ($bearbeitungsstatusArr as $key => $name) {
 				$bearbeitungsstatusObject = new Bearbeitungsstatus();
 				$bearbeitungsstatusObject->setUid($key);
 				$bearbeitungsstatusObject->setName($name);
 				$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObject);
 				$this->persistenceManager->persistAll();
+				$nBearbeitungsstatus++;
 			}
+			return $nBearbeitungsstatus;
 		}
 	}
 
@@ -335,8 +358,10 @@ class DataImportController extends ActionController {
 			$numberOfAccounts = count($this->accountRepository->findAll());
 		}
 
+		$nBearbeiter = 0;
+
 		if ($numberOfBearbeiter == 0 && $numberOfAccounts == 0) {
-			$this->importAndJoinBearbeiterWithAccount();
+			$nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
 		}
 		elseif ($numberOfBearbeiter == 0 && $numberOfAccounts != 0) {
 			$sql = 'SET foreign_key_checks = 0';
@@ -349,7 +374,7 @@ class DataImportController extends ActionController {
 			$sqlConnection->executeUpdate($sql);
 			$sql = 'SET foreign_key_checks = 1';
 			$sqlConnection->executeUpdate($sql);
-			$this->importAndJoinBearbeiterWithAccount();
+			$nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
 		}
 		elseif ($numberOfBearbeiter != 0 && $numberOfAccounts == 0) {
 			$sql = 'SET foreign_key_checks = 0';
@@ -359,8 +384,9 @@ class DataImportController extends ActionController {
 			$sqlConnection->executeUpdate($sql);
 			$sql = 'SET foreign_key_checks = 1';
 			$sqlConnection->executeUpdate($sql);
-			$this->importAndJoinBearbeiterWithAccount();
+			$nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
 		}
+		return $nBearbeiter;
 	}
 
 	/**
@@ -373,6 +399,7 @@ class DataImportController extends ActionController {
 		$sql = 'SELECT ID, Bearbeiter FROM Bearbeiter ORDER BY ID ASC';
 		$bearbeiters = $sqlConnection->fetchAll($sql);
 		if (isset($bearbeiters) and is_array($bearbeiters)) {
+			$nBearbeiter = 0;
 			foreach ($bearbeiters as $be) {
 				$uid = $be['ID'];
 				$bearbeiter = $be['Bearbeiter'];
@@ -387,7 +414,9 @@ class DataImportController extends ActionController {
 				$this->bearbeiterRepository->add($bearbeiterObject);
 				$this->persistenceManager->persistAll();
 				$this->createUsernamePasswordFile($userName, $password, $uid);
+				$nBearbeiter++;
 			}
+			return $nBearbeiter;
 		}
 	}
 
@@ -442,6 +471,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importOrtAction() {
+		$start = microtime(true);
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_ort';
 		$sql = "ANALYZE LOCAL TABLE " . $tbl;
@@ -512,6 +542,10 @@ class DataImportController extends ActionController {
 				}
 				$nOrt++;
 			}
+			$end = microtime(true);
+			$time = number_format(($end - $start), 2);
+			$this->logger->log('Ort import completed in ' . round($time/60, 2) . ' minutes.');
+
 			return $nOrt;
 		}
 	}
@@ -521,6 +555,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importBistumAction() {
+		$start = microtime(true);
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "GND"';
@@ -641,11 +676,9 @@ class DataImportController extends ActionController {
 						foreach ($wikipedias as $wikipedia) {
 							if (isset($wikipedia) && !empty($wikipedia)) {
 								if ($wikipedia != $oldwikipedia) {
-
 									$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
 									$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
 									$wikipediabemerkung = rawurldecode($wikipediabemerkung);
-
 									$urlObject = new Url();
 									$urlObject->setUrl($wikipedia);
 									$urlObject->setBemerkung($wikipediabemerkung);
@@ -654,9 +687,7 @@ class DataImportController extends ActionController {
 									$this->urlRepository->add($urlObject);
 									$this->persistenceManager->persistAll();
 									$wikiurlUUID = $urlObject->getUUID();
-
 									$oldwikipedia = $wikipedia;
-
 									$bistumhasurlObject = new Bistumhasurl();
 									$bistumObject = $this->bistumRepository->findByIdentifier($bistumUUID);
 									$bistumhasurlObject->setBistum($bistumObject);
@@ -672,19 +703,16 @@ class DataImportController extends ActionController {
 				$nBistum++;
 			}
 		}
-		// Added to prevent wrong search result
+
 		$ortBistum = $this->bistumRepository->findOneByBistum('keine Angabe');
+		$bistumUUID = $ortBistum->getUUID();
 		$ortTbl = 'subugoe_germaniasacra_domain_model_ort';
-		$sql = 'SELECT * FROM ' . $ortTbl . ' WHERE bistum IS NULL';
-		$orts = $sqlConnection->fetchAll($sql);
-		if (!empty($orts)) {
-			foreach ($orts as $ort) {
-				$ortObject = $this->ortRepository->findOneByUid($ort['uid']);
-				$ortObject->setBistum($ortBistum);
-				$this->ortRepository->update($ortObject);
-				$this->persistenceManager->persistAll();
-			}
-		}
+		$sql = 'UPDATE ' . $ortTbl . ' SET bistum = \'' . $bistumUUID . '\' WHERE bistum IS NULL';
+		$sqlConnection->executeUpdate($sql);
+		$end = microtime(true);
+		$time = number_format(($end - $start), 2);
+		$this->logger->log('Bistum import completed in ' . round($time/60, 2) . ' minutes.');
+
 		return $nBistum;
 	}
 
@@ -693,6 +721,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importBandAction() {
+		$start = microtime(true);
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Handle"';
@@ -841,6 +870,10 @@ class DataImportController extends ActionController {
 		$bandObject->setKurztitel($kurztitel);
 		$this->bandRepository->add($bandObject);
 		$this->persistenceManager->persistAll();
+		$end = microtime(true);
+		$time = number_format(($end - $start), 2);
+		$this->logger->log('Band import completed in ' . round($time/60, 2) . ' minutes.');
+
 		return $nBand;
 	}
 
@@ -849,6 +882,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importKlosterAction() {
+		$start = microtime(true);
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Quelle"';
@@ -905,8 +939,8 @@ class DataImportController extends ActionController {
 					$patrozinium = $kloster['Patrozinium'];
 					$bemerkung = $kloster['Bemerkungen'];
 					$creationdate = $kloster['Datensatz_angelegt'];
-					$bearbeiter = $kloster['Bearbeiter'];
-					$bearbeitungsstatus = $kloster['Status'];
+					$bearbeiter = trim($kloster['Bearbeiter']);
+					$bearbeitungsstatus = trim($kloster['Status']);
 					$personallistenstatus = trim($kloster['Personallisten']);
 					if (!empty($bearbeiter)) {
 						/** @var Bearbeiter $bearbeiterObject */
@@ -914,208 +948,214 @@ class DataImportController extends ActionController {
 						if (!empty($bearbeitungsstatus)) {
 							/** @var Bearbeitungsstatus $bearbeitungsstatusObject */
 							$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findOneByName($bearbeitungsstatus);
-								if (!empty($personallistenstatus)) {
-									/** @var Personallistenstatus $personallistenstatusObject */
-									$personallistenstatusObject = $this->personallistenstatusRepository->findOneByName($personallistenstatus);
-									$band = $kloster['GermaniaSacraBandNr'];
-									$band_seite = $kloster['GSBandSeite'];
-									$text_gs_band = $kloster['TextGSBand'];
-									$kloster_id = $kloster['Klosternummer'];
-									$kloster = $kloster['Klostername'];
-									$klosterObject = new Kloster();
-									$klosterObject->setUid($uid);
-									if (is_object($bearbeiterObject)) {
-										$klosterObject->setBearbeiter($bearbeiterObject);
+							if (!empty($personallistenstatus)) {
+								/** @var Personallistenstatus $personallistenstatusObject */
+								$personallistenstatusObject = $this->personallistenstatusRepository->findOneByName($personallistenstatus);
+								$band = $kloster['GermaniaSacraBandNr'];
+								$band_seite = $kloster['GSBandSeite'];
+								$text_gs_band = $kloster['TextGSBand'];
+								$kloster = $kloster['Klostername'];
+								$klosterObject = new Kloster();
+								$klosterObject->setUid($uid);
+								if (is_object($bearbeiterObject)) {
+									$klosterObject->setBearbeiter($bearbeiterObject);
+								}
+								if (is_object($bearbeitungsstatusObject) AND $bearbeitungsstatusObject->getName() !== NULL) {
+									$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
+								} else {
+									$result = $this->bearbeitungsstatusRepository->findLastEntry();
+									foreach ($result as $res) {
+										$lastBearbeitungsstatusEntry = $res->getUid();
 									}
-									if (is_object($bearbeitungsstatusObject) AND $bearbeitungsstatusObject->getName() !== NULL) {
-										$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
-									} else {
-										$lastBearbeitungsstatusEntry = $this->bearbeitungsstatusRepository->findLastEntry();
-										$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry['uid'] + 1;
-										$bearbeitungsstatusObject = new Bearbeitungsstatus();
-										$bearbeitungsstatusObject->setUid($bearbeitungsstatusUid);
-										$bearbeitungsstatusObject->setName($bearbeitungsstatus);
-										$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObject);
-										$this->persistenceManager->persistAll();
-										$bearbeitungsstatusUUID = $bearbeitungsstatusObject->getUUID();
-										$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatusUUID);
-										$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
-										$this->logger->log('Bearbeitungsstatus "' . $bearbeitungsstatus . '" was missing in Bearbeitungsstatus table. It is added now. Kloster entry: ' . $klosterObject->getUid());
-
-									}
-									if (is_object($personallistenstatusObject)) {
-										$klosterObject->setPersonallistenstatus($personallistenstatusObject);
-									}
-									$klosterObject->setKloster_id($uid);
-									$klosterObject->setKloster($kloster);
-									$klosterObject->setPatrozinium($patrozinium);
-									$klosterObject->setBemerkung($bemerkung);
-									if (null !== $band) {
-										/** @var Band $bandObject */
-										$bandObject = $this->bandRepository->findOneByUid($band);
-										$klosterObject->setBand($bandObject);
-									}
-									// Added to prevent wrong search result
-									else {
-										$this->bandRepository->setDefaultOrderings(
-												array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
-										);
-										$bandObject = $this->bandRepository->findAll()->getFirst();
-										$klosterObject->setBand($bandObject);
-									}
-									$klosterObject->setBand_seite($band_seite);
-									$klosterObject->setText_gs_band($text_gs_band);
-									$klosterObject->setBearbeitungsstand($bearbeitungsstand);
-									$klosterObject->setcreationDate(new \DateTime($creationdate));
-									$this->klosterRepository->add($klosterObject);
+									$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry + 1;
+									$bearbeitungsstatusObject = new Bearbeitungsstatus();
+									$bearbeitungsstatusObject->setUid($bearbeitungsstatusUid);
+									$bearbeitungsstatusObject->setName($bearbeitungsstatus);
+									$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObject);
 									$this->persistenceManager->persistAll();
-									$klosterUUID = $klosterObject->getUUID();
-									if ($hauptRessource) {
-										$parts = explode("#", $hauptRessource);
-										if (count($parts) > 1) {
-											$urlTypeName = "Quelle";
-											if (!isset($urltypUUID)) {
-												$urltypObject = new Urltyp();
-												$urltypObject->setName($urlTypeName);
-												$this->urltypRepository->add($urltypObject);
-												$this->persistenceManager->persistAll();
-												$urltypUUID = $urltypObject->getUUID();
+									$bearbeitungsstatusUUID = $bearbeitungsstatusObject->getUUID();
+									$bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatusUUID);
+									$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
+									$this->dumpImportlogger->log('Bearbeitungsstatus "' . $bearbeitungsstatus . '" fehlte in der Bearbeitungsstatustabelle. Er ist nun hinzugefügt. Kloster-uid: ' . $klosterObject->getUid(), LOG_INFO);
+								}
+								if (is_object($personallistenstatusObject)) {
+									$klosterObject->setPersonallistenstatus($personallistenstatusObject);
+								}
+								$klosterObject->setKloster_id($uid);
+								$klosterObject->setKloster($kloster);
+								$klosterObject->setPatrozinium($patrozinium);
+								$klosterObject->setBemerkung($bemerkung);
+								if (null !== $band) {
+									/** @var Band $bandObject */
+									$bandObject = $this->bandRepository->findOneByUid($band);
+									$klosterObject->setBand($bandObject);
+								}
+								// Added to prevent wrong search result
+								else {
+									$this->bandRepository->setDefaultOrderings(
+											array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
+									);
+									$bandObject = $this->bandRepository->findAll()->getFirst();
+									$klosterObject->setBand($bandObject);
+								}
+								$klosterObject->setBand_seite($band_seite);
+								$klosterObject->setText_gs_band($text_gs_band);
+								$klosterObject->setBearbeitungsstand($bearbeitungsstand);
+								$klosterObject->setcreationDate(new \DateTime($creationdate));
+								$this->klosterRepository->add($klosterObject);
+								$this->persistenceManager->persistAll();
+								$klosterUUID = $klosterObject->getUUID();
+								if ($hauptRessource) {
+									$parts = explode("#", $hauptRessource);
+									if (count($parts) > 1) {
+										$urlTypeName = "Quelle";
+										if (!isset($urltypUUID)) {
+											$urltypObject = new Urltyp();
+											$urltypObject->setName($urlTypeName);
+											$this->urltypRepository->add($urltypObject);
+											$this->persistenceManager->persistAll();
+											$urltypUUID = $urltypObject->getUUID();
+										}
+										foreach ($parts as $k => $value) {
+											if (!($k % 2)) {
+												if (!empty($value)) $urlBemerkung = $value;
 											}
-											foreach ($parts as $k => $value) {
-												if (!($k % 2)) {
-													if (!empty($value)) $urlBemerkung = $value;
-												}
-												if ($k % 2) {
-													if (!empty($value)) $url = $value;
-												}
-												if ((isset($url) && !empty($url)) ) {
+											if ($k % 2) {
+												if (!empty($value)) $url = $value;
+											}
+											if ((isset($url) && !empty($url)) ) {
+												$urlObject = new Url();
+												$urlObject->setUrl($url);
+												$urlObject->setBemerkung($urlBemerkung);
+												/** @var UrlTyp $urltypObject */
+												$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
+												$urlObject->setUrltyp($urltypObject);
+												$this->urlRepository->add($urlObject);
+												$this->persistenceManager->persistAll();
+												$urlUUID = $urlObject->getUUID();
+												$klosterhasurlObject = new Klosterhasurl();
+												/** @var Kloster $klosterObject */
+												$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
+												$klosterhasurlObject->setKloster($klosterObject);
+												/** @var Url $urlObject */
+												$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
+												$klosterhasurlObject->setUrl($urlObject);
+												$this->klosterHasUrlRepository->add($klosterhasurlObject);
+												$this->persistenceManager->persistAll();
+											}
+											if (isset($url)) {
+												unset($url);
+											}
+										}
+									}
+								}
+								if (isset($gnd) && !empty($gnd)) {
+									$gnd = str_replace("\t", " ", $gnd);
+									$gnd = str_replace("http:// ", " ", $gnd);
+									$gnd = str_replace(" http", ";http", $gnd);
+									$gnd = str_replace(";", "#", $gnd);
+									$gnds = explode("#", $gnd);
+									if (isset($gnds) && is_array($gnds)) {
+										$oldgnd = "";
+										foreach ($gnds as $gnd) {
+											if (isset($gnd) && !empty($gnd)) {
+												if ($gnd != $oldgnd) {
+													$gnd = str_replace(" ", "", $gnd);
+													$gnd = str_replace("# ", "", $gnd);
+													$gndid = str_replace("http://d-nb.info/gnd/", "", $gnd);
+													$gndbemerkung = $kloster . " [" . $gndid . "]";
 													$urlObject = new Url();
-													$urlObject->setUrl($url);
-													$urlObject->setBemerkung($urlBemerkung);
-													/** @var UrlTyp $urltypObject */
-													$urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
-													$urlObject->setUrltyp($urltypObject);
+													$urlObject->setUrl($gnd);
+													$urlObject->setBemerkung($gndbemerkung);
+													/** @var UrlTyp $gndurltypObject */
+													$gndurltypObject = $this->urltypRepository->findByIdentifier($gndurltypUUID);
+													$urlObject->setUrltyp($gndurltypObject);
 													$this->urlRepository->add($urlObject);
 													$this->persistenceManager->persistAll();
-													$urlUUID = $urlObject->getUUID();
+													$gndurlUUID = $urlObject->getUUID();
+													$oldgnd = $gnd;
 													$klosterhasurlObject = new Klosterhasurl();
 													/** @var Kloster $klosterObject */
 													$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
 													$klosterhasurlObject->setKloster($klosterObject);
-													/** @var Url $urlObject */
-													$urlObject = $this->urlRepository->findByIdentifier($urlUUID);
-													$klosterhasurlObject->setUrl($urlObject);
+													/** @var Url $gndurlObject */
+													$gndurlObject = $this->urlRepository->findByIdentifier($gndurlUUID);
+													$klosterhasurlObject->setUrl($gndurlObject);
 													$this->klosterHasUrlRepository->add($klosterhasurlObject);
 													$this->persistenceManager->persistAll();
 												}
-												if (isset($url)) {
-													unset($url);
-												}
-											}
-										}
-									}
-									if (isset($gnd) && !empty($gnd)) {
-										$gnd = str_replace("\t", " ", $gnd);
-										$gnd = str_replace("http:// ", " ", $gnd);
-										$gnd = str_replace(" http", ";http", $gnd);
-										$gnd = str_replace(";", "#", $gnd);
-										$gnds = explode("#", $gnd);
-										if (isset($gnds) && is_array($gnds)) {
-											$oldgnd = "";
-											foreach ($gnds as $gnd) {
-												if (isset($gnd) && !empty($gnd)) {
-													if ($gnd != $oldgnd) {
-														$gnd = str_replace(" ", "", $gnd);
-														$gnd = str_replace("# ", "", $gnd);
-														$gndid = str_replace("http://d-nb.info/gnd/", "", $gnd);
-														$gndbemerkung = $kloster . " [" . $gndid . "]";
-														$urlObject = new Url();
-														$urlObject->setUrl($gnd);
-														$urlObject->setBemerkung($gndbemerkung);
-														/** @var UrlTyp $gndurltypObject */
-														$gndurltypObject = $this->urltypRepository->findByIdentifier($gndurltypUUID);
-														$urlObject->setUrltyp($gndurltypObject);
-														$this->urlRepository->add($urlObject);
-														$this->persistenceManager->persistAll();
-														$gndurlUUID = $urlObject->getUUID();
-														$oldgnd = $gnd;
-														$klosterhasurlObject = new Klosterhasurl();
-														/** @var Kloster $klosterObject */
-														$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
-														$klosterhasurlObject->setKloster($klosterObject);
-														/** @var Url $gndurlObject */
-														$gndurlObject = $this->urlRepository->findByIdentifier($gndurlUUID);
-														$klosterhasurlObject->setUrl($gndurlObject);
-														$this->klosterHasUrlRepository->add($klosterhasurlObject);
-														$this->persistenceManager->persistAll();
-													}
-												}
-											}
-										}
-									}
-									if (isset($wikipedia) && !empty($wikipedia)) {
-										$wikipedia = str_replace("http:// ", " ", $wikipedia);
-										$wikipedia = str_replace(";", "#", $wikipedia);
-										$wikipedias = explode("#", $wikipedia);
-										if (isset($wikipedias) && is_array($wikipedias)) {
-											$oldwikipedia = "";
-											foreach ($wikipedias as $wikipedia) {
-												if (isset($wikipedia) && !empty($wikipedia)) {
-													if ($wikipedia != $oldwikipedia) {
-														$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
-														$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
-														$wikipediabemerkung = rawurldecode($wikipediabemerkung);
-														$urlObject = new Url();
-														$urlObject->setUrl($wikipedia);
-														$urlObject->setBemerkung($wikipediabemerkung);
-														$wikiurltypObject = $this->urltypRepository->findByIdentifier($wikiurltypUUID);
-														$urlObject->setUrltyp($wikiurltypObject);
-														$this->urlRepository->add($urlObject);
-														$this->persistenceManager->persistAll();
-														$wikiurlUUID = $urlObject->getUUID();
-														$oldwikipedia = $wikipedia;
-														$klosterhasurlObject = new Klosterhasurl();
-														$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
-														$klosterhasurlObject->setKloster($klosterObject);
-														$wikiurlObject = $this->urlRepository->findByIdentifier($wikiurlUUID);
-														$klosterhasurlObject->setUrl($wikiurlObject);
-														$this->klosterHasUrlRepository->add($klosterhasurlObject);
-														$this->persistenceManager->persistAll();
-													}
-												}
 											}
 										}
 									}
 								}
-								else {
-									echo 'Personallistenstatus zum Kloster ' . $uid . 'fehlt.<br>';
-									$this->logger->log('Personallistenstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+								if (isset($wikipedia) && !empty($wikipedia)) {
+									$wikipedia = str_replace("http:// ", " ", $wikipedia);
+									$wikipedia = str_replace(";", "#", $wikipedia);
+									$wikipedias = explode("#", $wikipedia);
+									if (isset($wikipedias) && is_array($wikipedias)) {
+										$oldwikipedia = "";
+										foreach ($wikipedias as $wikipedia) {
+											if (isset($wikipedia) && !empty($wikipedia)) {
+												if ($wikipedia != $oldwikipedia) {
+													$wikipediabemerkung = str_replace("http://de.wikipedia.org/wiki/", "", $wikipedia);
+													$wikipediabemerkung = str_replace("_", " ", $wikipediabemerkung);
+													$wikipediabemerkung = rawurldecode($wikipediabemerkung);
+													$urlObject = new Url();
+													$urlObject->setUrl($wikipedia);
+													$urlObject->setBemerkung($wikipediabemerkung);
+													$wikiurltypObject = $this->urltypRepository->findByIdentifier($wikiurltypUUID);
+													$urlObject->setUrltyp($wikiurltypObject);
+													$this->urlRepository->add($urlObject);
+													$this->persistenceManager->persistAll();
+													$wikiurlUUID = $urlObject->getUUID();
+													$oldwikipedia = $wikipedia;
+													$klosterhasurlObject = new Klosterhasurl();
+													$klosterObject = $this->klosterRepository->findByIdentifier($klosterUUID);
+													$klosterhasurlObject->setKloster($klosterObject);
+													$wikiurlObject = $this->urlRepository->findByIdentifier($wikiurlUUID);
+													$klosterhasurlObject->setUrl($wikiurlObject);
+													$this->klosterHasUrlRepository->add($klosterhasurlObject);
+													$this->persistenceManager->persistAll();
+												}
+											}
+										}
+									}
 								}
 							}
 							else {
-								echo 'Bearbeitunsstatus zum Kloster ' . $uid . 'fehlt.<br>';
-								$this->logger->log('Bearbeitungsstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
-								if (empty($personallistenstatus)) {
-									echo 'Personallistenstatus zum Kloster ' . $uid . 'fehlt.<br>';
-									$this->logger->log('Personallistenstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
-								}
+								$this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 							}
 						}
+						else {
+							$this->logger->dumpImportlogger('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+							if (empty($personallistenstatus)) {
+								$this->logger->dumpImportlogger('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+							}
+						}
+					}
 					else {
-						echo 'Bearbeiter zum Kloster ' . $uid . ' fehlt.<br>';
-						$this->logger->log('Bearbeiter zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+						$this->dumpImportlogger->log('Bearbeiter zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 						if (empty($bearbeitungsstatus)) {
-							echo 'Bearbeitunsstatus zum Kloster ' . $uid . ' fehlt.<br>';
-							$this->logger->log('Bearbeitungsstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+							$this->dumpImportlogger->log('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 						}
 						if (empty($personallistenstatus)) {
-							echo 'Personallistenstatus zum Kloster ' . $uid . ' fehlt.<br>';
-							$this->logger->log('Personallistenstatus zum Kloster ' . $uid . " fehlt.", LOG_INFO);
+							$this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 						}
 					}
 					$nKloster++;
 				}
+				else {
+					$this->dumpImportlogger->log('Doppelter Eintrag mit der Id = ' . $uid . ' in Klostertabelle. Der 2. Eintrag wurde ausgelassen.', LOG_ERR);
+				}
+
+				if (empty($uid)) {
+					$this->dumpImportlogger->log('Das Kloster ' . $kloster . ' hat keine Klosternummer.', LOG_ERR);
+				}
 			}
+			$end = microtime(true);
+			$time = number_format(($end - $start), 2);
+			$this->logger->log('Kloster import completed in ' . round($time/60, 2) . ' minutes.');
+
 			return $nKloster;
 		}
 	}
@@ -1125,6 +1165,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importKlosterstandortAction() {
+		$start = microtime(true);
 		$csvArr = $this->citekeysAction();
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterstandort ORDER  BY ID_Kloster ASC';
@@ -1151,13 +1192,15 @@ class DataImportController extends ActionController {
 				if ($laenge > 180 || $laenge < -180) {
 					$laenge = '';
 				}
-
 				if ($breite > 90 || $breite < -90) {
 					$breite = '';
 				}
 				$bemerkung_standort = $Klosterstandort['BemerkungenStandort'];
 				$temp_literatur_alt = $Klosterstandort['Literaturnachweise'];
 				$lit = $temp_literatur_alt;
+				$ortObject = $this->ortRepository->findOneByUid($ort);
+				$klosterObject = $this->klosterRepository->findOneByUid($kloster);
+				if ((is_object($klosterObject) && $klosterObject !== Null) && (is_object($ortObject) && $ortObject !== Null)) {
 				$KlosterstandortObject = new Klosterstandort();
 				$KlosterstandortObject->setUid($uid);
 				if (isset($kloster) && !empty($kloster)) {
@@ -1201,45 +1244,56 @@ class DataImportController extends ActionController {
 						if (count($parts) > 1) {
 							$seite = 'S. ' . trim($parts[1], ' .');
 						}
-						if (isset($buch) && !empty($buch) && !in_array($buch, $buecher)) {
-							array_push($buecher, $buch);
-							$bibitemObject = new Bibitem();
-							$bibitemObject->setBibitem($buch);
-							$this->bibitemRepository->add($bibitemObject);
-							$this->persistenceManager->persistAll();
-							$bibiitemUid = $bibitemObject->getUid();
-						}
 						$beschreibung = $seite;
 						if (array_key_exists($buch, $csvArr)) {
 							$citekey = $csvArr[$buch]['citekey'];
-							if ($citekey and $csvArr[$buch]['detail'] and $csvArr[$buch]['detail'] != '#N/A') {
-								if ($beschreibung and !strpos($csvArr[$buch]['detail'], $beschreibung)) {
-									$beschreibung = $csvArr[$buch]['detail'] . ', ' . $beschreibung;
-								} else {
-									$beschreibung = $csvArr[$buch]['detail'];
+							if (!empty($citekey)) {
+								if ($citekey and $csvArr[$buch]['detail'] and $csvArr[$buch]['detail'] != '#N/A') {
+									if ($beschreibung and !strpos($csvArr[$buch]['detail'], $beschreibung)) {
+										$beschreibung = $csvArr[$buch]['detail'] . ', ' . $beschreibung;
+									} else {
+										$beschreibung = $csvArr[$buch]['detail'];
+									}
+								}
+								$literaturKey = $uid . "-" . $citekey . "-" . utf8_decode($beschreibung);
+								if (!in_array($literaturKey, $literaturKeyArr)) {
+									array_push($literaturKeyArr, $literaturKey);
+									$literaturObject = new Literatur();
+									$literaturObject->setCitekey($citekey);
+									$literaturObject->setBeschreibung($beschreibung);
+									$this->literaturRepository->add($literaturObject);
+									$this->persistenceManager->persistAll();
+									$literaturUUID = $literaturObject->getUUID();
+									$klosterhasliteraturObject = new KlosterHasLiteratur();
+									$klosterhasliteraturObject->setKloster($klosterObject);
+									$literaturObject = $this->literaturRepository->findByIdentifier($literaturUUID);
+									$klosterhasliteraturObject->setLiteratur($literaturObject);
+									$this->klosterHasLiteraturRepository->add($klosterhasliteraturObject);
+									$this->persistenceManager->persistAll();
 								}
 							}
-							$literaturKey = $uid . "-" . $citekey . "-" . utf8_decode($beschreibung);
-							if (!in_array($literaturKey, $literaturKeyArr)) {
-								array_push($literaturKeyArr, $literaturKey);
-								$literaturObject = new Literatur();
-								$literaturObject->setCitekey($citekey);
-								$literaturObject->setBeschreibung($beschreibung);
-								$this->literaturRepository->add($literaturObject);
-								$this->persistenceManager->persistAll();
-								$literaturUUID = $literaturObject->getUUID();
-								$klosterhasliteraturObject = new KlosterHasLiteratur();
-								$klosterhasliteraturObject->setKloster($klosterObject);
-								$literaturObject = $this->literaturRepository->findByIdentifier($literaturUUID);
-								$klosterhasliteraturObject->setLiteratur($literaturObject);
-								$this->klosterHasLiteraturRepository->add($klosterhasliteraturObject);
-								$this->persistenceManager->persistAll();
+							else {
+								$this->dumpImportlogger->log('Kein citekey für das Buch ' . $buch . ' beim Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
 							}
 						}
 					}
 				}
 				$nKlosterstandort++;
 			}
+			else {
+				if ($klosterObject === Null) {
+					$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . 'wurde nicht gefunden.', LOG_ERR);
+				}
+
+				if ($ortObject === Null) {
+					$this->dumpImportlogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . 'wurde nicht gefunden.', LOG_ERR);
+				}
+			}
+			}
+			$end = microtime(true);
+			$time = number_format(($end - $start), 2);
+			$this->logger->log('Klosterstandort import completed in ' . round($time/60, 2) . ' minutes.');
+
 			return $nKlosterstandort;
 		}
 	}
@@ -1249,6 +1303,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importOrdenAction() {
+		$start = microtime(true);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Orden';
 		$ordens = $sqlConnection->fetchAll($sql);
@@ -1365,6 +1420,10 @@ class DataImportController extends ActionController {
 				}
 				$nOrden++;
 			}
+			$end = microtime(true);
+			$time = number_format(($end - $start), 2);
+			$this->logger->log('Orden import completed in ' . round($time/60, 2) . ' minutes.');
+
 			return $nOrden;
 		}
 	}
@@ -1374,6 +1433,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importKlosterordenAction() {
+		$start = microtime(true);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterorden ORDER BY ID_KlosterOrden ASC';
 		$klosterordens = $sqlConnection->fetchAll($sql);
@@ -1387,45 +1447,60 @@ class DataImportController extends ActionController {
 				if ((isset($kloster) && !empty($kloster)) && (isset($orden) && !empty($orden))) {
 					$klosterObject = $this->klosterRepository->findOneByUid($kloster);
 					$ordenObject = $this->ordenRepository->findOneByUid($orden);
-					if (!isset($klosterorden['Klosterstatus']) || empty($klosterorden['Klosterstatus'])) {
-						$klosterorden['Klosterstatus'] = "keine Angabe";
-					}
-					$klosterstatus = $klosterorden['Klosterstatus'];
-					if (!in_array($klosterstatus, $klosterstatusArr)) {
-						array_push($klosterstatusArr, $klosterstatus);
-						$klosterstatusObject = new Klosterstatus();
-						$klosterstatusObject->setStatus($klosterstatus);
-						$this->klosterstatusRepository->add($klosterstatusObject);
+					if ((is_object($klosterObject) && $klosterObject !== Null) && (is_object($ordenObject) && $ordenObject !== Null)) {
+						if (!isset($klosterorden['Klosterstatus']) || empty($klosterorden['Klosterstatus'])) {
+							$klosterorden['Klosterstatus'] = "keine Angabe";
+						}
+						$klosterstatus = $klosterorden['Klosterstatus'];
+						if (!in_array($klosterstatus, $klosterstatusArr)) {
+							array_push($klosterstatusArr, $klosterstatus);
+							$klosterstatusObject = new Klosterstatus();
+							$klosterstatusObject->setStatus($klosterstatus);
+							$this->klosterstatusRepository->add($klosterstatusObject);
+							$this->persistenceManager->persistAll();
+							$klosterstatusUUID = $klosterstatusObject->getUUID();
+							$klosterstatusObject = $this->klosterstatusRepository->findByIdentifier($klosterstatusUUID);
+						} else {
+							$klosterstatusObject = $this->klosterstatusRepository->findOneByStatus($klosterstatus);
+						}
+						$von_von = $klosterorden['von_von'];
+						$von_bis = $klosterorden['von_bis'];
+						$von_verbal = $klosterorden['verbal_von'];
+						$bis_von = $klosterorden['bis_von'];
+						$bis_bis = $klosterorden['bis_bis'];
+						$bis_verbal = $klosterorden['verbal_bis'];
+						$bemerkung = $klosterorden['interne_Anmerkungen'];
+						$klosterordenObject = new Klosterorden();
+						$klosterordenObject->setUid($uid);
+						$klosterordenObject->setKloster($klosterObject);
+						$klosterordenObject->setOrden($ordenObject);
+						$klosterordenObject->setKlosterstatus($klosterstatusObject);
+						$klosterordenObject->setVon_von($von_von);
+						$klosterordenObject->setVon_bis($von_bis);
+						$klosterordenObject->setVon_verbal($von_verbal);
+						$klosterordenObject->setBis_von($bis_von);
+						$klosterordenObject->setBis_bis($bis_bis);
+						$klosterordenObject->setBis_verbal($bis_verbal);
+						$klosterordenObject->setBemerkung($bemerkung);
+						$this->klosterordenRepository->add($klosterordenObject);
 						$this->persistenceManager->persistAll();
-						$klosterstatusUUID = $klosterstatusObject->getUUID();
-						$klosterstatusObject = $this->klosterstatusRepository->findByIdentifier($klosterstatusUUID);
-					} else {
-						$klosterstatusObject = $this->klosterstatusRepository->findOneByStatus($klosterstatus);
 					}
-					$von_von = $klosterorden['von_von'];
-					$von_bis = $klosterorden['von_bis'];
-					$von_verbal = $klosterorden['verbal_von'];
-					$bis_von = $klosterorden['bis_von'];
-					$bis_bis = $klosterorden['bis_bis'];
-					$bis_verbal = $klosterorden['verbal_bis'];
-					$bemerkung = $klosterorden['interne_Anmerkungen'];
-					$klosterordenObject = new Klosterorden();
-					$klosterordenObject->setUid($uid);
-					$klosterordenObject->setKloster($klosterObject);
-					$klosterordenObject->setOrden($ordenObject);
-					$klosterordenObject->setKlosterstatus($klosterstatusObject);
-					$klosterordenObject->setVon_von($von_von);
-					$klosterordenObject->setVon_bis($von_bis);
-					$klosterordenObject->setVon_verbal($von_verbal);
-					$klosterordenObject->setBis_von($bis_von);
-					$klosterordenObject->setBis_bis($bis_bis);
-					$klosterordenObject->setBis_verbal($bis_verbal);
-					$klosterordenObject->setBemerkung($bemerkung);
-					$this->klosterordenRepository->add($klosterordenObject);
-					$this->persistenceManager->persistAll();
+					$nKlosterorden++;
 				}
-				$nKlosterorden++;
+				else {
+					if ($klosterObject === Null) {
+						$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterordentabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . 'wurde nicht gefunden.', LOG_ERR);
+					}
+
+					if ($ordenObject === Null) {
+						$this->dumpImportlogger->log('Entweder ist das Feld Orden in Klosterordentabelle leer oder das Ordenobject in der Ordentabelle für den Orden mit der Id = ' . $orden . 'wurde nicht gefunden.',  LOG_ERR);
+					}
+				}
 			}
+			$end = microtime(true);
+			$time = number_format(($end - $start), 2);
+			$this->logger->log('Klosterorden import completed in ' . round($time/60, 2) . ' minutes.');
+
 			return $nKlosterorden;
 		}
 	}
@@ -1466,36 +1541,37 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function access2mysqlAction() {
-
-		$log = new \TYPO3\Flow\Log\LoggerFactory();
-		$this->logger = $log->create(
-				'GermaniaSacra',
-				'TYPO3\Flow\Log\Logger',
-				'\TYPO3\Flow\Log\Backend\FileBackend',
-				array(
-						'logFileUrl' => FLOW_PATH_DATA . 'Logs/GermaniaSacra/AccessImport.log',
-						'createParentDirectories' => TRUE
-				)
-		);
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
+		$this->importDumpFromGithubAction();
 		$this->delAccessTabsAction();
 		$this->importAccessAction();
 		$this->emptyTabsAction();
-		$this->importBearbeitungsstatusAction();
-		$this->importBearbeiterAction();
+		$this->dumpImportlogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
+		$nBearbeitungsstatus = $this->importBearbeitungsstatusAction();
+		$this->dumpImportlogger->log($nBearbeitungsstatus . ' Bearbeitungsstatus Datensätze');
+		$nBearbeiter = $this->importBearbeiterAction();
+		$this->dumpImportlogger->log($nBearbeiter . ' Bearbeiter Datensätze');
 		$this->importPersonallistenstatusAction();
-		$this->importLandAction();
-		$this->importOrtAction();
-		$this->importBistumAction();
-		$this->importBandAction();
-		$this->importKlosterAction();
-		$this->importKlosterstandortAction();
-		$this->importOrdenAction();
-		$this->importKlosterordenAction();
+		$nLand = $this->importLandAction();
+		$this->dumpImportlogger->log($nLand . ' Land Datensätze');
+		$nOrt = $this->importOrtAction();
+		$this->dumpImportlogger->log($nOrt . ' Ort Datensätze');
+		$nBistum = $this->importBistumAction();
+		$this->dumpImportlogger->log($nBistum . ' Bistum Datensätze');
+		$nBand = $this->importBandAction();
+		$this->dumpImportlogger->log($nBand . ' Band Datensätze');
+		$nKloster = $this->importKlosterAction();
+		$this->dumpImportlogger->log($nKloster . ' Kloster Datensätze');
+		$nKlosterstandort = $this->importKlosterstandortAction();
+		$this->dumpImportlogger->log($nKlosterstandort . ' Klosterstandort Datensätze');
+		$nOrden = $this->importOrdenAction();
+		$this->dumpImportlogger->log($nOrden . ' Orden Datensätze');
+		$nKlosterorden = $this->importKlosterordenAction();
+		$this->dumpImportlogger->log($nKlosterorden . ' Klosterorden Datensätze');
 		$this->delAccessTabsAction();
 		$sql = 'SET foreign_key_checks = 1';
 		$sqlConnection->executeUpdate($sql);
@@ -2297,5 +2373,6 @@ class DataImportController extends ActionController {
 		}
 		file_put_contents($usernamePasswordFile, $usernamePassword);
 	}
+
 }
 ?>
