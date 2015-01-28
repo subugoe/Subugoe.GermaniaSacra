@@ -253,25 +253,50 @@ class DataImportController extends ActionController {
 	 */
 	protected $method;
 
+	/**
+	 * @var string
+	 */
 	const accessDumpFilename = 'klosterdatenbankdump.sql';
 
+	/**
+	 * @var string
+	 */
 	const citekeysFilename = 'GS-citekeys.csv';
 
+	/**
+	 * @var string
+	 */
 	const cacertFilename = 'cacert.pem';
 
+	/**
+	 * @var string
+	 */
 	const inkKlosterDumpFilename = 'inkKlosterDump.sql';
 
+	/**
+	 * @var string
+	 */
 	const cacertSource = 'Packages/Libraries/guzzle/guzzle/src/Guzzle/Http/Resources/';
 
+	/**
+	 * @var string
+	 */
 	const cacertDest = 'Data/Temporary/Development/Cache/Code/Flow_Object_Classes/Resources/';
 
+	/**
+	 * @var string
+	 */
 	const  githubUser = 'subugoe';
 
+	/**
+	 * @var string
+	 */
 	const githubRepository = 'GermaniaSacra-dumps';
 
-	const inklDumpLogFile = 'Persistent/GermaniaSacra/Log/inkKlosterDumpImport.log';
-
-	const dumpLogFile = 'Persistent/GermaniaSacra/Log/klosterDumpImport.log';
+	/**
+	 * @var string
+	 */
+	const dumpLogFile = 'Application/Subugoe.GermaniaSacra/Resources/Public/DumpImportLog/klosterDumpImport.log';
 
 	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
@@ -286,59 +311,18 @@ class DataImportController extends ActionController {
 		$this->settings = $settings;
 		$this->client = new \Github\Client();
 		$this->method = \Github\Client::AUTH_URL_TOKEN;
-
 		$log = new \TYPO3\Flow\Log\LoggerFactory();
-		if (file_exists(FLOW_PATH_DATA . self::inklDumpLogFile)) unlink(FLOW_PATH_DATA . self::inklDumpLogFile);
-		if (file_exists(FLOW_PATH_DATA . self::dumpLogFile)) unlink(FLOW_PATH_DATA . self::dumpLogFile);
-		$this->inkDumpImportlogger = $log->create('GermaniaSacra',
-									'TYPO3\Flow\Log\Logger',
-									'\TYPO3\Flow\Log\Backend\FileBackend',
-									array(
-										'logFileUrl' => FLOW_PATH_DATA . self::inklDumpLogFile,
-										'createParentDirectories' => TRUE
-									)
-								);
+		if (file_exists(FLOW_PATH_PACKAGES . self::dumpLogFile)) unlink(FLOW_PATH_PACKAGES . self::dumpLogFile);
 		$this->dumpImportlogger = $log->create('GermaniaSacra',
 									'TYPO3\Flow\Log\Logger',
 									'\TYPO3\Flow\Log\Backend\FileBackend',
 									array(
-										'logFileUrl' => FLOW_PATH_DATA . self::dumpLogFile,
+										'logFileUrl' => FLOW_PATH_PACKAGES . self::dumpLogFile,
 										'createParentDirectories' => TRUE
 									)
 								);
 	}
 
-	/**
-	 * Import Bearbeitungsstatus table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_bearbeitungsstatus
-	 * @return void
-	 */
-	public function importBearbeitungsstatusAction() {
-		$bearbeitungsstatusArr = array(
-				1 => 'Angaben unklar',
-				2 => 'Daten importiert',
-				3 => 'Quellenlage unvollständig',
-				4 => 'Geprüft (bei Eingabe)',
-				5 => 'Redaktionell geprüft',
-				6 => 'Neuaufnahme, unvollständig',
-				7 => 'Online',
-				8 => 'Dublette BW',
-				9 => 'Zum internen Gebrauch',
-				10 => 'Zisterzienser importiert',
-				11 => 'Wikipedia ungeprüft'
-		);
-		if (isset($bearbeitungsstatusArr) and is_array($bearbeitungsstatusArr)) {
-			$nBearbeitungsstatus = 0;
-			foreach ($bearbeitungsstatusArr as $key => $name) {
-				$bearbeitungsstatusObject = new Bearbeitungsstatus();
-				$bearbeitungsstatusObject->setUid($key);
-				$bearbeitungsstatusObject->setName($name);
-				$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObject);
-				$this->persistenceManager->persistAll();
-				$nBearbeitungsstatus++;
-			}
-			return $nBearbeitungsstatus;
-		}
-	}
 
 	/**
 	 * Check Bearbeiter and Account tables for content and acts as appropriate
@@ -347,19 +331,15 @@ class DataImportController extends ActionController {
 	public function importBearbeiterAction() {
 		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
-
 		$checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('subugoe_germaniasacra_domain_model_bearbeiter');
 		if ($checkIfBearbeiterTableExists) {
 			$numberOfBearbeiter = count($this->bearbeiterRepository->findAll());
 		}
-
 		$checkIfAccountTableExists = $sqlConnection->getSchemaManager()->tablesExist('typo3_flow_security_account');
 		if ($checkIfAccountTableExists) {
 			$numberOfAccounts = count($this->accountRepository->findAll());
 		}
-
 		$nBearbeiter = 0;
-
 		if ($numberOfBearbeiter == 0 && $numberOfAccounts == 0) {
 			$nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
 		}
@@ -471,7 +451,9 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importOrtAction() {
-		$start = microtime(true);
+		if ($this->logger) {
+			$start = microtime(true);
+		}
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_ort';
 		$sql = "ANALYZE LOCAL TABLE " . $tbl;
@@ -542,10 +524,11 @@ class DataImportController extends ActionController {
 				}
 				$nOrt++;
 			}
-			$end = microtime(true);
-			$time = number_format(($end - $start), 2);
-			$this->logger->log('Ort import completed in ' . round($time/60, 2) . ' minutes.');
-
+			if ($this->logger) {
+				$end = microtime(true);
+				$time = number_format(($end - $start), 2);
+				$this->logger->log('Ort import completed in ' . round($time/60, 2) . ' minutes.');
+			}
 			return $nOrt;
 		}
 	}
@@ -555,7 +538,9 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importBistumAction() {
-		$start = microtime(true);
+		if ($this->logger) {
+			$start = microtime(true);
+		}
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "GND"';
@@ -703,16 +688,16 @@ class DataImportController extends ActionController {
 				$nBistum++;
 			}
 		}
-
 		$ortBistum = $this->bistumRepository->findOneByBistum('keine Angabe');
 		$bistumUUID = $ortBistum->getUUID();
 		$ortTbl = 'subugoe_germaniasacra_domain_model_ort';
 		$sql = 'UPDATE ' . $ortTbl . ' SET bistum = \'' . $bistumUUID . '\' WHERE bistum IS NULL';
 		$sqlConnection->executeUpdate($sql);
-		$end = microtime(true);
-		$time = number_format(($end - $start), 2);
-		$this->logger->log('Bistum import completed in ' . round($time/60, 2) . ' minutes.');
-
+		if ($this->logger) {
+			$end = microtime(true);
+			$time = number_format(($end - $start), 2);
+			$this->logger->log('Bistum import completed in ' . round($time/60, 2) . ' minutes.');
+		}
 		return $nBistum;
 	}
 
@@ -721,7 +706,9 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importBandAction() {
-		$start = microtime(true);
+		if ($this->logger) {
+			$start = microtime(true);
+		}
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Handle"';
@@ -870,10 +857,11 @@ class DataImportController extends ActionController {
 		$bandObject->setKurztitel($kurztitel);
 		$this->bandRepository->add($bandObject);
 		$this->persistenceManager->persistAll();
-		$end = microtime(true);
-		$time = number_format(($end - $start), 2);
-		$this->logger->log('Band import completed in ' . round($time/60, 2) . ' minutes.');
-
+		if ($this->logger) {
+			$end = microtime(true);
+			$time = number_format(($end - $start), 2);
+			$this->logger->log('Band import completed in ' . round($time/60, 2) . ' minutes.');
+		}
 		return $nBand;
 	}
 
@@ -882,7 +870,9 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importKlosterAction() {
-		$start = microtime(true);
+		if ($this->logger) {
+			$start = microtime(true);
+		}
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Quelle"';
@@ -964,10 +954,15 @@ class DataImportController extends ActionController {
 									$klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
 								} else {
 									$result = $this->bearbeitungsstatusRepository->findLastEntry();
-									foreach ($result as $res) {
-										$lastBearbeitungsstatusEntry = $res->getUid();
+									if (count($result) === 1) {
+										foreach ($result as $res) {
+											$lastBearbeitungsstatusEntry = $res->getUid();
+										}
+										$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry + 1;
 									}
-									$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry + 1;
+									else {
+										$bearbeitungsstatusUid = 1;
+									}
 									$bearbeitungsstatusObject = new Bearbeitungsstatus();
 									$bearbeitungsstatusObject->setUid($bearbeitungsstatusUid);
 									$bearbeitungsstatusObject->setName($bearbeitungsstatus);
@@ -1152,10 +1147,11 @@ class DataImportController extends ActionController {
 					$this->dumpImportlogger->log('Das Kloster ' . $kloster . ' hat keine Klosternummer.', LOG_ERR);
 				}
 			}
-			$end = microtime(true);
-			$time = number_format(($end - $start), 2);
-			$this->logger->log('Kloster import completed in ' . round($time/60, 2) . ' minutes.');
-
+			if ($this->logger) {
+				$end = microtime(true);
+				$time = number_format(($end - $start), 2);
+				$this->logger->log('Kloster import completed in ' . round($time/60, 2) . ' minutes.');
+			}
 			return $nKloster;
 		}
 	}
@@ -1165,18 +1161,18 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importKlosterstandortAction() {
-		$start = microtime(true);
+		if ($this->logger) {
+			$start = microtime(true);
+		}
 		$csvArr = $this->citekeysAction();
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterstandort ORDER  BY ID_Kloster ASC';
 		$Klosterstandorts = $sqlConnection->fetchAll($sql);
-		$buecher = array();
 		$literaturKeyArr = array();
 		if (isset($Klosterstandorts) and is_array($Klosterstandorts)) {
 			$nKlosterstandort = 0;
 			foreach ($Klosterstandorts as $Klosterstandort) {
 				$uid = $Klosterstandort['ID_Kloster'];
-				$klosterObject = $this->klosterRepository->findOneByUid($uid);
 				$kloster = $Klosterstandort['Klosternummer'];
 				$ort = $Klosterstandort['ID_alleOrte'];
 				$von_von = $Klosterstandort['Standort_von_von'];
@@ -1290,10 +1286,11 @@ class DataImportController extends ActionController {
 				}
 			}
 			}
-			$end = microtime(true);
-			$time = number_format(($end - $start), 2);
-			$this->logger->log('Klosterstandort import completed in ' . round($time/60, 2) . ' minutes.');
-
+			if ($this->logger) {
+				$end = microtime(true);
+				$time = number_format(($end - $start), 2);
+				$this->logger->log('Klosterstandort import completed in ' . round($time/60, 2) . ' minutes.');
+			}
 			return $nKlosterstandort;
 		}
 	}
@@ -1303,7 +1300,9 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importOrdenAction() {
-		$start = microtime(true);
+		if ($this->logger) {
+			$start = microtime(true);
+		}
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Orden';
 		$ordens = $sqlConnection->fetchAll($sql);
@@ -1420,10 +1419,11 @@ class DataImportController extends ActionController {
 				}
 				$nOrden++;
 			}
-			$end = microtime(true);
-			$time = number_format(($end - $start), 2);
-			$this->logger->log('Orden import completed in ' . round($time/60, 2) . ' minutes.');
-
+			if ($this->logger) {
+				$end = microtime(true);
+				$time = number_format(($end - $start), 2);
+				$this->logger->log('Orden import completed in ' . round($time/60, 2) . ' minutes.');
+			}
 			return $nOrden;
 		}
 	}
@@ -1433,7 +1433,9 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function importKlosterordenAction() {
-		$start = microtime(true);
+		if ($this->logger) {
+			$start = microtime(true);
+		}
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterorden ORDER BY ID_KlosterOrden ASC';
 		$klosterordens = $sqlConnection->fetchAll($sql);
@@ -1497,10 +1499,11 @@ class DataImportController extends ActionController {
 					}
 				}
 			}
-			$end = microtime(true);
-			$time = number_format(($end - $start), 2);
-			$this->logger->log('Klosterorden import completed in ' . round($time/60, 2) . ' minutes.');
-
+			if ($this->logger) {
+				$end = microtime(true);
+				$time = number_format(($end - $start), 2);
+				$this->logger->log('Klosterorden import completed in ' . round($time/60, 2) . ' minutes.');
+			}
 			return $nKlosterorden;
 		}
 	}
@@ -1551,8 +1554,6 @@ class DataImportController extends ActionController {
 		$this->importAccessAction();
 		$this->emptyTabsAction();
 		$this->dumpImportlogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
-		$nBearbeitungsstatus = $this->importBearbeitungsstatusAction();
-		$this->dumpImportlogger->log($nBearbeitungsstatus . ' Bearbeitungsstatus Datensätze');
 		$nBearbeiter = $this->importBearbeiterAction();
 		$this->dumpImportlogger->log($nBearbeiter . ' Bearbeiter Datensätze');
 		$this->importPersonallistenstatusAction();
@@ -2184,6 +2185,16 @@ class DataImportController extends ActionController {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the incremental kloster dump file.', 1406721073);
 			}
 		}
+
+		if (!is_file($this->cacertFilenamePath)) {
+			if (!is_dir(self::cacertDest)) {
+				\TYPO3\Flow\Utility\Files::createDirectoryRecursively(self::cacertDest);
+			}
+			if (!copy($this->cacertSourcePath, $this->cacertDestPath)) {
+				throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
+			}
+		}
+
 		$mode = 'w';
 		$fp = fopen($this->inkKlosterDumpFilenamePath, $mode);
 		if (!$fp) {
@@ -2197,78 +2208,54 @@ class DataImportController extends ActionController {
 		$this->importAccessInkDumpAction();
 		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
+		$this->dumpImportlogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
 		$checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bearbeiter');
 		if ($checkIfBearbeiterTableExists) {
-			$this->importBearbeiterAction();
+			$nBearbeiter = $this->importBearbeiterAction();
+			$this->dumpImportlogger->log($nBearbeiter . ' Bearbeiter Datensätze');
 		}
 		$checkIfLandTableExists = $sqlConnection->getSchemaManager()->tablesExist('Land');
 		if ($checkIfLandTableExists) {
 			$nLand = $this->importLandAction();
+			$this->dumpImportlogger->log($nLand . ' Land Datensätze');
 		}
 		$checkIfOrtTableExists = $sqlConnection->getSchemaManager()->tablesExist('Ort');
 		if ($checkIfOrtTableExists) {
 			$nOrt = $this->importOrtAction();
+			$this->dumpImportlogger->log($nOrt . ' Ort Datensätze');
 		}
 		$checkIfBistumTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bistum');
 		if ($checkIfBistumTableExists) {
 			$nBistum = $this->importBistumAction();
+			$this->dumpImportlogger->log($nBistum . ' Bistum Datensätze');
 		}
 		$checkIfBandTableExists = $sqlConnection->getSchemaManager()->tablesExist('Band');
 		if ($checkIfBandTableExists) {
 			$nBand = $this->importBandAction();
+			$this->dumpImportlogger->log($nBand . ' Band Datensätze');
 		}
 		$checkIfKlosterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Kloster');
 		if ($checkIfKlosterTableExists) {
 			$nKloster = $this->importKlosterAction();
+			$this->dumpImportlogger->log($nKloster . ' Kloster Datensätze');
 		}
 		$checkIfKlosterstandortTableExists = $sqlConnection->getSchemaManager()->tablesExist('Klosterstandort');
 		if ($checkIfKlosterstandortTableExists) {
 			$nKlosterstandort = $this->importKlosterstandortAction();
+			$this->dumpImportlogger->log($nKlosterstandort . ' Klosterstandort Datensätze');
 		}
 		$checkIfOrdenTableExists = $sqlConnection->getSchemaManager()->tablesExist('Orden');
 		if ($checkIfOrdenTableExists) {
 			$nOrden = $this->importOrdenAction();
+			$this->dumpImportlogger->log($nOrden . ' Orden Datensätze');
 		}
 		$checkIfKlosterordenTableExists = $sqlConnection->getSchemaManager()->tablesExist('Klosterorden');
 		if ($checkIfKlosterordenTableExists) {
 			$nKlosterorden = $this->importKlosterordenAction();
+			$this->dumpImportlogger->log($nKlosterorden . ' Klosterorden Datensätze');
 		}
 		$this->delAccessTabsAction();
-		$importLogMsg = '########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########' . PHP_EOL;
-		if (isset($nLand) && !empty($nLand)) {
-			$importLogMsg .= $nLand . ' Land Datensätze' . PHP_EOL;
-		}
-		if (isset($nOrt) && !empty($nOrt)) {
-			$importLogMsg .= $nOrt . ' Ort Datensätze' . PHP_EOL;
-		}
-		if (isset($nBistum) && !empty($nBistum)) {
-			$importLogMsg .= $nBistum . ' Bistum Datensätze' . PHP_EOL;
-		}
-		if (isset($nBand) && !empty($nBand)) {
-			$importLogMsg .= $nBand . ' Band Datensätze' . PHP_EOL;
-		}
-		if (isset($nKloster) && !empty($nKloster)) {
-			$importLogMsg .= $nKloster . ' Kloster Datensätze' . PHP_EOL;
-		}
-		if (isset($nKlosterstandort) && !empty($nKlosterstandort)) {
-			$importLogMsg .= $nKlosterstandort . ' Klosterstandort Datensätze' . PHP_EOL;
-		}
-		if (isset($nOrden) && !empty($nOrden)) {
-			$importLogMsg .= $nOrden . ' Orden Datensätze' . PHP_EOL;
-		}
-		if (isset($nKlosterorden) && !empty($nKlosterorden)) {
-			$importLogMsg .= $nKlosterorden . ' Klosterorden Datensätze' . PHP_EOL;
-		}
-		$importLogMsg .= PHP_EOL;
-		$importFEMsg = nl2br(htmlentities($importLogMsg));
-		echo $importFEMsg;
-		$importLogFilePath = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data';
-		$importLogFile = FLOW_PATH_DATA . 'Persistent/GermaniaSacra/Data/importLogFile.txt';
-		if (!is_dir(dirname($importLogFilePath))) {
-			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($importLogFilePath);
-		}
-		file_put_contents($importLogFile, $importLogMsg,  FILE_APPEND);
-		exit;
+		$this->redirect('list', 'Kloster', 'Subugoe.GermaniaSacra');
 	}
 
 	/**
@@ -2373,6 +2360,5 @@ class DataImportController extends ActionController {
 		}
 		file_put_contents($usernamePasswordFile, $usernamePassword);
 	}
-
 }
 ?>

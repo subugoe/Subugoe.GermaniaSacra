@@ -188,6 +188,9 @@ class KlosterController extends AbstractBaseController {
 		if (isset($this->bearbeiterObj) && is_object($this->bearbeiterObj)) {
 			$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 		}
+		if ($this->dumpLogFileExists) {
+			$this->view->assign('dumpLogFileExists', $this->dumpLogFileExists);
+		}
 	}
 
 	/**
