@@ -85,6 +85,11 @@
 						<li>
 							<f:link.action controller="DataImport" action="importInkDump" target="_self"><i class="icon-upload"></i> Daten-Import</f:link.action>
 						</li>
+						<f:if condition="{dumpLogFileExists}">
+							<li>
+								<a href="{f:uri.resource(path: 'DumpImportLog/klosterDumpImport.log')}" target="_blank"/>Import-Logdatei</li></a>
+							</li>
+						</f:if>
 					</f:security.ifHasRole>
 				</f:security.ifAuthenticated>
 			</ul>

@@ -111,5 +111,4 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	public function jsonCommand($entityName) {
 		JsonGeneratorUtility::generateJsonFile($entityName);
 	}
-
 }
