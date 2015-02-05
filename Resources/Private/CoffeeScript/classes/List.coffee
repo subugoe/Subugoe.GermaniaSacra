@@ -50,29 +50,34 @@ class germaniaSacra.List
 		if orderBy < 0 then orderBy = 1
 
 		@dataTable = $table.DataTable
-			sAjaxSource: '/entity/' + @type
+			ajax:
+				url: '/entity/' + @type
+				dataSrc: (json) ->
+					$('#search, #list').slideDown()
+					$('#message').slideUp()
+					# TODO: Find a more elegant way to use text instead of uuid for filtering and sorting
+					for index, entity of json.data
+						# Prepare options data for selects. Currently only this one is used within the lists.
+						json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus]
+						# WORKAROUND: Fix table filtering. Empty values pose a problem.
+						for key, value of entity
+							if not value then json.data[index][key] = ' '
+					return json.data
+			#deferRender: true
+			serverSide: true
 			columns: columns
 			autoWidth: false
 			pageLength: 100
 			columnDefs: [
-				bSortable: false
-				aTargets: [ 'not-sortable' ]
+				targets: ['not-sortable']
+				sortable: false
 			]
 			dom: 'lipt' # 'l' - Length changing, 'f' - Filtering input, 't' - The table, 'i' - Information, 'p' - Pagination, 'r' - pRocessing
 			language:
 				url: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
 			order: [ [ orderBy, 'asc' ] ]
-			fnServerData: (sSource, aoData, fnCallback, oSettings) ->
-				oSettings.jqXHR = $.ajax
-					cache: false
-					dataType: 'json'
-					type: 'GET'
-					url: sSource
-					data: aoData
-					success: [ajaxSuccess, fnCallback]
-					error: -> germaniaSacra.message 'Fehler: Daten konnten nicht geladen werden.'
 
-			fnDrawCallback: ->
+			drawCallback: ->
 
 				$tr = $table.find('tbody tr:not(.processed)')
 
@@ -126,17 +131,6 @@ class germaniaSacra.List
 
 				$tr.find('select').autocomplete()
 				$tr.addClass('processed')
-
-			ajaxSuccess = (json) ->
-				$('#search, #list').slideDown()
-				$('#message').slideUp()
-				# TODO: Find a more elegant way to use text instead of uuid for filtering and sorting
-				for index, entity of json.data
-					# Prepare options data for selects. Currently only this one is used within the lists.
-					json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus]
-					# WORKAROUND: Fix table filtering. Empty values pose a problem.
-					for key, value of entity
-						if not value then json.data[index][key] = ' '
 
 		# Click handlers for edit and delete
 
