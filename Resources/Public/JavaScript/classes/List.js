@@ -24,7 +24,7 @@ germaniaSacra.List = (function() {
   }
 
   List.prototype.editList = function() {
-    var $table, $ths, ajaxSuccess, columns, orderBy, self;
+    var $table, $ths, columns, orderBy, self;
     self = this;
     $('#search, #list').hide();
     germaniaSacra.message(germaniaSacra.messages.loading, false);
@@ -51,14 +51,34 @@ germaniaSacra.List = (function() {
       orderBy = 1;
     }
     this.dataTable = $table.DataTable({
-      sAjaxSource: '/entity/' + this.type,
+      ajax: {
+        url: '/entity/' + this.type,
+        dataSrc: function(json) {
+          var entity, index, key, value, _ref;
+          $('#search, #list').slideDown();
+          $('#message').slideUp();
+          _ref = json.data;
+          for (index in _ref) {
+            entity = _ref[index];
+            json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus];
+            for (key in entity) {
+              value = entity[key];
+              if (!value) {
+                json.data[index][key] = ' ';
+              }
+            }
+          }
+          return json.data;
+        }
+      },
+      serverSide: true,
       columns: columns,
       autoWidth: false,
       pageLength: 100,
       columnDefs: [
         {
-          bSortable: false,
-          aTargets: ['not-sortable']
+          targets: ['not-sortable'],
+          sortable: false
         }
       ],
       dom: 'lipt',
@@ -66,20 +86,7 @@ germaniaSacra.List = (function() {
         url: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
       },
       order: [[orderBy, 'asc']],
-      fnServerData: function(sSource, aoData, fnCallback, oSettings) {
-        return oSettings.jqXHR = $.ajax({
-          cache: false,
-          dataType: 'json',
-          type: 'GET',
-          url: sSource,
-          data: aoData,
-          success: [ajaxSuccess, fnCallback],
-          error: function() {
-            return germaniaSacra.message('Fehler: Daten konnten nicht geladen werden.');
-          }
-        });
-      },
-      fnDrawCallback: function() {
+      drawCallback: function() {
         var $tr;
         $tr = $table.find('tbody tr:not(.processed)');
         $tr.children().each(function() {
@@ -142,30 +149,6 @@ germaniaSacra.List = (function() {
         $tr.find('select').autocomplete();
         return $tr.addClass('processed');
       }
-    }, ajaxSuccess = function(json) {
-      var entity, index, key, value, _ref, _results;
-      $('#search, #list').slideDown();
-      $('#message').slideUp();
-      _ref = json.data;
-      _results = [];
-      for (index in _ref) {
-        entity = _ref[index];
-        json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus];
-        _results.push((function() {
-          var _results1;
-          _results1 = [];
-          for (key in entity) {
-            value = entity[key];
-            if (!value) {
-              _results1.push(json.data[index][key] = ' ');
-            } else {
-              _results1.push(void 0);
-            }
-          }
-          return _results1;
-        })());
-      }
-      return _results;
     });
     $table.on('click', '.edit', function(e) {
       var uuid;
