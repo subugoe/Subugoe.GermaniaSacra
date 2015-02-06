@@ -68,14 +68,28 @@ class BearbeiterController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Bearbeiter entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bearbeiters'));
 		}
-		$this->view->assign('bearbeiters', ['data' => $this->bearbeiterRepository->findAll()]);
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		$bearbeiter = $this->bearbeiterRepository->getCertainNumberOfBearbeiter($start, $length);
+		$this->view->assign('bearbeiters', ['data' => $bearbeiter]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**

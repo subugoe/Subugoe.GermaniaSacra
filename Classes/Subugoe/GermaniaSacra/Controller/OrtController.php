@@ -66,14 +66,26 @@ class OrtController extends AbstractBaseController {
 	);
 
 	/**
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
 	 * List of all Ort entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ort'));
 		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$ortArr = array();
-		$orts = $this->ortRepository->findAll();
+		$orts = $this->ortRepository->getCertainNumberOfOrt($start, $length);
 		foreach ($orts as $k => $ort) {
 			if (is_object($ort)) {
 				$uUID = $ort->getUUID();
@@ -139,14 +151,6 @@ class OrtController extends AbstractBaseController {
 		}
 		$this->view->assign('ort', ['data' => $ortArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-		if ($this->request->getFormat() === 'json') {
-			if ($this->cacheInterface->has('ort')) {
-				return $this->cacheInterface->get('ort');
-			}
-			$viewRendered = $this->view->render();
-			$this->cacheInterface->set('ort', $viewRendered);
-			return $viewRendered;
-		}
 		return $this->view->render();
 	}
 
@@ -267,8 +271,6 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ort');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Ort not available', NULL);
@@ -321,7 +323,6 @@ class OrtController extends AbstractBaseController {
 			}
 		}
 		$ortArr['url'] = $Urls;
-
 		return json_encode($ortArr);
 	}
 
@@ -493,8 +494,6 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ort');
-
 			$this->throwStatus(200, NULL, NUll);
 		} else {
 			$this->throwStatus(400, 'Entity Ort not available', NULL);
@@ -528,9 +527,7 @@ class OrtController extends AbstractBaseController {
 					$this->ortHasUrlRepository->remove($ortHasUrl);
 				}
 			}
-			$this->clearCachesFor('ort');
 			$this->throwStatus(200, NULL, NULL);
-
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', NULL);
 		}
@@ -573,8 +570,6 @@ class OrtController extends AbstractBaseController {
 			}
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('ort');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

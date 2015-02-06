@@ -64,14 +64,26 @@ class OrdenController extends AbstractBaseController {
 	);
 
 	/**
-	 * List of all Orden entities
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Orden entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$ordenArr = array();
-		$ordens = $this->ordenRepository->findAll();
+		$ordens = $this->ordenRepository->getCertainNumberOfOrden($start, $length);
 		foreach ($ordens as $k => $orden) {
 			if (is_object($orden)) {
 				$uUID = $orden->getUUID();
@@ -123,14 +135,6 @@ class OrdenController extends AbstractBaseController {
 		}
 		$this->view->assign('orden', ['data' => $ordenArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-		if ($this->request->getFormat() === 'json') {
-			if ($this->cacheInterface->has('orden')) {
-				return $this->cacheInterface->get('orden');
-			}
-			$viewRendered = $this->view->render();
-			$this->cacheInterface->set('orden', $viewRendered);
-			return $viewRendered;
-		}
 		return $this->view->render();
 	}
 
@@ -243,8 +247,6 @@ class OrdenController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('orden');
-
 			$this->throwStatus(201, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity not available', NULL);
@@ -295,7 +297,6 @@ class OrdenController extends AbstractBaseController {
 			}
 		}
 		$ordenArr['url'] = $Urls;
-
 		return json_encode($ordenArr);
 	}
 
@@ -460,8 +461,6 @@ class OrdenController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('orden');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Orden not available', NULL);
@@ -494,8 +493,6 @@ class OrdenController extends AbstractBaseController {
 					$this->ordenHasUrlRepository->remove($ordenHasUrl);
 				}
 			}
-			$this->clearCachesFor('orden');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Orden entity could not be deleted', NULL);
@@ -530,8 +527,6 @@ class OrdenController extends AbstractBaseController {
 			$this->ordenRepository->update($ordenObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('orden');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

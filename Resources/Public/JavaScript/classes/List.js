@@ -71,7 +71,6 @@ germaniaSacra.List = (function() {
           return json.data;
         }
       },
-      serverSide: true,
       columns: columns,
       autoWidth: false,
       pageLength: 100,

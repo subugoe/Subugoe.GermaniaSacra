@@ -32,14 +32,28 @@ class UrltypController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Urltyp entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('urltyp'));
 		}
-		$this->view->assign('urltyp', ['data' => $this->urltypRepository->findAll()]);
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		$urltyp = $this->urltypRepository->getCertainNumberOfUrltyp($start, $length);
+		$this->view->assign('urltyp', ['data' => $urltyp]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -55,8 +69,6 @@ class UrltypController extends AbstractBaseController {
 			$urltypObj->setName($this->request->getArgument('name'));
 			$this->urltypRepository->add($urltypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('urlyp');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -95,8 +107,6 @@ class UrltypController extends AbstractBaseController {
 			$urltypObj->setName($this->request->getArgument('name'));
 			$this->urltypRepository->update($urltypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('urlyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Urltyp not available', NULL);
@@ -121,8 +131,6 @@ class UrltypController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Urltyp not available', NULL);
 			}
 			$this->urltypRepository->remove($urltypObj);
-			$this->clearCachesFor('urlyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Urltyp entity could not be deleted', NULL);
@@ -146,8 +154,6 @@ class UrltypController extends AbstractBaseController {
 			$this->urltypRepository->update($urltypObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('urlyp');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
