@@ -1,7 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Domain\Repository;
 
-
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Persistence\Repository;
 
@@ -25,16 +24,15 @@ class OrtRepository extends Repository {
 	}
 
 	/**
-	 * Returns a list of Ort entries
-	 *
+	 * Returns a limited number of Ort entities
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
-	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The ort
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function findOrts($offset=0, $limit=50000) {
-	    $query = $this->createQuery();
-		$query->setOffset($offset);
-		$query->setLimit($limit);
+	public function getCertainNumberOfOrt($offset, $limit) {
+	    $query = $this->createQuery()
+				->setOffset($offset)
+				->setLimit($limit);
 		return $query->execute();
 	}
 

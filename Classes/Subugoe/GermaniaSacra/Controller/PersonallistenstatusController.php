@@ -32,14 +32,28 @@ class PersonallistenstatusController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Personallistenstatus entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('personallistenstatus'));
 		}
-		$this->view->assign('personallistenstatus', ['data' => $this->personallistenstatusRepository->findAll()]);
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		$personallistenstatus = $this->personallistenstatusRepository->getCertainNumberOfPersonallistenstatus($start, $length);
+		$this->view->assign('personallistenstatus', ['data' => $personallistenstatus]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -55,8 +69,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$personallistenstatusObj->setName($this->request->getArgument('name'));
 			$this->personallistenstatusRepository->add($personallistenstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('personallistenstatus');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -95,8 +107,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$personallistenstatusObj->setName($this->request->getArgument('name'));
 			$this->personallistenstatusRepository->update($personallistenstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('personallistenstatus');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Personallistenstatus not available', NULL);
@@ -121,8 +131,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Personallistenstatus not available', NULL);
 			}
 			$this->personallistenstatusRepository->remove($personallistenstatusObj);
-			$this->clearCachesFor('personallistenstatus');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Personallistenstatus entity could not be deleted', NULL);
@@ -146,8 +154,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$this->personallistenstatusRepository->update($personallistenstatusObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('personallistenstatus');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

@@ -32,13 +32,26 @@ class BearbeitungsstatusController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Bearbeitungsstatus entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bearbeitungsstatuses'));
 		}
-		$this->view->assign('bearbeitungsstatuses', ['data' => $this->bearbeitungsstatusRepository->findAll()]);
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		$bearbeitungsstatuses = $this->bearbeitungsstatusRepository->getCertainNumberOfBearbeitungsstatus($start, $length);
+		$this->view->assign('bearbeitungsstatuses', ['data' => $bearbeitungsstatuses]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
@@ -56,7 +69,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObj);
 			$this->persistenceManager->persistAll();
 			$this->clearCachesFor('bearbeitungsstatus');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -122,7 +134,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			}
 			$this->bearbeitungsstatusRepository->remove($bearbeitungsstatusObj);
 			$this->clearCachesFor('bearbeitungsstatus');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Bearbeitungsstatus entity could not be deleted', NULL);
@@ -147,7 +158,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 		}
 		$this->persistenceManager->persistAll();
 		$this->clearCachesFor('bearbeitungsstatus');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

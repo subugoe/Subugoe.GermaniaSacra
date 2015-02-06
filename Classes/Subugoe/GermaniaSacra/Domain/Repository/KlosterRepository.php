@@ -18,7 +18,13 @@ class KlosterRepository extends Repository {
 	 */
 	protected $entityManager;
 
-	public function findKlosters($offset=0, $limit=10) {
+	/*
+	 * Returns a limited number of Kloster entities
+	 * @param integer $offset The select offset
+	 * @param integer $limit The select limit
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+	 */
+	public function getCertainNumberOfKloster($offset, $limit) {
 	    $query = $this->createQuery()
 				->setOffset($offset)
 				->setLimit($limit);

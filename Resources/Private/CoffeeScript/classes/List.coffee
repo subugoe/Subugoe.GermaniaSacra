@@ -64,7 +64,7 @@ class germaniaSacra.List
 							if not value then json.data[index][key] = ' '
 					return json.data
 			#deferRender: true
-			serverSide: true
+#			serverSide: true
 			columns: columns
 			autoWidth: false
 			pageLength: 100

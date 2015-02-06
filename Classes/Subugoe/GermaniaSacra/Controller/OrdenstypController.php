@@ -32,14 +32,28 @@ class OrdenstypController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Ordenstyp entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ordenstyp'));
 		}
-		$this->view->assign('ordenstyp', ['data' => $this->ordenstypRepository->findAll()]);
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		$ordenstyp = $this->ordenstypRepository->getCertainNumberOfOrdenstyp($start, $length);
+		$this->view->assign('ordenstyp', ['data' => $ordenstyp]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -55,8 +69,6 @@ class OrdenstypController extends AbstractBaseController {
 			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
 			$this->ordenstypRepository->add($ordenstypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ordenstyp');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -95,8 +107,6 @@ class OrdenstypController extends AbstractBaseController {
 			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
 			$this->ordenstypRepository->update($ordenstypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ordenstyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Ordenstyp not available', NULL);
@@ -121,8 +131,6 @@ class OrdenstypController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Ordenstyp not available', NULL);
 			}
 			$this->ordenstypRepository->remove($ordenstypObj);
-			$this->clearCachesFor('ordenstyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Ordenstyp entity could not be deleted', NULL);
@@ -146,8 +154,6 @@ class OrdenstypController extends AbstractBaseController {
 			$this->ordenstypRepository->update($ordenstypObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('ordenstyp');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

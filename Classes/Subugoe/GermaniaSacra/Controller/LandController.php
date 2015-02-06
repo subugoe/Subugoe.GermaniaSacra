@@ -32,14 +32,28 @@ class LandController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Land entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('land'));
 		}
-		$this->view->assign('land', ['data' => $this->landRepository->findAll()]);
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		$land = $this->landRepository->getCertainNumberOfLand($start, $length);
+		$this->view->assign('land', ['data' => $land]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -56,8 +70,6 @@ class LandController extends AbstractBaseController {
 			$landObj->setIst_in_deutschland($this->request->hasArgument('ist_in_deutschland'));
 			$this->landRepository->add($landObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('land');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -98,8 +110,6 @@ class LandController extends AbstractBaseController {
 			$landObj->setIst_in_deutschland($this->request->hasArgument('ist_in_deutschland'));
 			$this->landRepository->update($landObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('land');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Land not available', NULL);
@@ -124,8 +134,6 @@ class LandController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Land not available', NULL);
 			}
 			$this->landRepository->remove($landObj);
-			$this->clearCachesFor('land');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Land entity could not be deleted', NULL);
@@ -155,8 +163,6 @@ class LandController extends AbstractBaseController {
 			$this->landRepository->update($landObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('land');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
