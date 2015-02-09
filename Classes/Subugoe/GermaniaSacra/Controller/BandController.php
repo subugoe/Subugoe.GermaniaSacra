@@ -58,14 +58,26 @@ class BandController extends AbstractBaseController {
 	);
 
 	/**
-	 * List of all Band entities
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Band entities
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bands'));
 		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$bandArr = array();
-		$bands = $this->bandRepository->findBands();
+		$bands = $this->bandRepository->getCertainNumberOfBand($start, $length);
 		foreach ($bands as $k => $band) {
 			if (is_object($band)) {
 				$uUID = $band->getUUID();
@@ -117,14 +129,6 @@ class BandController extends AbstractBaseController {
 		}
 		$this->view->assign('bands', ['data' => $bandArr]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-		if ($this->request->getFormat() === 'json') {
-			if ($this->cacheInterface->has('band')) {
-				return $this->cacheInterface->get('band');
-			}
-			$viewRendered = $this->view->render();
-			$this->cacheInterface->set('band', $viewRendered);
-			return $viewRendered;
-		}
 		return $this->view->render();
 	}
 
@@ -236,7 +240,6 @@ class BandController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('band');
 			$this->throwStatus(201, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Band not available', NULL);
@@ -288,7 +291,6 @@ class BandController extends AbstractBaseController {
 			}
 		}
 		$bandArr['url'] = $Urls;
-
 		return json_encode($bandArr);
 	}
 
@@ -451,8 +453,6 @@ class BandController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('band');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Band not available', NULL);
@@ -486,8 +486,6 @@ class BandController extends AbstractBaseController {
 					$this->bandHasUrlRepository->remove($bandHasUrl);
 				}
 			}
-			$this->clearCachesFor('band');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Band entity could not be deleted', NULL);
@@ -522,8 +520,6 @@ class BandController extends AbstractBaseController {
 			}
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('band');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

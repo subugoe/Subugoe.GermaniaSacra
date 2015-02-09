@@ -105,30 +105,8 @@ class ProxyController extends AbstractBaseController {
 	 * @param string $entityName
 	 */
 	public function entityAction($entityName) {
-
 		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
-
-		$controller = ucfirst($entityName) . 'Controller';
-		$controllerName = '\\Subugoe\\GermaniaSacra\\Controller\\' . $controller;
-
-		$this->response->setHeader('Content-Type', 'application/json');
-
-		if (!class_exists($controllerName)) {
-			throw new Exception('Class ' . $controllerName . ' not found.', 1409817407);
-		}
-
-		/** @var \TYPO3\Flow\Mvc\Controller\ActionController $controllerInstance */
-		$controllerInstance = new $controllerName();
-		$controllerInstance->initializeAction();
-
-		if ($this->cacheInterface->has($entityName)) {
-			return $this->cacheInterface->get($entityName);
-		} else {
-			if ($entityName === 'kloster') {
-				return $controllerInstance->allAsJson();
-			} else {
-				$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
-			}
-		}
+		$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
 	}
-} 
+
+}

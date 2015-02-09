@@ -24,7 +24,7 @@ germaniaSacra.List = (function() {
   }
 
   List.prototype.editList = function() {
-    var $table, $ths, ajaxSuccess, columns, orderBy, self;
+    var $table, $ths, columns, orderBy, self;
     self = this;
     $('#search, #list').hide();
     germaniaSacra.message(germaniaSacra.messages.loading, false);
@@ -51,14 +51,35 @@ germaniaSacra.List = (function() {
       orderBy = 1;
     }
     this.dataTable = $table.DataTable({
-      sAjaxSource: '/entity/' + this.type,
+      ajax: {
+        url: '/entity/' + this.type,
+        type: 'post',
+        dataSrc: function(json) {
+          var entity, index, key, value, _ref;
+          $('#search, #list').slideDown();
+          $('#message').slideUp();
+          _ref = json.data;
+          for (index in _ref) {
+            entity = _ref[index];
+            json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus];
+            for (key in entity) {
+              value = entity[key];
+              if (!value) {
+                json.data[index][key] = ' ';
+              }
+            }
+          }
+          return json.data;
+        }
+      },
+      serverSide: true,
       columns: columns,
       autoWidth: false,
       pageLength: 100,
       columnDefs: [
         {
-          bSortable: false,
-          aTargets: ['not-sortable']
+          targets: ['not-sortable'],
+          sortable: false
         }
       ],
       dom: 'lipt',
@@ -66,22 +87,9 @@ germaniaSacra.List = (function() {
         url: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
       },
       order: [[orderBy, 'asc']],
-      fnServerData: function(sSource, aoData, fnCallback, oSettings) {
-        return oSettings.jqXHR = $.ajax({
-          cache: false,
-          dataType: 'json',
-          type: 'GET',
-          url: sSource,
-          data: aoData,
-          success: [ajaxSuccess, fnCallback],
-          error: function() {
-            return germaniaSacra.message('Fehler: Daten konnten nicht geladen werden.');
-          }
-        });
-      },
-      fnDrawCallback: function() {
+      createdRow: function(row, data, dataIndex) {
         var $tr;
-        $tr = $table.find('tbody tr:not(.processed)');
+        $tr = $(row);
         $tr.children().each(function() {
           var $input, $td, $th, dataInput, name, option, optionUuid, text, uuid, value, _ref, _ref1, _ref2;
           $td = $(this);
@@ -132,40 +140,19 @@ germaniaSacra.List = (function() {
         $tr.each(function() {
           var uuid;
           uuid = $(this).find(':input[name=uUID]').val();
-          $(this).find('textarea').autosize();
           return $(this).find(':input:not([name=uUID])').change(function() {
             $(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop('checked', true);
             $('body').addClass('dirty');
             return $(':submit[type=submit]', self.scope).prop('disabled', false);
           });
         });
-        $tr.find('select').autocomplete();
-        return $tr.addClass('processed');
+        return $tr.find('select').autocomplete();
+      },
+      drawCallback: function() {
+        var $tr;
+        $tr = $table.find('tbody tr:not(.processed)');
+        return $tr.find('textarea').autosize().addClass('processed');
       }
-    }, ajaxSuccess = function(json) {
-      var entity, index, key, value, _ref, _results;
-      $('#search, #list').slideDown();
-      $('#message').slideUp();
-      _ref = json.data;
-      _results = [];
-      for (index in _ref) {
-        entity = _ref[index];
-        json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus];
-        _results.push((function() {
-          var _results1;
-          _results1 = [];
-          for (key in entity) {
-            value = entity[key];
-            if (!value) {
-              _results1.push(json.data[index][key] = ' ');
-            } else {
-              _results1.push(void 0);
-            }
-          }
-          return _results1;
-        })());
-      }
-      return _results;
     });
     $table.on('click', '.edit', function(e) {
       var uuid;
@@ -212,6 +199,7 @@ germaniaSacra.List = (function() {
     formData.__csrfToken = $('#csrf').val();
     $.post(this.type + '/updateList', formData).done((function(_this) {
       return function(respond, status, jqXHR) {
+        germaniaSacra.keepSelectOptions = false;
         germaniaSacra.message('Ihre Änderungen wurden gespeichert.');
         $form.find('.dirty').removeClass('dirty');
         $form.find('input[name=uUID]').prop('checked', false);
@@ -233,6 +221,7 @@ germaniaSacra.List = (function() {
       }).done((function(_this) {
         return function(respond, status, jqXHR) {
           if (status === 'success') {
+            germaniaSacra.keepSelectOptions = false;
             _this.dataTable.row($('tr').has("td:first input[value='" + uuid + "']")).remove().draw();
             return germaniaSacra.message('Der Eintrag wurde gelöscht.');
           }

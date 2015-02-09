@@ -183,6 +183,7 @@ class germaniaSacra.Editor
 		$form = $('form', @scope)
 		uuid = $form.find(':input[name=uUID]').first().val()
 		$.post("#{@type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) =>
+			germaniaSacra.keepSelectOptions = false
 			germaniaSacra.message 'Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;'
 			$form.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')
