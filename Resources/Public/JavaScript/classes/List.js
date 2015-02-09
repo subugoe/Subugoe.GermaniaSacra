@@ -71,6 +71,7 @@ germaniaSacra.List = (function() {
           return json.data;
         }
       },
+      serverSide: true,
       columns: columns,
       autoWidth: false,
       pageLength: 100,
@@ -85,6 +86,19 @@ germaniaSacra.List = (function() {
         url: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
       },
       order: [[orderBy, 'asc']],
+      fnServerData: function(sSource, aoData, fnCallback, oSettings) {
+        return oSettings.jqXHR = $.ajax({
+          cache: false,
+          dataType: 'json',
+          type: 'GET',
+          url: sSource,
+          data: aoData,
+          success: [ajaxSuccess, fnCallback],
+          error: function() {
+            return germaniaSacra.message('Fehler: Daten konnten nicht geladen werden.');
+          }
+        });
+      },
       drawCallback: function() {
         var $tr;
         $tr = $table.find('tbody tr:not(.processed)');

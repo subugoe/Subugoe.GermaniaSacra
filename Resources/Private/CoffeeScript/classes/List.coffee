@@ -64,7 +64,7 @@ class germaniaSacra.List
 							if not value then json.data[index][key] = ' '
 					return json.data
 			#deferRender: true
-#			serverSide: true
+			serverSide: true
 			columns: columns
 			autoWidth: false
 			pageLength: 100
@@ -76,6 +76,15 @@ class germaniaSacra.List
 			language:
 				url: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
 			order: [ [ orderBy, 'asc' ] ]
+			fnServerData: (sSource, aoData, fnCallback, oSettings) ->
+				oSettings.jqXHR = $.ajax
+					cache: false
+					dataType: 'json'
+					type: 'GET'
+					url: sSource
+					data: aoData
+					success: [ajaxSuccess, fnCallback]
+					error: -> germaniaSacra.message 'Fehler: Daten konnten nicht geladen werden.'
 
 			drawCallback: ->
 
