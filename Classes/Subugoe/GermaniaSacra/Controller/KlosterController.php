@@ -201,6 +201,18 @@ class KlosterController extends AbstractBaseController {
 		$this->klosterRepository->setDefaultOrderings(
 				array('uid' => QueryInterface::ORDER_DESCENDING)
 		);
+		$recordsTotal = $this->klosterRepository->getNumberOfEntries();
+		if (!empty($recordsTotal)) {
+			if (!$this->request->hasArgument('search')) {
+				$recordsFiltered = $recordsTotal;
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$klosterArr = array();
@@ -238,7 +250,7 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 		}
-		$this->view->assign('kloster', ['data' => $klosterArr]);
+		$this->view->assign('kloster', ['data' => $klosterArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		if (isset($this->bearbeiterObj) && is_object($this->bearbeiterObj)) {
 			$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 		}

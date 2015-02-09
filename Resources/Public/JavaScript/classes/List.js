@@ -53,6 +53,7 @@ germaniaSacra.List = (function() {
     this.dataTable = $table.DataTable({
       ajax: {
         url: '/entity/' + this.type,
+        type: 'post',
         dataSrc: function(json) {
           var entity, index, key, value, _ref;
           $('#search, #list').slideDown();
@@ -71,6 +72,7 @@ germaniaSacra.List = (function() {
           return json.data;
         }
       },
+      serverSide: true,
       columns: columns,
       autoWidth: false,
       pageLength: 100,
@@ -85,9 +87,9 @@ germaniaSacra.List = (function() {
         url: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
       },
       order: [[orderBy, 'asc']],
-      drawCallback: function() {
+      createdRow: function(row, data, dataIndex) {
         var $tr;
-        $tr = $table.find('tbody tr:not(.processed)');
+        $tr = $(row);
         $tr.children().each(function() {
           var $input, $td, $th, dataInput, name, option, optionUuid, text, uuid, value, _ref, _ref1, _ref2;
           $td = $(this);
@@ -138,15 +140,18 @@ germaniaSacra.List = (function() {
         $tr.each(function() {
           var uuid;
           uuid = $(this).find(':input[name=uUID]').val();
-          $(this).find('textarea').autosize();
           return $(this).find(':input:not([name=uUID])').change(function() {
             $(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop('checked', true);
             $('body').addClass('dirty');
             return $(':submit[type=submit]', self.scope).prop('disabled', false);
           });
         });
-        $tr.find('select').autocomplete();
-        return $tr.addClass('processed');
+        return $tr.find('select').autocomplete();
+      },
+      drawCallback: function() {
+        var $tr;
+        $tr = $table.find('tbody tr:not(.processed)');
+        return $tr.find('textarea').autosize().addClass('processed');
       }
     });
     $table.on('click', '.edit', function(e) {

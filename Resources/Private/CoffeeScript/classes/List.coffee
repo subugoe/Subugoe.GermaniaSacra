@@ -52,6 +52,7 @@ class germaniaSacra.List
 		@dataTable = $table.DataTable
 			ajax:
 				url: '/entity/' + @type
+				type: 'post'
 				dataSrc: (json) ->
 					$('#search, #list').slideDown()
 					$('#message').slideUp()
@@ -63,8 +64,7 @@ class germaniaSacra.List
 						for key, value of entity
 							if not value then json.data[index][key] = ' '
 					return json.data
-			#deferRender: true
-#			serverSide: true
+			serverSide: true
 			columns: columns
 			autoWidth: false
 			pageLength: 100
@@ -77,9 +77,9 @@ class germaniaSacra.List
 				url: '/_Resources/Static/Packages/Subugoe.GermaniaSacra/JavaScript/DataTables/German.json'
 			order: [ [ orderBy, 'asc' ] ]
 
-			drawCallback: ->
+			createdRow: (row, data, dataIndex) ->
 
-				$tr = $table.find('tbody tr:not(.processed)')
+				$tr = $(row)
 
 				$tr.children().each ->
 
@@ -121,8 +121,6 @@ class germaniaSacra.List
 
 				$tr.each ->
 					uuid = $(this).find(':input[name=uUID]').val()
-					# Since only visible textareas can be autosized, this has to be called after every page render
-					$(this).find('textarea').autosize()
 					# Mark row as dirty on change
 					$(this).find(':input:not([name=uUID])').change ->
 						$(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop 'checked', true
@@ -130,7 +128,13 @@ class germaniaSacra.List
 						$(':submit[type=submit]', self.scope).prop('disabled', false)
 
 				$tr.find('select').autocomplete()
-				$tr.addClass('processed')
+
+			drawCallback: ->
+				# Since only visible textareas can be autosized, this has to be called after every page render
+				$tr = $table.find('tbody tr:not(.processed)')
+				$tr
+					.find('textarea').autosize()
+					.addClass('processed')
 
 		# Click handlers for edit and delete
 

@@ -31,6 +31,20 @@ class KlosterRepository extends Repository {
 		return $query->execute();
 	}
 
+	/*
+	 * Returns the number of Kloster entities
+	 * @return integer The query result count
+	 */
+	public function getNumberOfEntries() {
+		return $this->createQuery()->count();
+	}
+
+	/*
+	 * Returns the last Kloster entity in the table
+	 * @param integer $offset The select offset
+	 * @param integer $limit The select limit
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+	 */
 	public function findLastEntry($offset=0, $limit=1) {
 		$query = $this->createQuery();
 		$query->matching($query->lessThan('kloster_id', 20000))
