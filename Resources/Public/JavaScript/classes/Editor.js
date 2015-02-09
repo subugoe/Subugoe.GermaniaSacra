@@ -214,6 +214,7 @@ germaniaSacra.Editor = (function() {
     uuid = $form.find(':input[name=uUID]').first().val();
     return $.post("" + this.type + "/update/" + uuid, $form.serialize()).done((function(_this) {
       return function(respond, status, jqXHR) {
+        germaniaSacra.keepSelectOptions = false;
         germaniaSacra.message('Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;');
         $form.find('.dirty').removeClass('dirty');
         $('body').removeClass('dirty');

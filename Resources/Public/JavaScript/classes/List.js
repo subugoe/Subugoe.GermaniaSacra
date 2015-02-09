@@ -199,6 +199,7 @@ germaniaSacra.List = (function() {
     formData.__csrfToken = $('#csrf').val();
     $.post(this.type + '/updateList', formData).done((function(_this) {
       return function(respond, status, jqXHR) {
+        germaniaSacra.keepSelectOptions = false;
         germaniaSacra.message('Ihre Änderungen wurden gespeichert.');
         $form.find('.dirty').removeClass('dirty');
         $form.find('input[name=uUID]').prop('checked', false);
@@ -220,6 +221,7 @@ germaniaSacra.List = (function() {
       }).done((function(_this) {
         return function(respond, status, jqXHR) {
           if (status === 'success') {
+            germaniaSacra.keepSelectOptions = false;
             _this.dataTable.row($('tr').has("td:first input[value='" + uuid + "']")).remove().draw();
             return germaniaSacra.message('Der Eintrag wurde gelöscht.');
           }

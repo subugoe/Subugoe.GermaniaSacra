@@ -179,6 +179,7 @@ class germaniaSacra.List
 				return
 		formData.__csrfToken = $('#csrf').val()
 		$.post(@type + '/updateList', formData).done((respond, status, jqXHR) =>
+			germaniaSacra.keepSelectOptions = false
 			germaniaSacra.message 'Ihre Änderungen wurden gespeichert.'
 			$form.find('.dirty').removeClass('dirty')
 			$form.find('input[name=uUID]').prop('checked', false)
@@ -196,8 +197,9 @@ class germaniaSacra.List
 			csrf = $('#csrf').val()
 			$.post(@type + '/delete/' + uuid,
 				__csrfToken: csrf
-			).done((respond, status, jqXHR) =>
+			).done( (respond, status, jqXHR) =>
 				if status is 'success'
+					germaniaSacra.keepSelectOptions = false
 					@dataTable
 						.row( $('tr').has("td:first input[value='#{uuid}']") )
 						.remove()
