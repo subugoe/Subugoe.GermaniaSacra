@@ -53,6 +53,7 @@ class germaniaSacra.List
 			ajax:
 				url: '/entity/' + @type
 				type: 'post'
+
 				dataSrc: (json) ->
 					$('#search, #list').slideDown()
 					$('#message').slideUp()
@@ -64,6 +65,7 @@ class germaniaSacra.List
 						for key, value of entity
 							if not value then json.data[index][key] = ' '
 					return json.data
+
 			serverSide: true
 			columns: columns
 			autoWidth: false
