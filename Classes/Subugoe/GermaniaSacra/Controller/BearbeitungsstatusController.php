@@ -43,18 +43,14 @@ class BearbeitungsstatusController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Bearbeitungsstatus entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bearbeitungsstatuses'));
 		}
-
 		$recordsTotal = $this->bearbeitungsstatusRepository->getNumberOfEntries();
-		if (!empty($recordsTotal)) {
-			if (!$this->request->hasArgument('search')) {
-				$recordsFiltered = $recordsTotal;
-			}
-		}
+		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}

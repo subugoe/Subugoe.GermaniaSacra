@@ -74,17 +74,14 @@ class BistumController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Bistum entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bistum'));
 		}
 		$recordsTotal = $this->bistumRepository->getNumberOfEntries();
-		if (!empty($recordsTotal)) {
-			if (!$this->request->hasArgument('search')) {
-				$recordsFiltered = $recordsTotal;
-			}
-		}
+		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}

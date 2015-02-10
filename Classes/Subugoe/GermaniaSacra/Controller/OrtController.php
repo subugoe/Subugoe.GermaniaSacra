@@ -77,17 +77,15 @@ class OrtController extends AbstractBaseController {
 
 	/**
 	 * List of all Ort entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ort'));
 		}
+		$defaultOrderings = array('ort' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
 		$recordsTotal = $this->ortRepository->getNumberOfEntries();
-		if (!empty($recordsTotal)) {
-			if (!$this->request->hasArgument('search')) {
-				$recordsFiltered = $recordsTotal;
-			}
-		}
+		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}
@@ -97,7 +95,7 @@ class OrtController extends AbstractBaseController {
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$ortArr = array();
-		$orts = $this->ortRepository->getCertainNumberOfOrt($start, $length);
+		$orts = $this->ortRepository->getCertainNumberOfOrt($start, $length, $defaultOrderings);
 		foreach ($orts as $k => $ort) {
 			if (is_object($ort)) {
 				$uUID = $ort->getUUID();

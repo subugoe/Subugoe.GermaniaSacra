@@ -29,8 +29,9 @@ class OrtRepository extends Repository {
 	 * @param integer $limit The select limit
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function getCertainNumberOfOrt($offset, $limit) {
+	public function getCertainNumberOfOrt($offset, $limit, $orderings) {
 	    $query = $this->createQuery()
+				->setOrderings($orderings)
 				->setOffset($offset)
 				->setLimit($limit);
 		return $query->execute();

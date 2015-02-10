@@ -75,17 +75,14 @@ class OrdenController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Orden entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
 		$recordsTotal = $this->ordenRepository->getNumberOfEntries();
-		if (!empty($recordsTotal)) {
-			if (!$this->request->hasArgument('search')) {
-				$recordsFiltered = $recordsTotal;
-			}
-		}
+		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}

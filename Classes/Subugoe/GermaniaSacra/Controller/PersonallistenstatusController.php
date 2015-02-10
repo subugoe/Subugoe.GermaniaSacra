@@ -43,17 +43,14 @@ class PersonallistenstatusController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Personallistenstatus entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('personallistenstatus'));
 		}
 		$recordsTotal = $this->personallistenstatusRepository->getNumberOfEntries();
-		if (!empty($recordsTotal)) {
-			if (!$this->request->hasArgument('search')) {
-				$recordsFiltered = $recordsTotal;
-			}
-		}
+		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}
