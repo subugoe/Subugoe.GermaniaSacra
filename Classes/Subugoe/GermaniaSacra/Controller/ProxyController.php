@@ -6,7 +6,7 @@ namespace Subugoe\GermaniaSacra\Controller;
  *
  *  (c) 2014 Ingo Pfennigstorf <pfennigstorf@sub-goettingen.de>
  *      Goettingen State Library
- *  
+ *
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -87,13 +87,9 @@ class ProxyController extends AbstractBaseController {
 	public function literatureAction() {
 		$literatureUrl = $this->settings['data']['literature'];
 		$this->initializeAction();
-		if ($this->cacheInterface->has('literature')) {
-			return $this->cacheInterface->get('literature');
-		}
 
 		try {
 			$literature = $this->browser->request($literatureUrl)->getContent();
-			$this->cacheInterface->set('literature', $literature);
 			return $literature;
 		} catch (\Exception $e) {
 			$this->systemLogger->logException($e);
@@ -131,4 +127,4 @@ class ProxyController extends AbstractBaseController {
 			}
 		}
 	}
-} 
+}
