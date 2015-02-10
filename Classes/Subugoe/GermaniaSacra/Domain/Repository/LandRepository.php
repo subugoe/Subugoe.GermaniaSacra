@@ -22,5 +22,13 @@ class LandRepository extends Repository {
 		return $query->execute();
 	}
 
+	/*
+	 * Returns the number of Land entities
+	 * @return integer The query result count
+	 */
+	public function getNumberOfEntries() {
+		return $this->createQuery()->count();
+	}
+
 }
 ?>

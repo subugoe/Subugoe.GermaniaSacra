@@ -24,5 +24,13 @@ class BandRepository extends Repository {
 				->execute();
 	}
 
+	/*
+	 * Returns the number of Band entities
+	 * @return integer The query result count
+	 */
+	public function getNumberOfEntries() {
+		return $this->createQuery()->count();
+	}
+
 }
 ?>

@@ -52,7 +52,7 @@ germaniaSacra.List = (function() {
     }
     this.dataTable = $table.DataTable({
       ajax: {
-        url: '/entity/' + this.type,
+        url: this.type + '/entity/',
         type: 'post',
         dataSrc: function(json) {
           var entity, index, key, value, _ref;

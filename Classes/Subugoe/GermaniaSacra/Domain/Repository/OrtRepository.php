@@ -36,6 +36,14 @@ class OrtRepository extends Repository {
 		return $query->execute();
 	}
 
+	/*
+	 * Returns the number of Ort entities
+	 * @return integer The query result count
+	 */
+	public function getNumberOfEntries() {
+		return $this->createQuery()->count();
+	}
+
 }
 
 ?>

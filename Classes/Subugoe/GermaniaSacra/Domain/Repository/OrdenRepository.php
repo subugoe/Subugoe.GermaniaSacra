@@ -22,5 +22,13 @@ class OrdenRepository extends Repository {
 		return $query->execute();
 	}
 
+		/*
+	 * Returns the number of Orden entities
+	 * @return integer The query result count
+	 */
+	public function getNumberOfEntries() {
+		return $this->createQuery()->count();
+	}
+
 }
 ?>

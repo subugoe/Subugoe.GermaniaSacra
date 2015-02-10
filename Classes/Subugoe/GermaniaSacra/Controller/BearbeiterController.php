@@ -79,15 +79,24 @@ class BearbeiterController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Bearbeiter entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bearbeiters'));
 		}
+		$recordsTotal = $this->bearbeiterRepository->getNumberOfEntries();
+		$recordsFiltered = $recordsTotal;
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$bearbeiter = $this->bearbeiterRepository->getCertainNumberOfBearbeiter($start, $length);
-		$this->view->assign('bearbeiters', ['data' => $bearbeiter]);
+		$this->view->assign('bearbeiters', ['data' => $bearbeiter, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 		return $this->view->render();
 	}

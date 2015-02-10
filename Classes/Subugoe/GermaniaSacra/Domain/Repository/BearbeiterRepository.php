@@ -22,5 +22,14 @@ class BearbeiterRepository extends Repository {
 		return $query->execute();
 	}
 
+	/*
+	 * Returns the number of Bearbeiter entities
+	 * @return integer The query result count
+	 */
+	public function getNumberOfEntries() {
+		return $this->createQuery()->count();
+	}
+
 }
+
 ?>

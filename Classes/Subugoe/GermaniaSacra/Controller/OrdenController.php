@@ -80,6 +80,18 @@ class OrdenController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
+		$recordsTotal = $this->ordenRepository->getNumberOfEntries();
+		if (!empty($recordsTotal)) {
+			if (!$this->request->hasArgument('search')) {
+				$recordsFiltered = $recordsTotal;
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$ordenArr = array();
@@ -133,7 +145,7 @@ class OrdenController extends AbstractBaseController {
 				}
 			}
 		}
-		$this->view->assign('orden', ['data' => $ordenArr]);
+		$this->view->assign('orden', ['data' => $ordenArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 		return $this->view->render();
 	}

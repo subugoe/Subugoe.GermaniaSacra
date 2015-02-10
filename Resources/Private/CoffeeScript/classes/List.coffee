@@ -51,7 +51,7 @@ class germaniaSacra.List
 
 		@dataTable = $table.DataTable
 			ajax:
-				url: '/entity/' + @type
+				url: @type + '/entity/'
 				type: 'post'
 
 				dataSrc: (json) ->

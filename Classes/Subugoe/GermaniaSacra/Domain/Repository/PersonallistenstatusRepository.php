@@ -22,5 +22,13 @@ class PersonallistenstatusRepository extends Repository {
 		return $query->execute();
 	}
 
+	/*
+	 * Returns the number of Personallistenstatus entities
+	 * @return integer The query result count
+	 */
+	public function getNumberOfEntries() {
+		return $this->createQuery()->count();
+	}
+
 }
 ?>

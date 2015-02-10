@@ -193,6 +193,7 @@ class KlosterController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Kloster entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
@@ -202,11 +203,7 @@ class KlosterController extends AbstractBaseController {
 				array('uid' => QueryInterface::ORDER_DESCENDING)
 		);
 		$recordsTotal = $this->klosterRepository->getNumberOfEntries();
-		if (!empty($recordsTotal)) {
-			if (!$this->request->hasArgument('search')) {
-				$recordsFiltered = $recordsTotal;
-			}
-		}
+		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}

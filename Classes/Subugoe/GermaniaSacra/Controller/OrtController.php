@@ -82,6 +82,18 @@ class OrtController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ort'));
 		}
+		$recordsTotal = $this->ortRepository->getNumberOfEntries();
+		if (!empty($recordsTotal)) {
+			if (!$this->request->hasArgument('search')) {
+				$recordsFiltered = $recordsTotal;
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$ortArr = array();
@@ -149,7 +161,7 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 		}
-		$this->view->assign('ort', ['data' => $ortArr]);
+		$this->view->assign('ort', ['data' => $ortArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 		return $this->view->render();
 	}

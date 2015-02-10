@@ -59,12 +59,14 @@
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
     '@action':     'list'
+    '@format': 'json'
 
 -
   name: 'Default list routes (controller with action)'
   uriPattern: '{@controller}/{@action}'
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
+    '@format': 'json'
 
 -
   name: 'Default list routes (controller with action and id)'
