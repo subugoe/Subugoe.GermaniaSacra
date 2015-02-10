@@ -28,12 +28,12 @@ class germaniaSacra.Editor
 
 		$('form', @scope).submit (e) ->
 			e.preventDefault()
-			$('select:disabled', @scope).prop('disabled', false).addClass 'disabled'
+			$(':disabled', @scope).prop('disabled', false).addClass 'disabled'
 			if $(this).find(':input[name=uUID]').first().val().length
 				self.update()
 			else
 				self.create()
-			$('select.disabled', self.scope).prop 'disabled', true
+			$('.disabled', self.scope).prop 'disabled', true
 
 		$('.coordinates').geopicker()
 
