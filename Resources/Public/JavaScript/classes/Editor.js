@@ -197,7 +197,7 @@ germaniaSacra.Editor = (function() {
           });
         }
         _this.scope.slideDown();
-        $('#message').slideUp();
+        germaniaSacra.hideMessage();
         $form.find('select').autocomplete();
         $form.find('input[type=url]').keyup();
         $form.find('textarea').trigger('autosize.resize');

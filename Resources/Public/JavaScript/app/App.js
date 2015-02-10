@@ -33,6 +33,8 @@ germaniaSacra.config(function($routeProvider, $locationProvider) {
     templateUrl: templatePath + 'Urltyp.html'
   }).when('/bearbeiter', {
     templateUrl: templatePath + 'Bearbeiter.html'
+  }).when('/publish', {
+    templateUrl: templatePath + 'Publish.html'
   }).otherwise({
     redirectTo: '/'
   });

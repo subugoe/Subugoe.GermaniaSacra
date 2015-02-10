@@ -6,23 +6,32 @@ germaniaSacra.controller('listController', function($scope) {
     var type;
     if (newval != null) {
       type = $('#list').data('type');
-      germaniaSacra.search = new germaniaSacra.Search();
-      germaniaSacra.editor = new germaniaSacra.Editor(type);
-      $('#message, #search, #list').hide();
-      $('.togglable + .togglable').hide();
-      return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
-        germaniaSacra.selectOptions = selectOptions;
-        germaniaSacra.list = new germaniaSacra.List(type);
-        $('.toggle').click(function(e) {
-          e.preventDefault();
-          return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
+      if ($('#list').data('no-table') != null) {
+        germaniaSacra.message(germaniaSacra.messages.loading, false);
+        $('#list').hide();
+        return $.getJSON(type, function(json) {
+          germaniaSacra.hideMessage();
+          return $('#list').append("<p>" + json.message + "</p>").slideDown();
         });
-        germaniaSacra.bindKeys();
-        $('#edit form, #list form').appendSaveButton();
-        return $('fieldset .multiple').appendAddRemoveButtons();
-      }, function() {
-        return germaniaSacra.message('Fehler: Optionen können nicht geladen werden');
-      });
+      } else {
+        germaniaSacra.search = new germaniaSacra.Search();
+        germaniaSacra.editor = new germaniaSacra.Editor(type);
+        $('#message, #search, #list').hide();
+        $('.togglable + .togglable').hide();
+        return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
+          germaniaSacra.selectOptions = selectOptions;
+          germaniaSacra.list = new germaniaSacra.List(type);
+          $('.toggle').click(function(e) {
+            e.preventDefault();
+            return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
+          });
+          germaniaSacra.bindKeys();
+          $('#edit form, #list form').appendSaveButton();
+          return $('fieldset .multiple').appendAddRemoveButtons();
+        }, function() {
+          return germaniaSacra.message('Fehler: Optionen können nicht geladen werden');
+        });
+      }
     }
   }), true);
   return $scope.$on('$locationChangeStart', function(e) {
@@ -91,6 +100,10 @@ germaniaSacra.message = function(text, withTimestampAndCloseButton) {
   return $('html, body').animate({
     scrollTop: 0
   });
+};
+
+germaniaSacra.hideMessage = function() {
+  return $('#message').slideUp();
 };
 
 window.onbeforeunload = function() {

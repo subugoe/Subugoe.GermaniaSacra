@@ -6,24 +6,34 @@ germaniaSacra.controller 'listController', ($scope) ->
 	), ((newval, oldval) ->
 		if newval?
 			type = $('#list').data('type')
-			germaniaSacra.search = new germaniaSacra.Search()
-			germaniaSacra.editor = new germaniaSacra.Editor(type)
-			$('#message, #search, #list').hide()
-			$('.togglable + .togglable').hide()
-			$.when( germaniaSacra.getOptions() ).then(
-				(selectOptions) ->
-					germaniaSacra.selectOptions = selectOptions
-					germaniaSacra.list = new germaniaSacra.List(type)
-					$('.toggle').click (e) ->
-						e.preventDefault()
-						$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
-					germaniaSacra.bindKeys()
-					$('#edit form, #list form').appendSaveButton()
-					$('fieldset .multiple').appendAddRemoveButtons()
-				,
-				->
-					germaniaSacra.message 'Fehler: Optionen können nicht geladen werden'
-			)
+			if $('#list').data('no-table')?
+				germaniaSacra.message germaniaSacra.messages.loading, false
+				$('#list').hide()
+				$.getJSON(type, (json) ->
+					germaniaSacra.hideMessage()
+					$('#list')
+					.append "<p>#{json.message}</p>"
+					.slideDown()
+				)
+			else
+				germaniaSacra.search = new germaniaSacra.Search()
+				germaniaSacra.editor = new germaniaSacra.Editor(type)
+				$('#message, #search, #list').hide()
+				$('.togglable + .togglable').hide()
+				$.when( germaniaSacra.getOptions() ).then(
+					(selectOptions) ->
+						germaniaSacra.selectOptions = selectOptions
+						germaniaSacra.list = new germaniaSacra.List(type)
+						$('.toggle').click (e) ->
+							e.preventDefault()
+							$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
+						germaniaSacra.bindKeys()
+						$('#edit form, #list form').appendSaveButton()
+						$('fieldset .multiple').appendAddRemoveButtons()
+					,
+					->
+						germaniaSacra.message 'Fehler: Optionen können nicht geladen werden'
+				)
 	), true
 
 	# Confirm discard changes on view change
@@ -74,6 +84,9 @@ germaniaSacra.message = (text, withTimestampAndCloseButton = true) ->
 			$message.hide()
 	$('html, body').animate
 		scrollTop: 0
+
+germaniaSacra.hideMessage = ->
+	$('#message').slideUp()
 
 # Confirm discard changes on window close/reload
 window.onbeforeunload = -> if $('.dirty').length then return germaniaSacra.messages.askUnsavedChanges

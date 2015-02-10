@@ -145,7 +145,7 @@ germaniaSacra.List = (function() {
     }, ajaxSuccess = function(json) {
       var entity, index, key, value, _ref, _results;
       $('#search, #list').slideDown();
-      $('#message').slideUp();
+      germaniaSacra.hideMessage();
       _ref = json.data;
       _results = [];
       for (index in _ref) {

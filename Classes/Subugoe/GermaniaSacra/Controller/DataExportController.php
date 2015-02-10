@@ -202,9 +202,11 @@ class DataExportController extends ActionController {
 		/** @var \Solarium\Core\Query\Result\ResultInterface $result */
 		$result = $this->client->execute($update);
 
-		$this->logger->log('Data export completed in ' . round($result->getQueryTime() / 100) . ' seconds.');
+		$logMessage = 'Data export completed in ' . round($result->getQueryTime() / 100) . ' seconds.';
 
-		return TRUE;
+		$this->logger->log($logMessage);
+
+		return json_encode(array('message' => $logMessage));
 	}
 
 	/**

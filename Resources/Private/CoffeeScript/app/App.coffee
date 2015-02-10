@@ -17,6 +17,7 @@ germaniaSacra.config ($routeProvider, $locationProvider) ->
 	.when('/ordenstyp', { templateUrl: templatePath + 'Ordenstyp.html' })
 	.when('/urltyp', { templateUrl: templatePath + 'Urltyp.html' })
 	.when('/bearbeiter', { templateUrl: templatePath + 'Bearbeiter.html' })
+	.when('/publish', { templateUrl: templatePath + 'Publish.html' })
 	.otherwise({ redirectTo: '/' })
 
 germaniaSacra.messages =
