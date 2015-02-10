@@ -21,13 +21,14 @@ $.fn.autocomplete = ->
 		$select.on 'refresh', ->
 			$fakeSelect
 				.val $select.find(':selected').text()
-				.attr 'title', $select.find(':selected').text()
+				.attr 'title', $select.find(':selected').text() + if $select.prop('disabled') then " – keine Änderung möglich" else ""
 
 		$fakeSelect = $('<input class="select" type="text">')
+		if $select.prop('disabled') then $fakeSelect.prop('disabled', true)
 		$select.trigger('refresh')
 
 		$spinner = $('<i class="spinner spinner-icon"/>')
-		$filter = $('<input type="text">').attr 'placeholder', if isAjax then 'Suchen' else 'Filter'
+		$filter =  $('<input type="text">').attr 'placeholder', if isAjax then 'Suchen' else 'Filter'
 		$filterContainer = $('<div class="filter"/>').append $filter, $spinner
 		$list = $('<ol class="list"/>')
 		$popup = $('<div class="popup"/>').append $filterContainer, $list

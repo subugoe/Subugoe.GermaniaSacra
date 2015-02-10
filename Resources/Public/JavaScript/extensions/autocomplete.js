@@ -17,9 +17,12 @@ $.fn.autocomplete = function() {
     isAjax = $select.hasClass('ajax');
     $select.siblings('.autocomplete').remove();
     $select.on('refresh', function() {
-      return $fakeSelect.val($select.find(':selected').text()).attr('title', $select.find(':selected').text());
+      return $fakeSelect.val($select.find(':selected').text()).attr('title', $select.find(':selected').text() + ($select.prop('disabled') ? " – keine Änderung möglich" : ""));
     });
     $fakeSelect = $('<input class="select" type="text">');
+    if ($select.prop('disabled')) {
+      $fakeSelect.prop('disabled', true);
+    }
     $select.trigger('refresh');
     $spinner = $('<i class="spinner spinner-icon"/>');
     $filter = $('<input type="text">').attr('placeholder', isAjax ? 'Suchen' : 'Filter');

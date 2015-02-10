@@ -26,13 +26,13 @@ germaniaSacra.Editor = (function() {
     });
     $('form', this.scope).submit(function(e) {
       e.preventDefault();
-      $('select:disabled', this.scope).prop('disabled', false).addClass('disabled');
+      $(':disabled', this.scope).prop('disabled', false).addClass('disabled');
       if ($(this).find(':input[name=uUID]').first().val().length) {
         self.update();
       } else {
         self.create();
       }
-      return $('select.disabled', self.scope).prop('disabled', true);
+      return $('.disabled', self.scope).prop('disabled', true);
     });
     $('.coordinates').geopicker();
   }
