@@ -71,8 +71,12 @@
 				<target state="signed-off">Ordenstyp</target>
 			</trans-unit>
 			<trans-unit id="urltype" approved="yes">
-				<source>URL Typ</source>
-				<target state="signed-off">URL Typ</target>
+				<source>URL-Typ</source>
+				<target state="signed-off">URL-Typ</target>
+			</trans-unit>
+			<trans-unit id="publish" approved="yes">
+				<source>Veröffentlichen</source>
+				<target state="signed-off">Veröffentlichen</target>
 			</trans-unit>
 		</body>
 	</file>

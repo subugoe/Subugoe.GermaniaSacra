@@ -17,9 +17,9 @@ class germaniaSacra.Search
 				else
 					# WORKAROUND: Server does return 500 if search term is empty
 					$('#uuid-filter').val('```').change()
-				$('#message').slideUp()
+				germaniaSacra.hideMessage()
 			search.fail (data) ->
-				$('#message').slideUp()
+				germaniaSacra.hideMessage()
 				alert 'Suche fehlgeschlagen'
 
 		$('.reset', @scope).click (e) ->

@@ -15,10 +15,10 @@ germaniaSacra.Search = (function() {
         } else {
           $('#uuid-filter').val('```').change();
         }
-        return $('#message').slideUp();
+        return germaniaSacra.hideMessage();
       });
       return search.fail(function(data) {
-        $('#message').slideUp();
+        germaniaSacra.hideMessage();
         return alert('Suche fehlgeschlagen');
       });
     });

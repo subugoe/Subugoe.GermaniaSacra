@@ -47,6 +47,13 @@
     '@action': 'search'
 
 -
+  name: 'publish'
+  uriPattern: 'publish'
+  defaults:
+    '@controller': 'DataExport'
+    '@action': 'mysql2solrExport'
+
+-
   name: 'Get select options'
   uriPattern: 'getOptions'
   defaults:

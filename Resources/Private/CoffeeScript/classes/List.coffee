@@ -129,7 +129,7 @@ class germaniaSacra.List
 
 			ajaxSuccess = (json) ->
 				$('#search, #list').slideDown()
-				$('#message').slideUp()
+				germaniaSacra.hideMessage()
 				# TODO: Find a more elegant way to use text instead of uuid for filtering and sorting
 				for index, entity of json.data
 					# Prepare options data for selects. Currently only this one is used within the lists.
