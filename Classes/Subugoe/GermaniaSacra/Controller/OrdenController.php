@@ -81,6 +81,31 @@ class OrdenController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+			if ($orderDir === 'asc') {
+				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			elseif ($orderDir === 'desc') {
+				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+			}
+		}
+		if (isset($orderArr) && !empty($orderArr)) {
+			$orderings = $orderArr;
+		}
+		else {
+			$orderings = array('orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+		}
 		$recordsTotal = $this->ordenRepository->getNumberOfEntries();
 		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
@@ -92,7 +117,7 @@ class OrdenController extends AbstractBaseController {
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		$ordenArr = array();
-		$ordens = $this->ordenRepository->getCertainNumberOfOrden($start, $length);
+		$ordens = $this->ordenRepository->getCertainNumberOfOrden($start, $length, $orderings);
 		foreach ($ordens as $k => $orden) {
 			if (is_object($orden)) {
 				$uUID = $orden->getUUID();

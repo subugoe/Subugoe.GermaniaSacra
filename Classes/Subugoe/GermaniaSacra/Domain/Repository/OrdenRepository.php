@@ -15,8 +15,9 @@ class OrdenRepository extends Repository {
 	 * @param integer $limit The select limit
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function getCertainNumberOfOrden($offset, $limit) {
+	public function getCertainNumberOfOrden($offset, $limit, $orderings) {
 	    $query = $this->createQuery()
+			    ->setOrderings($orderings)
 				->setOffset($offset)
 				->setLimit($limit);
 		return $query->execute();
