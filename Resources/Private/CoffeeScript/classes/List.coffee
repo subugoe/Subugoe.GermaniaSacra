@@ -2,10 +2,15 @@ class germaniaSacra.List
 
 	constructor: (@type) ->
 
-		@scope = $('#list')
 		self = @
 
+		@scope = $('#list')
+
 		@dataTable = null
+
+		@formData =
+			data: {}
+			__csrfToken: $('#csrf').val()
 
 		@editList()
 
@@ -15,7 +20,7 @@ class germaniaSacra.List
 
 		$('form', @scope).submit (e) ->
 			e.preventDefault()
-			if $(this).find('input[name=uUID]:checked').length is 0
+			if not @formData.data
 				germaniaSacra.message 'Wählen Sie bitte mindestens einen Eintrag aus.'
 				return false
 			else
@@ -121,22 +126,45 @@ class germaniaSacra.List
 
 						$(this).html $input.attr('name', name).val( value )
 
-				$tr.each ->
-					uuid = $(this).find(':input[name=uUID]').val()
-					# Mark row as dirty on change
-					$(this).find(':input:not([name=uUID])').change ->
-						$(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop 'checked', true
-						$('body').addClass('dirty')
-						$(':submit[type=submit]', self.scope).prop('disabled', false)
+				$rowSelector = $tr.find(':input[name=uUID]:eq(0)')
+				$rowInputs = $tr.find(':input:not([name=uUID])')
+
+				# Build form data and mark row as dirty on change
+
+				$rowInputs.change ->
+					uuid = $tr.find(':input[name=uUID]').first().val()
+					$(this).closest('td').addClass('dirty')
+					$rowSelector.prop('checked', true).change()
+					$('body').addClass('dirty')
+					$('[type=submit]', self.scope).prop('disabled', false)
+
+				$rowSelector.change ->
+					uuid = $(this).val()
+					if $(this).prop('checked')
+						self.formData.data[uuid] = {}
+						$tr = $(this).closest('tr')
+						$tr.find(':input:not([name=uUID])').each (i, input) ->
+							if not $(input).is(':checkbox') or $(input).prop('checked')
+								if input.name then self.formData.data[uuid][input.name] = input.value
+							return
+					else
+						delete self.formData.data[uuid]
+
+					console.dir self.formData # TODO: Remove this and put text next to submit button: "n geänderte Datensätze"
+
+				# If this row's data is already part of formData (i.e. it was changed by the user), update the view
+				uuid = $rowSelector.val()
+				if self.formData.data[uuid]?
+					$rowSelector.prop('checked', true)
+					for name, value of self.formData.data[uuid]
+						$tr.find(":input[name='#{name}']").val(value)
 
 				$tr.find('select').autocomplete()
 
 			drawCallback: ->
-				# Since only visible textareas can be autosized, this has to be called after every page render
-				$tr = $table.find('tbody tr:not(.processed)')
-				$tr
-					.find('textarea').autosize()
-					.addClass('processed')
+				# Since only visible textareas can be autosized, this has to be called after every page render.
+				# This is still slow (about 500 ms for 100 textareas in current Chrome), consider disabling it for faster rendering.
+				$table.find('textarea').autosize()
 
 		# Click handlers for edit and delete
 
@@ -144,6 +172,7 @@ class germaniaSacra.List
 			e.preventDefault()
 			uuid = $(this).closest('tr').find(':input[name=uUID]').first().val()
 			germaniaSacra.editor.edit(uuid)
+
 		$table.on 'click', '.delete', (e) ->
 			e.preventDefault()
 			uuid = $(this).closest('tr').find(':input[name=uUID]').first().val()
@@ -165,21 +194,9 @@ class germaniaSacra.List
 
 	updateList: ->
 
-		$form = $('form', @scope)
-
-		$rows = @dataTable.$('tr').has('td:first input:checked')
-		formData = {}
-		formData.data = {}
-		$rows.each (i, row) ->
-			uuid = $(row).find(':input[name=uUID]').first().val()
-			formData.data[uuid] = {}
-			$(row).find(':input:not([name=uUID])').each (i, input) ->
-				if not $(input).is(':checkbox') or $(input).prop('checked')
-					if input.name then formData.data[uuid][input.name] = input.value
-				return
-		formData.__csrfToken = $('#csrf').val()
-		$.post(@type + '/updateList', formData).done((respond, status, jqXHR) =>
+		$.post(@type + '/updateList', @formData).done((respond, status, jqXHR) =>
 			germaniaSacra.message 'Ihre Änderungen wurden gespeichert.'
+			@formData.data = {}
 			$form.find('.dirty').removeClass('dirty')
 			$form.find('input[name=uUID]').prop('checked', false)
 			$('body').removeClass('dirty')

@@ -62,9 +62,6 @@
 							</li>
 						</ul>
 					</li>
-						<li>
-							<f:link.action action="list" controller="Bearbeiter" format="html"><f:translate id="bearbeiter" /></f:link.action>
-						</li>
 					</f:security.ifHasRole>
 				</f:security.ifAuthenticated>
 			</ul>
@@ -79,17 +76,27 @@
 				</li>
 				<f:security.ifAuthenticated>
 					<f:security.ifHasRole role="Flow.Login:Administrator">
-						<li>
-							<f:link.action controller="Dump" action="dump" target="_self"><i class="icon-download"></i> SQL Dump</f:link.action>
+						<li class="has-dropdown"><a href="#">Admin</a>
+							<ul class="dropdown">
+								<li>
+									<f:link.action controller="Dump" action="dump" target="_self"><i class="icon-download"></i> SQL-Dump</f:link.action>
+								</li>
+								<li>
+									<f:link.action controller="DataImport" action="importInkDump" target="_self"><i class="icon-upload"></i> Daten-Import</f:link.action>
+								</li>
+								<li>
+									<f:link.action action="list" controller="Bearbeiter" format="html"><i class="icon-users"></i> <f:translate id="bearbeiter" /></f:link.action>
+								</li>
+								<li>
+									<f:link.action action="mysql2solrExport" controller="DataExport" format="html"><i class="icon-publish"></i> <f:translate id="publish" /></f:link.action>
+								</li>
+								<f:if condition="{dumpLogFileExists}">
+									<li>
+										<a href="{f:uri.resource(path: 'DumpImportLog/klosterDumpImport.log')}" target="_blank"/>Import-Logdatei</li></a>
+									</li>
+								</f:if>
+							</ul>
 						</li>
-						<li>
-							<f:link.action controller="DataImport" action="importInkDump" target="_self"><i class="icon-upload"></i> Daten-Import</f:link.action>
-						</li>
-						<f:if condition="{dumpLogFileExists}">
-							<li>
-								<a href="{f:uri.resource(path: 'DumpImportLog/klosterDumpImport.log')}" target="_blank"/>Import-Logdatei</li></a>
-							</li>
-						</f:if>
 					</f:security.ifHasRole>
 				</f:security.ifAuthenticated>
 			</ul>
@@ -102,13 +109,12 @@
 	<footer>
 		<f:link.external class="icon-bolt" target="_blank" uri="https://docs.google.com/forms/d/17C1uZpuvUCbQja7V0ybf_nZ6BrWfGEpREsqNjeZJG48/viewform">Problem melden</f:link.external>
 	</footer>
-	
+
 	<input id="uuid-filter" type="hidden">
 	<!-- Append this to every form via JavaScript -->
 	<input id="csrf" type="hidden" name="__csrfToken" value="{f:security.csrfToken()}">
 
 	<script src="{f:uri.resource(path: 'JavaScript/jquery.min.js')}" type="text/javascript"></script>
-	<script src="{f:uri.resource(path: 'JavaScript/jquery.autosize.min.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/foundation/modernizr.js')}"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/foundation/foundation.min.js')}"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/angular.min.js')}"></script>
@@ -120,6 +126,7 @@
 	<script src="{f:uri.resource(path: 'JavaScript/classes/Editor.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/extensions/extensions.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/extensions/autocomplete.js')}" type="text/javascript"></script>
+	<script src="{f:uri.resource(path: 'JavaScript/extensions/autosize.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/extensions/geopicker.js')}" type="text/javascript"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/leaflet-0.7.3.min.js')}"></script>
 	<script src="{f:uri.resource(path: 'JavaScript/DataTables/jquery.dataTables.min.js')}"></script>

@@ -3,9 +3,13 @@ germaniaSacra.List = (function() {
   function List(type) {
     var self;
     this.type = type;
-    this.scope = $('#list');
     self = this;
+    this.scope = $('#list');
     this.dataTable = null;
+    this.formData = {
+      data: {},
+      __csrfToken: $('#csrf').val()
+    };
     this.editList();
     $('.new', this.scope).click(function(e) {
       e.preventDefault();
@@ -13,7 +17,7 @@ germaniaSacra.List = (function() {
     });
     $('form', this.scope).submit(function(e) {
       e.preventDefault();
-      if ($(this).find('input[name=uUID]:checked').length === 0) {
+      if (!this.formData.data) {
         germaniaSacra.message('Wählen Sie bitte mindestens einen Eintrag aus.');
         return false;
       } else {
@@ -88,7 +92,7 @@ germaniaSacra.List = (function() {
       },
       order: [[orderBy, 'asc']],
       createdRow: function(row, data, dataIndex) {
-        var $tr;
+        var $rowInputs, $rowSelector, $tr, name, uuid, value, _ref;
         $tr = $(row);
         $tr.children().each(function() {
           var $input, $td, $th, dataInput, name, option, optionUuid, text, uuid, value, _ref, _ref1, _ref2;
@@ -137,21 +141,47 @@ germaniaSacra.List = (function() {
             return $(this).html($input.attr('name', name).val(value));
           }
         });
-        $tr.each(function() {
+        $rowSelector = $tr.find(':input[name=uUID]:eq(0)');
+        $rowInputs = $tr.find(':input:not([name=uUID])');
+        $rowInputs.change(function() {
           var uuid;
-          uuid = $(this).find(':input[name=uUID]').val();
-          return $(this).find(':input:not([name=uUID])').change(function() {
-            $(this).closest('td').addClass('dirty').closest('tr').find(':checkbox:eq(0)').prop('checked', true);
-            $('body').addClass('dirty');
-            return $(':submit[type=submit]', self.scope).prop('disabled', false);
-          });
+          uuid = $tr.find(':input[name=uUID]').first().val();
+          $(this).closest('td').addClass('dirty');
+          $rowSelector.prop('checked', true).change();
+          $('body').addClass('dirty');
+          return $('[type=submit]', self.scope).prop('disabled', false);
         });
+        $rowSelector.change(function() {
+          var uuid;
+          uuid = $(this).val();
+          if ($(this).prop('checked')) {
+            self.formData.data[uuid] = {};
+            $tr = $(this).closest('tr');
+            $tr.find(':input:not([name=uUID])').each(function(i, input) {
+              if (!$(input).is(':checkbox') || $(input).prop('checked')) {
+                if (input.name) {
+                  self.formData.data[uuid][input.name] = input.value;
+                }
+              }
+            });
+          } else {
+            delete self.formData.data[uuid];
+          }
+          return console.dir(self.formData);
+        });
+        uuid = $rowSelector.val();
+        if (self.formData.data[uuid] != null) {
+          $rowSelector.prop('checked', true);
+          _ref = self.formData.data[uuid];
+          for (name in _ref) {
+            value = _ref[name];
+            $tr.find(":input[name='" + name + "']").val(value);
+          }
+        }
         return $tr.find('select').autocomplete();
       },
       drawCallback: function() {
-        var $tr;
-        $tr = $table.find('tbody tr:not(.processed)');
-        return $tr.find('textarea').autosize().addClass('processed');
+        return $table.find('textarea').autosize();
       }
     });
     $table.on('click', '.edit', function(e) {
@@ -179,27 +209,10 @@ germaniaSacra.List = (function() {
   };
 
   List.prototype.updateList = function() {
-    var $form, $rows, formData;
-    $form = $('form', this.scope);
-    $rows = this.dataTable.$('tr').has('td:first input:checked');
-    formData = {};
-    formData.data = {};
-    $rows.each(function(i, row) {
-      var uuid;
-      uuid = $(row).find(':input[name=uUID]').first().val();
-      formData.data[uuid] = {};
-      return $(row).find(':input:not([name=uUID])').each(function(i, input) {
-        if (!$(input).is(':checkbox') || $(input).prop('checked')) {
-          if (input.name) {
-            formData.data[uuid][input.name] = input.value;
-          }
-        }
-      });
-    });
-    formData.__csrfToken = $('#csrf').val();
-    $.post(this.type + '/updateList', formData).done((function(_this) {
+    $.post(this.type + '/updateList', this.formData).done((function(_this) {
       return function(respond, status, jqXHR) {
         germaniaSacra.message('Ihre Änderungen wurden gespeichert.');
+        _this.formData.data = {};
         $form.find('.dirty').removeClass('dirty');
         $form.find('input[name=uUID]').prop('checked', false);
         $('body').removeClass('dirty');
