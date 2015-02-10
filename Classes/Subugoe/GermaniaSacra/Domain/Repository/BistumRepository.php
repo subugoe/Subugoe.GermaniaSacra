@@ -15,8 +15,9 @@ class BistumRepository extends Repository {
 	 * @param integer $limit The select limit
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function getCertainNumberOfBistum($offset, $limit) {
+	public function getCertainNumberOfBistum($offset, $limit, $orderings) {
 	    $query = $this->createQuery()
+			    ->setOrderings($orderings)
 				->setOffset($offset)
 				->setLimit($limit);
 		return $query->execute();

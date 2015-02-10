@@ -15,10 +15,10 @@ class BandRepository extends Repository {
 	 * @param $limit The limit
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function getCertainNumberOfBand($offset, $limit) {
+	public function getCertainNumberOfBand($offset, $limit, $orderings) {
 	    $query = $this->createQuery();
 		return $query->matching($query->logicalNot($query->like('nummer', 'keine Angabe')))
-				->setOrderings(array('sortierung' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING))
+				->setOrderings($orderings)
 				->setOffset($offset)
 				->setLimit($limit)
 				->execute();
