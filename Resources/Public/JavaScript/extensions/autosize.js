@@ -6,7 +6,7 @@ $.fn.autosize = function() {
       var el;
       el = $(this)[0];
       el.style.height = 0;
-      return el.style.height = el.scrollHeight + "px";
+      return el.style.height = (el.scrollHeight + 2) + "px";
     });
     return $(this).keyup();
   });

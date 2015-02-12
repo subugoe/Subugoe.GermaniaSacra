@@ -5,7 +5,6 @@ germaniaSacra.Editor = (function() {
     this.type = type;
     this.scope = $('#edit');
     self = this;
-    $('textarea', this.scope).autosize();
     this.scope.hide();
     $('input[type=url]', this.scope).keyup(function() {
       return $(this).parent().next(".link").html($(this).val() ? '<a class="icon-link" href="' + $(this).val() + '" target="_blank"></a>' : '');
@@ -46,7 +45,7 @@ germaniaSacra.Editor = (function() {
     $form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true);
     $('select', this.scope).autocomplete();
     $form.find('input[type=url]').keyup();
-    return $form.find('textarea').trigger('autosize.resize');
+    return $form.find('textarea').autosize();
   };
 
   Editor.prototype.create = function(data) {
@@ -200,7 +199,7 @@ germaniaSacra.Editor = (function() {
         $('#message').slideUp();
         $form.find('select').autocomplete();
         $form.find('input[type=url]').keyup();
-        $form.find('textarea').trigger('autosize.resize');
+        $form.find('textarea').autosize();
         return $('[type=submit]', _this.scope).prop('disabled', true);
       };
     })(this)).fail(function() {

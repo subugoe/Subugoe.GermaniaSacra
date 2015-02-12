@@ -5,7 +5,6 @@ class germaniaSacra.Editor
 		@scope = $('#edit')
 		self = @
 
-		$('textarea', @scope).autosize()
 		@scope.hide()
 
 		# Update clickable URL next to URL input
@@ -47,7 +46,7 @@ class germaniaSacra.Editor
 		$form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true)
 		$('select', @scope).autocomplete()
 		$form.find('input[type=url]').keyup()
-		$form.find('textarea').trigger('autosize.resize')
+		$form.find('textarea').autosize()
 
 	# Create a new Kloster
 	create: (data) ->
@@ -170,7 +169,7 @@ class germaniaSacra.Editor
 			$('#message').slideUp()
 			$form.find('select').autocomplete()
 			$form.find('input[type=url]').keyup()
-			$form.find('textarea').trigger('autosize.resize')
+			$form.find('textarea').autosize()
 			# TODO: This should not be necessary, so why is it?
 			$('[type=submit]', @scope).prop('disabled', true)
 

@@ -7,6 +7,6 @@ $.fn.autosize = ->
 		$(this).keyup (e) ->
 			el = $(this)[0]
 			el.style.height = 0
-			el.style.height = ( el.scrollHeight ) + "px";
+			el.style.height = ( el.scrollHeight + 2 ) + "px";
 
 		$(this).keyup()
