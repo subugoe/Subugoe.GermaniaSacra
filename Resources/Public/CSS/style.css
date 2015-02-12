@@ -7694,11 +7694,11 @@ ul.pagination li a:focus {
   color: #fff;
 }
 
-form span {
+form fieldset span {
   font-size: 0.875rem;
   padding: 0.625rem 0.75rem;
 }
-form span.link {
+form fieldset span.link {
   font-size: 1.2em;
   position: absolute;
   z-index: 9;
@@ -8065,6 +8065,10 @@ tr:hover .show-only-on-hover * {
 
 .wide {
   width: 50%;
+}
+
+.hidden {
+  display: none;
 }
 
 .map-container,

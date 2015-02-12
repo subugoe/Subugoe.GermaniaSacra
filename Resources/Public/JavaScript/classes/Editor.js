@@ -14,7 +14,7 @@ germaniaSacra.Editor = (function() {
     $(':input:not([name=uUID])', this.scope).change(function() {
       $(this).closest("label").addClass("dirty");
       $('body').addClass('dirty');
-      return $(':submit[type=submit]', self.scope).prop('disabled', false);
+      return $('[type=submit]', self.scope).prop('disabled', false);
     });
     $('.close', this.scope).click(function(e) {
       if (!$('.dirty', self.scope).length || confirm(germaniaSacra.messages.askUnsavedChanges)) {
@@ -53,11 +53,11 @@ germaniaSacra.Editor = (function() {
     var $form;
     $form = $('form', this.scope);
     return $.post(this.type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
-      germaniaSacra.message('Ein neuer Eintrag wurde angelegt.');
+      germaniaSacra.message('entryCreated');
       $form.find('.dirty').removeClass('dirty');
       return $('body').removeClass('dirty');
     }).fail(function() {
-      return germaniaSacra.message('Fehler: Eintrag konnte nicht angelegt werden.');
+      return germaniaSacra.message('entryCreateError');
     });
   };
 
@@ -67,7 +67,7 @@ germaniaSacra.Editor = (function() {
     $form = $('form', this.scope);
     $form.clearForm();
     $('#search, #list').slideUp();
-    germaniaSacra.message(germaniaSacra.messages.loading, false);
+    germaniaSacra.message('loading', false);
     return $.getJSON("" + type + "/edit/" + id).done((function(_this) {
       return function(obj) {
         var $fieldset, $input, name, value;
@@ -201,10 +201,10 @@ germaniaSacra.Editor = (function() {
         $form.find('select').autocomplete();
         $form.find('input[type=url]').keyup();
         $form.find('textarea').trigger('autosize.resize');
-        return $(':submit[type=submit]', _this.scope).prop('disabled', true);
+        return $('[type=submit]', _this.scope).prop('disabled', true);
       };
     })(this)).fail(function() {
-      return germaniaSacra.message('Fehler: Daten konnten nicht geladen werden.');
+      return germaniaSacra.message('dataLoadError');
     });
   };
 
@@ -214,15 +214,15 @@ germaniaSacra.Editor = (function() {
     uuid = $form.find(':input[name=uUID]').first().val();
     return $.post("" + this.type + "/update/" + uuid, $form.serialize()).done((function(_this) {
       return function(respond, status, jqXHR) {
-        germaniaSacra.message('Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;');
+        germaniaSacra.message('changesSaved');
         $form.find('.dirty').removeClass('dirty');
         $('body').removeClass('dirty');
-        $(':submit[type=submit]', _this.scope).prop('disabled', true);
+        $('[type=submit]', _this.scope).prop('disabled', true);
         $('.close', _this.scope).click();
         return germaniaSacra.list.reload();
       };
     })(this)).fail(function() {
-      return germaniaSacra.message('Fehler: Ihre Änderungen konnten nicht gespeichert werden.');
+      return germaniaSacra.message('changesSaveError');
     });
   };
 

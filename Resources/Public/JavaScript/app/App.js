@@ -39,8 +39,18 @@ germaniaSacra.config(function($routeProvider, $locationProvider) {
 });
 
 germaniaSacra.messages = {
-  loading: '<i class="spinner spinner-icon"></i> Wird geladen&hellip;',
-  askUnsavedChanges: 'Sind Sie sicher, dass Sie diese Ansicht verlassen möchten? Ihre Änderungen wurden nicht gespeichert.',
   askDelete: 'Möchten Sie diesen Eintrag wirklich löschen?',
-  askRemove: 'Möchten Sie dieses Feld wirklich entfernen?'
+  askRemove: 'Möchten Sie dieses Feld wirklich entfernen?',
+  askUnsavedChanges: 'Sind Sie sicher, dass Sie diese Ansicht verlassen möchten? Ihre Änderungen wurden nicht gespeichert.',
+  loading: '<i class="spinner spinner-icon"></i> Wird geladen&hellip;',
+  optionsLoadError: 'Fehler: Optionen können nicht geladen werden',
+  entryCreated: 'Ein neuer Eintrag wurde angelegt.',
+  entryCreateError: 'Fehler: Eintrag konnte nicht angelegt werden.',
+  dataLoadError: 'Fehler: Daten konnten nicht geladen werden.',
+  changesSaved: 'Ihre Änderungen wurden gespeichert.',
+  changesSavedReloadList: 'Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;',
+  changesSaveError: 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.',
+  selectAtLeastOneEntry: 'Wählen Sie bitte mindestens einen Eintrag aus.',
+  entryDeleted: 'Der Eintrag wurde gelöscht.',
+  entryDeleteError: 'Fehler: Eintrag konnte nicht gelöscht werden.'
 };

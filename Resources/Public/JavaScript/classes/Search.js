@@ -3,19 +3,26 @@ germaniaSacra.Search = (function() {
   function Search() {
     this.scope = $('#simple-search, #advanced-search');
     $('select', this.scope).autocomplete();
-    this.scope.submit(function() {
+    $('#simple-search').submit(function() {
+      var searchString;
+      germaniaSacra.message('loading', false);
+      searchString = $("[name='alle']", $(this)).val();
+      return germaniaSacra.list.dataTable.search(searchString, true, false).draw();
+    });
+    $('#advanced-search').submit(function() {
       var json, search;
-      germaniaSacra.message(germaniaSacra.messages.loading, false);
+      germaniaSacra.message('loading', false);
       json = $(this).serializeArray();
       search = $.post('/search', json);
       search.success(function(data) {
+        var searchString;
         data = $.parseJSON(data);
         if (data.length) {
-          $('#uuid-filter').val(data.join('|')).change();
+          searchString = data.join('|');
+          return germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw();
         } else {
-          $('#uuid-filter').val('```').change();
+          return germaniaSacra.list.dataTable.draw();
         }
-        return $('#message').slideUp();
       });
       return search.fail(function(data) {
         $('#message').slideUp();
@@ -23,8 +30,9 @@ germaniaSacra.Search = (function() {
       });
     });
     $('.reset', this.scope).click(function(e) {
+      germaniaSacra.message('loading', false);
       e.preventDefault();
-      $('#uuid-filter').val('').change();
+      germaniaSacra.list.dataTable.search('').column(0).search('').draw();
       return $(this).parents('form').clearForm();
     });
   }

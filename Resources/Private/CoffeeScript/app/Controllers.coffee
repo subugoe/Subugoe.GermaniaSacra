@@ -18,11 +18,12 @@ germaniaSacra.controller 'listController', ($scope) ->
 						e.preventDefault()
 						$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
 					germaniaSacra.bindKeys()
-					$('#edit form, #list form').appendSaveButton()
+					$('#edit form').appendSaveButton 'Änderungen speichern'
+					$('#list form').appendSaveButton '<span class="count">0</span> <span class="singular hidden">geänderten Datensatz</span><span class="plural">geänderte Datensätze</span> speichern'
 					$('fieldset .multiple').appendAddRemoveButtons()
 				,
 				->
-					germaniaSacra.message 'Fehler: Optionen können nicht geladen werden'
+					germaniaSacra.message 'optionsLoadError'
 			)
 	), true
 
@@ -58,13 +59,13 @@ germaniaSacra.bindKeys = ->
 					$('button.new:visible:last').click()
 				when 's'
 					e.preventDefault()
-					$(':submit[type=submit]:visible:last').click()
+					$('[type=submit]:visible:last').click()
 
-germaniaSacra.message = (text, withTimestampAndCloseButton = true) ->
+germaniaSacra.message = (messageId, withTimestampAndCloseButton = true) ->
 	$message = $('#message')
 	date = new Date()
 	timestamp = if withTimestampAndCloseButton then "<span class='timestamp'>#{date.toLocaleString()}</span>" else ''
-	text = "<span class='text'>#{text}</span>"
+	text = "<span class='text'>#{germaniaSacra.messages[messageId]}</span>"
 	# TODO: No animation since it freezes during DataTables render
 	$message.hide().html(timestamp + text).show()
 	if withTimestampAndCloseButton

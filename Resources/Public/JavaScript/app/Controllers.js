@@ -18,10 +18,11 @@ germaniaSacra.controller('listController', function($scope) {
           return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
         });
         germaniaSacra.bindKeys();
-        $('#edit form, #list form').appendSaveButton();
+        $('#edit form').appendSaveButton('Änderungen speichern');
+        $('#list form').appendSaveButton('<span class="count">0</span> <span class="singular hidden">geänderten Datensatz</span><span class="plural">geänderte Datensätze</span> speichern');
         return $('fieldset .multiple').appendAddRemoveButtons();
       }, function() {
-        return germaniaSacra.message('Fehler: Optionen können nicht geladen werden');
+        return germaniaSacra.message('optionsLoadError');
       });
     }
   }), true);
@@ -65,21 +66,21 @@ germaniaSacra.bindKeys = function() {
           return $('button.new:visible:last').click();
         case 's':
           e.preventDefault();
-          return $(':submit[type=submit]:visible:last').click();
+          return $('[type=submit]:visible:last').click();
       }
     }
   });
 };
 
-germaniaSacra.message = function(text, withTimestampAndCloseButton) {
-  var $close, $message, date, timestamp;
+germaniaSacra.message = function(messageId, withTimestampAndCloseButton) {
+  var $close, $message, date, text, timestamp;
   if (withTimestampAndCloseButton == null) {
     withTimestampAndCloseButton = true;
   }
   $message = $('#message');
   date = new Date();
   timestamp = withTimestampAndCloseButton ? "<span class='timestamp'>" + (date.toLocaleString()) + "</span>" : '';
-  text = "<span class='text'>" + text + "</span>";
+  text = "<span class='text'>" + germaniaSacra.messages[messageId] + "</span>";
   $message.hide().html(timestamp + text).show();
   if (withTimestampAndCloseButton) {
     $close = $("<i class='hover close icon-close right'>&times;</i>");
