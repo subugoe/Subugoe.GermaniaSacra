@@ -218,7 +218,7 @@ germaniaSacra.Editor = (function() {
         $('body').removeClass('dirty');
         $('[type=submit]', _this.scope).prop('disabled', true);
         $('.close', _this.scope).click();
-        return germaniaSacra.list.ajax.reload();
+        return germaniaSacra.list.reload();
       };
     })(this)).fail(function() {
       return germaniaSacra.message('changesSaveError');

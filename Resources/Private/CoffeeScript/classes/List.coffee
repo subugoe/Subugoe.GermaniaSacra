@@ -88,12 +88,11 @@ class germaniaSacra.List
 
 		# Apply the search
 		@dataTable.columns().eq(0).each (colIdx) ->
-			$('input', self.dataTable.column(colIdx).header()).click((e) ->
-				e.stopPropagation()
-			).on 'keyup change', ->
+			$('input', self.dataTable.column(colIdx).header()).on 'keyup', ->
 				clearTimeout self.timeout
 				self.timeout = setTimeout(
 					=>
+						germaniaSacra.message 'loading', false
 						self.dataTable.column(colIdx).search(@value).draw()
 					,
 					500
@@ -104,12 +103,11 @@ class germaniaSacra.List
 	updateList: ->
 
 		$.post(@type + '/updateList', @formData).done( (respond, status, jqXHR) =>
-			germaniaSacra.message 'changesSavedReloadList'
 			@formData.data = {}
 			@scope.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')
 			@scope.find('input[name=uUID]').prop('checked', false)
-			@dataTable.ajax.reload()
+			germaniaSacra.message 'changesSaved'
 			@updateSubmitButton 0
 		).fail (jqXHR, textStatus) ->
 			germaniaSacra.message 'changesSaveError'

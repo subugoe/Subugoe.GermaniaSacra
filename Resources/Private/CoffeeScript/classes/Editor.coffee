@@ -187,6 +187,6 @@ class germaniaSacra.Editor
 			$('body').removeClass('dirty')
 			$('[type=submit]', @scope).prop('disabled', true)
 			$('.close', @scope).click()
-			germaniaSacra.list.ajax.reload()
+			germaniaSacra.list.reload()
 		).fail ->
 			germaniaSacra.message 'changesSaveError'

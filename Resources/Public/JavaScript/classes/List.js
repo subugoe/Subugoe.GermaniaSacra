@@ -97,12 +97,11 @@ germaniaSacra.List = (function() {
       return self["delete"](uuid);
     });
     this.dataTable.columns().eq(0).each(function(colIdx) {
-      return $('input', self.dataTable.column(colIdx).header()).click(function(e) {
-        return e.stopPropagation();
-      }).on('keyup change', function() {
+      return $('input', self.dataTable.column(colIdx).header()).on('keyup', function() {
         clearTimeout(self.timeout);
         return self.timeout = setTimeout((function(_this) {
           return function() {
+            germaniaSacra.message('loading', false);
             return self.dataTable.column(colIdx).search(_this.value).draw();
           };
         })(this), 500);
@@ -113,12 +112,11 @@ germaniaSacra.List = (function() {
   List.prototype.updateList = function() {
     $.post(this.type + '/updateList', this.formData).done((function(_this) {
       return function(respond, status, jqXHR) {
-        germaniaSacra.message('changesSavedReloadList');
         _this.formData.data = {};
         _this.scope.find('.dirty').removeClass('dirty');
         $('body').removeClass('dirty');
         _this.scope.find('input[name=uUID]').prop('checked', false);
-        _this.dataTable.ajax.reload();
+        germaniaSacra.message('changesSaved');
         return _this.updateSubmitButton(0);
       };
     })(this)).fail(function(jqXHR, textStatus) {
