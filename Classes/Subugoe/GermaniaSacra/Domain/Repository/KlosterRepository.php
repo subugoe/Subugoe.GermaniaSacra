@@ -19,25 +19,169 @@ class KlosterRepository extends Repository {
 	protected $entityManager;
 
 	/*
-	 * Returns a limited number of Kloster entities
+	 * Searches and returns a limited number of Kloster entities as per search terms
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function getCertainNumberOfKloster($offset, $limit, $orderings) {
-	    $query = $this->createQuery()
-			    ->setOrderings($orderings)
-				->setOffset($offset)
-				->setLimit($limit);
-		return $query->execute();
+	public function searchCertainNumberOfKloster($offset, $limit, $orderings, $searchArr, $mode) {
+
+		$query = $this->createQuery();
+	/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
+		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
+		$queryBuilder
+		->resetDQLParts()
+		->select('kloster')
+		->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'kloster');
+
+
+		$entity = 'kloster';
+		$operator = 'LIKE';
+
+		if (is_array($searchArr) && count($searchArr) > 0) {
+
+
+			$i = 1;
+
+			foreach ($searchArr as $k => $v) {
+
+
+				$parameter = $k;
+
+				$searchStr = trim($v);
+				$value = '%' . $searchStr . '%';
+
+
+				$filter = $entity . '.' . $k;
+
+				if ($k === 'bearbeitungsstatus') {
+					$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+					$filter = 'bearbeitungsstatus.name';
+
+					$entity = 'bearbeitungsstatus';
+
+				}
+
+				if ($k === 'ort') {
+					$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
+								->innerJoin('klosterstandort.ort', 'ort');
+					$filter = 'ort.ort';
+
+
+
+					if ($orderings[0] === 'ort') {
+
+						$entity = 'ort';
+
+					}
+
+				}
+
+				if ($i === 1) {
+					$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
+				}
+				else {
+					$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
+				}
+
+
+				$queryBuilder->setParameter($parameter, $value);
+
+				$i++;
+			}
+		}
+
+
+
+		if ($mode === 1) {
+			$queryBuilder->orderBy($entity . '.' . $orderings[0], $orderings[1]);
+			$queryBuilder->setFirstResult($offset);
+			$queryBuilder->setMaxResults($limit);
+
+
+			return $query->execute();
+		}
+		else {
+			return $query->count();
+		}
+
+
 	}
+
+
+
+
+
+	public function getCertainNumberOfKloster($offset, $limit, $orderings) {
+
+
+		$entity = 'kloster';
+
+		$query = $this->createQuery();
+		/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
+		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
+		$queryBuilder
+		->resetDQLParts()
+		->select('kloster')
+		->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'kloster');
+
+
+		if ($orderings[0] === 'ort') {
+			$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
+						->innerJoin('klosterstandort.ort', 'ort');
+			$entity = 'ort';
+		}
+
+
+		if ($orderings[0] === 'gnd') {
+			$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
+						->innerJoin('klosterhasurl.url', 'url')
+						->innerJoin('url.urltyp', 'urltyp');
+
+			$queryBuilder->where('urltyp.name LIKE :gnd')
+
+			->setParameter('gnd', 'GND');
+
+			$entity = 'url';
+
+			$orderings[0] = 'url';
+		}
+
+
+		$queryBuilder->orderBy($entity . '.' . $orderings[0], $orderings[1]);
+		$queryBuilder->setFirstResult($offset);
+		$queryBuilder->setMaxResults($limit);
+
+		return $query->execute();
+
+	}
+
+
+
+
+
+
+//	/*
+//	 * Returns a limited number of Kloster entities
+//	 * @param integer $offset The select offset
+//	 * @param integer $limit The select limit
+//	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+//	 */
+//	public function getCertainNumberOfKloster($offset, $limit, $orderings) {
+//	    $query = $this->createQuery()
+//			    ->setOrderings($orderings)
+//				->setOffset($offset)
+//				->setLimit($limit);
+//		return $query->execute();
+//	}
 
 	/*
 	 * Returns the number of Kloster entities
 	 * @return integer The query result count
 	 */
 	public function getNumberOfEntries() {
-		return $this->createQuery()->count();
+		return $this->countAll();
+//		return $this->createQuery()->count();
 	}
 
 	/*

@@ -199,6 +199,21 @@ class KlosterController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('kloster'));
 		}
+
+
+
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+
+
+
 		if ($this->request->hasArgument('order')) {
 			$order = $this->request->getArgument('order');
 			if (!empty($order)) {
@@ -210,32 +225,76 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 		}
+
+
+
+
+
 		if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
 			if ($orderDir === 'asc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				$orderArr = array($orderBy, 'asc');
 			}
 			elseif ($orderDir === 'desc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				$orderArr = array($orderBy, 'desc');
 			}
 		}
 		if (isset($orderArr) && !empty($orderArr)) {
 			$orderings = $orderArr;
 		}
 		else {
-			$orderings = array('kloster_id' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			$orderings = array('kloster_id', 'asc');
 		}
-		$recordsTotal = $this->klosterRepository->getNumberOfEntries();
-		$recordsFiltered = $recordsTotal;
+
+
+
+
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}
 		else {
 			$draw = 0;
 		}
+
+
+
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+
+
+
+
+		if (empty($searchArr)) {
+
+
+			$klosters = $this->klosterRepository->getCertainNumberOfKloster($start, $length, $orderings);
+			$recordsTotal = $this->klosterRepository->getNumberOfEntries();
+		}
+		else {
+
+
+
+			$klosters = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 1);
+
+
+			$recordsFiltered = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 2);
+
+
+			$recordsTotal = $this->klosterRepository->getNumberOfEntries();
+
+
+		}
+
+		if (!isset($recordsFiltered) || empty($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
+
+
+
+
+
+
+
 		$klosterArr = array();
-		$klosters = $this->klosterRepository->getCertainNumberOfKloster($start, $length, $orderings);
 		foreach ($klosters as $k => $kloster) {
 			$klosterArr[$k]['uUID'] = $kloster->getUUID();
 			$klosterArr[$k]['kloster'] = $kloster->getKloster();
