@@ -88,15 +88,18 @@ class germaniaSacra.List
 
 		# Apply the search
 		@dataTable.columns().eq(0).each (colIdx) ->
-			$('input', self.dataTable.column(colIdx).header()).on 'keyup', ->
-				clearTimeout self.timeout
-				self.timeout = setTimeout(
-					=>
-						germaniaSacra.message 'loading', false
-						self.dataTable.column(colIdx).search(@value).draw()
-					,
-					500
-				)
+			$('input', self.dataTable.column(colIdx).header())
+				.keyup ->
+					clearTimeout self.timeout
+					self.timeout = setTimeout(
+						=>
+							germaniaSacra.message 'loading', false
+							self.dataTable.column(colIdx).search(@value).draw()
+						,
+						500
+					)
+				.click (e) ->
+					return false # Prevent sort
 
 		return
 

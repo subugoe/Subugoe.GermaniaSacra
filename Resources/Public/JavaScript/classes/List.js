@@ -97,7 +97,7 @@ germaniaSacra.List = (function() {
       return self["delete"](uuid);
     });
     this.dataTable.columns().eq(0).each(function(colIdx) {
-      return $('input', self.dataTable.column(colIdx).header()).on('keyup', function() {
+      return $('input', self.dataTable.column(colIdx).header()).keyup(function() {
         clearTimeout(self.timeout);
         return self.timeout = setTimeout((function(_this) {
           return function() {
@@ -105,6 +105,8 @@ germaniaSacra.List = (function() {
             return self.dataTable.column(colIdx).search(_this.value).draw();
           };
         })(this), 500);
+      }).click(function(e) {
+        return false;
       });
     });
   };
