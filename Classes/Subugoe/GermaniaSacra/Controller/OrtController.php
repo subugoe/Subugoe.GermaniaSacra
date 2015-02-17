@@ -83,6 +83,15 @@ class OrtController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ort'));
 		}
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
 		if ($this->request->hasArgument('order')) {
 			$order = $this->request->getArgument('order');
 			if (!empty($order)) {
@@ -94,22 +103,6 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 		}
-		if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
-			if ($orderDir === 'asc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
-			}
-			elseif ($orderDir === 'desc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
-			}
-		}
-		if (isset($orderArr) && !empty($orderArr)) {
-			$orderings = $orderArr;
-		}
-		else {
-			$orderings = array('ort' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
-		}
-		$recordsTotal = $this->ortRepository->getNumberOfEntries();
-		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}
@@ -118,8 +111,47 @@ class OrtController extends AbstractBaseController {
 		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('ort' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$orts = $this->ortRepository->getCertainNumberOfOrt($start, $length, $orderings);
+			$recordsTotal = $this->ortRepository->getNumberOfEntries();
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('ort', 'ASC');
+			}
+			$orts = $this->ortRepository->searchCertainNumberOfOrt($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->ortRepository->searchCertainNumberOfOrt($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->ortRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
 		$ortArr = array();
-		$orts = $this->ortRepository->getCertainNumberOfOrt($start, $length, $orderings);
 		foreach ($orts as $k => $ort) {
 			if (is_object($ort)) {
 				$uUID = $ort->getUUID();

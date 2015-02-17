@@ -65,7 +65,7 @@ germaniaSacra.List = (function() {
       serverSide: true,
       columns: columns,
       autoWidth: false,
-      pageLength: 100,
+      pageLength: 50,
       columnDefs: [
         {
           targets: ['not-sortable'],

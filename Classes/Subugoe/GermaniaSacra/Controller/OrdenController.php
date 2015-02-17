@@ -81,6 +81,17 @@ class OrdenController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('orden'));
 		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
 		if ($this->request->hasArgument('order')) {
 			$order = $this->request->getArgument('order');
 			if (!empty($order)) {
@@ -92,22 +103,6 @@ class OrdenController extends AbstractBaseController {
 				}
 			}
 		}
-		if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
-			if ($orderDir === 'asc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
-			}
-			elseif ($orderDir === 'desc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
-			}
-		}
-		if (isset($orderArr) && !empty($orderArr)) {
-			$orderings = $orderArr;
-		}
-		else {
-			$orderings = array('orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
-		}
-		$recordsTotal = $this->ordenRepository->getNumberOfEntries();
-		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}
@@ -116,8 +111,47 @@ class OrdenController extends AbstractBaseController {
 		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('orden' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$ordens = $this->ordenRepository->getCertainNumberOfOrden($start, $length, $orderings);
+			$recordsTotal = $this->ordenRepository->getNumberOfEntries();
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('orden', 'ASC');
+			}
+			$ordens = $this->ordenRepository->searchCertainNumberOfOrden($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->ordenRepository->searchCertainNumberOfOrden($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->ordenRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
 		$ordenArr = array();
-		$ordens = $this->ordenRepository->getCertainNumberOfOrden($start, $length, $orderings);
 		foreach ($ordens as $k => $orden) {
 			if (is_object($orden)) {
 				$uUID = $orden->getUUID();

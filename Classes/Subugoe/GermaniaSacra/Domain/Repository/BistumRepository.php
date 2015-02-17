@@ -3,11 +3,72 @@ namespace Subugoe\GermaniaSacra\Domain\Repository;
 
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Persistence\Repository;
+use TYPO3\Flow\Reflection\ObjectAccess;
 
 /**
  * @Flow\Scope("singleton")
  */
 class BistumRepository extends Repository {
+
+	/**
+	* @var array An array of associated entities
+	*/
+	protected  $entities = array('bistum' => 'bistum', 'ist_erzbistum' => 'bistum', 'kirchenprovinz' => 'bistum', 'ort' => 'ort', 'shapefile' => 'bistum', 'bemerkung' => 'bistum');
+
+	/*
+	 * Searches and returns a limited number of Bistum entities as per search terms
+	 * @param integer $offset The select offset
+	 * @param integer $limit The select limit
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+	 */
+	public function searchCertainNumberOfBistum($offset, $limit, $orderings, $searchArr, $mode = 1) {
+		$query = $this->createQuery();
+	/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
+		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
+		$queryBuilder
+		->resetDQLParts()
+		->select('bistum')
+		->from('\Subugoe\GermaniaSacra\Domain\Model\Bistum', 'bistum');
+		$operator = 'LIKE';
+		$isBistumInSearchArray = False;
+		if (is_array($searchArr) && count($searchArr) > 0) {
+			$i = 1;
+			foreach ($searchArr as $k => $v) {
+				$entity = $this->entities[$k];
+				$parameter = $k;
+				$searchStr = trim($v);
+				$value = '%' . $searchStr . '%';
+				$filter = $entity . '.' . $k;
+				if ($k === 'ort') {
+					$queryBuilder->innerJoin('bistum.ort', 'ort');
+					$isBistumInSearchArray = True;
+				}
+				if ($i === 1) {
+					$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
+					$queryBuilder->setParameter($parameter, $value);
+				}
+				else {
+					$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
+					$queryBuilder->setParameter($parameter, $value);
+				}
+				$i++;
+			}
+		}
+		if ($orderings[0] === 'ort' && !$isBistumInSearchArray) {
+			$queryBuilder->innerJoin('bistum.ort', 'ort');
+		}
+		if ($mode === 1) {
+			$sort = $this->entities[$orderings[0]] . '.' . $orderings[0];
+			$order = $orderings[1];
+			$queryBuilder->orderBy($sort, $order);
+			$queryBuilder->setFirstResult($offset);
+			$queryBuilder->setMaxResults($limit);
+			return $query->execute();
+		}
+		else {
+			return $query->count();
+		}
+	}
 
 	/*
 	 * Returns a limited number of Bistum entities

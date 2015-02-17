@@ -80,6 +80,15 @@ class BistumController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bistum'));
 		}
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
 		if ($this->request->hasArgument('order')) {
 			$order = $this->request->getArgument('order');
 			if (!empty($order)) {
@@ -91,22 +100,6 @@ class BistumController extends AbstractBaseController {
 				}
 			}
 		}
-		if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
-			if ($orderDir === 'asc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
-			}
-			elseif ($orderDir === 'desc') {
-				$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
-			}
-		}
-		if (isset($orderArr) && !empty($orderArr)) {
-			$orderings = $orderArr;
-		}
-		else {
-			$orderings = array('bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
-		}
-		$recordsTotal = $this->bistumRepository->getNumberOfEntries();
-		$recordsFiltered = $recordsTotal;
 		if ($this->request->hasArgument('draw')) {
 			$draw = $this->request->getArgument('draw');
 		}
@@ -115,8 +108,47 @@ class BistumController extends AbstractBaseController {
 		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$bistums = $this->bistumRepository->getCertainNumberOfBistum($start, $length, $orderings);
+			$recordsTotal = $this->bistumRepository->getNumberOfEntries();
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('bistum', 'ASC');
+			}
+			$bistums = $this->bistumRepository->searchCertainNumberOfBistum($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->bistumRepository->searchCertainNumberOfBistum($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->bistumRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
 		$bistumArr = array();
-		$bistums = $this->bistumRepository->getCertainNumberOfBistum($start, $length, $orderings);
 		foreach ($bistums as $k => $bistum) {
 			if (is_object($bistum)) {
 				$uUID = $bistum->getUUID();

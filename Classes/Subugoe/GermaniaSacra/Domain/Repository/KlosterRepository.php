@@ -13,10 +13,14 @@ use Doctrine\ORM\Query\Expr;
 class KlosterRepository extends Repository {
 
 	/**
-	 * @Flow\Inject
-	 * @var \Doctrine\Common\Persistence\ObjectManager
-	 */
-	protected $entityManager;
+	* @var array An array of associated entities for filtering
+	*/
+	protected  $entities = array('kloster_id' => 'kloster', 'bearbeitungsstatus' => 'bearbeitungsstatus', 'kloster' => 'kloster', 'ort' => 'ort', 'gnd' => 'url', 'bearbeitungsstand' => 'kloster');
+
+	/**
+	* @var array An array of associated entities for ordering
+	*/
+	protected  $orderByEntities = array('kloster_id' => 'kloster', 'name' => 'bearbeitungsstatus', 'kloster' => 'kloster', 'ort' => 'ort', 'url' => 'url', 'bearbeitungsstand' => 'kloster');
 
 	/*
 	 * Searches and returns a limited number of Kloster entities as per search terms
@@ -24,8 +28,7 @@ class KlosterRepository extends Repository {
 	 * @param integer $limit The select limit
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function searchCertainNumberOfKloster($offset, $limit, $orderings, $searchArr, $mode) {
-
+	public function searchCertainNumberOfKloster($offset, $limit, $orderings, $searchArr, $mode = 1) {
 		$query = $this->createQuery();
 	/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
 		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
@@ -33,84 +36,89 @@ class KlosterRepository extends Repository {
 		->resetDQLParts()
 		->select('kloster')
 		->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'kloster');
-
-
-		$entity = 'kloster';
 		$operator = 'LIKE';
-
+		$isBearbeitungsstatusInSearchArray = False;
+		$isOrtInSearchArray = False;
+		$isGNDInSearchArray = False;
 		if (is_array($searchArr) && count($searchArr) > 0) {
-
-
 			$i = 1;
-
 			foreach ($searchArr as $k => $v) {
-
-
+				$entity = $this->entities[$k];
 				$parameter = $k;
-
 				$searchStr = trim($v);
 				$value = '%' . $searchStr . '%';
-
-
 				$filter = $entity . '.' . $k;
-
 				if ($k === 'bearbeitungsstatus') {
 					$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+					$isBearbeitungsstatusInSearchArray = True;
 					$filter = 'bearbeitungsstatus.name';
-
-					$entity = 'bearbeitungsstatus';
-
 				}
-
 				if ($k === 'ort') {
 					$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
 								->innerJoin('klosterstandort.ort', 'ort');
+					$isOrtInSearchArray = True;
 					$filter = 'ort.ort';
-
-
-
-					if ($orderings[0] === 'ort') {
-
-						$entity = 'ort';
-
-					}
-
 				}
-
-				if ($i === 1) {
-					$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
+				if ($k === 'gnd') {
+					$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
+								->innerJoin('klosterhasurl.url', 'url')
+								->innerJoin('url.urltyp', 'urltyp');
+					$isGNDInSearchArray = True;
+					if ($i === 1) {
+						$queryBuilder->where('urltyp.name LIKE :urltyp');
+						$queryBuilder->andWhere('url.url LIKE :' . $parameter);
+					}
+					else {
+						$queryBuilder->andWhere('urltyp.name LIKE :urltyp');
+						$queryBuilder->andWhere('url.url LIKE :' . $parameter);
+					}
+					$queryBuilder->setParameter('urltyp', 'GND');
+					$queryBuilder->setParameter($parameter, $value);
 				}
 				else {
-					$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
+					if ($i === 1) {
+						$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
+						$queryBuilder->setParameter($parameter, $value);
+					}
+					else {
+						$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
+						$queryBuilder->setParameter($parameter, $value);
+					}
 				}
-
-
-				$queryBuilder->setParameter($parameter, $value);
-
 				$i++;
 			}
 		}
-
-
-
+		if ($orderings[0] === 'ort' && !$isOrtInSearchArray) {
+			$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
+						->innerJoin('klosterstandort.ort', 'ort');
+		}
+		elseif ($orderings[0] === 'bearbeitungsstatus' && !$isBearbeitungsstatusInSearchArray) {
+			$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+		}
+		elseif ($orderings[0] === 'gnd' && !$isGNDInSearchArray) {
+			$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
+						->innerJoin('klosterhasurl.url', 'url')
+						->innerJoin('url.urltyp', 'urltyp');
+			$queryBuilder->andWhere('urltyp.name LIKE :urltyp');
+			$queryBuilder->setParameter('urltyp', 'GND');
+		}
+		if ($orderings[0] === 'bearbeitungsstatus') $orderings[0] = 'name';
+		if ($orderings[0] === 'gnd') $orderings[0] = 'url';
 		if ($mode === 1) {
-			$queryBuilder->orderBy($entity . '.' . $orderings[0], $orderings[1]);
+			$sort = $this->orderByEntities[$orderings[0]] . '.' . $orderings[0];
+			$order = $orderings[1];
+			$queryBuilder->orderBy($sort, $order);
 			$queryBuilder->setFirstResult($offset);
 			$queryBuilder->setMaxResults($limit);
 
+//			\TYPO3\Flow\var_dump($queryBuilder->getDQL()); die;
 
 			return $query->execute();
 		}
 		else {
 			return $query->count();
 		}
-
-
 	}
-
-
-
-
 
 	public function getCertainNumberOfKloster($offset, $limit, $orderings) {
 
@@ -125,6 +133,11 @@ class KlosterRepository extends Repository {
 		->select('kloster')
 		->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'kloster');
 
+		if ($orderings[0] === 'bearbeitungsstatus') {
+			$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+			$entity = 'bearbeitungsstatus';
+			$orderings[0] = 'name';
+		}
 
 		if ($orderings[0] === 'ort') {
 			$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
@@ -132,18 +145,13 @@ class KlosterRepository extends Repository {
 			$entity = 'ort';
 		}
 
-
 		if ($orderings[0] === 'gnd') {
 			$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
 						->innerJoin('klosterhasurl.url', 'url')
 						->innerJoin('url.urltyp', 'urltyp');
-
 			$queryBuilder->where('urltyp.name LIKE :gnd')
-
 			->setParameter('gnd', 'GND');
-
 			$entity = 'url';
-
 			$orderings[0] = 'url';
 		}
 
