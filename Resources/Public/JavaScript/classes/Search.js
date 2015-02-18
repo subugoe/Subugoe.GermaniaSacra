@@ -3,39 +3,64 @@ germaniaSacra.Search = (function() {
   function Search() {
     this.scope = $('#simple-search, #advanced-search');
     $('select', this.scope).autocomplete();
-    $('#simple-search').submit(function() {
-      var searchString;
-      germaniaSacra.message('loading', false);
-      searchString = $("[name='alle']", $(this)).val();
-      return germaniaSacra.list.dataTable.search(searchString, true, false).draw();
-    });
-    $('#advanced-search').submit(function() {
-      var json, search;
-      germaniaSacra.message('loading', false);
-      json = $(this).serializeArray();
-      search = $.post('/search', json);
-      search.success(function(data) {
-        var searchString;
-        data = $.parseJSON(data);
-        if (data.length) {
-          searchString = data.join('|');
-          return germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw();
-        } else {
-          return germaniaSacra.list.dataTable.draw();
-        }
-      });
-      return search.fail(function(data) {
-        $('#message').slideUp();
-        return alert('Suche fehlgeschlagen');
-      });
-    });
-    $('.reset', this.scope).click(function(e) {
-      germaniaSacra.message('loading', false);
-      e.preventDefault();
-      germaniaSacra.list.dataTable.search('').column(0).search('').draw();
-      return $(this).parents('form').clearForm();
-    });
+    $('#simple-search').submit((function(_this) {
+      return function() {
+        return _this.simpleSearch();
+      };
+    })(this));
+    $('#advanced-search').submit((function(_this) {
+      return function() {
+        return _this.advancedSearch();
+      };
+    })(this));
+    $('.reset', this.scope).click((function(_this) {
+      return function(e) {
+        e.preventDefault();
+        return _this.reset();
+      };
+    })(this));
   }
+
+  Search.prototype.simpleSearch = function() {
+    var searchString;
+    germaniaSacra.message('loading', false);
+    germaniaSacra.list.resetFilters();
+    searchString = $("#simple-search [name='alle']").val();
+    return germaniaSacra.list.dataTable.search(searchString, true, false).draw();
+  };
+
+  Search.prototype.advancedSearch = function() {
+    var json, search;
+    germaniaSacra.message('loading', false);
+    json = $('#advanced-search').serializeArray();
+    search = $.post('/search', json);
+    search.success(function(data) {
+      var searchString;
+      data = $.parseJSON(data);
+      if (data.length) {
+        searchString = data.join('|');
+        return germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw();
+      } else {
+        return germaniaSacra.list.dataTable.draw();
+      }
+    });
+    return search.fail(function(data) {
+      $('#message').slideUp();
+      return alert('Suche fehlgeschlagen');
+    });
+  };
+
+  Search.prototype.reset = function(redraw) {
+    if (redraw == null) {
+      redraw = false;
+    }
+    this.scope.clearForm();
+    germaniaSacra.list.dataTable.search('');
+    if (redraw) {
+      germaniaSacra.message('loading', false);
+      return germaniaSacra.list.dataTable.column(0).search('').draw();
+    }
+  };
 
   return Search;
 

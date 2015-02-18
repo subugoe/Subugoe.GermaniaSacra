@@ -6,33 +6,42 @@ class germaniaSacra.Search
 
 		$('select', @scope).autocomplete()
 
-		$('#simple-search').submit ->
-			germaniaSacra.message 'loading', false
-			searchString = $("[name='alle']", $(this)).val()
-			germaniaSacra.list.dataTable.search( searchString, true, false ).draw()
+		$('#simple-search').submit =>
+			@simpleSearch()
 
-		$('#advanced-search').submit ->
-			germaniaSacra.message 'loading', false
-			json = $(this).serializeArray()
-			search = $.post '/search', json
-			search.success (data) ->
-				data = $.parseJSON(data)
-				if data.length
-					# Enable regex, disable smart search (enabling both will not work)
-					searchString = data.join('|')
-					germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw()
-				else
-					# Reset
-					germaniaSacra.list.dataTable.draw()
-			search.fail (data) ->
-				$('#message').slideUp()
-				alert 'Suche fehlgeschlagen'
+		$('#advanced-search').submit =>
+			@advancedSearch()
 
-		$('.reset', @scope).click (e) ->
-			germaniaSacra.message 'loading', false
+		$('.reset', @scope).click (e) =>
 			e.preventDefault()
-			germaniaSacra.list.dataTable
-				.search('')
-				.column(0).search('')
-				.draw()
-			$(this).parents('form').clearForm()
+			@reset()
+
+	simpleSearch: ->
+		germaniaSacra.message 'loading', false
+		germaniaSacra.list.resetFilters()
+		searchString = $("#simple-search [name='alle']").val()
+		germaniaSacra.list.dataTable.search( searchString, true, false ).draw()
+
+	advancedSearch: ->
+		germaniaSacra.message 'loading', false
+		json = $('#advanced-search').serializeArray()
+		search = $.post '/search', json
+		search.success (data) ->
+			data = $.parseJSON(data)
+			if data.length
+				# Enable regex, disable smart search (enabling both will not work)
+				searchString = data.join('|')
+				germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw()
+			else
+				# Reset
+				germaniaSacra.list.dataTable.draw()
+		search.fail (data) ->
+			$('#message').slideUp()
+			alert 'Suche fehlgeschlagen'
+
+	reset: (redraw = false) ->
+		@scope.clearForm()
+		germaniaSacra.list.dataTable.search('')
+		if redraw
+			germaniaSacra.message 'loading', false
+			germaniaSacra.list.dataTable.column(0).search('').draw()

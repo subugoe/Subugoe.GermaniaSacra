@@ -102,6 +102,7 @@ germaniaSacra.List = (function() {
         return self.timeout = setTimeout((function(_this) {
           return function() {
             germaniaSacra.message('loading', false);
+            germaniaSacra.search.reset();
             return self.dataTable.column(colIdx).search(_this.value).draw();
           };
         })(this), 500);
@@ -109,6 +110,17 @@ germaniaSacra.List = (function() {
         return false;
       });
     });
+  };
+
+  List.prototype.resetFilters = function(redraw) {
+    if (redraw == null) {
+      redraw = false;
+    }
+    $('input', this.dataTable.columns().header()).val('');
+    this.dataTable.columns().search('');
+    if (redraw) {
+      return this.dataTable.draw();
+    }
   };
 
   List.prototype.updateList = function() {

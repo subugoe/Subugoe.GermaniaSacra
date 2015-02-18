@@ -86,7 +86,7 @@ class germaniaSacra.List
 			uuid = $(this).closest('tr').find(':input[name=uUID]').first().val()
 			self.delete(uuid)
 
-		# Apply the search
+		# Handle column filters
 		@dataTable.columns().eq(0).each (colIdx) ->
 			$('input', self.dataTable.column(colIdx).header())
 				.keyup ->
@@ -94,6 +94,7 @@ class germaniaSacra.List
 					self.timeout = setTimeout(
 						=>
 							germaniaSacra.message 'loading', false
+							germaniaSacra.search.reset()
 							self.dataTable.column(colIdx).search(@value).draw()
 						,
 						500
@@ -102,6 +103,11 @@ class germaniaSacra.List
 					return false # Prevent sort
 
 		return
+
+	resetFilters: (redraw = false) ->
+		$('input', @dataTable.columns().header()).val('')
+		@dataTable.columns().search('')
+		if redraw then @dataTable.draw()
 
 	updateList: ->
 
