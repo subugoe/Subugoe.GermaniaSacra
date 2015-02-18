@@ -26,6 +26,9 @@ class KlosterRepository extends Repository {
 	 * Searches and returns a limited number of Kloster entities as per search terms
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
+	 * @param array $orderings The ordering parameters
+	 * @param array $searchArr An array of search terms
+	 * @param integer $mode The search mode
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
 	public function searchCertainNumberOfKloster($offset, $limit, $orderings, $searchArr, $mode = 1) {
@@ -110,9 +113,6 @@ class KlosterRepository extends Repository {
 			$queryBuilder->orderBy($sort, $order);
 			$queryBuilder->setFirstResult($offset);
 			$queryBuilder->setMaxResults($limit);
-
-//			\TYPO3\Flow\var_dump($queryBuilder->getDQL()); die;
-
 			return $query->execute();
 		}
 		else {
@@ -120,11 +120,15 @@ class KlosterRepository extends Repository {
 		}
 	}
 
+	/*
+	 * Returns a limited number of Kloster entities
+	 * @param integer $offset The select offset
+	 * @param integer $limit The select limit
+	 * @param array $orderings The ordering parameters
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+	 */
 	public function getCertainNumberOfKloster($offset, $limit, $orderings) {
-
-
 		$entity = 'kloster';
-
 		$query = $this->createQuery();
 		/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
 		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
@@ -132,19 +136,16 @@ class KlosterRepository extends Repository {
 		->resetDQLParts()
 		->select('kloster')
 		->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'kloster');
-
 		if ($orderings[0] === 'bearbeitungsstatus') {
 			$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
 			$entity = 'bearbeitungsstatus';
 			$orderings[0] = 'name';
 		}
-
 		if ($orderings[0] === 'ort') {
 			$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
 						->innerJoin('klosterstandort.ort', 'ort');
 			$entity = 'ort';
 		}
-
 		if ($orderings[0] === 'gnd') {
 			$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
 						->innerJoin('klosterhasurl.url', 'url')
@@ -154,34 +155,68 @@ class KlosterRepository extends Repository {
 			$entity = 'url';
 			$orderings[0] = 'url';
 		}
-
-
 		$queryBuilder->orderBy($entity . '.' . $orderings[0], $orderings[1]);
 		$queryBuilder->setFirstResult($offset);
 		$queryBuilder->setMaxResults($limit);
-
 		return $query->execute();
-
 	}
 
-
-
-
-
-
-//	/*
-//	 * Returns a limited number of Kloster entities
-//	 * @param integer $offset The select offset
-//	 * @param integer $limit The select limit
-//	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
-//	 */
-//	public function getCertainNumberOfKloster($offset, $limit, $orderings) {
-//	    $query = $this->createQuery()
-//			    ->setOrderings($orderings)
-//				->setOffset($offset)
-//				->setLimit($limit);
-//		return $query->execute();
-//	}
+	/*
+	 * Searches and returns a limited number of Kloster entities as per wild card search terms
+	 * @param integer $offset The select offset
+	 * @param integer $limit The select limit
+	 * @param string $searchValue The search string
+	 * @param integer $mode The search mode
+	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+	 */
+	public function findKlosterByWildCard($offset, $limit, $searchValue, $mode = 1) {
+		if (!empty($searchValue)) {
+			$query = $this->createQuery();
+		/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
+			$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
+			$queryBuilder
+			->resetDQLParts()
+			->select('k')
+			->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'k');
+			$searchValue = "%" . trim($searchValue) . "%";
+			$searchValue = (string)$searchValue;
+			$queryBuilder->innerJoin('k.klosterstandorts', 's')
+						->innerJoin('s.ort', 'o')
+						->innerJoin('k.bearbeitungsstatus', 'b')
+						->innerJoin('k.band', 'band')
+						->innerJoin('o.bistum', 'bistum')
+						->innerJoin('o.land', 'land')
+						->innerJoin('k.klosterordens', 'klosterorden')
+						->innerJoin('klosterorden.orden', 'orden')
+						->where('k.kloster_id LIKE :alle OR
+								k.kloster LIKE :alle OR
+								k.patrozinium LIKE :alle OR
+								b.name LIKE :alle OR
+								s.von_von LIKE :alle OR
+								s.bis_bis LIKE :alle OR
+								s.breite LIKE :alle OR
+								s.laenge LIKE :alle OR
+								band.nummer LIKE :alle OR
+								bistum.bistum LIKE :alle OR
+								o.ort LIKE :alle OR
+								orden.orden LIKE :alle OR
+								land.land LIKE :alle OR
+								land.land LIKE :alle AND land.ist_in_deutschland = :ist_in_deutschland')
+						->setParameter('alle', $searchValue)
+						->setParameter('ist_in_deutschland', 1);
+			if ($mode === 1) {
+				$sort = 'k.kloster_id';
+				$order = 'ASC';
+				$queryBuilder->orderBy($sort, $order);
+				$queryBuilder->setFirstResult($offset);
+				$queryBuilder->setMaxResults($limit);
+				return $query->execute();
+			}
+			else {
+				return $query->count();
+			}
+		}
+	}
 
 	/*
 	 * Returns the number of Kloster entities
@@ -189,7 +224,6 @@ class KlosterRepository extends Repository {
 	 */
 	public function getNumberOfEntries() {
 		return $this->countAll();
-//		return $this->createQuery()->count();
 	}
 
 	/*
@@ -207,50 +241,6 @@ class KlosterRepository extends Repository {
 		return $query->execute();
 	}
 
-	public function findKlosterByWildCard($alle) {
-
-		if (!empty($alle)) {
-
-			$query = $this->createQuery();
-		/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
-			$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
-			$queryBuilder
-			->resetDQLParts()
-			->select('k.Persistence_Object_Identifier')
-			->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'k');
-
-			$alle = "%" . trim($alle) . "%";
-			$alle = (string)$alle;
-			$queryBuilder->innerJoin('k.klosterstandorts', 's')
-						->innerJoin('s.ort', 'o')
-						->innerJoin('k.bearbeitungsstatus', 'b')
-						->innerJoin('k.band', 'band')
-						->innerJoin('o.bistum', 'bistum')
-						->innerJoin('o.land', 'land')
-						->innerJoin('k.klosterordens', 'klosterorden')
-						->innerJoin('klosterorden.orden', 'orden')
-
-						->where('k.kloster_id LIKE :alle OR
-								k.kloster LIKE :alle OR
-								k.patrozinium LIKE :alle OR
-								b.name LIKE :alle OR
-								s.von_von LIKE :alle OR
-								s.bis_bis LIKE :alle OR
-								s.breite LIKE :alle OR
-								s.laenge LIKE :alle OR
-								band.nummer LIKE :alle OR
-								bistum.bistum LIKE :alle OR
-								o.ort LIKE :alle OR
-								orden.orden LIKE :alle OR
-								land.land LIKE :alle OR
-								land.land LIKE :alle AND land.ist_in_deutschland = :ist_in_deutschland')
-						->setParameter('alle', $alle)
-						->setParameter('ist_in_deutschland', 1);
-
-				return $query->execute();
-		}
-
-	}
 
 	public function findKlosterByAdvancedSearch($searchArr) {
 

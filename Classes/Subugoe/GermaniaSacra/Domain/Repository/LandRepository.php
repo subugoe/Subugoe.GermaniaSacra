@@ -69,6 +69,7 @@ class LandRepository extends Repository {
 	 * Returns a limited number of Land entities
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
+	 * @param array $orderings The ordering parameters
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
 	public function getCertainNumberOfLand($offset, $limit, $orderings) {

@@ -69,6 +69,7 @@ class UrltypRepository extends Repository {
 	 * Returns a limited number of Urltyp entities
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
+	 * @param array $orderings The ordering parameters
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
 	public function getCertainNumberOfUrltyp($offset, $limit, $orderings) {

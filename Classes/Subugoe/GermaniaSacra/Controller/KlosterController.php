@@ -199,6 +199,9 @@ class KlosterController extends AbstractBaseController {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('kloster'));
 		}
+		if ($this->request->hasArgument('search'))  {
+			$searchValue = $this->request->getArgument('search')['value'];
+		}
 		$searchArr = array();
 		if ($this->request->hasArgument('columns'))  {
 			$columns = $this->request->getArgument('columns');
@@ -241,60 +244,81 @@ class KlosterController extends AbstractBaseController {
 		}
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
-		if (empty($searchArr)) {
-			$klosters = $this->klosterRepository->getCertainNumberOfKloster($start, $length, $orderings);
-			$recordsTotal = $this->klosterRepository->getNumberOfEntries();
+		if (isset($searchValue) && !empty($searchValue)) {
+			$klosters = $this->klosterRepository->findKlosterByWildCard($start, $length, $searchValue, 1);
+			$recordsFiltered = $this->klosterRepository->findKlosterByWildCard($start, $length, $searchValue, 2);
 		}
-		else {
+		elseif (isset($searchArr) && $searchArr !== array()) {
 			$klosters = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 1);
 			$recordsFiltered = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 2);
-			$recordsTotal = $this->klosterRepository->getNumberOfEntries();
 		}
+		else {
+			$klosters = $this->klosterRepository->getCertainNumberOfKloster($start, $length, $orderings);
+		}
+		$recordsTotal = $this->klosterRepository->getNumberOfEntries();
 		if (!isset($recordsFiltered)) {
 			$recordsFiltered = $recordsTotal;
 		}
-		$klosterArr = array();
-		foreach ($klosters as $k => $kloster) {
-			$klosterArr[$k]['uUID'] = $kloster->getUUID();
-			$klosterArr[$k]['kloster'] = $kloster->getKloster();
-			$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
-			$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
-			$bearbeitungsstatus = $kloster->getBearbeitungsstatus();
-			$klosterArr[$k]['bearbeitungsstatus'] = $bearbeitungsstatus->getUUID();
-			$klosterstandorts = $kloster->getKlosterstandorts();
-			foreach ($klosterstandorts as $i => $klosterstandort) {
-				$ort = $klosterstandort->getOrt();
-				if (is_object($ort)) {
-					$klosterArr[$k]['ort'][$i] = $ort->getOrt();
-				}
-			}
-			if (!empty($klosterArr[$k]['ort'][$i])) {
-				$klosterArr[$k]['ort'] = implode(' / ', $klosterArr[$k]['ort']);
-			} else {
-				$klosterArr[$k]['ort'] = '';
-			}
-			$klosterHasUrls = $kloster->getKlosterHasUrls();
-			$klosterArr[$k]['gnd'] = '';
-			foreach ($klosterHasUrls as $klosterHasUrl) {
-				$urlObj = $klosterHasUrl->getUrl();
-				$url = $urlObj->getUrl();
-				$urlTypObj = $urlObj->getUrltyp();
-				if (is_object($urlTypObj)) {
-					$urlTyp = $urlTypObj->getName();
-					if ($urlTyp == "GND") {
-						$klosterArr[$k]['gnd'] = $url;
+		if (isset($recordsTotal)) {
+			if (isset($recordsFiltered)) {
+				if (isset($klosters) && $klosters !== array()) {
+					$klosterArr = array();
+					foreach ($klosters as $k => $kloster) {
+						$klosterArr[$k]['uUID'] = $kloster->getUUID();
+						$klosterArr[$k]['kloster'] = $kloster->getKloster();
+						$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
+						$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
+						$bearbeitungsstatus = $kloster->getBearbeitungsstatus();
+						$klosterArr[$k]['bearbeitungsstatus'] = $bearbeitungsstatus->getUUID();
+						$klosterstandorts = $kloster->getKlosterstandorts();
+						foreach ($klosterstandorts as $i => $klosterstandort) {
+							$ort = $klosterstandort->getOrt();
+							if (is_object($ort)) {
+								$klosterArr[$k]['ort'][$i] = $ort->getOrt();
+							}
+						}
+						if (!empty($klosterArr[$k]['ort'][$i])) {
+							$klosterArr[$k]['ort'] = implode(' / ', $klosterArr[$k]['ort']);
+						} else {
+							$klosterArr[$k]['ort'] = '';
+						}
+						$klosterHasUrls = $kloster->getKlosterHasUrls();
+						$klosterArr[$k]['gnd'] = '';
+						foreach ($klosterHasUrls as $klosterHasUrl) {
+							$urlObj = $klosterHasUrl->getUrl();
+							$url = $urlObj->getUrl();
+							$urlTypObj = $urlObj->getUrltyp();
+							if (is_object($urlTypObj)) {
+								$urlTyp = $urlTypObj->getName();
+								if ($urlTyp == "GND") {
+									$klosterArr[$k]['gnd'] = $url;
+								}
+							}
+						}
 					}
+					$this->view->assign('kloster', ['data' => $klosterArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
+					if (isset($this->bearbeiterObj) && is_object($this->bearbeiterObj)) {
+						$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+					}
+					if ($this->dumpLogFileExists) {
+						$this->view->assign('dumpLogFileExists', $this->dumpLogFileExists);
+					}
+					return $this->view->render();
+				}
+				else {
+					$error = array('error' => 'No search result returned');
+					return json_encode($error);
 				}
 			}
+			else {
+				$error = array('error' => 'Total number of search entries not available');
+				return json_encode($error);
+			}
 		}
-		$this->view->assign('kloster', ['data' => $klosterArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
-		if (isset($this->bearbeiterObj) && is_object($this->bearbeiterObj)) {
-			$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		else {
+			$error = array('error' => 'Total number of entries not available');
+			return json_encode($error);
 		}
-		if ($this->dumpLogFileExists) {
-			$this->view->assign('dumpLogFileExists', $this->dumpLogFileExists);
-		}
-		return $this->view->render();
 	}
 
 	/**

@@ -19,6 +19,9 @@ class BandRepository extends Repository {
 	 * Searches and returns a limited number of Band entities as per search terms
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
+	 * @param array $orderings The ordering parameters
+	 * @param array $searchArr An array of search terms
+	 * @param integer $mode The search mode
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
 	public function searchCertainNumberOfBand($offset, $limit, $orderings, $searchArr, $mode = 1) {
@@ -74,6 +77,7 @@ class BandRepository extends Repository {
 	 * Returns a limited number of Band entities
 	 * @param $offset The offset
 	 * @param $limit The limit
+	 * @param array $orderings The ordering parameters
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
 	public function getCertainNumberOfBand($offset, $limit, $orderings) {

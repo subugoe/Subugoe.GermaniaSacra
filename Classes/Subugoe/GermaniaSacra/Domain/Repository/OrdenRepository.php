@@ -19,6 +19,9 @@ class OrdenRepository extends Repository {
 	 * Searches and returns a limited number of Orden entities as per search terms
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
+	 * @param array $orderings The ordering parameters
+	 * @param array $searchArr An array of search terms
+	 * @param integer $mode The search mode
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
 	public function searchCertainNumberOfOrden($offset, $limit, $orderings, $searchArr, $mode = 1) {
@@ -74,6 +77,7 @@ class OrdenRepository extends Repository {
 	 * Returns a limited number of Orden entities
 	 * @param integer $offset The select offset
 	 * @param integer $limit The select limit
+	 * @param array $orderings The ordering parameters
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
 	public function getCertainNumberOfOrden($offset, $limit, $orderings) {
