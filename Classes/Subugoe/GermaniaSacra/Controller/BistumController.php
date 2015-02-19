@@ -60,17 +60,95 @@ class BistumController extends AbstractBaseController {
 	/**
 	 * @var string
 	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * @var string
+	 */
 	protected $defaultViewObjectName = 'TYPO3\\Flow\\Mvc\\View\\JsonView';
 
 	/**
-	 * List of all Bistum entities
+	 * Returns the list of all Bistum entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('bistum'));
 		}
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('bistum' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$bistums = $this->bistumRepository->getCertainNumberOfBistum($start, $length, $orderings);
+			$recordsTotal = $this->bistumRepository->getNumberOfEntries();
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('bistum', 'ASC');
+			}
+			$bistums = $this->bistumRepository->searchCertainNumberOfBistum($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->bistumRepository->searchCertainNumberOfBistum($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->bistumRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
 		$bistumArr = array();
-		$bistums = $this->bistumRepository->findAll();
 		foreach ($bistums as $k => $bistum) {
 			if (is_object($bistum)) {
 				$uUID = $bistum->getUUID();
@@ -129,16 +207,8 @@ class BistumController extends AbstractBaseController {
 				}
 			}
 		}
-		$this->view->assign('bistum', ['data' => $bistumArr]);
+		$this->view->assign('bistum', ['data' => $bistumArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-		if ($this->request->getFormat() === 'json') {
-			if ($this->cacheInterface->has('bistum')) {
-				return $this->cacheInterface->get('bistum');
-			}
-			$viewRendered = $this->view->render();
-			$this->cacheInterface->set('bistum', $viewRendered);
-			return $viewRendered;
-		}
 		return $this->view->render();
 	}
 
@@ -253,9 +323,6 @@ class BistumController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-
-			$this->clearCachesFor('bistum');
-
 			$this->throwStatus(201, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Bistum not available', NULL);
@@ -307,7 +374,6 @@ class BistumController extends AbstractBaseController {
 			}
 		}
 		$bistumArr['url'] = $Urls;
-
 		return json_encode($bistumArr);
 	}
 
@@ -471,8 +537,6 @@ class BistumController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('bistum');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Bistum not available', NULL);
@@ -506,8 +570,6 @@ class BistumController extends AbstractBaseController {
 					$this->bistumHasUrlRepository->remove($bistumHasUrl);
 				}
 			}
-			$this->clearCachesFor('bistum');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Bistum entity could not be deleted', NULL);
@@ -548,8 +610,6 @@ class BistumController extends AbstractBaseController {
 			}
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('bistum');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

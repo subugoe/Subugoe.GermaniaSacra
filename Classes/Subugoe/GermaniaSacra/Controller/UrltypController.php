@@ -32,14 +32,95 @@ class UrltypController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Urltyp entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('urltyp'));
 		}
-		$this->view->assign('urltyp', ['data' => $this->urltypRepository->findAll()]);
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('name' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$urltyp = $this->urltypRepository->getCertainNumberOfUrltyp($start, $length, $orderings);
+			$recordsTotal = $this->urltypRepository->getNumberOfEntries();
+			$recordsFiltered = $recordsTotal;
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('name', 'ASC');
+			}
+			$urltyp = $this->urltypRepository->searchCertainNumberOfLand($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->urltypRepository->searchCertainNumberOfLand($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->urltypRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
+		$this->view->assign('urltyp', ['data' => $urltyp, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -55,8 +136,6 @@ class UrltypController extends AbstractBaseController {
 			$urltypObj->setName($this->request->getArgument('name'));
 			$this->urltypRepository->add($urltypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('urlyp');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -95,8 +174,6 @@ class UrltypController extends AbstractBaseController {
 			$urltypObj->setName($this->request->getArgument('name'));
 			$this->urltypRepository->update($urltypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('urlyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Urltyp not available', NULL);
@@ -121,8 +198,6 @@ class UrltypController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Urltyp not available', NULL);
 			}
 			$this->urltypRepository->remove($urltypObj);
-			$this->clearCachesFor('urlyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Urltyp entity could not be deleted', NULL);
@@ -146,8 +221,6 @@ class UrltypController extends AbstractBaseController {
 			$this->urltypRepository->update($urltypObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('urlyp');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

@@ -32,14 +32,95 @@ class PersonallistenstatusController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Personallistenstatus entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('personallistenstatus'));
 		}
-		$this->view->assign('personallistenstatus', ['data' => $this->personallistenstatusRepository->findAll()]);
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('land' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$personallistenstatus = $this->personallistenstatusRepository->getCertainNumberOfPersonallistenstatus($start, $length, $orderings);
+			$recordsTotal = $this->personallistenstatusRepository->getNumberOfEntries();
+			$recordsFiltered = $recordsTotal;
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('land', 'ASC');
+			}
+			$personallistenstatus = $this->personallistenstatusRepository->searchCertainNumberOfPersonallistenstatus($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->personallistenstatusRepository->searchCertainNumberOfPersonallistenstatus($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->personallistenstatusRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
+		$this->view->assign('personallistenstatus', ['data' => $personallistenstatus, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -55,8 +136,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$personallistenstatusObj->setName($this->request->getArgument('name'));
 			$this->personallistenstatusRepository->add($personallistenstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('personallistenstatus');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -95,8 +174,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$personallistenstatusObj->setName($this->request->getArgument('name'));
 			$this->personallistenstatusRepository->update($personallistenstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('personallistenstatus');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Personallistenstatus not available', NULL);
@@ -121,8 +198,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Personallistenstatus not available', NULL);
 			}
 			$this->personallistenstatusRepository->remove($personallistenstatusObj);
-			$this->clearCachesFor('personallistenstatus');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Personallistenstatus entity could not be deleted', NULL);
@@ -146,8 +221,6 @@ class PersonallistenstatusController extends AbstractBaseController {
 			$this->personallistenstatusRepository->update($personallistenstatusObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('personallistenstatus');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

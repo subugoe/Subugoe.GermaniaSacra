@@ -6,23 +6,42 @@ class germaniaSacra.Search
 
 		$('select', @scope).autocomplete()
 
-		@scope.submit ->
-			germaniaSacra.message germaniaSacra.messages.loading, false
-			json = $(this).serializeArray()
-			search = $.post '/search', json
-			search.success (data) ->
-				data = $.parseJSON(data)
-				if data.length
-					$('#uuid-filter').val(data.join('|')).change()
-				else
-					# WORKAROUND: Server does return 500 if search term is empty
-					$('#uuid-filter').val('```').change()
-				germaniaSacra.hideMessage()
-			search.fail (data) ->
-				germaniaSacra.hideMessage()
-				alert 'Suche fehlgeschlagen'
+		$('#simple-search').submit =>
+			@simpleSearch()
 
-		$('.reset', @scope).click (e) ->
+		$('#advanced-search').submit =>
+			@advancedSearch()
+
+		$('.reset', @scope).click (e) =>
 			e.preventDefault()
-			$('#uuid-filter').val('').change()
-			$(this).parents('form').clearForm()
+			@reset()
+
+	simpleSearch: ->
+		germaniaSacra.message 'loading', false
+		germaniaSacra.list.resetFilters()
+		searchString = $("#simple-search [name='alle']").val()
+		germaniaSacra.list.dataTable.search( searchString, true, false ).draw()
+
+	advancedSearch: ->
+		germaniaSacra.message 'loading', false
+		json = $('#advanced-search').serializeArray()
+		search = $.post '/search', json
+		search.success (data) ->
+			data = $.parseJSON(data)
+			if data.length
+				# Enable regex, disable smart search (enabling both will not work)
+				searchString = data.join('|')
+				germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw()
+			else
+				# Reset
+				germaniaSacra.list.dataTable.draw()
+		search.fail (data) ->
+			$('#message').slideUp()
+			alert 'Suche fehlgeschlagen'
+
+	reset: (redraw = false) ->
+		@scope.clearForm()
+		germaniaSacra.list.dataTable.search('')
+		if redraw
+			germaniaSacra.message 'loading', false
+			germaniaSacra.list.dataTable.column(0).search('').draw()

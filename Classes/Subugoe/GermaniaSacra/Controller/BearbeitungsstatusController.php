@@ -32,13 +32,93 @@ class BearbeitungsstatusController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Bearbeitungsstatus entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
-			$this->view->setVariablesToRender(array('bearbeitungsstatuses'));
+			$this->view->setVariablesToRender(array('bearbeitungsstatus'));
 		}
-		$this->view->assign('bearbeitungsstatuses', ['data' => $this->bearbeitungsstatusRepository->findAll()]);
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('name' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$bearbeitungsstatus = $this->bearbeitungsstatusRepository->getCertainNumberOfBearbeitungsstatus($start, $length, $orderings);
+			$recordsTotal = $this->bearbeitungsstatusRepository->getNumberOfEntries();
+			$recordsFiltered = $recordsTotal;
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('name', 'ASC');
+			}
+			$bearbeitungsstatus = $this->bearbeitungsstatusRepository->searchCertainNumberOfBearbeitungsstatus($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->bearbeitungsstatusRepository->searchCertainNumberOfBearbeitungsstatus($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->bearbeitungsstatusRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
+		$this->view->assign('bearbeitungsstatus', ['data' => $bearbeitungsstatus, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
 	}
 
@@ -56,7 +136,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObj);
 			$this->persistenceManager->persistAll();
 			$this->clearCachesFor('bearbeitungsstatus');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -122,7 +201,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			}
 			$this->bearbeitungsstatusRepository->remove($bearbeitungsstatusObj);
 			$this->clearCachesFor('bearbeitungsstatus');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Bearbeitungsstatus entity could not be deleted', NULL);
@@ -147,7 +225,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 		}
 		$this->persistenceManager->persistAll();
 		$this->clearCachesFor('bearbeitungsstatus');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

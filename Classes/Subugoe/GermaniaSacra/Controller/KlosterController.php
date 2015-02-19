@@ -182,72 +182,127 @@ class KlosterController extends AbstractBaseController {
 	);
 
 	/**
-	 * Fetches the actual Bearbeiter and assigns it to the view
+	 * @var string
 	 */
-	public function listAction() {
-		if (isset($this->bearbeiterObj) && is_object($this->bearbeiterObj)) {
-			$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-		}
-		if ($this->dumpLogFileExists) {
-			$this->view->assign('dumpLogFileExists', $this->dumpLogFileExists);
-		}
-	}
+	const  start = 0;
 
 	/**
-	 * @return array $response The Kloster array
+	 * @var string
 	 */
-	public function allAsJson() {
+	const  length = 100;
 
-		if ($this->cacheInterface->has('kloster')) {
-			return $this->cacheInterface->get('kloster');
+	/**
+	 * Returns the list of all Kloster entities
+	 * @FLOW\SkipCsrfProtection
+	 */
+	public function listAction() {
+		if ($this->request->getFormat() === 'json') {
+			$this->view->setVariablesToRender(array('kloster'));
 		}
-
-		$this->klosterRepository->setDefaultOrderings(
-				array('uid' => QueryInterface::ORDER_DESCENDING)
-		);
-		$klosters = $this->klosterRepository->findAll();
-		$klosterArr = array();
-		foreach ($klosters as $k => $kloster) {
-			$klosterArr[$k]['uUID'] = $kloster->getUUID();
-			$klosterArr[$k]['kloster'] = $kloster->getKloster();
-			$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
-			$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
-			$bearbeitungsstatus = $kloster->getBearbeitungsstatus();
-			$klosterArr[$k]['bearbeitungsstatus'] = $bearbeitungsstatus->getUUID();
-			$klosterstandorts = $kloster->getKlosterstandorts();
-			foreach ($klosterstandorts as $i => $klosterstandort) {
-				$ort = $klosterstandort->getOrt();
-				if (is_object($ort)) {
-					$klosterArr[$k]['ort'][$i] = $ort->getOrt();
+		if ($this->request->hasArgument('search'))  {
+			$searchValue = $this->request->getArgument('search')['value'];
+		}
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
 				}
 			}
-			if (!empty($klosterArr[$k]['ort'][$i])) {
-				$klosterArr[$k]['ort'] = implode(' / ', $klosterArr[$k]['ort']);
-			} else {
-				$klosterArr[$k]['ort'] = '';
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
 			}
-			$klosterHasUrls = $kloster->getKlosterHasUrls();
-			$klosterArr[$k]['gnd'] = '';
-			foreach ($klosterHasUrls as $klosterHasUrl) {
-				$urlObj = $klosterHasUrl->getUrl();
-				$url = $urlObj->getUrl();
-				$urlTypObj = $urlObj->getUrltyp();
-				if (is_object($urlTypObj)) {
-					$urlTyp = $urlTypObj->getName();
-					if ($urlTyp == "GND") {
-						$klosterArr[$k]['gnd'] = $url;
+		}
+		if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+			if ($orderDir === 'asc') {
+				$orderArr = array($orderBy, 'ASC');
+			}
+			elseif ($orderDir === 'desc') {
+				$orderArr = array($orderBy, 'DESC');
+			}
+		}
+		if (isset($orderArr) && !empty($orderArr)) {
+			$orderings = $orderArr;
+		}
+		else {
+			$orderings = array('kloster_id', 'ASC');
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (isset($searchValue) && !empty($searchValue)) {
+			$klosters = $this->klosterRepository->findKlosterByWildCard($start, $length, $searchValue, 1);
+			$recordsFiltered = $this->klosterRepository->findKlosterByWildCard($start, $length, $searchValue, 2);
+		}
+		elseif (isset($searchArr) && $searchArr !== array()) {
+			$klosters = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 2);
+		}
+		else {
+			$klosters = $this->klosterRepository->getCertainNumberOfKloster($start, $length, $orderings);
+		}
+		$recordsTotal = $this->klosterRepository->getNumberOfEntries();
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
+		if (isset($klosters) && $klosters !== array()) {
+			$klosterArr = array();
+			foreach ($klosters as $k => $kloster) {
+				$klosterArr[$k]['uUID'] = $kloster->getUUID();
+				$klosterArr[$k]['kloster'] = $kloster->getKloster();
+				$klosterArr[$k]['kloster_id'] = $kloster->getKloster_id();
+				$klosterArr[$k]['bearbeitungsstand'] = $kloster->getBearbeitungsstand();
+				$bearbeitungsstatus = $kloster->getBearbeitungsstatus();
+				$klosterArr[$k]['bearbeitungsstatus'] = $bearbeitungsstatus->getUUID();
+				$klosterstandorts = $kloster->getKlosterstandorts();
+				foreach ($klosterstandorts as $i => $klosterstandort) {
+					$ort = $klosterstandort->getOrt();
+					if (is_object($ort)) {
+						$klosterArr[$k]['ort'][$i] = $ort->getOrt();
+					}
+				}
+				if (!empty($klosterArr[$k]['ort'][$i])) {
+					$klosterArr[$k]['ort'] = implode(' / ', $klosterArr[$k]['ort']);
+				} else {
+					$klosterArr[$k]['ort'] = '';
+				}
+				$klosterHasUrls = $kloster->getKlosterHasUrls();
+				$klosterArr[$k]['gnd'] = '';
+				foreach ($klosterHasUrls as $klosterHasUrl) {
+					$urlObj = $klosterHasUrl->getUrl();
+					$url = $urlObj->getUrl();
+					$urlTypObj = $urlObj->getUrltyp();
+					if (is_object($urlTypObj)) {
+						$urlTyp = $urlTypObj->getName();
+						if ($urlTyp == "GND") {
+							$klosterArr[$k]['gnd'] = $url;
+						}
 					}
 				}
 			}
+			$this->view->assign('kloster', ['data' => $klosterArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
+			if (isset($this->bearbeiterObj) && is_object($this->bearbeiterObj)) {
+				$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+			}
+			if ($this->dumpLogFileExists) {
+				$this->view->assign('dumpLogFileExists', $this->dumpLogFileExists);
+			}
+			return $this->view->render();
 		}
-
-		$response = array();
-		$response['data'] = $klosterArr;
-		$viewRendered = json_encode($response);
-
-		$this->cacheInterface->set('kloster', $viewRendered);
-
-		return $viewRendered;
 	}
 
 	/**
@@ -321,9 +376,6 @@ class KlosterController extends AbstractBaseController {
 		$response[] = $ordenArr;
 		$response[] = $klosterstatusArr;
 		$response[] = $bearbeiterArr;
-
-		$this->cacheInterface->remove('kloster');
-
 		return json_encode($response);
 	}
 
@@ -639,8 +691,6 @@ class KlosterController extends AbstractBaseController {
 					}
 				}
 			}
-			$this->cacheInterface->remove('kloster');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 		else {
@@ -791,7 +841,6 @@ class KlosterController extends AbstractBaseController {
 		if ($this->cacheInterface->has('getOptions')) {
 			return $this->cacheInterface->get('getOptions');
 		}
-		$role = array_keys($this->securityContext->getAccount()->getRoles())[0];
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
 		$this->bearbeitungsstatusRepository->setDefaultOrderings(
@@ -1293,8 +1342,6 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 		}
-		$this->cacheInterface->remove('kloster');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 
@@ -1336,8 +1383,6 @@ class KlosterController extends AbstractBaseController {
 				$this->klosterHasUrlRepository->remove($url);
 			}
 		}
-		$this->cacheInterface->remove('kloster');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 
@@ -1416,8 +1461,6 @@ class KlosterController extends AbstractBaseController {
 			}
 			$this->persistenceManager->persistAll();
 		}
-		$this->cacheInterface->remove('kloster');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 

@@ -66,14 +66,92 @@ class OrtController extends AbstractBaseController {
 	);
 
 	/**
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
 	 * List of all Ort entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ort'));
 		}
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('ort' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$orts = $this->ortRepository->getCertainNumberOfOrt($start, $length, $orderings);
+			$recordsTotal = $this->ortRepository->getNumberOfEntries();
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('ort', 'ASC');
+			}
+			$orts = $this->ortRepository->searchCertainNumberOfOrt($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->ortRepository->searchCertainNumberOfOrt($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->ortRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
 		$ortArr = array();
-		$orts = $this->ortRepository->findAll();
 		foreach ($orts as $k => $ort) {
 			if (is_object($ort)) {
 				$uUID = $ort->getUUID();
@@ -137,16 +215,8 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 		}
-		$this->view->assign('ort', ['data' => $ortArr]);
+		$this->view->assign('ort', ['data' => $ortArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
-		if ($this->request->getFormat() === 'json') {
-			if ($this->cacheInterface->has('ort')) {
-				return $this->cacheInterface->get('ort');
-			}
-			$viewRendered = $this->view->render();
-			$this->cacheInterface->set('ort', $viewRendered);
-			return $viewRendered;
-		}
 		return $this->view->render();
 	}
 
@@ -267,8 +337,6 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ort');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Ort not available', NULL);
@@ -321,7 +389,6 @@ class OrtController extends AbstractBaseController {
 			}
 		}
 		$ortArr['url'] = $Urls;
-
 		return json_encode($ortArr);
 	}
 
@@ -493,8 +560,6 @@ class OrtController extends AbstractBaseController {
 				}
 			}
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ort');
-
 			$this->throwStatus(200, NULL, NUll);
 		} else {
 			$this->throwStatus(400, 'Entity Ort not available', NULL);
@@ -528,9 +593,7 @@ class OrtController extends AbstractBaseController {
 					$this->ortHasUrlRepository->remove($ortHasUrl);
 				}
 			}
-			$this->clearCachesFor('ort');
 			$this->throwStatus(200, NULL, NULL);
-
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Ort entity could not be deleted', NULL);
 		}
@@ -573,8 +636,6 @@ class OrtController extends AbstractBaseController {
 			}
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('ort');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

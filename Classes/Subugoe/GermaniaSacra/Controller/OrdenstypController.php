@@ -32,14 +32,95 @@ class OrdenstypController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Ordenstyp entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('ordenstyp'));
 		}
-		$this->view->assign('ordenstyp', ['data' => $this->ordenstypRepository->findAll()]);
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('name' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$ordenstyp = $this->ordenstypRepository->getCertainNumberOfOrdenstyp($start, $length, $orderings);
+			$recordsTotal = $this->ordenstypRepository->getNumberOfEntries();
+			$recordsFiltered = $recordsTotal;
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('name', 'ASC');
+			}
+			$ordenstyp = $this->ordenstypRepository->searchCertainNumberOfOrdenstyp($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->ordenstypRepository->searchCertainNumberOfOrdenstyp($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->ordenstypRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
+		$this->view->assign('ordenstyp', ['data' => $ordenstyp, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -55,8 +136,6 @@ class OrdenstypController extends AbstractBaseController {
 			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
 			$this->ordenstypRepository->add($ordenstypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ordenstyp');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -95,8 +174,6 @@ class OrdenstypController extends AbstractBaseController {
 			$ordenstypObj->setOrdenstyp($this->request->getArgument('ordenstyp'));
 			$this->ordenstypRepository->update($ordenstypObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('ordenstyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Ordenstyp not available', NULL);
@@ -121,8 +198,6 @@ class OrdenstypController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Ordenstyp not available', NULL);
 			}
 			$this->ordenstypRepository->remove($ordenstypObj);
-			$this->clearCachesFor('ordenstyp');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Ordenstyp entity could not be deleted', NULL);
@@ -146,8 +221,6 @@ class OrdenstypController extends AbstractBaseController {
 			$this->ordenstypRepository->update($ordenstypObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('ordenstyp');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

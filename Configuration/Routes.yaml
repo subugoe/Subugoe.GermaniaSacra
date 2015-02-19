@@ -10,20 +10,6 @@
     '@action': 'list'
 
 -
-  name: 'JSON-List Kloster URI'
-  uriPattern: 'jsonList'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'jsonList'
-
--
-  name: 'JSON-List-All Kloster URI'
-  uriPattern: 'klosterListAll'
-  defaults:
-    '@controller': 'Kloster'
-    '@action': 'klosterListAll'
-
--
   name: 'Proxy for static files'
   uriPattern: 'entity/{entityName}'
   defaults:
@@ -72,6 +58,7 @@
   uriPattern: '{@controller}/{@action}'
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
+    '@format': 'json'
 
 -
   name: 'Default list routes (controller with action and id)'

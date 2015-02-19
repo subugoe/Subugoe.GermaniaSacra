@@ -32,14 +32,95 @@ class LandController extends AbstractBaseController {
 	);
 
 	/**
-	 * @return void
+	 * @var string
+	 */
+	const  start = 0;
+
+	/**
+	 * @var string
+	 */
+	const  length = 100;
+
+	/**
+	 * Returns the list of all Land entities
+	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('land'));
 		}
-		$this->view->assign('land', ['data' => $this->landRepository->findAll()]);
+		$searchArr = array();
+		if ($this->request->hasArgument('columns'))  {
+			$columns = $this->request->getArgument('columns');
+			foreach ($columns as $column) {
+				if (!empty($column['data']) && !empty($column['search']['value'])) {
+					$searchArr[$column['data']] = $column['search']['value'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('order')) {
+			$order = $this->request->getArgument('order');
+			if (!empty($order)) {
+				$orderDir = $order[0]['dir'];
+				$orderById = $order[0]['column'];
+				if (!empty($orderById)) {
+					$columns = $this->request->getArgument('columns');
+					$orderBy = $columns[$orderById]['data'];
+				}
+			}
+		}
+		if ($this->request->hasArgument('draw')) {
+			$draw = $this->request->getArgument('draw');
+		}
+		else {
+			$draw = 0;
+		}
+		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
+		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
+		if (empty($searchArr)) {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING);
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('land' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING);
+			}
+			$land = $this->landRepository->getCertainNumberOfLand($start, $length, $orderings);
+			$recordsTotal = $this->landRepository->getNumberOfEntries();
+			$recordsFiltered = $recordsTotal;
+		}
+		else {
+			if ((isset($orderBy) && !empty($orderBy)) && (isset($orderDir) && !empty($orderDir))) {
+				if ($orderDir === 'asc') {
+					$orderArr = array($orderBy, 'ASC');
+				}
+				elseif ($orderDir === 'desc') {
+					$orderArr = array($orderBy, 'DESC');
+				}
+			}
+			if (isset($orderArr) && !empty($orderArr)) {
+				$orderings = $orderArr;
+			}
+			else {
+				$orderings = array('land', 'ASC');
+			}
+			$land = $this->landRepository->searchCertainNumberOfLand($start, $length, $orderings, $searchArr, 1);
+			$recordsFiltered = $this->landRepository->searchCertainNumberOfLand($start, $length, $orderings, $searchArr, 2);
+			$recordsTotal = $this->landRepository->getNumberOfEntries();
+		}
+		if (!isset($recordsFiltered)) {
+			$recordsFiltered = $recordsTotal;
+		}
+		$this->view->assign('land', ['data' => $land, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
 		$this->view->assign('bearbeiter', $this->bearbeiterObj->getBearbeiter());
+		return $this->view->render();
 	}
 
 	/**
@@ -56,8 +137,6 @@ class LandController extends AbstractBaseController {
 			$landObj->setIst_in_deutschland($this->request->hasArgument('ist_in_deutschland'));
 			$this->landRepository->add($landObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('land');
-
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -98,8 +177,6 @@ class LandController extends AbstractBaseController {
 			$landObj->setIst_in_deutschland($this->request->hasArgument('ist_in_deutschland'));
 			$this->landRepository->update($landObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('land');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Land not available', NULL);
@@ -124,8 +201,6 @@ class LandController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Land not available', NULL);
 			}
 			$this->landRepository->remove($landObj);
-			$this->clearCachesFor('land');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Land entity could not be deleted', NULL);
@@ -155,8 +230,6 @@ class LandController extends AbstractBaseController {
 			$this->landRepository->update($landObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('land');
-
 		$this->throwStatus(200, NULL, NULL);
 	}
 }

@@ -6,32 +6,24 @@ germaniaSacra.controller('listController', function($scope) {
     var type;
     if (newval != null) {
       type = $('#list').data('type');
-      if ($('#list').data('no-table') != null) {
-        germaniaSacra.message(germaniaSacra.messages.loading, false);
-        $('#list').hide();
-        return $.getJSON(type, function(json) {
-          germaniaSacra.hideMessage();
-          return $('#list').append("<p>" + json.message + "</p>").slideDown();
+      germaniaSacra.search = new germaniaSacra.Search();
+      germaniaSacra.editor = new germaniaSacra.Editor(type);
+      $('#message, #search, #list').hide();
+      $('.togglable + .togglable').hide();
+      return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
+        germaniaSacra.selectOptions = selectOptions;
+        germaniaSacra.list = new germaniaSacra.List(type);
+        $('.toggle').click(function(e) {
+          e.preventDefault();
+          return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
         });
-      } else {
-        germaniaSacra.search = new germaniaSacra.Search();
-        germaniaSacra.editor = new germaniaSacra.Editor(type);
-        $('#message, #search, #list').hide();
-        $('.togglable + .togglable').hide();
-        return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
-          germaniaSacra.selectOptions = selectOptions;
-          germaniaSacra.list = new germaniaSacra.List(type);
-          $('.toggle').click(function(e) {
-            e.preventDefault();
-            return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
-          });
-          germaniaSacra.bindKeys();
-          $('#edit form, #list form').appendSaveButton();
-          return $('fieldset .multiple').appendAddRemoveButtons();
-        }, function() {
-          return germaniaSacra.message('Fehler: Optionen können nicht geladen werden');
-        });
-      }
+        germaniaSacra.bindKeys();
+        $('#edit form').appendSaveButton('Änderungen speichern');
+        $('#list form').appendSaveButton('<span class="count">0</span> <span class="singular hidden">geänderten Datensatz</span><span class="plural">geänderte Datensätze</span> speichern');
+        return $('fieldset .multiple').appendAddRemoveButtons();
+      }, function() {
+        return germaniaSacra.message('optionsLoadError');
+      });
     }
   }), true);
   return $scope.$on('$locationChangeStart', function(e) {
@@ -74,21 +66,21 @@ germaniaSacra.bindKeys = function() {
           return $('button.new:visible:last').click();
         case 's':
           e.preventDefault();
-          return $(':submit[type=submit]:visible:last').click();
+          return $('[type=submit]:visible:last').click();
       }
     }
   });
 };
 
-germaniaSacra.message = function(text, withTimestampAndCloseButton) {
-  var $close, $message, date, timestamp;
+germaniaSacra.message = function(messageId, withTimestampAndCloseButton) {
+  var $close, $message, date, text, timestamp;
   if (withTimestampAndCloseButton == null) {
     withTimestampAndCloseButton = true;
   }
   $message = $('#message');
   date = new Date();
   timestamp = withTimestampAndCloseButton ? "<span class='timestamp'>" + (date.toLocaleString()) + "</span>" : '';
-  text = "<span class='text'>" + text + "</span>";
+  text = "<span class='text'>" + germaniaSacra.messages[messageId] + "</span>";
   $message.hide().html(timestamp + text).show();
   if (withTimestampAndCloseButton) {
     $close = $("<i class='hover close icon-close right'>&times;</i>");

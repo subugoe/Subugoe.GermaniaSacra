@@ -5,7 +5,6 @@ class germaniaSacra.Editor
 		@scope = $('#edit')
 		self = @
 
-		$('textarea', @scope).autosize()
 		@scope.hide()
 
 		# Update clickable URL next to URL input
@@ -17,7 +16,7 @@ class germaniaSacra.Editor
 		$(':input:not([name=uUID])', @scope).change ->
 			$(this).closest("label").addClass("dirty")
 			$('body').addClass('dirty')
-			$(':submit[type=submit]', self.scope).prop('disabled', false)
+			$('[type=submit]', self.scope).prop('disabled', false)
 
 		$('.close', @scope).click (e) ->
 			if not $('.dirty', self.scope).length or confirm(germaniaSacra.messages.askUnsavedChanges)
@@ -47,17 +46,17 @@ class germaniaSacra.Editor
 		$form.find('select[name=personallistenstatus] option:contains("Erfassung")').prop('selected', true)
 		$('select', @scope).autocomplete()
 		$form.find('input[type=url]').keyup()
-		$form.find('textarea').trigger('autosize.resize')
+		$form.find('textarea').autosize()
 
 	# Create a new Kloster
 	create: (data) ->
 		$form = $('form', @scope)
 		$.post(@type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
-			germaniaSacra.message 'Ein neuer Eintrag wurde angelegt.'
+			germaniaSacra.message 'entryCreated'
 			$form.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')
 		).fail ->
-			germaniaSacra.message 'Fehler: Eintrag konnte nicht angelegt werden.'
+			germaniaSacra.message 'entryCreateError'
 
 	# Load a single entity into the edit form
 	edit: (id) ->
@@ -68,7 +67,7 @@ class germaniaSacra.Editor
 		$form.clearForm()
 
 		$('#search, #list').slideUp()
-		germaniaSacra.message germaniaSacra.messages.loading, false
+		germaniaSacra.message 'loading', false
 
 		$.getJSON("#{type}/edit/#{id}").done( (obj) =>
 
@@ -170,12 +169,12 @@ class germaniaSacra.Editor
 			germaniaSacra.hideMessage()
 			$form.find('select').autocomplete()
 			$form.find('input[type=url]').keyup()
-			$form.find('textarea').trigger('autosize.resize')
+			$form.find('textarea').autosize()
 			# TODO: This should not be necessary, so why is it?
-			$(':submit[type=submit]', @scope).prop('disabled', true)
+			$('[type=submit]', @scope).prop('disabled', true)
 
 		).fail( ->
-			germaniaSacra.message 'Fehler: Daten konnten nicht geladen werden.'
+			germaniaSacra.message 'dataLoadError'
 		)
 
 	# Update a single entity
@@ -183,11 +182,11 @@ class germaniaSacra.Editor
 		$form = $('form', @scope)
 		uuid = $form.find(':input[name=uUID]').first().val()
 		$.post("#{@type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) =>
-			germaniaSacra.message 'Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;'
+			germaniaSacra.message 'changesSaved'
 			$form.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')
-			$(':submit[type=submit]', @scope).prop('disabled', true)
+			$('[type=submit]', @scope).prop('disabled', true)
 			$('.close', @scope).click()
 			germaniaSacra.list.reload()
 		).fail ->
-			germaniaSacra.message 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'
+			germaniaSacra.message 'changesSaveError'
