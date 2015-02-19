@@ -1166,7 +1166,7 @@ class DataImportController extends ActionController {
 		}
 		$csvArr = $this->citekeysAction();
 		$sqlConnection = $this->entityManager->getConnection();
-		$sql = 'SELECT * FROM Klosterstandort ORDER  BY ID_Kloster ASC';
+		$sql = 'SELECT * FROM Klosterstandort ORDER  BY Klosternummer ASC';
 		$Klosterstandorts = $sqlConnection->fetchAll($sql);
 		$literaturKeyArr = array();
 		if (isset($Klosterstandorts) and is_array($Klosterstandorts)) {
@@ -1272,6 +1272,9 @@ class DataImportController extends ActionController {
 								$this->dumpImportlogger->log('Kein citekey für das Buch ' . $buch . ' beim Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
 							}
 						}
+						else {
+							$this->dumpImportlogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
+						}
 					}
 				}
 				$nKlosterstandort++;
@@ -1280,9 +1283,8 @@ class DataImportController extends ActionController {
 				if ($klosterObject === Null) {
 					$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . 'wurde nicht gefunden.', LOG_ERR);
 				}
-
 				if ($ortObject === Null) {
-					$this->dumpImportlogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . 'wurde nicht gefunden.', LOG_ERR);
+					$this->dumpImportlogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . ' wurde nicht gefunden.', LOG_ERR);
 				}
 			}
 			}
@@ -1491,11 +1493,11 @@ class DataImportController extends ActionController {
 				}
 				else {
 					if ($klosterObject === Null) {
-						$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterordentabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . 'wurde nicht gefunden.', LOG_ERR);
+						$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterordentabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . ' wurde nicht gefunden.', LOG_ERR);
 					}
 
 					if ($ordenObject === Null) {
-						$this->dumpImportlogger->log('Entweder ist das Feld Orden in Klosterordentabelle leer oder das Ordenobject in der Ordentabelle für den Orden mit der Id = ' . $orden . 'wurde nicht gefunden.',  LOG_ERR);
+						$this->dumpImportlogger->log('Entweder ist das Feld Orden in Klosterordentabelle leer oder das Ordenobject in der Ordentabelle für den Orden mit der Id = ' . $orden . ' wurde nicht gefunden.',  LOG_ERR);
 					}
 				}
 			}
