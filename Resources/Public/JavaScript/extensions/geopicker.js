@@ -69,7 +69,7 @@ $.fn.geopicker = function() {
         var doit;
         lat = e.latlng.lat.toFixed(6);
         lng = e.latlng.lng.toFixed(6);
-        doit = confirm("Sollen die Koordinaten " + lat + ", " + lng + " übernommen werden?");
+        doit = confirm('Sollen die Koordinaten #{lat}, #{lng} übernommen werden?');
         if (doit === true) {
           $(':input[name$="breite[]"]', scope).val(lat);
           $(':input[name$="laenge[]"]', scope).val(lng);
@@ -80,11 +80,11 @@ $.fn.geopicker = function() {
         var borders, style;
         style = {
           clickable: false,
-          color: "#f49739",
-          fillColor: "#f49739",
-          weight: 3,
+          color: "#000",
+          fillColor: "#000",
+          weight: 1.5,
           opacity: 0.3,
-          fillOpacity: 0.1
+          fillOpacity: 0.05
         };
         borders = L.geoJson(data, {
           style: style

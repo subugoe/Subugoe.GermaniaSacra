@@ -81,7 +81,7 @@ $.fn.geopicker = ->
 		map.on 'click', onMapClick = (e) =>
 			lat = e.latlng.lat.toFixed(6)
 			lng = e.latlng.lng.toFixed(6)
-			doit = confirm "Sollen die Koordinaten #{lat}, #{lng} übernommen werden?"
+			doit = confirm 'Sollen die Koordinaten #{lat}, #{lng} übernommen werden?'
 			if doit is true
 				# Insert values into input fields, cut to 6 decimals (corresponds to a precision of about 10 cm)
 				$(':input[name$="breite[]"]', scope).val lat
@@ -92,11 +92,11 @@ $.fn.geopicker = ->
 		$.getJSON(geoJsonSrc).success (data) ->
 			style =
 				clickable: false
-				color: "#f49739"
-				fillColor: "#f49739"
-				weight: 3
+				color: "#000"
+				fillColor: "#000"
+				weight: 1.5
 				opacity: 0.3
-				fillOpacity: 0.1
+				fillOpacity: 0.05
 			borders = L.geoJson( data,
 				style: style
 			)
