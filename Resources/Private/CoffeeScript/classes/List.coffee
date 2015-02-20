@@ -59,6 +59,9 @@ class germaniaSacra.List
 				url: @type + '/list/'
 				type: 'post'
 				dataSrc: (json) -> self.onJsonLoad(json)
+				data: (d) ->
+					d.advancedSearch = germaniaSacra.search.advancedSearchRequest
+					return
 			serverSide: true
 			columns: columns
 			autoWidth: false

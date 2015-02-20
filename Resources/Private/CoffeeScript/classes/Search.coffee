@@ -4,6 +4,8 @@ class germaniaSacra.Search
 
 		@scope = $('#simple-search, #advanced-search')
 
+		@advancedSearchRequest = null
+
 		$('select', @scope).autocomplete()
 
 		$('#simple-search').submit =>
@@ -14,33 +16,24 @@ class germaniaSacra.Search
 
 		$('.reset', @scope).click (e) =>
 			e.preventDefault()
-			@reset()
+			@reset(true)
 
 	simpleSearch: ->
 		germaniaSacra.message 'loading', false
 		germaniaSacra.list.resetFilters()
 		searchString = $("#simple-search [name='alle']").val()
+		@advancedSearchRequest = null
 		germaniaSacra.list.dataTable.search( searchString, true, false ).draw()
 
 	advancedSearch: ->
 		germaniaSacra.message 'loading', false
-		json = $('#advanced-search').serializeArray()
-		search = $.post '/search', json
-		search.success (data) ->
-			data = $.parseJSON(data)
-			if data.length
-				# Enable regex, disable smart search (enabling both will not work)
-				searchString = data.join('|')
-				germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw()
-			else
-				# Reset
-				germaniaSacra.list.dataTable.draw()
-		search.fail (data) ->
-			$('#message').slideUp()
-			alert 'Suche fehlgeschlagen'
+		germaniaSacra.list.resetFilters()
+		@advancedSearchRequest = $('#advanced-search').serializeArray()
+		germaniaSacra.list.dataTable.ajax.reload()
 
 	reset: (redraw = false) ->
 		@scope.clearForm()
+		@advancedSearchRequest = null
 		germaniaSacra.list.dataTable.search('')
 		if redraw
 			germaniaSacra.message 'loading', false
