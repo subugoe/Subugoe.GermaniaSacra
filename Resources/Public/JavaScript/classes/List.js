@@ -60,6 +60,9 @@ germaniaSacra.List = (function() {
         type: 'post',
         dataSrc: function(json) {
           return self.onJsonLoad(json);
+        },
+        data: function(d) {
+          d.advancedSearch = germaniaSacra.search.advancedSearchRequest;
         }
       },
       serverSide: true,

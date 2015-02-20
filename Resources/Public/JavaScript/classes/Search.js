@@ -2,6 +2,7 @@
 germaniaSacra.Search = (function() {
   function Search() {
     this.scope = $('#simple-search, #advanced-search');
+    this.advancedSearchRequest = null;
     $('select', this.scope).autocomplete();
     $('#simple-search').submit((function(_this) {
       return function() {
@@ -16,7 +17,7 @@ germaniaSacra.Search = (function() {
     $('.reset', this.scope).click((function(_this) {
       return function(e) {
         e.preventDefault();
-        return _this.reset();
+        return _this.reset(true);
       };
     })(this));
   }
@@ -26,28 +27,15 @@ germaniaSacra.Search = (function() {
     germaniaSacra.message('loading', false);
     germaniaSacra.list.resetFilters();
     searchString = $("#simple-search [name='alle']").val();
+    this.advancedSearchRequest = null;
     return germaniaSacra.list.dataTable.search(searchString, true, false).draw();
   };
 
   Search.prototype.advancedSearch = function() {
-    var json, search;
     germaniaSacra.message('loading', false);
-    json = $('#advanced-search').serializeArray();
-    search = $.post('/search', json);
-    search.success(function(data) {
-      var searchString;
-      data = $.parseJSON(data);
-      if (data.length) {
-        searchString = data.join('|');
-        return germaniaSacra.list.dataTable.column(0).search(searchString, true, false).draw();
-      } else {
-        return germaniaSacra.list.dataTable.draw();
-      }
-    });
-    return search.fail(function(data) {
-      $('#message').slideUp();
-      return alert('Suche fehlgeschlagen');
-    });
+    germaniaSacra.list.resetFilters();
+    this.advancedSearchRequest = $('#advanced-search').serializeArray();
+    return germaniaSacra.list.dataTable.ajax.reload();
   };
 
   Search.prototype.reset = function(redraw) {
@@ -55,6 +43,7 @@ germaniaSacra.Search = (function() {
       redraw = false;
     }
     this.scope.clearForm();
+    this.advancedSearchRequest = null;
     germaniaSacra.list.dataTable.search('');
     if (redraw) {
       germaniaSacra.message('loading', false);
