@@ -54,6 +54,14 @@
     '@action':     'list'
 
 -
+  name: 'Default list routes (controller only)'
+  uriPattern: 'dump/dump'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'
+    '@controller': 'Dump'
+    '@action':     'dump'
+
+-
   name: 'Default list routes (controller with action)'
   uriPattern: '{@controller}/{@action}'
   defaults:
