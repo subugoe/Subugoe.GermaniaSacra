@@ -9,11 +9,11 @@ germaniaSacra.controller 'listController', ($scope) ->
 			if $('#list').data('no-table')?
 				germaniaSacra.message 'loading', false
 				$('#list').hide()
-				$.getJSON(type)
-					.done (json) ->
+				$.get(type)
+					.done (text) ->
 						germaniaSacra.hideMessage()
 						$('#list')
-							.append "<p>#{json.message}</p>"
+							.append ( if $('#list').data('code')? then "<pre>#{text}</pre>" else "<p>#{text}</p>" )
 							.slideDown()
 					.fail () ->
 						germaniaSacra.message 'publishError', false

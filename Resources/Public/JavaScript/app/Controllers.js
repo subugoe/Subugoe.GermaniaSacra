@@ -9,9 +9,9 @@ germaniaSacra.controller('listController', function($scope) {
       if ($('#list').data('no-table') != null) {
         germaniaSacra.message('loading', false);
         $('#list').hide();
-        return $.getJSON(type).done(function(json) {
+        return $.get(type).done(function(text) {
           germaniaSacra.hideMessage();
-          return $('#list').append("<p>" + json.message + "</p>").slideDown();
+          return $('#list').append(($('#list').data('code') != null ? "<pre>" + text + "</pre>" : "<p>" + text + "</p>")).slideDown();
         }).fail(function() {
           return germaniaSacra.message('publishError', false);
         });
