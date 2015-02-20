@@ -213,6 +213,7 @@ germaniaSacra.Editor = (function() {
     uuid = $form.find(':input[name=uUID]').first().val();
     return $.post("" + this.type + "/update/" + uuid, $form.serialize()).done((function(_this) {
       return function(respond, status, jqXHR) {
+        germaniaSacra.keepSelectOptions = false;
         germaniaSacra.message('changesSaved');
         $form.find('.dirty').removeClass('dirty');
         $('body').removeClass('dirty');

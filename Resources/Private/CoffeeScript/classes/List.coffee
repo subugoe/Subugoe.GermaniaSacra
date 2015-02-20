@@ -112,6 +112,7 @@ class germaniaSacra.List
 	updateList: ->
 
 		$.post(@type + '/updateList', @formData).done( (respond, status, jqXHR) =>
+			germaniaSacra.keepSelectOptions = false
 			@formData.data = {}
 			@scope.find('.dirty').removeClass('dirty')
 			$('body').removeClass('dirty')

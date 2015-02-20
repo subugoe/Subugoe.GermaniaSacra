@@ -48,19 +48,23 @@ germaniaSacra.controller 'listController', ($scope) ->
 				e.preventDefault()
 
 germaniaSacra.getOptions = ->
-	dfd = $.Deferred()
-	# Load options for selects before initializing list
-	$.getJSON 'getOptions', (response) ->
-		$.each response, (name, values) ->
-			$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
-			$selects.empty()
-			$.each values, (uUID, text) ->
-				$selects.append $('<option/>',
-					value: uUID
-					text: text
-				)
-		dfd.resolve(response)
-	return dfd.promise()
+	if germaniaSacra.keepSelectOptions? and germaniaSacra.keepSelectOptions is true
+		return germaniaSacra.selectOptions
+	else
+		dfd = $.Deferred()
+		# Load options for selects before initializing list
+		$.getJSON 'getOptions', (response) ->
+			$.each response, (name, values) ->
+				$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
+				$selects.empty()
+				$.each values, (uUID, text) ->
+					$selects.append $('<option/>',
+						value: uUID
+						text: text
+					)
+			germaniaSacra.keepSelectOptions = true
+			dfd.resolve(response)
+		return dfd.promise()
 
 germaniaSacra.bindKeys = ->
 	$(window).bind 'keydown', (e) ->
