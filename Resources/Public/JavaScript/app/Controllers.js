@@ -6,24 +6,35 @@ germaniaSacra.controller('listController', function($scope) {
     var type;
     if (newval != null) {
       type = $('#list').data('type');
-      germaniaSacra.search = new germaniaSacra.Search();
-      germaniaSacra.editor = new germaniaSacra.Editor(type);
-      $('#message, #search, #list').hide();
-      $('.togglable + .togglable').hide();
-      return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
-        germaniaSacra.selectOptions = selectOptions;
-        germaniaSacra.list = new germaniaSacra.List(type);
-        $('.toggle').click(function(e) {
-          e.preventDefault();
-          return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
+      if ($('#list').data('no-table') != null) {
+        germaniaSacra.message('loading', false);
+        $('#list').hide();
+        return $.getJSON(type).done(function(json) {
+          germaniaSacra.hideMessage();
+          return $('#list').append("<p>" + json.message + "</p>").slideDown();
+        }).fail(function() {
+          return germaniaSacra.message('publishError', false);
         });
-        germaniaSacra.bindKeys();
-        $('#edit form').appendSaveButton('Änderungen speichern');
-        $('#list form').appendSaveButton('<span class="count">0</span> <span class="singular hidden">geänderten Datensatz</span><span class="plural">geänderte Datensätze</span> speichern');
-        return $('fieldset .multiple').appendAddRemoveButtons();
-      }, function() {
-        return germaniaSacra.message('optionsLoadError');
-      });
+      } else {
+        germaniaSacra.search = new germaniaSacra.Search();
+        germaniaSacra.editor = new germaniaSacra.Editor(type);
+        $('#message, #search, #list').hide();
+        $('.togglable + .togglable').hide();
+        return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
+          germaniaSacra.selectOptions = selectOptions;
+          germaniaSacra.list = new germaniaSacra.List(type);
+          $('.toggle').click(function(e) {
+            e.preventDefault();
+            return $(this).closest('.togglable').siblings('.togglable').addBack().slideToggle();
+          });
+          germaniaSacra.bindKeys();
+          $('#edit form').appendSaveButton('saveChanges');
+          $('#list form').appendSaveButton('saveChangesWithCount');
+          return $('fieldset .multiple').appendAddRemoveButtons();
+        }, function() {
+          return germaniaSacra.message('optionsLoadError');
+        });
+      }
     }
   }), true);
   return $scope.$on('$locationChangeStart', function(e) {

@@ -21,6 +21,8 @@ germaniaSacra.config ($routeProvider, $locationProvider) ->
 	.otherwise({ redirectTo: '/' })
 
 germaniaSacra.messages =
+	saveChanges: 'Änderungen speichern'
+	saveChangesWithCount: '<span class="count">0</span> <span class="singular hidden">geänderten Datensatz</span><span class="plural">geänderte Datensätze</span> speichern'
 	askDelete: 'Möchten Sie diesen Eintrag wirklich löschen?'
 	askRemove: 'Möchten Sie dieses Feld wirklich entfernen?'
 	askUnsavedChanges: 'Sind Sie sicher, dass Sie diese Ansicht verlassen möchten? Ihre Änderungen wurden nicht gespeichert.'
@@ -29,6 +31,7 @@ germaniaSacra.messages =
 	entryCreated: 'Ein neuer Eintrag wurde angelegt.'
 	entryCreateError: 'Fehler: Eintrag konnte nicht angelegt werden.'
 	dataLoadError: 'Fehler: Daten konnten nicht geladen werden.'
+	publishError: 'Fehler: Daten konnten nicht veröffentlicht werden.'
 	changesSaved: 'Ihre Änderungen wurden gespeichert.'
 	changesSavedReloadList: 'Ihre Änderungen wurden gespeichert. <i class="spinner spinner-icon"></i> Liste wird neu geladen&hellip;'
 	changesSaveError: 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.'

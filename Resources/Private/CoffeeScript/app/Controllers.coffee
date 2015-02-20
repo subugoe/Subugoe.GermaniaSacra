@@ -6,25 +6,37 @@ germaniaSacra.controller 'listController', ($scope) ->
 	), ((newval, oldval) ->
 		if newval?
 			type = $('#list').data('type')
-			germaniaSacra.search = new germaniaSacra.Search()
-			germaniaSacra.editor = new germaniaSacra.Editor(type)
-			$('#message, #search, #list').hide()
-			$('.togglable + .togglable').hide()
-			$.when( germaniaSacra.getOptions() ).then(
-				(selectOptions) ->
-					germaniaSacra.selectOptions = selectOptions
-					germaniaSacra.list = new germaniaSacra.List(type)
-					$('.toggle').click (e) ->
-						e.preventDefault()
-						$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
-					germaniaSacra.bindKeys()
-					$('#edit form').appendSaveButton 'Änderungen speichern'
-					$('#list form').appendSaveButton '<span class="count">0</span> <span class="singular hidden">geänderten Datensatz</span><span class="plural">geänderte Datensätze</span> speichern'
-					$('fieldset .multiple').appendAddRemoveButtons()
-				,
-				->
-					germaniaSacra.message 'optionsLoadError'
-			)
+			if $('#list').data('no-table')?
+				germaniaSacra.message 'loading', false
+				$('#list').hide()
+				$.getJSON(type)
+					.done (json) ->
+						germaniaSacra.hideMessage()
+						$('#list')
+							.append "<p>#{json.message}</p>"
+							.slideDown()
+					.fail () ->
+						germaniaSacra.message 'publishError', false
+			else
+				germaniaSacra.search = new germaniaSacra.Search()
+				germaniaSacra.editor = new germaniaSacra.Editor(type)
+				$('#message, #search, #list').hide()
+				$('.togglable + .togglable').hide()
+				$.when( germaniaSacra.getOptions() ).then(
+					(selectOptions) ->
+						germaniaSacra.selectOptions = selectOptions
+						germaniaSacra.list = new germaniaSacra.List(type)
+						$('.toggle').click (e) ->
+							e.preventDefault()
+							$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
+						germaniaSacra.bindKeys()
+						$('#edit form').appendSaveButton 'saveChanges'
+						$('#list form').appendSaveButton 'saveChangesWithCount'
+						$('fieldset .multiple').appendAddRemoveButtons()
+					,
+					->
+						germaniaSacra.message 'optionsLoadError'
+				)
 	), true
 
 	# Confirm discard changes on view change
