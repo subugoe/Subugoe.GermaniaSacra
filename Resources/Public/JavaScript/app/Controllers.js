@@ -50,22 +50,27 @@ germaniaSacra.controller('listController', function($scope) {
 
 germaniaSacra.getOptions = function() {
   var dfd;
-  dfd = $.Deferred();
-  $.getJSON('getOptions', function(response) {
-    $.each(response, function(name, values) {
-      var $selects;
-      $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid']");
-      $selects.empty();
-      return $.each(values, function(uUID, text) {
-        return $selects.append($('<option/>', {
-          value: uUID,
-          text: text
-        }));
+  if ((germaniaSacra.keepSelectOptions != null) && germaniaSacra.keepSelectOptions === true) {
+    return germaniaSacra.selectOptions;
+  } else {
+    dfd = $.Deferred();
+    $.getJSON('getOptions', function(response) {
+      $.each(response, function(name, values) {
+        var $selects;
+        $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid']");
+        $selects.empty();
+        return $.each(values, function(uUID, text) {
+          return $selects.append($('<option/>', {
+            value: uUID,
+            text: text
+          }));
+        });
       });
+      germaniaSacra.keepSelectOptions = true;
+      return dfd.resolve(response);
     });
-    return dfd.resolve(response);
-  });
-  return dfd.promise();
+    return dfd.promise();
+  }
 };
 
 germaniaSacra.bindKeys = function() {

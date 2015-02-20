@@ -126,6 +126,7 @@ germaniaSacra.List = (function() {
   List.prototype.updateList = function() {
     $.post(this.type + '/updateList', this.formData).done((function(_this) {
       return function(respond, status, jqXHR) {
+        germaniaSacra.keepSelectOptions = false;
         _this.formData.data = {};
         _this.scope.find('.dirty').removeClass('dirty');
         $('body').removeClass('dirty');
