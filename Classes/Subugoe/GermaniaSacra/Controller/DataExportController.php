@@ -206,7 +206,7 @@ class DataExportController extends ActionController {
 
 		$this->logger->log($logMessage);
 
-		return json_encode(array('message' => $logMessage));
+		return $logMessage;
 	}
 
 	/**
