@@ -10,6 +10,13 @@ h2 {
 	padding-bottom: .5em;
 }
 
+pre {
+	background: white;
+	max-width: 100%;
+	overflow: auto;
+	padding: 1em;
+}
+
 footer {
 	@include radius(0 $input-border-radius 0 0);
 	background: #fff;
