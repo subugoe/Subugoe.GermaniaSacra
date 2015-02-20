@@ -1,9 +1,9 @@
-$.fn.appendSaveButton = (html) ->
+$.fn.appendSaveButton = (messageId) ->
 	@each ->
 		$button = $('<button/>',
 			disabled: 'disabled'
 			type: 'submit'
-			html: '<i class="icon-disk"></i> ' + html
+			html: "<i class='icon-disk'></i> #{germaniaSacra.messages[messageId]}</span>"
 		)
 		$(this)
 			.append $button
