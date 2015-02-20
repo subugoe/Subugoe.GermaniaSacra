@@ -40,6 +40,13 @@
     '@action': 'mysql2solrExport'
 
 -
+  name: 'importlog'
+  uriPattern: 'importlog'
+  defaults:
+    '@controller': 'DataImport'
+    '@action': 'log'
+
+-
   name: 'Get select options'
   uriPattern: 'getOptions'
   defaults:

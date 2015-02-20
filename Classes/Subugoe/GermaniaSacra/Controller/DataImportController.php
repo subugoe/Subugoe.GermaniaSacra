@@ -4,6 +4,7 @@ namespace Subugoe\GermaniaSacra\Controller;
 ini_set('memory_limit', '2048M');
 
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Log\LoggerFactory;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 
 use Subugoe\GermaniaSacra\Domain\Model\Klosterstatus;
@@ -39,9 +40,9 @@ class DataImportController extends ActionController {
 	protected $accountFactory;
 
 	/**
-	* @FLOW\Inject
-	* @var \TYPO3\Flow\Security\AccountRepository
-	*/
+	 * @FLOW\Inject
+	 * @var \TYPO3\Flow\Security\AccountRepository
+	 */
 	protected $accountRepository;
 
 	/**
@@ -296,7 +297,7 @@ class DataImportController extends ActionController {
 	/**
 	 * @var string
 	 */
-	const dumpLogFile = 'Application/Subugoe.GermaniaSacra/Resources/Public/DumpImportLog/klosterDumpImport.log';
+	const dumpLogFile = 'Persistent/GermaniaSacra/Log/klosterDumpImport.log';
 
 	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
@@ -311,16 +312,13 @@ class DataImportController extends ActionController {
 		$this->settings = $settings;
 		$this->client = new \Github\Client();
 		$this->method = \Github\Client::AUTH_URL_TOKEN;
-		$log = new \TYPO3\Flow\Log\LoggerFactory();
-		if (file_exists(FLOW_PATH_PACKAGES . self::dumpLogFile)) unlink(FLOW_PATH_PACKAGES . self::dumpLogFile);
-		$this->dumpImportlogger = $log->create('GermaniaSacra',
-									'TYPO3\Flow\Log\Logger',
-									'\TYPO3\Flow\Log\Backend\FileBackend',
-									array(
-										'logFileUrl' => FLOW_PATH_PACKAGES . self::dumpLogFile,
-										'createParentDirectories' => TRUE
-									)
-								);
+	}
+
+	public function logAction() {
+		$dumpFile = FLOW_PATH_DATA . self::dumpLogFile;
+		if (file_exists($dumpFile)) {
+			echo nl2br(utf8_decode(file_get_contents($dumpFile)));
+		}
 	}
 
 
@@ -342,8 +340,7 @@ class DataImportController extends ActionController {
 		$nBearbeiter = 0;
 		if ($numberOfBearbeiter == 0 && $numberOfAccounts == 0) {
 			$nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
-		}
-		elseif ($numberOfBearbeiter == 0 && $numberOfAccounts != 0) {
+		} elseif ($numberOfBearbeiter == 0 && $numberOfAccounts != 0) {
 			$sql = 'SET foreign_key_checks = 0';
 			$sqlConnection->executeUpdate($sql);
 			$accountTbl = 'typo3_flow_security_account';
@@ -355,8 +352,7 @@ class DataImportController extends ActionController {
 			$sql = 'SET foreign_key_checks = 1';
 			$sqlConnection->executeUpdate($sql);
 			$nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
-		}
-		elseif ($numberOfBearbeiter != 0 && $numberOfAccounts == 0) {
+		} elseif ($numberOfBearbeiter != 0 && $numberOfAccounts == 0) {
 			$sql = 'SET foreign_key_checks = 0';
 			$sqlConnection->executeUpdate($sql);
 			$bearbeiterTbl = 'subugoe_germaniasacra_domain_model_bearbeiter';
@@ -385,7 +381,7 @@ class DataImportController extends ActionController {
 				$bearbeiter = $be['Bearbeiter'];
 				$userName = $this->createUsername($bearbeiter);
 				$password = $this->createPassword();
-				$account = $this->accountFactory->createAccountWithPassword($userName,$password, array('Flow.Login:Administrator'));
+				$account = $this->accountFactory->createAccountWithPassword($userName, $password, array('Flow.Login:Administrator'));
 				$this->accountRepository->add($account);
 				$bearbeiterObject = new Bearbeiter();
 				$bearbeiterObject->setUid($uid);
@@ -527,7 +523,7 @@ class DataImportController extends ActionController {
 			if ($this->logger) {
 				$end = microtime(true);
 				$time = number_format(($end - $start), 2);
-				$this->logger->log('Ort import completed in ' . round($time/60, 2) . ' minutes.');
+				$this->logger->log('Ort import completed in ' . round($time / 60, 2) . ' minutes.');
 			}
 			return $nOrt;
 		}
@@ -696,7 +692,7 @@ class DataImportController extends ActionController {
 		if ($this->logger) {
 			$end = microtime(true);
 			$time = number_format(($end - $start), 2);
-			$this->logger->log('Bistum import completed in ' . round($time/60, 2) . ' minutes.');
+			$this->logger->log('Bistum import completed in ' . round($time / 60, 2) . ' minutes.');
 		}
 		return $nBistum;
 	}
@@ -860,7 +856,7 @@ class DataImportController extends ActionController {
 		if ($this->logger) {
 			$end = microtime(true);
 			$time = number_format(($end - $start), 2);
-			$this->logger->log('Band import completed in ' . round($time/60, 2) . ' minutes.');
+			$this->logger->log('Band import completed in ' . round($time / 60, 2) . ' minutes.');
 		}
 		return $nBand;
 	}
@@ -959,8 +955,7 @@ class DataImportController extends ActionController {
 											$lastBearbeitungsstatusEntry = $res->getUid();
 										}
 										$bearbeitungsstatusUid = $lastBearbeitungsstatusEntry + 1;
-									}
-									else {
+									} else {
 										$bearbeitungsstatusUid = 1;
 									}
 									$bearbeitungsstatusObject = new Bearbeitungsstatus();
@@ -984,8 +979,7 @@ class DataImportController extends ActionController {
 									/** @var Band $bandObject */
 									$bandObject = $this->bandRepository->findOneByUid($band);
 									$klosterObject->setBand($bandObject);
-								}
-								// Added to prevent wrong search result
+								} // Added to prevent wrong search result
 								else {
 									$this->bandRepository->setDefaultOrderings(
 											array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
@@ -1018,7 +1012,7 @@ class DataImportController extends ActionController {
 											if ($k % 2) {
 												if (!empty($value)) $url = $value;
 											}
-											if ((isset($url) && !empty($url)) ) {
+											if ((isset($url) && !empty($url))) {
 												$urlObject = new Url();
 												$urlObject->setUrl($url);
 												$urlObject->setBemerkung($urlBemerkung);
@@ -1116,19 +1110,16 @@ class DataImportController extends ActionController {
 										}
 									}
 								}
-							}
-							else {
+							} else {
 								$this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 							}
-						}
-						else {
+						} else {
 							$this->logger->dumpImportlogger('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 							if (empty($personallistenstatus)) {
 								$this->logger->dumpImportlogger('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 							}
 						}
-					}
-					else {
+					} else {
 						$this->dumpImportlogger->log('Bearbeiter zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 						if (empty($bearbeitungsstatus)) {
 							$this->dumpImportlogger->log('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
@@ -1138,8 +1129,7 @@ class DataImportController extends ActionController {
 						}
 					}
 					$nKloster++;
-				}
-				else {
+				} else {
 					$this->dumpImportlogger->log('Doppelter Eintrag mit der Id = ' . $uid . ' in Klostertabelle. Der 2. Eintrag wurde ausgelassen.', LOG_ERR);
 				}
 
@@ -1150,7 +1140,7 @@ class DataImportController extends ActionController {
 			if ($this->logger) {
 				$end = microtime(true);
 				$time = number_format(($end - $start), 2);
-				$this->logger->log('Kloster import completed in ' . round($time/60, 2) . ' minutes.');
+				$this->logger->log('Kloster import completed in ' . round($time / 60, 2) . ' minutes.');
 			}
 			return $nKloster;
 		}
@@ -1197,101 +1187,98 @@ class DataImportController extends ActionController {
 				$ortObject = $this->ortRepository->findOneByUid($ort);
 				$klosterObject = $this->klosterRepository->findOneByUid($kloster);
 				if ((is_object($klosterObject) && $klosterObject !== Null) && (is_object($ortObject) && $ortObject !== Null)) {
-				$KlosterstandortObject = new Klosterstandort();
-				$KlosterstandortObject->setUid($uid);
-				if (isset($kloster) && !empty($kloster)) {
-					$klosterObject = $this->klosterRepository->findOneByUid($kloster);
-					$KlosterstandortObject->setKloster($klosterObject);
-				}
-				if (isset($ort) && !empty($ort)) {
-					$ortObject = $this->ortRepository->findOneByUid($ort);
-					$KlosterstandortObject->setOrt($ortObject);
-				}
-				$KlosterstandortObject->setVon_von($von_von);
-				$KlosterstandortObject->setVon_bis($von_bis);
-				$KlosterstandortObject->setVon_verbal($von_verbal);
-				$KlosterstandortObject->setBis_von($bis_von);
-				$KlosterstandortObject->setBis_bis($bis_bis);
-				$KlosterstandortObject->setBis_verbal($bis_verbal);
-				$KlosterstandortObject->setGruender($gruender);
-				$KlosterstandortObject->setBemerkung($bemerkung);
-				$KlosterstandortObject->setBreite($breite);
-				$KlosterstandortObject->setLaenge($laenge);
-				$KlosterstandortObject->setBemerkung_standort($bemerkung_standort);
-				$KlosterstandortObject->setTemp_literatur_alt($temp_literatur_alt);
-				$this->klosterstandortRepository->add($KlosterstandortObject);
-				$this->persistenceManager->persistAll();
-				if (isset($lit) && !empty($lit)) {
-					$lit = trim($lit, "- −");
-					$lit = str_replace(" − ", " - ", $lit);
-					$lit = str_replace(" — ", " - ", $lit);
-					$lit = str_replace("\r\n", " - ", $lit);
-					$lit = str_replace("—", " - ", $lit);
-					$lit = str_replace(" – ", " - ", $lit);
-					$lit = str_replace(", S[^.]", ", S.", $lit);
-					$lit = str_replace(",S.", ", S.", $lit);
-					$lits = explode(" - ", $lit);
-					foreach ($lits as $key => $litItem) {
-						$parts = trim($litItem);
-						$parts = explode(', S.', $parts);
-						$buch = trim($parts[0]);
-						$buch = utf8_decode($buch);
-						$seite = "";
-						if (count($parts) > 1) {
-							$seite = 'S. ' . trim($parts[1], ' .');
-						}
-						$beschreibung = $seite;
-						if (array_key_exists($buch, $csvArr)) {
-							$citekey = $csvArr[$buch]['citekey'];
-							if (!empty($citekey)) {
-								if ($citekey and $csvArr[$buch]['detail'] and $csvArr[$buch]['detail'] != '#N/A') {
-									if ($beschreibung and !strpos($csvArr[$buch]['detail'], $beschreibung)) {
-										$beschreibung = $csvArr[$buch]['detail'] . ', ' . $beschreibung;
-									} else {
-										$beschreibung = $csvArr[$buch]['detail'];
+					$KlosterstandortObject = new Klosterstandort();
+					$KlosterstandortObject->setUid($uid);
+					if (isset($kloster) && !empty($kloster)) {
+						$klosterObject = $this->klosterRepository->findOneByUid($kloster);
+						$KlosterstandortObject->setKloster($klosterObject);
+					}
+					if (isset($ort) && !empty($ort)) {
+						$ortObject = $this->ortRepository->findOneByUid($ort);
+						$KlosterstandortObject->setOrt($ortObject);
+					}
+					$KlosterstandortObject->setVon_von($von_von);
+					$KlosterstandortObject->setVon_bis($von_bis);
+					$KlosterstandortObject->setVon_verbal($von_verbal);
+					$KlosterstandortObject->setBis_von($bis_von);
+					$KlosterstandortObject->setBis_bis($bis_bis);
+					$KlosterstandortObject->setBis_verbal($bis_verbal);
+					$KlosterstandortObject->setGruender($gruender);
+					$KlosterstandortObject->setBemerkung($bemerkung);
+					$KlosterstandortObject->setBreite($breite);
+					$KlosterstandortObject->setLaenge($laenge);
+					$KlosterstandortObject->setBemerkung_standort($bemerkung_standort);
+					$KlosterstandortObject->setTemp_literatur_alt($temp_literatur_alt);
+					$this->klosterstandortRepository->add($KlosterstandortObject);
+					$this->persistenceManager->persistAll();
+					if (isset($lit) && !empty($lit)) {
+						$lit = trim($lit, "- −");
+						$lit = str_replace(" − ", " - ", $lit);
+						$lit = str_replace(" — ", " - ", $lit);
+						$lit = str_replace("\r\n", " - ", $lit);
+						$lit = str_replace("—", " - ", $lit);
+						$lit = str_replace(" – ", " - ", $lit);
+						$lit = str_replace(", S[^.]", ", S.", $lit);
+						$lit = str_replace(",S.", ", S.", $lit);
+						$lits = explode(" - ", $lit);
+						foreach ($lits as $key => $litItem) {
+							$parts = trim($litItem);
+							$parts = explode(', S.', $parts);
+							$buch = trim($parts[0]);
+							$buch = utf8_decode($buch);
+							$seite = "";
+							if (count($parts) > 1) {
+								$seite = 'S. ' . trim($parts[1], ' .');
+							}
+							$beschreibung = $seite;
+							if (array_key_exists($buch, $csvArr)) {
+								$citekey = $csvArr[$buch]['citekey'];
+								if (!empty($citekey)) {
+									if ($citekey and $csvArr[$buch]['detail'] and $csvArr[$buch]['detail'] != '#N/A') {
+										if ($beschreibung and !strpos($csvArr[$buch]['detail'], $beschreibung)) {
+											$beschreibung = $csvArr[$buch]['detail'] . ', ' . $beschreibung;
+										} else {
+											$beschreibung = $csvArr[$buch]['detail'];
+										}
 									}
+									$literaturKey = $uid . "-" . $citekey . "-" . utf8_decode($beschreibung);
+									if (!in_array($literaturKey, $literaturKeyArr)) {
+										array_push($literaturKeyArr, $literaturKey);
+										$literaturObject = new Literatur();
+										$literaturObject->setCitekey($citekey);
+										$literaturObject->setBeschreibung($beschreibung);
+										$this->literaturRepository->add($literaturObject);
+										$this->persistenceManager->persistAll();
+										$literaturUUID = $literaturObject->getUUID();
+										$klosterhasliteraturObject = new KlosterHasLiteratur();
+										$klosterhasliteraturObject->setKloster($klosterObject);
+										$literaturObject = $this->literaturRepository->findByIdentifier($literaturUUID);
+										$klosterhasliteraturObject->setLiteratur($literaturObject);
+										$this->klosterHasLiteraturRepository->add($klosterhasliteraturObject);
+										$this->persistenceManager->persistAll();
+									}
+								} else {
+									$this->dumpImportlogger->log('Kein citekey für das Buch ' . $buch . ' beim Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
 								}
-								$literaturKey = $uid . "-" . $citekey . "-" . utf8_decode($beschreibung);
-								if (!in_array($literaturKey, $literaturKeyArr)) {
-									array_push($literaturKeyArr, $literaturKey);
-									$literaturObject = new Literatur();
-									$literaturObject->setCitekey($citekey);
-									$literaturObject->setBeschreibung($beschreibung);
-									$this->literaturRepository->add($literaturObject);
-									$this->persistenceManager->persistAll();
-									$literaturUUID = $literaturObject->getUUID();
-									$klosterhasliteraturObject = new KlosterHasLiteratur();
-									$klosterhasliteraturObject->setKloster($klosterObject);
-									$literaturObject = $this->literaturRepository->findByIdentifier($literaturUUID);
-									$klosterhasliteraturObject->setLiteratur($literaturObject);
-									$this->klosterHasLiteraturRepository->add($klosterhasliteraturObject);
-									$this->persistenceManager->persistAll();
-								}
+							} else {
+								$this->dumpImportlogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
 							}
-							else {
-								$this->dumpImportlogger->log('Kein citekey für das Buch ' . $buch . ' beim Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
-							}
-						}
-						else {
-							$this->dumpImportlogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
 						}
 					}
+					$nKlosterstandort++;
+				} else {
+					if ($klosterObject === Null) {
+						$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . 'wurde nicht gefunden.', LOG_ERR);
+					}
+					if ($ortObject === Null) {
+						$this->dumpImportlogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . ' wurde nicht gefunden.', LOG_ERR);
+					}
 				}
-				$nKlosterstandort++;
-			}
-			else {
-				if ($klosterObject === Null) {
-					$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . 'wurde nicht gefunden.', LOG_ERR);
-				}
-				if ($ortObject === Null) {
-					$this->dumpImportlogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . ' wurde nicht gefunden.', LOG_ERR);
-				}
-			}
 			}
 			if ($this->logger) {
 				$end = microtime(true);
 				$time = number_format(($end - $start), 2);
-				$this->logger->log('Klosterstandort import completed in ' . round($time/60, 2) . ' minutes.');
+				$this->logger->log('Klosterstandort import completed in ' . round($time / 60, 2) . ' minutes.');
 			}
 			return $nKlosterstandort;
 		}
@@ -1424,7 +1411,7 @@ class DataImportController extends ActionController {
 			if ($this->logger) {
 				$end = microtime(true);
 				$time = number_format(($end - $start), 2);
-				$this->logger->log('Orden import completed in ' . round($time/60, 2) . ' minutes.');
+				$this->logger->log('Orden import completed in ' . round($time / 60, 2) . ' minutes.');
 			}
 			return $nOrden;
 		}
@@ -1490,21 +1477,20 @@ class DataImportController extends ActionController {
 						$this->persistenceManager->persistAll();
 					}
 					$nKlosterorden++;
-				}
-				else {
+				} else {
 					if ($klosterObject === Null) {
 						$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterordentabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . ' wurde nicht gefunden.', LOG_ERR);
 					}
 
 					if ($ordenObject === Null) {
-						$this->dumpImportlogger->log('Entweder ist das Feld Orden in Klosterordentabelle leer oder das Ordenobject in der Ordentabelle für den Orden mit der Id = ' . $orden . ' wurde nicht gefunden.',  LOG_ERR);
+						$this->dumpImportlogger->log('Entweder ist das Feld Orden in Klosterordentabelle leer oder das Ordenobject in der Ordentabelle für den Orden mit der Id = ' . $orden . ' wurde nicht gefunden.', LOG_ERR);
 					}
 				}
 			}
 			if ($this->logger) {
 				$end = microtime(true);
 				$time = number_format(($end - $start), 2);
-				$this->logger->log('Klosterorden import completed in ' . round($time/60, 2) . ' minutes.');
+				$this->logger->log('Klosterorden import completed in ' . round($time / 60, 2) . ' minutes.');
 			}
 			return $nKlosterorden;
 		}
@@ -1546,6 +1532,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function access2mysqlAction() {
+		$this->initializeLogger();
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -2142,7 +2129,7 @@ class DataImportController extends ActionController {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
 			}
 		}
-		$this->client->authenticate($this->settings['git']['token'], $password='', $this->method);
+		$this->client->authenticate($this->settings['git']['token'], $password = '', $this->method);
 		$accessDumpHash = $this->getFileHashAction($this->client, self::accessDumpFilename);
 		$accessDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $accessDumpHash);
 		$accessDumpBlob = base64_decode($accessDumpBlob['content']);
@@ -2153,17 +2140,15 @@ class DataImportController extends ActionController {
 		$fp = fopen($this->accessDumpFilenamePath, $mode);
 		if (!$fp) {
 			throw new \TYPO3\Flow\Resource\Exception('Can\'t create the access dump file.', 1406721039);
-		}
-		else {
-			fwrite ($fp, $accessDumpBlob);
+		} else {
+			fwrite($fp, $accessDumpBlob);
 			fclose($fp);
 		}
 		$fp = fopen($this->citekeysFilenamePath, $mode);
 		if (!$fp) {
 			throw new \TYPO3\Flow\Resource\Exception('Can\'t create the citekeys csv file.', 1406721048);
-		}
-		else {
-			fwrite ($fp, $citekeysBlob);
+		} else {
+			fwrite($fp, $citekeysBlob);
 			fclose($fp);
 		}
 		return true;
@@ -2175,7 +2160,7 @@ class DataImportController extends ActionController {
 	 * @throws \Exception
 	 */
 	public function importInkDumpAction() {
-		$this->client->authenticate($this->settings['git']['token'], $password='', $this->method);
+		$this->client->authenticate($this->settings['git']['token'], $password = '', $this->method);
 		$inkKlosterDumpHash = $this->getFileHashAction($this->client, self::inkKlosterDumpFilename);
 		$inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
 		$inkKlosterDumpBlob = base64_decode($inkKlosterDumpBlob['content']);
@@ -2201,9 +2186,8 @@ class DataImportController extends ActionController {
 		$fp = fopen($this->inkKlosterDumpFilenamePath, $mode);
 		if (!$fp) {
 			throw new \TYPO3\Flow\Resource\Exception('Can\'t create the incremental kloster dump file.', 1406721082);
-		}
-		else {
-			fwrite ($fp, $inkKlosterDumpBlob);
+		} else {
+			fwrite($fp, $inkKlosterDumpBlob);
 			fclose($fp);
 		}
 		$this->delAccessTabsAction();
@@ -2324,8 +2308,8 @@ class DataImportController extends ActionController {
 	protected function createUsername($fullName) {
 		$username = implode('.', explode(' ', $fullName));
 		$username = strtolower(str_replace(
-		array('Ä','ä','Ö','ö','Ü','ü','ß'),
-		array('Ae','ae','Oe','oe','Ue','ue','ss'), $username));
+				array('Ä', 'ä', 'Ö', 'ö', 'Ü', 'ü', 'ß'),
+				array('Ae', 'ae', 'Oe', 'oe', 'Ue', 'ue', 'ss'), $username));
 
 		return $username;
 	}
@@ -2334,9 +2318,9 @@ class DataImportController extends ActionController {
 	 * @return string
 	 */
 	private function createPassword() {
-		$chars ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.$@#&0123456789";
+		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.$@#&0123456789";
 		$password = '';
-		for($i = 0; $i < 8; $i++) {
+		for ($i = 0; $i < 8; $i++) {
 			$password .= substr($chars, rand(0, strlen($chars) - 1), 1);
 		}
 		return $password;
@@ -2349,8 +2333,7 @@ class DataImportController extends ActionController {
 	private function createUsernamePasswordFile($userName, $password, $uid) {
 		if ($uid == 1) {
 			$usernamePassword = '########## New username-password list dated ' . date('d.m.Y H:i:s') . ' ##########' . PHP_EOL;
-		}
-		else {
+		} else {
 			$usernamePassword = '';
 		}
 		$usernamePassword .= 'Benutzername: ' . $userName . PHP_EOL;
@@ -2362,5 +2345,21 @@ class DataImportController extends ActionController {
 		}
 		file_put_contents($usernamePasswordFile, $usernamePassword);
 	}
+
+	protected function initializeLogger() {
+		$log = new LoggerFactory();
+		if (file_exists(FLOW_PATH_DATA . self::dumpLogFile)) {
+			unlink(FLOW_PATH_DATA . self::dumpLogFile);
+		}
+		$this->dumpImportlogger = $log->create('GermaniaSacra',
+				'TYPO3\Flow\Log\Logger',
+				'\TYPO3\Flow\Log\Backend\FileBackend',
+				array(
+						'logFileUrl' => FLOW_PATH_DATA . self::dumpLogFile,
+						'createParentDirectories' => TRUE
+				)
+		);
+	}
 }
+
 ?>
