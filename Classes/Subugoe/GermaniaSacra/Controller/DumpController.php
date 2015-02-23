@@ -455,7 +455,7 @@ class DumpController extends ActionController {
 	 * @return bool|string
 	 */
 	protected function _Retrieve($fp, $compress) {
-		$value = "\xEF\xBB\xBF";
+		$value = "";
 		if (!$this->_Connect()) {
 			return FALSE;
 		}
