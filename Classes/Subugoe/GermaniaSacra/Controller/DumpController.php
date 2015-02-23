@@ -2,11 +2,11 @@
 namespace Subugoe\GermaniaSacra\Controller;
 
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Configuration\ConfigurationManager;
 use TYPO3\Flow\Mvc\Controller\ActionController;
 use TYPO3\Flow\Utility\Files;
 
 define('MSX_VERSION', '1.1.0');
-define('MSX_NL', "\n");
 define('MSX_STRING', 0);
 define('MSX_DOWNLOAD', 1);
 define('MSX_SAVE', 2);
@@ -91,7 +91,7 @@ class DumpController extends ActionController {
 	 * Sets the connection parameters from the TYPO3 Flow Database configuration
 	 */
 	protected function setConnectionParameters() {
-		$flowSettings = $this->configurationManager->getConfiguration(\TYPO3\Flow\Configuration\ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'TYPO3.Flow');
+		$flowSettings = $this->configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'TYPO3.Flow');
 
 		try {
 			$this->server = $flowSettings['persistence']['backendOptions']['host'];
@@ -150,6 +150,12 @@ class DumpController extends ActionController {
 		exit;
 	}
 
+	/**
+	 * @param int $task
+	 * @param string $dname
+	 * @param bool $compress
+	 * @return array|bool|string
+	 */
 	public function Execute($task = MSX_STRING, $dname = '', $compress = FALSE) {
 		$fp = FALSE;
 		if ($task == MSX_APPEND || $task == MSX_SAVE || $task == MSX_DOWNLOAD) {
@@ -157,15 +163,15 @@ class DumpController extends ActionController {
 			if (empty($tmp_name) || $task == MSX_DOWNLOAD) {
 				$tmp_name = date($this->fname_format);
 				$tmp_name = "GS-Dump-" . $tmp_name;
-				$SendDate = $tmp_name;
+
 				$tmp_name .= ($compress ? '.sql.gz' : '.sql');
 				if (empty($dname)) {
 					$dname = $tmp_name;
 				}
 			}
-			$fname = $this->dumpDirectory . $tmp_name;
+			$fileName = $this->dumpDirectory . $tmp_name;
 
-			if (!($fp = $this->_OpenFile($fname, $task, $compress))) {
+			if (!($fp = $this->_OpenFile($fileName, $task, $compress))) {
 				return FALSE;
 			}
 		}
@@ -176,7 +182,7 @@ class DumpController extends ActionController {
 
 		if ($task == MSX_DOWNLOAD) {
 			$this->_CloseFile($fp, $compress);
-			return $this->_DownloadFile($fname, $dname);
+			return $this->_DownloadFile($fileName, $dname);
 		} else if ($task == MSX_APPEND || $task == MSX_SAVE) {
 			$this->_CloseFile($fp, $compress);
 
@@ -192,8 +198,7 @@ class DumpController extends ActionController {
 				$anhang["type"] = "application/octet-stream";
 			}
 
-			$status = TRUE;
-			return array($status, $path);
+			return array(TRUE, $path);
 		} else {
 			return $sql;
 		}
@@ -208,7 +213,7 @@ class DumpController extends ActionController {
 		}
 
 		if (!$this->link_id) {
-			$this->error = mysqli_error($this->link_id);
+			$this->error = \mysqli_error($this->link_id);
 		}
 		return $this->link_id;
 	}
@@ -248,7 +253,7 @@ class DumpController extends ActionController {
 	}
 
 	/**
-	 * @param $table
+	 * @param string $table
 	 * @param $fp
 	 * @param $compress
 	 * @return string
@@ -258,37 +263,47 @@ class DumpController extends ActionController {
 		$this->_Query('LOCK TABLES ' . $table . ' WRITE');
 		if ($this->create_tables) {
 			if ($this->comments) {
-				$value .= '# ' . MSX_NL;
-				$value .= '# Table structure for table `' . $table . '`' . MSX_NL;
-				$value .= '# ' . MSX_NL . MSX_NL;
+				$value .= '# ' . PHP_EOL;
+				$value .= '# Table structure for table `' . $table . '`' . PHP_EOL;
+				$value .= '# ' . PHP_EOL . PHP_EOL;
 			}
 			if ($this->drop_tables) {
-				$value .= 'DROP TABLE IF EXISTS `' . $table . '`;' . MSX_NL;
+				$value .= 'DROP TABLE IF EXISTS `' . $table . '`;' . PHP_EOL;
 			}
 			if (!($result = $this->_Query('SHOW CREATE TABLE ' . $table))) {
 				return FALSE;
 			}
 			$row = mysqli_fetch_assoc($result);
-			$value .= str_replace("\n", MSX_NL, $row['Create Table']) . ';';
-			$value .= MSX_NL . MSX_NL;
+			$value .= str_replace("\n", PHP_EOL, $row['Create Table']) . ';';
+			$value .= PHP_EOL . PHP_EOL;
 		}
 		if (!$this->struct_only) {
 			if ($this->comments) {
-				$value .= '# ' . MSX_NL;
-				$value .= '# Dumping data for table `' . $table . '`' . MSX_NL;
-				$value .= '# ' . MSX_NL . MSX_NL;
+				$value .= '# ' . PHP_EOL;
+				$value .= '# Dumping data for table `' . $table . '`' . PHP_EOL;
+				$value .= '# ' . PHP_EOL . PHP_EOL;
 			}
 			if ($fp) {
-				if ($compress) gzwrite($fp, $value);
-				else fwrite($fp, $value);
+				$value = utf8_encode($value);
+				if ($compress) {
+					gzwrite($fp, $value);
+				} else {
+					fwrite($fp, $value);
+				}
 				$value = '';
 			}
 			$value .= $this->_GetInserts($table, $fp, $compress);
 		}
-		$value .= MSX_NL . MSX_NL;
+		$value .= PHP_EOL . PHP_EOL;
+		$value = utf8_encode($value);
+
 		if ($fp) {
-			if ($compress) gzwrite($fp, $value);
-			else fwrite($fp, $value);
+			$value = utf8_encode($value);
+			if ($compress) {
+				gzwrite($fp, $value);
+			} else {
+				fwrite($fp, $value);
+			}
 			$value = TRUE;
 		}
 		$this->_Query('UNLOCK TABLES');
@@ -296,9 +311,9 @@ class DumpController extends ActionController {
 	}
 
 	/**
-	 * @param $table
+	 * @param string $table
 	 * @param $fp
-	 * @param $compress
+	 * @param bool $compress
 	 * @return bool|string
 	 */
 	protected function _GetInserts($table, $fp, $compress) {
@@ -319,12 +334,17 @@ class DumpController extends ActionController {
 		mysqli_data_seek($result, 0);
 
 		if ($this->locks) {
-			$value .= 'LOCK TABLES ' . $table . ' WRITE;' . MSX_NL;
+			$value .= 'LOCK TABLES ' . $table . ' WRITE;' . PHP_EOL;
 		}
 		$value .= $insert;
 		if ($fp) {
-			if ($compress) gzwrite($fp, $value);
-			else fwrite($fp, $value);
+			$value = utf8_encode($value);
+
+			if ($compress) {
+				gzwrite($fp, $value);
+			} else {
+				fwrite($fp, $value);
+			}
 			$value = '';
 		}
 
@@ -354,9 +374,9 @@ class DumpController extends ActionController {
 					}
 
 					if ($compress) {
-						$size += gzwrite($fp, $row[$x]);
+						$size += gzwrite($fp, utf8_encode($row[$x]));
 					} else {
-						$size += fwrite($fp, $row[$x]);
+						$size += fwrite($fp, utf8_encode($row[$x]));
 					}
 
 					$i++;
@@ -375,15 +395,24 @@ class DumpController extends ActionController {
 					}
 				} else {
 					$size = 0;
-					if ($compress) gzwrite($fp, ';' . MSX_NL);
-					else fwrite($fp, ';' . MSX_NL);
+					if ($compress) {
+						gzwrite($fp, ';' . PHP_EOL);
+					} else {
+						fwrite($fp, ';' . PHP_EOL);
+					}
 
 					if ($j + 1 < $num_rows) {
-						if ($compress) gzwrite($fp, $insert);
-						else fwrite($fp, $insert);
+						if ($compress) {
+							gzwrite($fp, $insert);
+						} else {
+							fwrite($fp, $insert);
+						}
 					} else if ($this->locks) {
-						if ($compress) gzwrite($fp, 'UNLOCK TABLES;' . MSX_NL);
-						else fwrite($fp, 'UNLOCK TABLES;' . MSX_NL);
+						if ($compress) {
+							gzwrite($fp, 'UNLOCK TABLES;' . PHP_EOL);
+						} else {
+							fwrite($fp, 'UNLOCK TABLES;' . PHP_EOL);
+						}
 					}
 				}
 				unset ($value);
@@ -401,14 +430,14 @@ class DumpController extends ActionController {
 				$values = substr($values, 0, -1) . '),';
 				if ($j + 1 == $num_rows || ($j + 1) % 5000 == 0) {
 					$values = substr($values, 0, -1);
-					$values = $values . ';' . MSX_NL;
+					$values = $values . ';' . PHP_EOL;
 					if ($j + 1 < $num_rows) {
 						$values .= $insert;
 					} else {
 						if ($this->locks) {
-							$values .= 'UNLOCK TABLES;' . MSX_NL;
+							$values .= 'UNLOCK TABLES;' . PHP_EOL;
 						}
-						$values .= MSX_NL;
+						$values .= PHP_EOL;
 					}
 				}
 				$value .= $values;
@@ -426,27 +455,31 @@ class DumpController extends ActionController {
 	 * @return bool|string
 	 */
 	protected function _Retrieve($fp, $compress) {
-		$value = '';
+		$value = "\xEF\xBB\xBF";
 		if (!$this->_Connect()) {
 			return FALSE;
 		}
 		if ($this->comments) {
-			$value .= '# ' . MSX_NL;
-			$value .= '# MySQL database dump' . MSX_NL;
-			$value .= '# ' . MSX_NL;
-			$value .= '# Host: ' . $this->server . MSX_NL;
-			$value .= '# Generated: ' . date('M j, Y') . ' at ' . date('H:i') . MSX_NL;
-			$value .= '# MySQL version: ' . mysqli_get_server_info($this->link_id) . MSX_NL;
-			$value .= '# PHP version: ' . phpversion() . MSX_NL;
+			$value .= '# ' . PHP_EOL;
+			$value .= '# MySQL database dump' . PHP_EOL;
+			$value .= '# ' . PHP_EOL;
+			$value .= '# Host: ' . $this->server . PHP_EOL;
+			$value .= '# Generated: ' . date('M j, Y') . ' at ' . date('H:i') . PHP_EOL;
+			$value .= '# MySQL version: ' . mysqli_get_server_info($this->link_id) . PHP_EOL;
+			$value .= '# PHP version: ' . phpversion() . PHP_EOL;
 			if (!empty($this->database)) {
-				$value .= '# ' . MSX_NL;
-				$value .= '# Database: `' . $this->database . '`' . MSX_NL;
+				$value .= '# ' . PHP_EOL;
+				$value .= '# Database: `' . $this->database . '`' . PHP_EOL;
 			}
-			$value .= '# ' . MSX_NL . MSX_NL . MSX_NL;
-			$value .= 'SET foreign_key_checks = 0;' . MSX_NL . MSX_NL;
+			$value .= '# ' . PHP_EOL . PHP_EOL . PHP_EOL;
+			$value .= 'SET foreign_key_checks = 0;' . PHP_EOL . PHP_EOL;
+			$value = utf8_encode($value);
 			if ($fp) {
-				if ($compress) gzwrite($fp, $value);
-				else fwrite($fp, $value);
+				if ($compress) {
+					gzwrite($fp, $value);
+				} else {
+					fwrite($fp, $value);
+				}
 				unset($value);
 				$value = '';
 			}
@@ -468,24 +501,27 @@ class DumpController extends ActionController {
 	}
 
 	/**
-	 * @param $fname
-	 * @param $task
-	 * @param $compress
+	 * @param string $fileName
+	 * @param int $task
+	 * @param bool $compress
 	 * @return bool|resource
 	 */
-	protected function _OpenFile($fname, $task, $compress) {
+	protected function _OpenFile($fileName, $task, $compress) {
 		if ($task != MSX_APPEND && $task != MSX_SAVE && $task != MSX_DOWNLOAD) {
 			$this->error = 'Tried to open file in wrong task.';
 			return FALSE;
 		}
 
 		$mode = 'w';
-		if ($task == MSX_APPEND && file_exists($fname)) {
+		if ($task == MSX_APPEND && file_exists($fileName)) {
 			$mode = 'a';
 		}
 
-		if ($compress) $fp = gzopen($fname, $mode . '9');
-		else $fp = fopen($fname, $mode);
+		if ($compress) {
+			$fp = gzopen($fileName, $mode . '9');
+		} else {
+			$fp = fopen($fileName, $mode);
+		}
 
 		if (!$fp) {
 			$this->error = 'Can\'t create the output file.';
@@ -509,8 +545,8 @@ class DumpController extends ActionController {
 	}
 
 	/**
-	 * @param $fname
-	 * @param $dname
+	 * @param string $fname
+	 * @param string $dname
 	 * @return bool
 	 */
 	protected function _DownloadFile($fname, $dname) {
@@ -534,5 +570,3 @@ class DumpController extends ActionController {
 	}
 
 }
-
-?>
