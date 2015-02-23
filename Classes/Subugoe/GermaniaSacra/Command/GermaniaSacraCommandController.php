@@ -88,6 +88,7 @@ class GermaniaSacraCommandController extends \TYPO3\Flow\Cli\CommandController {
 	public function alisInkKlosterImportCommand() {
 		/** @var DataImportController $importer */
 		$importer = new DataImportController($this->logger, $this->settings);
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);

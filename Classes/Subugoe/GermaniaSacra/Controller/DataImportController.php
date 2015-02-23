@@ -20,7 +20,6 @@ use Subugoe\GermaniaSacra\Domain\Model\Kloster;
 use Subugoe\GermaniaSacra\Domain\Model\Urltyp;
 use Subugoe\GermaniaSacra\Domain\Model\Url;
 use Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl;
-use Subugoe\GermaniaSacra\Domain\Model\Bibitem;
 use Subugoe\GermaniaSacra\Domain\Model\Literatur;
 use Subugoe\GermaniaSacra\Domain\Model\Orden;
 use Subugoe\GermaniaSacra\Domain\Model\Klosterstandort;
@@ -324,7 +323,7 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Check Bearbeiter and Account tables for content and acts as appropriate
-	 * @return void
+	 * @return int
 	 */
 	public function importBearbeiterAction() {
 		/** @var \Doctrine\DBAL\Connection $sqlConnection */
@@ -367,7 +366,7 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Bearbeiter table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_bearbeiter and creates an account for every user
-	 * @return void
+	 * @return int
 	 */
 	private function importAndJoinBearbeiterWithAccount() {
 		/** @var \Doctrine\DBAL\Connection $sqlConnection */
@@ -418,9 +417,10 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Land table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_land
-	 * @return void
+	 * @return int
 	 */
 	public function importLandAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT ID_Bundesland, Land, Deutschland FROM Land';
 		$Lands = $sqlConnection->fetchAll($sql);
@@ -444,17 +444,19 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Ort table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_ort
-	 * @return void
+	 * @return int
 	 */
 	public function importOrtAction() {
 		if ($this->logger) {
 			$start = microtime(true);
 		}
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_ort';
 		$sql = "ANALYZE LOCAL TABLE " . $tbl;
 		$sqlConnection->executeUpdate($sql);
 		$sqlConnection->close();
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Geonames"';
@@ -531,12 +533,13 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Bistum table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_bistum
-	 * @return void
+	 * @return int
 	 */
 	public function importBistumAction() {
 		if ($this->logger) {
 			$start = microtime(true);
 		}
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "GND"';
@@ -699,12 +702,13 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Band table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_band
-	 * @return void
+	 * @return int
 	 */
 	public function importBandAction() {
 		if ($this->logger) {
 			$start = microtime(true);
 		}
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Handle"';
@@ -863,12 +867,13 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Kloster table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_kloster
-	 * @return void
+	 * @return int
 	 */
 	public function importKlosterAction() {
 		if ($this->logger) {
 			$start = microtime(true);
 		}
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_urltyp';
 		$sql = 'SELECT * FROM ' . $tbl . ' WHERE name = "Quelle"';
@@ -1148,13 +1153,14 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Klosterstandort table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_klosterstandort
-	 * @return void
+	 * @return int
 	 */
 	public function importKlosterstandortAction() {
 		if ($this->logger) {
 			$start = microtime(true);
 		}
 		$csvArr = $this->citekeysAction();
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterstandort ORDER  BY Klosternummer ASC';
 		$Klosterstandorts = $sqlConnection->fetchAll($sql);
@@ -1286,12 +1292,13 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Orden table into the FLOW domain_model tabel subugoe_germaniasacra_domain_model_orden
-	 * @return void
+	 * @return int
 	 */
 	public function importOrdenAction() {
 		if ($this->logger) {
 			$start = microtime(true);
 		}
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Orden';
 		$ordens = $sqlConnection->fetchAll($sql);
@@ -1419,12 +1426,13 @@ class DataImportController extends ActionController {
 
 	/**
 	 * Import Klosterorden table into the FLOW domain_model tabel subugoe_germaniasacra_domain_klosterorden_band
-	 * @return void
+	 * @return int
 	 */
 	public function importKlosterordenAction() {
 		if ($this->logger) {
 			$start = microtime(true);
 		}
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SELECT * FROM Klosterorden ORDER BY ID_KlosterOrden ASC';
 		$klosterordens = $sqlConnection->fetchAll($sql);
@@ -1533,6 +1541,7 @@ class DataImportController extends ActionController {
 	 */
 	public function access2mysqlAction() {
 		$this->initializeLogger();
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET unique_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1572,6 +1581,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function delAccessTabsAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'Band, Bearbeiter, Bistum, Kloster, Klosterstandort, Land, Ort, Orden, Klosterorden';
 		$sql = 'DROP TABLE IF EXISTS  ' . $tbl;
@@ -1583,6 +1593,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyBearbeitungsstatusTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1600,6 +1611,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyBearbeiterTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1617,6 +1629,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyPersonallistenstatusTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1634,6 +1647,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyLandTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1651,6 +1665,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyOrtTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1668,6 +1683,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyOrtHasUrlTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1685,6 +1701,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyBistumTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1702,6 +1719,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyBistumHasUrlTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1719,6 +1737,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyBandTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1736,6 +1755,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyBandHasUrlTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1753,6 +1773,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyUrltypTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1770,6 +1791,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyKlosterTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1786,6 +1808,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyUrlTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1803,6 +1826,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyKlosterHasUrlTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1820,6 +1844,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyKlosterstandortTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1837,6 +1862,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyBibitemTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1854,6 +1880,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyLiteraturTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1871,6 +1898,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyKlosterHasLiteraturTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1888,6 +1916,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyOrdenTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1905,6 +1934,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyOrdenstypTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1922,6 +1952,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyOrdenHasUrlTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1939,6 +1970,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyKlosterordenTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1956,6 +1988,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyKlosterstatusTabAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sql = 'SET foreign_key_checks = 0';
 		$sqlConnection->executeUpdate($sql);
@@ -1973,6 +2006,7 @@ class DataImportController extends ActionController {
 	 * @return void
 	 */
 	public function emptyTabsAction() {
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$tbl = 'subugoe_germaniasacra_domain_model_bearbeitungsstatus';
 		$sql = 'DELETE FROM ' . $tbl;
@@ -2098,6 +2132,7 @@ class DataImportController extends ActionController {
 		$sql = str_replace('`Ordenszugehörigkeit_bis_von`', '`bis_von`', $sql);
 		$sql = str_replace('`Ordenzugehörigkeit_bis_bis`', '`bis_bis`', $sql);
 		$sql = str_replace('`OrdenszugehörigkeitVerbal_bis`', '`verbal_bis`', $sql);
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sqlConnection->executeUpdate($sql);
 	}
@@ -2277,6 +2312,7 @@ class DataImportController extends ActionController {
 		$sql = str_replace('`Ordenszugehörigkeit_bis_von`', '`bis_von`', $sql);
 		$sql = str_replace('`Ordenzugehörigkeit_bis_bis`', '`bis_bis`', $sql);
 		$sql = str_replace('`OrdenszugehörigkeitVerbal_bis`', '`verbal_bis`', $sql);
+		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
 		$sqlConnection->executeUpdate($sql);
 	}
@@ -2361,5 +2397,3 @@ class DataImportController extends ActionController {
 		);
 	}
 }
-
-?>
