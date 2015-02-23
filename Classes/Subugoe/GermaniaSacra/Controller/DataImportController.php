@@ -317,7 +317,7 @@ class DataImportController extends ActionController {
 	public function logAction() {
 		$dumpFile = FLOW_PATH_DATA . self::dumpLogFile;
 		if (file_exists($dumpFile)) {
-			echo nl2br(utf8_decode(file_get_contents($dumpFile)));
+			echo nl2br(file_get_contents($dumpFile));
 		}
 	}
 
