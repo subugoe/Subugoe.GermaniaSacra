@@ -1268,7 +1268,7 @@ class DataImportController extends ActionController {
 								}
 							} else {
 								$this->dumpImportlogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
-								$this->dumpImportlogger->log('Der Buchtitel lautet: ' . utf8_decode($buch), LOG_INFO);
+								$this->dumpImportlogger->log('Der Buchtitel lautet: ' . utf8_encode($buch), LOG_INFO);
 							}
 						}
 					}
