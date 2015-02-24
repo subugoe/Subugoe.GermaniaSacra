@@ -1267,7 +1267,7 @@ class DataImportController extends ActionController {
 									$this->dumpImportlogger->log('Kein citekey für das Buch ' . $buch . ' beim Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
 								}
 							} else {
-								$this->dumpImportlogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
+								$this->dumpImportlogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.<br>Der Buchtitel lautet: ' . $buch, LOG_ERR);
 							}
 						}
 					}
