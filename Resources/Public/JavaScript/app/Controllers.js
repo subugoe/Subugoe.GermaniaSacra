@@ -66,7 +66,7 @@ germaniaSacra.getOptions = function() {
           }));
         });
       });
-      germaniaSacra.keepSelectOptions = true;
+      germaniaSacra.keepSelectOptions = false;
       return dfd.resolve(response);
     });
     return dfd.promise();

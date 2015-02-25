@@ -62,7 +62,7 @@ germaniaSacra.getOptions = ->
 						value: uUID
 						text: text
 					)
-			germaniaSacra.keepSelectOptions = true
+			germaniaSacra.keepSelectOptions = false
 			dfd.resolve(response)
 		return dfd.promise()
 

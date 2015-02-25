@@ -213,6 +213,9 @@ class OrtController extends AbstractBaseController {
 						$ortArr[$k]['bistum'] = '';
 					}
 				}
+				else {
+					$ortArr[$k]['bistum'] = '';
+				}
 			}
 		}
 		$this->view->assign('ort', ['data' => $ortArr, 'draw' => $draw, 'recordsTotal' => $recordsTotal, 'recordsFiltered' => $recordsFiltered]);
