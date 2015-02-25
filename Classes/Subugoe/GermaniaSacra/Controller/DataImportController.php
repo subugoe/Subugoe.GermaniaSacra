@@ -30,7 +30,7 @@ use Subugoe\GermaniaSacra\Domain\Model\BandHasUrl;
 use Subugoe\GermaniaSacra\Domain\Model\BistumHasUrl;
 use Subugoe\GermaniaSacra\Domain\Model\OrtHasUrl;
 
-class DataImportController extends ActionController {
+class DataImportController extends AbstractBaseController {
 
 	/**
 	 * @FLOW\Inject
@@ -609,12 +609,6 @@ class DataImportController extends ActionController {
 						$this->persistenceManager->persistAll();
 					}
 				}
-				$GNDLabel = '';
-				if ($is_erzbistum)
-					$GNDLabel = 'Erzbistum';
-				else
-					$GNDLabel = 'Bistum';
-				$GNDLabel .= ' ' . $bistum;
 				if (isset($gnd) && !empty($gnd)) {
 					$gnd = str_replace("\t", " ", $gnd);
 					$gnd = str_replace("http:// ", " ", $gnd);
@@ -687,11 +681,6 @@ class DataImportController extends ActionController {
 				$nBistum++;
 			}
 		}
-		$ortBistum = $this->bistumRepository->findOneByBistum('keine Angabe');
-		$bistumUUID = $ortBistum->getUUID();
-		$ortTbl = 'subugoe_germaniasacra_domain_model_ort';
-		$sql = 'UPDATE ' . $ortTbl . ' SET bistum = \'' . $bistumUUID . '\' WHERE bistum IS NULL';
-		$sqlConnection->executeUpdate($sql);
 		if ($this->logger) {
 			$end = microtime(true);
 			$time = number_format(($end - $start), 2);
@@ -843,20 +832,6 @@ class DataImportController extends ActionController {
 				$nBand++;
 			}
 		}
-		// This is added to prevent wrong search result
-		$uid = $Band['ID_GSBand'] + 1;
-		$nummer = 'keine Angabe';
-		$sortierung = $Band['Sortierung'] + 1;
-		$titel = 'keine Angabe';
-		$kurztitel = 'keine Angabe';
-		$bandObject = new Band();
-		$bandObject->setUid($uid);
-		$bandObject->setNummer($nummer);
-		$bandObject->setSortierung($sortierung);
-		$bandObject->setTitel($titel);
-		$bandObject->setKurztitel($kurztitel);
-		$this->bandRepository->add($bandObject);
-		$this->persistenceManager->persistAll();
 		if ($this->logger) {
 			$end = microtime(true);
 			$time = number_format(($end - $start), 2);
@@ -984,20 +959,13 @@ class DataImportController extends ActionController {
 									/** @var Band $bandObject */
 									$bandObject = $this->bandRepository->findOneByUid($band);
 									$klosterObject->setBand($bandObject);
-								} // Added to prevent wrong search result
-								else {
-									$this->bandRepository->setDefaultOrderings(
-											array('uid' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_DESCENDING)
-									);
-									$bandObject = $this->bandRepository->findAll()->getFirst();
-									$klosterObject->setBand($bandObject);
+									$klosterObject->setBand_seite($band_seite);
+									$klosterObject->setText_gs_band($text_gs_band);
+									$klosterObject->setBearbeitungsstand($bearbeitungsstand);
+									$klosterObject->setcreationDate(new \DateTime($creationdate));
+									$this->klosterRepository->add($klosterObject);
+									$this->persistenceManager->persistAll();
 								}
-								$klosterObject->setBand_seite($band_seite);
-								$klosterObject->setText_gs_band($text_gs_band);
-								$klosterObject->setBearbeitungsstand($bearbeitungsstand);
-								$klosterObject->setcreationDate(new \DateTime($creationdate));
-								$this->klosterRepository->add($klosterObject);
-								$this->persistenceManager->persistAll();
 								$klosterUUID = $klosterObject->getUUID();
 								if ($hauptRessource) {
 									$parts = explode("#", $hauptRessource);
@@ -2191,16 +2159,22 @@ class DataImportController extends ActionController {
 		return true;
 	}
 
+
+
+
+	/**
+	 * Initializes defaults
+	 */
+	public function initializeAction() {
+		parent::initializeAction();
+	}
+
 	/**
 	 * Import incremental kloster data from within FLOW into db kloster table
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function importInkDumpAction() {
-		$this->client->authenticate($this->settings['git']['token'], $password = '', $this->method);
-		$inkKlosterDumpHash = $this->getFileHashAction($this->client, self::inkKlosterDumpFilename);
-		$inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
-		$inkKlosterDumpBlob = base64_decode($inkKlosterDumpBlob['content']);
 		if (!is_dir($this->dumpDirectory)) {
 			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
@@ -2211,13 +2185,18 @@ class DataImportController extends ActionController {
 		}
 
 		if (!is_file($this->cacertFilenamePath)) {
-			if (!is_dir(self::cacertDest)) {
-				\TYPO3\Flow\Utility\Files::createDirectoryRecursively(self::cacertDest);
+			if (!is_dir(FLOW_PATH_ROOT . self::cacertDest)) {
+				\TYPO3\Flow\Utility\Files::createDirectoryRecursively(FLOW_PATH_ROOT. self::cacertDest);
 			}
 			if (!copy($this->cacertSourcePath, $this->cacertDestPath)) {
 				throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
 			}
 		}
+
+		$this->client->authenticate($this->settings['git']['token'], $password = '', $this->method);
+		$inkKlosterDumpHash = $this->getFileHashAction($this->client, self::inkKlosterDumpFilename);
+		$inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
+		$inkKlosterDumpBlob = base64_decode($inkKlosterDumpBlob['content']);
 
 		$mode = 'w';
 		$fp = fopen($this->inkKlosterDumpFilenamePath, $mode);
@@ -2231,6 +2210,9 @@ class DataImportController extends ActionController {
 		$this->importAccessInkDumpAction();
 		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
+
+		$this->initializeLogger();
+
 		$this->dumpImportlogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
 		$checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bearbeiter');
 		if ($checkIfBearbeiterTableExists) {
@@ -2278,6 +2260,9 @@ class DataImportController extends ActionController {
 			$this->dumpImportlogger->log($nKlosterorden . ' Klosterorden Datensätze');
 		}
 		$this->delAccessTabsAction();
+		if ($this->cacheInterface->has('getOptions')) {
+			$this->cacheInterface->remove('getOptions');
+		}
 		$this->redirect('list', 'Kloster', 'Subugoe.GermaniaSacra');
 	}
 

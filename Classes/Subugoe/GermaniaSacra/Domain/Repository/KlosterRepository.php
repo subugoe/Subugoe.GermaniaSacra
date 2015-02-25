@@ -52,20 +52,20 @@ class KlosterRepository extends Repository {
 				$value = '%' . $searchStr . '%';
 				$filter = $entity . '.' . $k;
 				if ($k === 'bearbeitungsstatus') {
-					$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+					$queryBuilder->leftJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
 					$isBearbeitungsstatusInSearchArray = True;
 					$filter = 'bearbeitungsstatus.name';
 				}
 				if ($k === 'ort') {
-					$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
-								->innerJoin('klosterstandort.ort', 'ort');
+					$queryBuilder->leftJoin('kloster.klosterstandorts', 'klosterstandort')
+								->leftJoin('klosterstandort.ort', 'ort');
 					$isOrtInSearchArray = True;
 					$filter = 'ort.ort';
 				}
 				if ($k === 'gnd') {
-					$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
-								->innerJoin('klosterhasurl.url', 'url')
-								->innerJoin('url.urltyp', 'urltyp');
+					$queryBuilder->leftJoin('kloster.klosterHasUrls', 'klosterhasurl')
+								->leftJoin('klosterhasurl.url', 'url')
+								->leftJoin('url.urltyp', 'urltyp');
 					$isGNDInSearchArray = True;
 					if ($i === 1) {
 						$queryBuilder->where('urltyp.name LIKE :urltyp');
@@ -92,16 +92,16 @@ class KlosterRepository extends Repository {
 			}
 		}
 		if ($orderings[0] === 'ort' && !$isOrtInSearchArray) {
-			$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
-						->innerJoin('klosterstandort.ort', 'ort');
+			$queryBuilder->leftJoin('kloster.klosterstandorts', 'klosterstandort')
+						->leftJoin('klosterstandort.ort', 'ort');
 		}
 		elseif ($orderings[0] === 'bearbeitungsstatus' && !$isBearbeitungsstatusInSearchArray) {
-			$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+			$queryBuilder->leftJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
 		}
 		elseif ($orderings[0] === 'gnd' && !$isGNDInSearchArray) {
-			$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
-						->innerJoin('klosterhasurl.url', 'url')
-						->innerJoin('url.urltyp', 'urltyp');
+			$queryBuilder->leftJoin('kloster.klosterHasUrls', 'klosterhasurl')
+						->leftJoin('klosterhasurl.url', 'url')
+						->leftJoin('url.urltyp', 'urltyp');
 			$queryBuilder->andWhere('urltyp.name LIKE :urltyp');
 			$queryBuilder->setParameter('urltyp', 'GND');
 		}
@@ -137,19 +137,20 @@ class KlosterRepository extends Repository {
 		->select('kloster')
 		->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'kloster');
 		if ($orderings[0] === 'bearbeitungsstatus') {
-			$queryBuilder->innerJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+			$queryBuilder->leftJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
 			$entity = 'bearbeitungsstatus';
 			$orderings[0] = 'name';
 		}
 		if ($orderings[0] === 'ort') {
-			$queryBuilder->innerJoin('kloster.klosterstandorts', 'klosterstandort')
-						->innerJoin('klosterstandort.ort', 'ort');
+			$queryBuilder->leftJoin('kloster.klosterstandorts', 'klosterstandort')
+						->leftJoin('klosterstandort.ort', 'ort');
 			$entity = 'ort';
 		}
 		if ($orderings[0] === 'gnd') {
-			$queryBuilder->innerJoin('kloster.klosterHasUrls', 'klosterhasurl')
-						->innerJoin('klosterhasurl.url', 'url')
-						->innerJoin('url.urltyp', 'urltyp');
+
+			$queryBuilder->leftJoin('kloster.klosterHasUrls', 'klosterhasurl')
+						->leftJoin('klosterhasurl.url', 'url')
+						->leftJoin('url.urltyp', 'urltyp');
 			$queryBuilder->where('urltyp.name LIKE :gnd')
 			->setParameter('gnd', 'GND');
 			$entity = 'url';
@@ -180,14 +181,14 @@ class KlosterRepository extends Repository {
 			->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'k');
 			$searchValue = "%" . trim($searchValue) . "%";
 			$searchValue = (string)$searchValue;
-			$queryBuilder->innerJoin('k.klosterstandorts', 's')
-						->innerJoin('s.ort', 'o')
-						->innerJoin('k.bearbeitungsstatus', 'b')
-						->innerJoin('k.band', 'band')
-						->innerJoin('o.bistum', 'bistum')
-						->innerJoin('o.land', 'land')
-						->innerJoin('k.klosterordens', 'klosterorden')
-						->innerJoin('klosterorden.orden', 'orden')
+			$queryBuilder->leftJoin('k.klosterstandorts', 's')
+						->leftJoin('s.ort', 'o')
+						->leftJoin('k.bearbeitungsstatus', 'b')
+						->leftJoin('k.band', 'band')
+						->leftJoin('o.bistum', 'bistum')
+						->leftJoin('o.land', 'land')
+						->leftJoin('k.klosterordens', 'klosterorden')
+						->leftJoin('klosterorden.orden', 'orden')
 						->where('k.kloster_id LIKE :alle OR
 								k.kloster LIKE :alle OR
 								k.patrozinium LIKE :alle OR
