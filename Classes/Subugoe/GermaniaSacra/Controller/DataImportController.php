@@ -1,6 +1,8 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
+ini_set('memory_limit', '2048M');
+
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Log\LoggerFactory;
 use TYPO3\Flow\Mvc\Controller\ActionController;
