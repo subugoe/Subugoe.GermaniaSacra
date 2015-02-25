@@ -1,8 +1,6 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
-ini_set('memory_limit', '2048M');
-
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Log\LoggerFactory;
 use TYPO3\Flow\Mvc\Controller\ActionController;
@@ -1511,11 +1509,11 @@ class DataImportController extends ActionController {
 	 */
 	public function citekeysAction() {
 		$file = "GS-citekeys.csv";
-		if (!file_exists($this->dumpDirectory . '/' . $file)) {
+		if (!file_exists($this->dumpDirectory . $file)) {
 			throw new \TYPO3\Flow\Resource\Exception('File ' . $file . ' not present in ' . $this->dumpDirectory, 1398846324);
 		}
 		$csvArr = array();
-		$csv = array_map('str_getcsv', file($this->dumpDirectory . '/' . $file));
+		$csv = array_map('str_getcsv', file($this->dumpDirectory . $file));
 		foreach ($csv as $key => $value) {
 			if ($key > 0) {
 				if (isset($value[1]) && !empty($value[1])) {
@@ -1533,6 +1531,7 @@ class DataImportController extends ActionController {
 				}
 			}
 		}
+
 		return $csvArr;
 	}
 
@@ -2109,10 +2108,10 @@ class DataImportController extends ActionController {
 		if (!is_dir($this->dumpDirectory)) {
 			\TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
 		}
-		if (!file_exists($this->dumpDirectory . '/' . $dumpFileName)) {
+		if (!file_exists($this->dumpDirectory . $dumpFileName)) {
 			throw new \TYPO3\Flow\Resource\Exception(1398846324);
 		}
-		$sql = file_get_contents($this->dumpDirectory . '/' . $dumpFileName);
+		$sql = file_get_contents($this->dumpDirectory . $dumpFileName);
 		$sql = str_replace('CREATE DATABASE IF NOT EXISTS `Klosterdatenbank`;', '', $sql);
 		$sql = str_replace('USE `Klosterdatenbank`;', '', $sql);
 		$sql = str_replace('Bearbeitet von', 'Bearbeiter', $sql);
