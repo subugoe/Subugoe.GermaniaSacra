@@ -968,7 +968,6 @@ class DataImportController extends AbstractBaseController {
 									$klosterObject->setBand($bandObject);
 									$klosterObject->setBand_seite($band_seite);
 									$klosterObject->setText_gs_band($text_gs_band);
-
 								}
 								$klosterObject->setBearbeitungsstand($bearbeitungsstand);
 								$klosterObject->setcreationDate(new \DateTime($creationdate));
