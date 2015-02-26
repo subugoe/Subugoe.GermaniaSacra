@@ -275,7 +275,7 @@ class KlosterController extends AbstractBaseController {
 						$klosterArr[$k]['ort'][$i] = $ort->getOrt();
 					}
 				}
-				if (!empty($klosterArr[$k]['ort'][$i])) {
+				if (isset($klosterArr[$k]['ort']) && $klosterArr[$k]['ort'] !== array()) {
 					$klosterArr[$k]['ort'] = implode(' / ', $klosterArr[$k]['ort']);
 				} else {
 					$klosterArr[$k]['ort'] = '';
@@ -417,10 +417,12 @@ class KlosterController extends AbstractBaseController {
 			$personallistenstatus_uuid = $this->request->getArgument('personallistenstatus');
 			$personallistenstatus = $this->personallistenstatusRepository->findByIdentifier($personallistenstatus_uuid);
 			$kloster->setPersonallistenstatus($personallistenstatus);
-			$band_uuid = $this->request->getArgument('band');
-			if (isset($band_uuid) && !empty($band_uuid)) {
-				$band = $this->bandRepository->findByIdentifier($band_uuid);
-				$kloster->setBand($band);
+			if ($this->request->hasArgument('band')) {
+				$band_uuid = $this->request->getArgument('band');
+				if (isset($band_uuid) && !empty($band_uuid)) {
+					$band = $this->bandRepository->findByIdentifier($band_uuid);
+					$kloster->setBand($band);
+				}
 			}
 			$this->klosterRepository->add($kloster);
 			$uuid = $kloster->getUUID();
@@ -1014,11 +1016,12 @@ class KlosterController extends AbstractBaseController {
 		$kloster->setBearbeitungsstatus($bearbeitungsstatus);
 		$bearbeiter = $this->bearbeiterObj;
 		$kloster->setBearbeiter($bearbeiter);
-		$band_uuid = $this->request->getArgument('band');
-		$band = $this->bandRepository->findByIdentifier($band_uuid);
-		$kloster->setBand($band);
+		if ($this->request->hasArgument('band')) {
+			$band_uuid = $this->request->getArgument('band');
+			$band = $this->bandRepository->findByIdentifier($band_uuid);
+			$kloster->setBand($band);
+		}
 		$this->klosterRepository->update($kloster);
-
 		// Update Klosterstandort
 		if ($this->request->hasArgument('ort')) {
 			$ortArr = $this->request->getArgument('ort');

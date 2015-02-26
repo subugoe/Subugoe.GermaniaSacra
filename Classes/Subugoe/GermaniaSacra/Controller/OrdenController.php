@@ -220,8 +220,8 @@ class OrdenController extends AbstractBaseController {
 			$ordenObj->setOrdo($this->request->getArgument('ordo'));
 			$ordenObj->setSymbol($this->request->getArgument('symbol'));
 			$ordenObj->setGraphik($this->request->getArgument('graphik'));
-			if ($this->request->hasArgument('ordenstyp_uid')) {
-				$ordenstypUUID = $this->request->getArgument('ordenstyp_uid');
+			if ($this->request->hasArgument('ordenstyp')) {
+				$ordenstypUUID = $this->request->getArgument('ordenstyp');
 				$ordenstypObj = $this->ordenstypRepository->findByIdentifier($ordenstypUUID);
 				$ordenObj->setOrdenstyp($ordenstypObj);
 			}

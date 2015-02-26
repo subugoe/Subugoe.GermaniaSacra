@@ -61,12 +61,20 @@
     '@action':     'list'
 
 -
-  name: 'Default list routes (controller only)'
+  name: 'create mysql database dump'
   uriPattern: 'dump/dump'
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
     '@controller': 'Dump'
     '@action':     'dump'
+
+-
+  name: 'incremental data import'
+  uriPattern: 'dataimport/importinkdump'
+  defaults:
+    '@package': 'Subugoe.GermaniaSacra'
+    '@controller': 'dataimport'
+    '@action':     'importinkdump'
 
 -
   name: 'Default list routes (controller with action)'
