@@ -764,7 +764,7 @@ class KlosterController extends AbstractBaseController {
 			if ($klosterstandort->getVon_von()) {
 				$klosterstandorte[$i]['von_von'] = $klosterstandort->getVon_von();
 			}
-			if ($klosterstandort->getVon_bis(i)) {
+			if ($klosterstandort->getVon_bis()) {
 				$klosterstandorte[$i]['von_bis'] = $klosterstandort->getVon_bis();
 			}
 			$klosterstandorte[$i]['von_verbal'] = $klosterstandort->getVon_verbal();

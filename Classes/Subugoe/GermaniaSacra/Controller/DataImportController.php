@@ -298,6 +298,13 @@ class DataImportController extends AbstractBaseController {
 	 */
 	const dumpLogFile = 'Persistent/GermaniaSacra/Log/klosterDumpImport.log';
 
+	/**
+	 * Initializes defaults
+	 */
+	public function initializeAction() {
+		parent::initializeAction();
+	}
+
 	public function __construct($logger = NULL, $settings = NULL) {
 		parent::__construct();
 		$this->dumpDirectory = FLOW_PATH_ROOT . 'Data/Persistent/GermaniaSacra/Dump/';
@@ -318,8 +325,8 @@ class DataImportController extends AbstractBaseController {
 		if (file_exists($dumpFile)) {
 			echo nl2br(file_get_contents($dumpFile));
 		}
+		exit;
 	}
-
 
 	/**
 	 * Check Bearbeiter and Account tables for content and acts as appropriate
@@ -961,11 +968,12 @@ class DataImportController extends AbstractBaseController {
 									$klosterObject->setBand($bandObject);
 									$klosterObject->setBand_seite($band_seite);
 									$klosterObject->setText_gs_band($text_gs_band);
-									$klosterObject->setBearbeitungsstand($bearbeitungsstand);
-									$klosterObject->setcreationDate(new \DateTime($creationdate));
-									$this->klosterRepository->add($klosterObject);
-									$this->persistenceManager->persistAll();
+
 								}
+								$klosterObject->setBearbeitungsstand($bearbeitungsstand);
+								$klosterObject->setcreationDate(new \DateTime($creationdate));
+								$this->klosterRepository->add($klosterObject);
+								$this->persistenceManager->persistAll();
 								$klosterUUID = $klosterObject->getUUID();
 								if ($hauptRessource) {
 									$parts = explode("#", $hauptRessource);
@@ -1243,7 +1251,7 @@ class DataImportController extends AbstractBaseController {
 					$nKlosterstandort++;
 				} else {
 					if ($klosterObject === Null) {
-						$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . 'wurde nicht gefunden.', LOG_ERR);
+						$this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . ' wurde nicht gefunden.', LOG_ERR);
 					}
 					if ($ortObject === Null) {
 						$this->dumpImportlogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . ' wurde nicht gefunden.', LOG_ERR);
@@ -2159,16 +2167,6 @@ class DataImportController extends AbstractBaseController {
 		return true;
 	}
 
-
-
-
-	/**
-	 * Initializes defaults
-	 */
-	public function initializeAction() {
-		parent::initializeAction();
-	}
-
 	/**
 	 * Import incremental kloster data from within FLOW into db kloster table
 	 * @return void
@@ -2210,9 +2208,7 @@ class DataImportController extends AbstractBaseController {
 		$this->importAccessInkDumpAction();
 		/** @var \Doctrine\DBAL\Connection $sqlConnection */
 		$sqlConnection = $this->entityManager->getConnection();
-
 		$this->initializeLogger();
-
 		$this->dumpImportlogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
 		$checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bearbeiter');
 		if ($checkIfBearbeiterTableExists) {
@@ -2383,4 +2379,5 @@ class DataImportController extends AbstractBaseController {
 				)
 		);
 	}
+
 }
