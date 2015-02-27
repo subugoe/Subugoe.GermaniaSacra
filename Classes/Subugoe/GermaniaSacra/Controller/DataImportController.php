@@ -281,7 +281,7 @@ class DataImportController extends AbstractBaseController {
 	/**
 	 * @var string
 	 */
-	const cacertDest = 'Data/Temporary/Production/Cache/Code/Flow_Object_Classes/Resources/';
+	const cacertDest = 'Data/Temporary/Development/Cache/Code/Flow_Object_Classes/Resources/';
 
 	/**
 	 * @var string
