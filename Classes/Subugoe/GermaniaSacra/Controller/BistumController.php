@@ -74,7 +74,6 @@ class BistumController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Bistum entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {

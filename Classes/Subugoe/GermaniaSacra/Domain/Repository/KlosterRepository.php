@@ -102,8 +102,6 @@ class KlosterRepository extends Repository {
 			$queryBuilder->leftJoin('kloster.klosterHasUrls', 'klosterhasurl')
 						->leftJoin('klosterhasurl.url', 'url')
 						->leftJoin('url.urltyp', 'urltyp');
-			$queryBuilder->andWhere('urltyp.name LIKE :urltyp');
-			$queryBuilder->setParameter('urltyp', 'GND');
 		}
 		if ($orderings[0] === 'bearbeitungsstatus') $orderings[0] = 'name';
 		if ($orderings[0] === 'gnd') $orderings[0] = 'url';
@@ -170,7 +168,7 @@ class KlosterRepository extends Repository {
 	 * @param integer $mode The search mode
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 */
-	public function findKlosterByWildCard($offset, $limit, $searchValue, $mode = 1) {
+	public function findKlosterByWildCard($offset, $limit, $orderings, $searchValue, $mode = 1) {
 		if (!empty($searchValue)) {
 			$query = $this->createQuery();
 		/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
@@ -205,10 +203,26 @@ class KlosterRepository extends Repository {
 								land.land LIKE :alle AND land.ist_in_deutschland = :ist_in_deutschland')
 						->setParameter('alle', $searchValue)
 						->setParameter('ist_in_deutschland', 1);
+			switch ($orderings[0]) {
+			    case 'bearbeitungsstatus':
+				 	$entity = 'b';
+				 	$orderings[0] = 'name';
+			        break;
+			    case 'ort':
+				 	$entity = 'o';
+			        break;
+			    case 'gnd':
+				    $queryBuilder->leftJoin('k.klosterHasUrls', 'klosterhasurl')
+				 				->leftJoin('klosterhasurl.url', 'url')
+				 				->leftJoin('url.urltyp', 'urltyp');
+				 	$entity = 'url';
+				 	$orderings[0] = 'url';
+			        break;
+				default:
+					$entity = 'k';
+			}
 			if ($mode === 1) {
-				$sort = 'k.kloster_id';
-				$order = 'ASC';
-				$queryBuilder->orderBy($sort, $order);
+				$queryBuilder->orderBy($entity . '.' . $orderings[0], $orderings[1]);
 				$queryBuilder->setFirstResult($offset);
 				$queryBuilder->setMaxResults($limit);
 				return $query->execute();
@@ -242,28 +256,26 @@ class KlosterRepository extends Repository {
 		return $query->execute();
 	}
 
-
-	public function findKlosterByAdvancedSearch($searchArr) {
-
+	public function findKlosterByAdvancedSearch($offset, $limit, $orderings, $searchArr, $mode = 1) {
 		$query = $this->createQuery();
 	/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
 		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
 		$queryBuilder
 		->resetDQLParts()
-		->select('kloster.Persistence_Object_Identifier')
+		->select('kloster')
 		->from('\Subugoe\GermaniaSacra\Domain\Model\Kloster', 'kloster');
-
 		$check = array();
 		$parameterArr = array();
-
 		if (is_array($searchArr) && count($searchArr) > 0) {
+			$ortFilterExists = False;
+			$bearbeitungsstatusFilterExists = False;
 			foreach ($searchArr as $k => $v) {
-
 				$searchStr = trim($v['text']);
 				$filter = $v['filter'];
+				if ($filter === 'ort.ort') $ortFilterExists = True;
+				if ($filter === 'bearbeitungsstatus.name') $bearbeitungsstatusFilterExists = True;
 				$parameter = $v['joinParams']['parameter'];
 				$operator = $v['operator'];
-
 				if ($searchStr !== '') {
 					if ($operator == 'LIKE' || $operator == 'NOT LIKE') {
 						$value = '%' . $searchStr . '%';
@@ -283,48 +295,44 @@ class KlosterRepository extends Repository {
 				else {
 					$value = Null;
 				}
-
 				if ($value === Null) {
 					$v['operator'] = 'IS NULL';
 				}
-
 				if (isset($v['joinParams']['join']) && is_array($v['joinParams']['join']) && !in_array($v['joinParams']['duplicateJoinCheck'][0],$check)) {
 					foreach ($v['joinParams']['join'] as $join) {
-						$queryBuilder->innerJoin($join[0] . '.' . $join[1], $join['2']);
+						$queryBuilder->leftJoin($join[0] . '.' . $join[1], $join['2']);
 					}
 				}
-
 				if (isset($v['joinParams']['secondjoin']) && is_array($v['joinParams']['secondjoin']) && !in_array($v['joinParams']['duplicateJoinCheck'][1],$check)) {
 					foreach ($v['joinParams']['secondjoin'] as $secondjoin) {
-						$queryBuilder->innerJoin($secondjoin[0] . '.' . $secondjoin[1], $secondjoin['2']);
+						$queryBuilder->leftJoin($secondjoin[0] . '.' . $secondjoin[1], $secondjoin['2']);
 					}
 				}
-
 				if (isset($v['joinParams']['thirdjoin']) && is_array($v['joinParams']['thirdjoin']) && !in_array($v['joinParams']['duplicateJoinCheck'][2],$check)) {
 					foreach ($v['joinParams']['thirdjoin'] as $thirdjoin) {
-						$queryBuilder->innerJoin($thirdjoin[0] . '.' . $thirdjoin[1], $thirdjoin['2']);
+						$queryBuilder->leftJoin($thirdjoin[0] . '.' . $thirdjoin[1], $thirdjoin['2']);
 					}
 				}
-
 				if (in_array($parameter, $parameterArr)) {
 					$parameter = $parameter . '_' . $k;
 				}
-
 				if (isset($concat) && !empty($concat)) {
 					if ($concat == 'und') {
 						if ($value !== Null) {
-							$secondparameter = $v['joinParams']['secondparameter'];
+							if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
+								$secondparameter = $v['joinParams']['secondparameter'];
+							}
 							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
 								$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter . ' AND ' . $filter . ' !=  0 OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter . ' AND ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' !=  0');
 							}
 							else {
 								$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
-								if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
-									$secondparameter = $v['joinParams']['secondparameter'];
+								if (isset($secondparameter) && !empty($secondparameter)) {
 									$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
 									$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
 								}
 							}
+							unset($secondparameter);
 						}
 						else {
 							$queryBuilder->andWhere($filter . ' ' . $operator);
@@ -332,18 +340,20 @@ class KlosterRepository extends Repository {
 					}
 					elseif ($concat == 'oder') {
 						if ($value !== Null) {
-							$secondparameter = $v['joinParams']['secondparameter'];
+							if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
+								$secondparameter = $v['joinParams']['secondparameter'];
+							}
 							if (isset($v['joinParams']['zeitraum']) && $v['joinParams']['zeitraum'] === true) {
 								$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter . ' AND ' . $filter . ' !=  0 OR ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $operator . ' :' . $parameter . ' AND ' . $secondparameter['entity'] . '.' . $secondparameter['property'] . ' !=  0');
 							}
 							else {
 								$queryBuilder->orWhere($filter . ' ' . $operator . ' :' . $parameter);
-								if (isset($v['joinParams']['secondparameter']) && !empty($v['joinParams']['secondparameter'])) {
-									$secondparameter = $v['joinParams']['secondparameter'];
+								if (isset($secondparameter) && !empty($secondparameter)) {
 									$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
 									$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
 								}
 							}
+							unset($secondparameter);
 						}
 						else {
 							$queryBuilder->orWhere($filter . ' ' . $operator);
@@ -362,6 +372,7 @@ class KlosterRepository extends Repository {
 								$queryBuilder->andWhere($secondparameter['entity'] . '.' . $secondparameter['property'] . ' ' . $secondparameter['operator'] . ' :' . $secondparameter['value_alias'] );
 								$queryBuilder->setParameter($secondparameter['value_alias'], $secondparameter['value']);
 							}
+							unset($secondparameter);
 						}
 						else {
 							$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
@@ -371,30 +382,63 @@ class KlosterRepository extends Repository {
 						$queryBuilder->where($filter . ' ' . $operator);
 					}
 				}
-
 				if ($value !== Null) {
 					$queryBuilder->setParameter($parameter, $value);
 				}
-
 				if (isset($v['concat']) && !empty($v['concat'])) {
 					$concat = $v['concat'];
 				}
-
 				if (!empty($v['joinParams']['duplicateJoinCheck']) && is_array($v['joinParams']['duplicateJoinCheck'])) {
 					$check = array_merge($check, $v['joinParams']['duplicateJoinCheck']);
 				}
-
 				if (isset($check) && is_array($check)) {
 					$check = array_unique($check);
 				}
-
 				if (isset($parameter) && !empty($parameter)) {
 					$parameterArr[] = $parameter;
 				}
 			}
 		}
+		switch ($orderings[0]) {
+		    case 'bearbeitungsstatus':
 
-		return $query->execute();
+			    if ($bearbeitungsstatusFilterExists) {
+				    $entity = 'bearbeitungsstatus';
+				    $orderings[0] = 'name';
+			    }
+				else {
+					$queryBuilder->leftJoin('kloster.bearbeitungsstatus', 'bearbeitungsstatus');
+					 $entity = 'bearbeitungsstatus';
+					$orderings[0] = 'name';
+				}
+		        break;
+		    case 'ort':
+				if ($ortFilterExists)
+			 	    $entity = 'ort';
+				else
+					$queryBuilder->leftJoin('kloster.klosterstandorts', 'klosterstandort')
+								->leftJoin('klosterstandort.ort', 'ort');
+					$entity = 'ort';
+		        break;
+		    case 'gnd':
+			    $queryBuilder->leftJoin('kloster.klosterHasUrls', 'klosterhasurl')
+			 				->leftJoin('klosterhasurl.url', 'url')
+			 				->leftJoin('url.urltyp', 'urltyp');
+			 	$entity = 'url';
+			 	$orderings[0] = 'url';
+		        break;
+			default:
+				$entity = 'kloster';
+		}
+		if ($mode === 1) {
+			$queryBuilder->orderBy($entity . '.' . $orderings[0], $orderings[1]);
+			$queryBuilder->setFirstResult($offset);
+			$queryBuilder->setMaxResults($limit);
+			return $query->execute();
+		}
+		else {
+			return $query->count();
+		}
 	}
 
 }
