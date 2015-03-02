@@ -900,12 +900,7 @@ class KlosterController extends AbstractBaseController {
 		);
 		$bands = $this->bandRepository->findAll();
 		foreach ($bands as $band) {
-			if ($band->getTitel() != 'keine Angabe') {
-				$bandNummerTitel = $band->getNummer() . '-' . $band->getTitel();
-			}
-			else {
-				$bandNummerTitel = '––';
-			}
+			$bandNummerTitel = $band->getNummer() . '-' . $band->getTitel();
 			$bandArr[$band->getUUID()] = $bandNummerTitel;
 		}
 		// Literature data for select box
@@ -972,11 +967,8 @@ class KlosterController extends AbstractBaseController {
 		);
 		$urltyps = $this->urltypRepository->findAll();
 		foreach ($urltyps as $urltyp) {
-			if ($urltyp->getName() != 'Wikipedia' && $urltyp->getName() != 'GND' && $urltyp->getName() != 'keine Angabe') {
+			if (($urltyp->getName() != 'GND') && ($urltyp->getName() != 'Wikipedia')) {
 				$urltypArr[$urltyp->getUUID()] = $urltyp->getName();
-			}
-			else {
-				$urltypArr[$urltyp->getUUID()] = '––';
 			}
 		}
 		// Land data for select box

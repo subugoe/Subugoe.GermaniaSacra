@@ -18,7 +18,7 @@ class KlosterHasUrl {
 
 	/**
 	 * @var \Subugoe\GermaniaSacra\Domain\Model\Kloster
-	 * @ORM\ManyToOne(inversedBy="klosterHasUrls", cascade={"persist"})
+	 * @ORM\ManyToOne(inversedBy="klosterHasUrls")
 	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
 	 */
 	protected $kloster;
