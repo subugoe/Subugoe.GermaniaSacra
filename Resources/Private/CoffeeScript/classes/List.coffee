@@ -31,6 +31,8 @@ class germaniaSacra.List
 
 		self = @
 
+		csrf = $('#csrf').val();
+
 		$('#search, #list').hide()
 		germaniaSacra.message 'loading', false
 
@@ -59,6 +61,10 @@ class germaniaSacra.List
 				url: @type + '/list/'
 				type: 'post'
 				dataSrc: (json) -> self.onJsonLoad(json)
+				data: (d) ->
+					d.advancedSearch = germaniaSacra.search.advancedSearchRequest
+					d.__csrfToken = csrf
+					return
 			serverSide: true
 			columns: columns
 			autoWidth: false

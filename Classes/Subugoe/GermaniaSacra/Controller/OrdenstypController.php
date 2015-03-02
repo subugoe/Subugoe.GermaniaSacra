@@ -43,7 +43,6 @@ class OrdenstypController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Ordenstyp entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {

@@ -77,7 +77,6 @@ class OrtController extends AbstractBaseController {
 
 	/**
 	 * List of all Ort entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {

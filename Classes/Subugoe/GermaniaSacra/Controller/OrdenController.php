@@ -75,7 +75,6 @@ class OrdenController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Orden entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {

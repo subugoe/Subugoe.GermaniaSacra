@@ -69,7 +69,6 @@ class BandController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Band entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {

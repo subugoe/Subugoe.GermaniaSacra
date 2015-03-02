@@ -193,11 +193,42 @@ class KlosterController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Kloster entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
 			$this->view->setVariablesToRender(array('kloster'));
+		}
+		if ($this->request->hasArgument('advancedSearch'))  {
+			$advancedSearchParams = $this->request->getArgument('advancedSearch');
+			if (is_array($advancedSearchParams) && $advancedSearchParams !== array()) {
+				$filter = array();
+				$operator = array();
+				$text = array();
+				$concat = array();
+				foreach ($advancedSearchParams as $advancedSearch) {
+					if ($advancedSearch['name'] === 'filter[]') $filter[] = $advancedSearch['value'];
+					if ($advancedSearch['name'] === 'operator[]') $operator[] = $advancedSearch['value'];
+					if ($advancedSearch['name'] === 'text[]') $text[] = $advancedSearch['value'];
+					if ($advancedSearch['name'] === 'concat[]') $concat[] = $advancedSearch['value'];
+				}
+				$advancedSearchArr = array();
+				if ((isset($filter) && $filter !== array()) && (isset($operator) && $operator !== array()) && (isset($text) && $text !== array())) {
+					foreach ($filter as $k => $v) {
+						$joinParams = $this->joinParamArr[$v];
+						if (isset($concat[$k]) && !empty($concat[$k])) {
+							$cc = $concat[$k];
+						} else {
+							$cc = null;
+						}
+						if (trim($v) == 'bundesland.bundesland') {
+							$filter = 'land.land';
+						} else {
+							$filter = $v;
+						}
+						$advancedSearchArr[] = array('filter' => $filter, 'operator' => $operator[$k], 'text' => $text[$k], 'joinParams' => $joinParams, 'concat' => $cc);
+					}
+				}
+			}
 		}
 		if ($this->request->hasArgument('search'))  {
 			$searchValue = $this->request->getArgument('search')['value'];
@@ -245,12 +276,16 @@ class KlosterController extends AbstractBaseController {
 		$start = $this->request->hasArgument('start') ? $this->request->getArgument('start'):self::start;
 		$length = $this->request->hasArgument('length') ? $this->request->getArgument('length'):self::length;
 		if (isset($searchValue) && !empty($searchValue)) {
-			$klosters = $this->klosterRepository->findKlosterByWildCard($start, $length, $searchValue, 1);
-			$recordsFiltered = $this->klosterRepository->findKlosterByWildCard($start, $length, $searchValue, 2);
+			$klosters = $this->klosterRepository->findKlosterByWildCard($start, $length, $orderings, $searchValue, 1);
+			$recordsFiltered = $this->klosterRepository->findKlosterByWildCard($start, $length, $orderings, $searchValue, 2);
 		}
 		elseif (isset($searchArr) && $searchArr !== array()) {
 			$klosters = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 1);
 			$recordsFiltered = $this->klosterRepository->searchCertainNumberOfKloster($start, $length, $orderings, $searchArr, 2);
+		}
+		elseif (isset($advancedSearchArr) && $advancedSearchArr !== array()) {
+			$klosters = $this->klosterRepository->findKlosterByAdvancedSearch($start, $length, $orderings, $advancedSearchArr, 1);
+			$recordsFiltered = $this->klosterRepository->findKlosterByAdvancedSearch($start, $length, $orderings, $advancedSearchArr, 2);
 		}
 		else {
 			$klosters = $this->klosterRepository->getCertainNumberOfKloster($start, $length, $orderings);
@@ -1544,65 +1579,6 @@ class KlosterController extends AbstractBaseController {
 			$lastKlosterordenId = $res->getUid();
 		}
 		return $lastKlosterordenId;
-	}
-
-	/** Gets and returns a list of Klosters as per search string
-	 * @param void
-	 * @return array $reponse
-	 * @FLOW\SkipCsrfProtection
-	 */
-	public function searchAction() {
-		if ($this->request->hasArgument('alle')) {
-			$alle = $this->request->getArgument('alle');
-		}
-		$searchArr = array();
-		if ($this->request->hasArgument('filter')) {
-			$filter = $this->request->getArgument('filter');
-			if ($this->request->hasArgument('operator')) {
-				$operator = $this->request->getArgument('operator');
-
-				if ($this->request->hasArgument('text')) {
-					$text = $this->request->getArgument('text');
-				}
-
-				if ($this->request->hasArgument('concat')) {
-					$concat = $this->request->getArgument('concat');
-				}
-			}
-		}
-		if (!empty($filter) && !empty($operator) && !empty($text)) {
-			foreach ($filter as $k => $v) {
-				$joinParams = $this->joinParamArr[$v];
-				if (isset($concat[$k]) && !empty($concat[$k])) {
-					$cc = $concat[$k];
-				} else {
-					$cc = null;
-				}
-				if (trim($v) == 'bundesland.bundesland') {
-					$filter = 'land.land';
-				} else {
-					$filter = $v;
-				}
-				$searchArr[] = array('filter' => $filter, 'operator' => $operator[$k], 'text' => $text[$k], 'joinParams' => $joinParams, 'concat' => $cc);
-			}
-		}
-		if (isset($alle) && !empty($alle)) {
-			$searchResult = $this->klosterRepository->findKlosterByWildCard($alle);
-			$resultArr = array();
-			foreach ($searchResult as $v) {
-				$resultArr[] = $v['Persistence_Object_Identifier'];
-			}
-			return json_encode($resultArr);
-		} else {
-			if (isset($searchArr) && is_array($searchArr)) {
-				$searchResult = $this->klosterRepository->findKlosterByAdvancedSearch($searchArr);
-				$resultArr = array();
-				foreach ($searchResult as $v) {
-					$resultArr[] = $v['Persistence_Object_Identifier'];
-				}
-				return json_encode($resultArr);
-			}
-		}
 	}
 
 	/** Gets and returns the list of Literature key value pairs

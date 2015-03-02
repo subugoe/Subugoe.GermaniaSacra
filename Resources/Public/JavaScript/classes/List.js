@@ -28,8 +28,9 @@ germaniaSacra.List = (function() {
   }
 
   List.prototype.editList = function() {
-    var $table, $ths, columns, orderBy, self;
+    var $table, $ths, columns, csrf, orderBy, self;
     self = this;
+    csrf = $('#csrf').val();
     $('#search, #list').hide();
     germaniaSacra.message('loading', false);
     $table = this.scope.find('table:eq(0)');
@@ -60,6 +61,10 @@ germaniaSacra.List = (function() {
         type: 'post',
         dataSrc: function(json) {
           return self.onJsonLoad(json);
+        },
+        data: function(d) {
+          d.advancedSearch = germaniaSacra.search.advancedSearchRequest;
+          d.__csrfToken = csrf;
         }
       },
       serverSide: true,

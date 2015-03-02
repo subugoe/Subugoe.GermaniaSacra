@@ -79,7 +79,6 @@ class BearbeiterController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Bearbeiter entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {

@@ -43,7 +43,6 @@ class UrltypController extends AbstractBaseController {
 
 	/**
 	 * Returns the list of all Urltyp entities
-	 * @FLOW\SkipCsrfProtection
 	 */
 	public function listAction() {
 		if ($this->request->getFormat() === 'json') {
