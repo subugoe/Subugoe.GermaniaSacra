@@ -916,7 +916,7 @@ class DataExportController extends ActionController {
 
 							foreach ($klosterstandorte[$k] as $n => $mystandort) {
 
-								if (($myorden['orden_von_von'] < $mystandort['standort_bis_bis']) && ($mystandort['standort_von_von'] < $myorden['orden_bis_bis'])) {
+								if (($myorden['orden_von_von'] <= $mystandort['standort_bis_bis']) && ($mystandort['standort_von_von'] <= $myorden['orden_bis_bis'])) {
 
 									$standort_ordenArr[$k][$m][$n]['kloster_id'] = (string)$sql_uid;
 									$standort_ordenArr[$k][$m][$n]['id'] = 'standort-orden-' . (string)$sql_uid . '-' . (string)$standortOrdenCount;
