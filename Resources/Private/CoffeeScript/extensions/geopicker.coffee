@@ -81,7 +81,7 @@ $.fn.geopicker = ->
 		map.on 'click', onMapClick = (e) =>
 			lat = e.latlng.lat.toFixed(6)
 			lng = e.latlng.lng.toFixed(6)
-			doit = confirm 'Sollen die Koordinaten #{lat}, #{lng} übernommen werden?'
+			doit = confirm "Sollen die Koordinaten #{lat}, #{lng} übernommen werden?"
 			if doit is true
 				# Insert values into input fields, cut to 6 decimals (corresponds to a precision of about 10 cm)
 				$(':input[name$="breite[]"]', scope).val lat
