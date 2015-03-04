@@ -128,8 +128,8 @@ class germaniaSacra.Editor
 									$(this).closest('.multiple').find('[name="bistum[]"]').val(uUID).change().trigger('refresh')
 						else if name is 'bistum'
 							$(this).val(value[name])
-							text = $(this).find(':selected')
-							disabledCondition = text isnt 'keine Angabe' and text isnt ''
+							text = $(this).find(':selected').text()
+							disabledCondition = text not in germaniaSacra.notSpecifiedValues
 							$(this).prop 'disabled', disabledCondition
 						else
 							$(this).val value[name]
