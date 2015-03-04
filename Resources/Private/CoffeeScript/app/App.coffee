@@ -41,3 +41,4 @@ germaniaSacra.messages =
 	selectAtLeastOneEntry: 'Wählen Sie bitte mindestens einen Eintrag aus.'
 	entryDeleted: 'Der Eintrag wurde gelöscht.'
 	entryDeleteError: 'Fehler: Eintrag konnte nicht gelöscht werden.'
+	urlTypeNotSet: 'URL-Typ darf nicht leer sein.'
