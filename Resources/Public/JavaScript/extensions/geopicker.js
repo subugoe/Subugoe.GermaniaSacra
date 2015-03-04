@@ -71,8 +71,8 @@ $.fn.geopicker = function() {
         lng = e.latlng.lng.toFixed(6);
         doit = confirm("Sollen die Koordinaten " + lat + ", " + lng + " übernommen werden?");
         if (doit === true) {
-          $(':input[name$="breite[]"]', scope).val(lat);
-          $(':input[name$="laenge[]"]', scope).val(lng);
+          $(':input[name$="breite[]"]', scope).val(lat).change();
+          $(':input[name$="laenge[]"]', scope).val(lng).change();
           return marker.setLatLng(e.latlng);
         }
       });

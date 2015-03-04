@@ -84,8 +84,8 @@ $.fn.geopicker = ->
 			doit = confirm "Sollen die Koordinaten #{lat}, #{lng} übernommen werden?"
 			if doit is true
 				# Insert values into input fields, cut to 6 decimals (corresponds to a precision of about 10 cm)
-				$(':input[name$="breite[]"]', scope).val lat
-				$(':input[name$="laenge[]"]', scope).val lng
+				$(':input[name$="breite[]"]', scope).val(lat).change()
+				$(':input[name$="laenge[]"]', scope).val(lng).change()
 				marker.setLatLng(e.latlng)
 
 		# Add GeoJSON

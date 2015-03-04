@@ -174,12 +174,26 @@ class germaniaSacra.Editor
 			$('[type=submit]', @scope).prop('disabled', true)
 
 		).fail( ->
+
 			germaniaSacra.message 'dataLoadError'
+
 		)
 
 	# Update a single entity
 	update: ->
 		$form = $('form', @scope)
+		error = false
+
+		# TODO
+		$("#links .multiple", @scope).each ->
+			url_typ = $(this).find("[name='url_typ[]']").val()
+			url = $(this).find("[name='url[]']").val()
+			if url and not url_typ
+				error = true
+				alert germaniaSacra.messages.urlTypeNotSet
+
+		if error then return
+
 		uuid = $form.find(':input[name=uUID]').first().val()
 		$.post("#{@type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) =>
 			germaniaSacra.keepSelectOptions = false

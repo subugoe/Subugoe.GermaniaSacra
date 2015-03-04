@@ -210,8 +210,21 @@ germaniaSacra.Editor = (function() {
   };
 
   Editor.prototype.update = function() {
-    var $form, uuid;
+    var $form, error, uuid;
     $form = $('form', this.scope);
+    error = false;
+    $("#links .multiple", this.scope).each(function() {
+      var url, url_typ;
+      url_typ = $(this).find("[name='url_typ[]']").val();
+      url = $(this).find("[name='url[]']").val();
+      if (url && !url_typ) {
+        error = true;
+        return alert(germaniaSacra.messages.urlTypeNotSet);
+      }
+    });
+    if (error) {
+      return;
+    }
     uuid = $form.find(':input[name=uUID]').first().val();
     return $.post("" + this.type + "/update/" + uuid, $form.serialize()).done((function(_this) {
       return function(respond, status, jqXHR) {

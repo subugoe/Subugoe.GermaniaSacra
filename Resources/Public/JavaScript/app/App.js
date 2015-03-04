@@ -61,5 +61,6 @@ germaniaSacra.messages = {
   changesSaveError: 'Fehler: Ihre Änderungen konnten nicht gespeichert werden.',
   selectAtLeastOneEntry: 'Wählen Sie bitte mindestens einen Eintrag aus.',
   entryDeleted: 'Der Eintrag wurde gelöscht.',
-  entryDeleteError: 'Fehler: Eintrag konnte nicht gelöscht werden.'
+  entryDeleteError: 'Fehler: Eintrag konnte nicht gelöscht werden.',
+  urlTypeNotSet: 'URL-Typ darf nicht leer sein.'
 };
