@@ -62,13 +62,17 @@ $.fn.removeInputs = function(slideTime) {
 
 $.fn.clearForm = function() {
   return this.each(function() {
-    var $form;
+    var $form, value, _i, _len, _ref;
     $form = $(this);
     $form.find('label').removeClass('dirty');
     $form.find(':input').prop('disabled', false);
     $form.find(':input:not([name=__csrfToken]):not(:checkbox):not(:submit)').val('');
     $form.find(':checkbox, :radio').prop('checked', false);
-    $form.find('select option:contains("––"), select option:contains("keine Angabe"), select option:contains("unbekannt")').prop('selected', true);
+    _ref = germaniaSacra.notSpecifiedValues;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      value = _ref[_i];
+      $form.find("select option:contains('" + value + "')").prop('selected', true);
+    }
     $form.find('.multiple:gt(0)').removeInputs();
     $form.find('.map-container').remove();
     return $form.find('button.remove').prop('disabled', true);

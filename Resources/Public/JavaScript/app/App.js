@@ -42,6 +42,8 @@ germaniaSacra.config(function($routeProvider, $locationProvider) {
   });
 });
 
+germaniaSacra.notSpecifiedValues = ['––', 'keine Angabe', 'unbekannt'];
+
 germaniaSacra.messages = {
   saveChanges: 'Änderungen speichern',
   saveChangesWithCount: '<span class="count">0</span> <span class="singular hidden">geänderten Datensatz</span><span class="plural">geänderte Datensätze</span> speichern',
