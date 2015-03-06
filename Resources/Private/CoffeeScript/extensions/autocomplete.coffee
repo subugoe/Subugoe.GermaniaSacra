@@ -44,20 +44,25 @@ $.fn.autocomplete = ->
 				$list.append "<li data-uuid='#{$(element).val()}'>#{$(element).text()}</li>"
 
 		$fakeSelect.focus ->
+
 			$fakeSelect.blur()
 			$list.find('li').show().first().addClass('current')
 			$('.autocomplete .popup').hide()
+
 			$popup.slideDown()
 			$filter.focus()
 
 		$list.on 'click', 'li', ->
+
 			if isAjax
 				$select.empty().append("<option value='#{$(this).data('uuid')}' selected>#{$(this).text()}</option>")
 			else
 				$select.val( $(this).data('uuid') )
+
 			$fakeSelect
 				.val $(this).text()
 				.attr 'title', $select.find(':selected').text()
+
 			$select.change()
 			$(document).click()
 

@@ -20,22 +20,27 @@ germaniaSacra.controller 'listController', ($scope) ->
 			else
 				germaniaSacra.search = new germaniaSacra.Search()
 				germaniaSacra.editor = new germaniaSacra.Editor(type)
-				$('#message, #search, #list').hide()
+				$('#message, #search, #list, #edit').hide()
 				$('.togglable + .togglable').hide()
-				$.when( germaniaSacra.getOptions() ).then(
-					(selectOptions) ->
-						germaniaSacra.selectOptions = selectOptions
-						germaniaSacra.list = new germaniaSacra.List(type)
-						$('.toggle').click (e) ->
-							e.preventDefault()
-							$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
-						germaniaSacra.bindKeys()
-						$('#edit form').appendSaveButton 'saveChanges'
-						$('#list form').appendSaveButton 'saveChangesWithCount'
-						$('fieldset .multiple').appendAddRemoveButtons()
-					,
-					->
-						germaniaSacra.message 'optionsLoadError'
+				$.when( germaniaSacra.getOptions() ).then( (selectOptions) ->
+					$.each selectOptions, (name, values) ->
+						$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
+						$selects.empty()
+						$.each values, (uUID, text) ->
+							$selects.append $('<option/>',
+								value: uUID
+								text: text
+							)
+					germaniaSacra.list = new germaniaSacra.List(type)
+					$('.toggle').click (e) ->
+						e.preventDefault()
+						$(this).closest('.togglable').siblings('.togglable').addBack().slideToggle()
+					germaniaSacra.bindKeys()
+					$('#edit form').appendSaveButton 'saveChanges'
+					$('#list form').appendSaveButton 'saveChangesWithCount'
+					$('fieldset .multiple').appendAddRemoveButtons()
+				, ->
+					germaniaSacra.message 'optionsLoadError'
 				)
 	), true
 
@@ -52,17 +57,9 @@ germaniaSacra.getOptions = ->
 		return germaniaSacra.selectOptions
 	else
 		dfd = $.Deferred()
-		# Load options for selects before initializing list
 		$.getJSON 'getOptions', (response) ->
-			$.each response, (name, values) ->
-				$selects = $("#edit select[name='#{name}'], select[name='#{name}[]'], select[name='#{name}_uid']")
-				$selects.empty()
-				$.each values, (uUID, text) ->
-					$selects.append $('<option/>',
-						value: uUID
-						text: text
-					)
-			germaniaSacra.keepSelectOptions = false
+			germaniaSacra.selectOptions = response
+			germaniaSacra.keepSelectOptions = true
 			dfd.resolve(response)
 		return dfd.promise()
 

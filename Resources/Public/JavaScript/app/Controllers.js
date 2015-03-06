@@ -18,10 +18,20 @@ germaniaSacra.controller('listController', function($scope) {
       } else {
         germaniaSacra.search = new germaniaSacra.Search();
         germaniaSacra.editor = new germaniaSacra.Editor(type);
-        $('#message, #search, #list').hide();
+        $('#message, #search, #list, #edit').hide();
         $('.togglable + .togglable').hide();
         return $.when(germaniaSacra.getOptions()).then(function(selectOptions) {
-          germaniaSacra.selectOptions = selectOptions;
+          $.each(selectOptions, function(name, values) {
+            var $selects;
+            $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid']");
+            $selects.empty();
+            return $.each(values, function(uUID, text) {
+              return $selects.append($('<option/>', {
+                value: uUID,
+                text: text
+              }));
+            });
+          });
           germaniaSacra.list = new germaniaSacra.List(type);
           $('.toggle').click(function(e) {
             e.preventDefault();
@@ -55,18 +65,8 @@ germaniaSacra.getOptions = function() {
   } else {
     dfd = $.Deferred();
     $.getJSON('getOptions', function(response) {
-      $.each(response, function(name, values) {
-        var $selects;
-        $selects = $("#edit select[name='" + name + "'], select[name='" + name + "[]'], select[name='" + name + "_uid']");
-        $selects.empty();
-        return $.each(values, function(uUID, text) {
-          return $selects.append($('<option/>', {
-            value: uUID,
-            text: text
-          }));
-        });
-      });
-      germaniaSacra.keepSelectOptions = false;
+      germaniaSacra.selectOptions = response;
+      germaniaSacra.keepSelectOptions = true;
       return dfd.resolve(response);
     });
     return dfd.promise();
