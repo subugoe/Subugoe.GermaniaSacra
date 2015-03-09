@@ -81,10 +81,17 @@ class OrtRepository extends Repository {
 	 */
 	public function findOrtBySearchString($searchString) {
 		$query = $this->createQuery();
-		return $query->matching($query->like('ort', $searchString))
-				->setOrderings(array('ort' => \TYPO3\Flow\Persistence\QueryInterface::ORDER_ASCENDING))
-				->setLimit(20)
-				->execute();
+	/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
+		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
+		$queryBuilder
+		->resetDQLParts()
+		->select('ort')
+		->from('\Subugoe\GermaniaSacra\Domain\Model\Ort', 'ort')
+		->innerJoin('ort.bistum', 'bistum')
+		->orderBy('ort.ort', 'ASC')
+		->setFirstResult(0)
+		->setMaxResults(20);
+		return $query->execute();
 	}
 
 	/**
