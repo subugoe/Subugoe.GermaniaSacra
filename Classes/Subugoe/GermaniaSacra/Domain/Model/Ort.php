@@ -113,6 +113,9 @@ class Ort {
 		if (isset($this->kreis) && !empty($this->kreis)) {
 			$ortDetails[] = $this->kreis;
 		}
+		if (isset($this->bistum) && !empty($this->bistum)) {
+			$ortDetails[] = $this->bistum;
+		}
 		if ( !empty($ortDetails )) {
 			$fullOrt .= ' (' . join(', ', $ortDetails) . ')';
 		}
