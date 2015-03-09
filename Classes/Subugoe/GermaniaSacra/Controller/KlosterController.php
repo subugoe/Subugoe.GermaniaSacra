@@ -1253,16 +1253,17 @@ class KlosterController extends AbstractBaseController {
 			if (isset($gnd) && !empty($gnd)) {
 				foreach ($klosterHasUrls as $i => $klosterHasUrl) {
 					$urlObj = $klosterHasUrl->getUrl();
-					$url = $urlObj->getUrl();
 					$urlTypObj = $urlObj->getUrltyp();
-					$urlTyp = $urlTypObj->getName();
-					if ($urlTyp == "GND") {
-						$urlObj->setUrl($gnd);
-						if (!empty($gnd_label)) {
-							$urlObj->setBemerkung($gnd_label);
+					if (is_object($urlTypObj)) {
+						$urlTyp = $urlTypObj->getName();
+						if ($urlTyp == "GND") {
+							$urlObj->setUrl($gnd);
+							if (!empty($gnd_label)) {
+								$urlObj->setBemerkung($gnd_label);
+							}
+							$this->urlRepository->update($urlObj);
+							$klosterHasGND = true;
 						}
-						$this->urlRepository->update($urlObj);
-						$klosterHasGND = true;
 					}
 				}
 				if (!$klosterHasGND) {
@@ -1283,6 +1284,7 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 		}
+
 		//Update Wikipedia if set
 		$klosterHasWiki = false;
 		if ($this->request->hasArgument('wikipedia')) {
@@ -1300,14 +1302,16 @@ class KlosterController extends AbstractBaseController {
 					$urlObj = $klosterHasUrl->getUrl();
 					$url = $urlObj->getUrl();
 					$urlTypObj = $urlObj->getUrltyp();
-					$urlTyp = $urlTypObj->getName();
-					if ($urlTyp == "Wikipedia") {
-						$urlObj->setUrl($wikipedia);
-						if (!empty($wikipedia_label)) {
-							$urlObj->setBemerkung($wikipedia_label);
+					if (is_object($urlTypObj)) {
+						$urlTyp = $urlTypObj->getName();
+						if ($urlTyp == "Wikipedia") {
+							$urlObj->setUrl($wikipedia);
+							if (!empty($wikipedia_label)) {
+								$urlObj->setBemerkung($wikipedia_label);
+							}
+							$this->urlRepository->update($urlObj);
+							$klosterHasWiki = true;
 						}
-						$this->urlRepository->update($urlObj);
-						$klosterHasWiki = true;
 					}
 				}
 				if (!$klosterHasWiki) {
@@ -1328,6 +1332,7 @@ class KlosterController extends AbstractBaseController {
 				}
 			}
 		}
+
 		// Add Url if set
 		if ($this->request->hasArgument('url')) {
 			$urlArr = $this->request->getArgument('url');
@@ -1338,36 +1343,39 @@ class KlosterController extends AbstractBaseController {
 				if ($this->request->hasArgument('links_label')) {
 					$linksLabelArr = $this->request->getArgument('links_label');
 				}
-				if ((isset($urlArr) && !empty($urlArr)) && (isset($urlTypArr) && !empty($urlTypArr))) {
+				if (isset($klosterHasUrls) && $klosterHasUrls !== array()) {
 					foreach ($klosterHasUrls as $i => $klosterHasUrl) {
 						$urlObj = $klosterHasUrl->getUrl();
-						$url = $urlObj->getUrl();
 						$urlTypObj = $urlObj->getUrltyp();
-						$urlTyp = $urlTypObj->getName();
-						if ($urlTyp != "Wikipedia" && $urlTyp != "GND") {
+						if (is_object($urlTypObj)) {
+							$urlTyp = $urlTypObj->getName();
+						}
+						if (isset($urlTyp) && ($urlTyp != "Wikipedia" && $urlTyp != "GND")) {
 							$this->klosterHasUrlRepository->remove($klosterHasUrl);
 							$this->urlRepository->remove($urlObj);
 						}
 					}
-					foreach ($urlArr as $k => $url) {
-						if (!empty($url)) {
-							$urlObj = new Url();
-							$urlObj->setUrl($url);
+				}
+				foreach ($urlArr as $k => $url) {
+					if (!empty($url)) {
+						$urlObj = new Url();
+						$urlObj->setUrl($url);
+						if (isset($urlTypArr[$k]) && !empty($urlTypArr[$k])) {
 							$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
 							$urlTyp = $urlTypObj->getName();
 							$urlObj->setUrltyp($urlTypObj);
-							if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
-								$urlObj->setBemerkung($linksLabelArr[$k]);
-							}
-							else {
-								$urlObj->setBemerkung($urlTyp);
-							}
-							$this->urlRepository->add($urlObj);
-							$klosterhasurlObj = new KlosterHasUrl();
-							$klosterhasurlObj->setKloster($kloster);
-							$klosterhasurlObj->setUrl($urlObj);
-							$this->klosterHasUrlRepository->add($klosterhasurlObj);
 						}
+						if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
+							$urlObj->setBemerkung($linksLabelArr[$k]);
+						}
+						else {
+							$urlObj->setBemerkung($urlTyp);
+						}
+						$this->urlRepository->add($urlObj);
+						$klosterhasurlObj = new KlosterHasUrl();
+						$klosterhasurlObj->setKloster($kloster);
+						$klosterhasurlObj->setUrl($urlObj);
+						$this->klosterHasUrlRepository->add($klosterhasurlObj);
 					}
 				}
 			}
