@@ -163,11 +163,11 @@ germaniaSacra.Editor = (function() {
           $fieldset.find('.multiple:eq(0)').removeInputs(0);
           $.each(obj.url, function(index, value) {
             if (value.url_typ_name === 'GND') {
-              $form.find(':input[name=gnd]').val(value.url);
-              return $form.find(':input[name=gnd_label]').val(value.url_label);
+              $fieldset.find('[name=gnd]').val(value.url);
+              return $fieldset.find('[name=gnd_label]').val(value.url_label);
             } else if (value.url_typ_name === 'Wikipedia') {
-              $form.find(':input[name=wikipedia]').val(value.url);
-              return $form.find(':input[name=wikipedia_label]').val(value.url_label);
+              $fieldset.find('[name=wikipedia]').val(value.url);
+              return $fieldset.find('[name=wikipedia_label]').val(value.url_label);
             } else {
               $fieldset.find('.multiple:last()').addInputs(0);
               return $fieldset.find('.multiple:last() label :input').each(function() {
@@ -210,22 +210,9 @@ germaniaSacra.Editor = (function() {
   };
 
   Editor.prototype.update = function() {
-    var $form, error, uuid;
+    var $form, uuid;
     $form = $('form', this.scope);
-    error = false;
-    $("#links .multiple", this.scope).each(function() {
-      var url, url_typ;
-      url_typ = $(this).find("[name='url_typ[]']").val();
-      url = $(this).find("[name='url[]']").val();
-      if (url && !url_typ) {
-        error = true;
-        return alert(germaniaSacra.messages.urlTypeNotSet);
-      }
-    });
-    if (error) {
-      return;
-    }
-    uuid = $form.find(':input[name=uUID]').first().val();
+    uuid = $form.find(':input[name=uUID]:first').val();
     return $.post("" + this.type + "/update/" + uuid, $form.serialize()).done((function(_this) {
       return function(respond, status, jqXHR) {
         germaniaSacra.keepSelectOptions = false;
