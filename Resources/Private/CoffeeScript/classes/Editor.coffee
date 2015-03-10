@@ -139,11 +139,11 @@ class germaniaSacra.Editor
 				$fieldset.find('.multiple:eq(0)').removeInputs 0
 				$.each obj.url, (index, value) ->
 					if value.url_typ_name is 'GND'
-						$form.find(':input[name=gnd]').val value.url
-						$form.find(':input[name=gnd_label]').val value.url_label
+						$fieldset.find('[name=gnd]').val value.url
+						$fieldset.find('[name=gnd_label]').val value.url_label
 					else if value.url_typ_name is 'Wikipedia'
-						$form.find(':input[name=wikipedia]').val value.url
-						$form.find(':input[name=wikipedia_label]').val value.url_label
+						$fieldset.find('[name=wikipedia]').val value.url
+						$fieldset.find('[name=wikipedia_label]').val value.url_label
 					else
 						$fieldset.find('.multiple:last()').addInputs 0
 						$fieldset.find('.multiple:last() label :input').each ->
@@ -182,26 +182,17 @@ class germaniaSacra.Editor
 	# Update a single entity
 	update: ->
 		$form = $('form', @scope)
-		error = false
 
-		# TODO
-		$("#links .multiple", @scope).each ->
-			url_typ = $(this).find("[name='url_typ[]']").val()
-			url = $(this).find("[name='url[]']").val()
-			if url and not url_typ
-				error = true
-				alert germaniaSacra.messages.urlTypeNotSet
-
-		if error then return
-
-		uuid = $form.find(':input[name=uUID]').first().val()
-		$.post("#{@type}/update/#{uuid}", $form.serialize()).done((respond, status, jqXHR) =>
-			germaniaSacra.keepSelectOptions = false
-			germaniaSacra.message 'changesSaved'
-			$form.find('.dirty').removeClass('dirty')
-			$('body').removeClass('dirty')
-			$('[type=submit]', @scope).prop('disabled', true)
-			$('.close', @scope).click()
-			germaniaSacra.list.reload()
-		).fail ->
-			germaniaSacra.message 'changesSaveError'
+		uuid = $form.find(':input[name=uUID]:first').val()
+		$.post( "#{@type}/update/#{uuid}", $form.serialize() )
+			.done( (respond, status, jqXHR) =>
+				germaniaSacra.keepSelectOptions = false
+				germaniaSacra.message 'changesSaved'
+				$form.find('.dirty').removeClass('dirty')
+				$('body').removeClass('dirty')
+				$('[type=submit]', @scope).prop('disabled', true)
+				$('.close', @scope).click()
+				germaniaSacra.list.reload()
+			)
+			.fail ->
+				germaniaSacra.message 'changesSaveError'

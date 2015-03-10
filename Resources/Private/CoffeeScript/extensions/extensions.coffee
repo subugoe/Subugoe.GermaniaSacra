@@ -43,12 +43,20 @@ $.fn.removeInputs = (slideTime) ->
 $.fn.clearForm = ->
 	@each ->
 		$form = $(this)
+
 		$form.find('label').removeClass('dirty')
 		$form.find(':input').prop('disabled', false)
-		$form.find(':input:not([name=__csrfToken]):not(:checkbox):not(:submit)').val('')
+		$form.find(':input:not([name=__csrfToken]):not(:checkbox):not(:submit)').val([])
 		$form.find(':checkbox, :radio').prop('checked', false)
+
+		# If options contain a "not specified" value like "--", pre-select it
 		for value in germaniaSacra.notSpecifiedValues
 			$form.find("select option:contains('#{value}')").prop('selected', true)
+
+		# WORKAROUND: Select first option to prevent empty values in grouped URL fields.
+		# Missing values would raise one-off errors when handled as arrays in PHP.
+		$form.find('.default-select-first').each -> $(this)[0].selectedIndex = 0
+
 		$form.find('.multiple:gt(0)').removeInputs()
 		$form.find('.map-container').remove()
 		$form.find('button.remove').prop('disabled', true)

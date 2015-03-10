@@ -80,9 +80,9 @@ $.fn.geopicker = function() {
         var borders, style;
         style = {
           clickable: false,
-          color: "#000",
-          fillColor: "#000",
-          weight: 1.5,
+          color: '#f49739',
+          fillColor: '#f49739',
+          weight: 2,
           opacity: 0.3,
           fillOpacity: 0.05
         };

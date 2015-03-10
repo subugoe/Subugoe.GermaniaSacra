@@ -66,13 +66,16 @@ $.fn.clearForm = function() {
     $form = $(this);
     $form.find('label').removeClass('dirty');
     $form.find(':input').prop('disabled', false);
-    $form.find(':input:not([name=__csrfToken]):not(:checkbox):not(:submit)').val('');
+    $form.find(':input:not([name=__csrfToken]):not(:checkbox):not(:submit)').val([]);
     $form.find(':checkbox, :radio').prop('checked', false);
     _ref = germaniaSacra.notSpecifiedValues;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       value = _ref[_i];
       $form.find("select option:contains('" + value + "')").prop('selected', true);
     }
+    $form.find('.default-select-first').each(function() {
+      return $(this)[0].selectedIndex = 0;
+    });
     $form.find('.multiple:gt(0)').removeInputs();
     $form.find('.map-container').remove();
     return $form.find('button.remove').prop('disabled', true);
