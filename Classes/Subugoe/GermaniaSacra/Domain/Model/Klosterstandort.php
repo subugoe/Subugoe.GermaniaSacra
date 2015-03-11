@@ -74,7 +74,7 @@ class Klosterstandort {
 
 	/**
 	 * @var string
-	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $bemerkung;
 
@@ -92,16 +92,15 @@ class Klosterstandort {
 
 	/**
 	 * @var string
-	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $bemerkung_standort;
 
 	/**
 	 * @var string
-	 * @ORM\Column(nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $temp_literatur_alt;
-
 
 	/**
 	 * @return \Subugoe\GermaniaSacra\Domain\Model\Kloster
