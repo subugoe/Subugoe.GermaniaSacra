@@ -47,6 +47,7 @@ $.fn.clearForm = ->
 		$form.find('label').removeClass('dirty')
 		$form.find(':input').prop('disabled', false)
 		$form.find(':input:not([name=__csrfToken]):not(:checkbox):not(:submit)').val([])
+		$form.find('select.ajax option').remove()
 		$form.find(':checkbox, :radio').prop('checked', false)
 
 		# If options contain a "not specified" value like "--", pre-select it

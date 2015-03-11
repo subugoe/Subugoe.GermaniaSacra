@@ -124,13 +124,17 @@ class germaniaSacra.Editor
 								text: value.ort
 							).attr('selected', true)
 							$(this).change ->
-								$.get "#{type}/searchBistum/#{$(this).val()}", (uUID) =>
-									$(this).closest('.multiple').find('[name="bistum[]"]').val(uUID).change().trigger('refresh')
+								bistum = $(this).closest('.multiple').find('[name="bistum[]"]')
+								$.get "#{type}/searchBistum/#{$(this).val()}", (uUID) ->
+									bistum.val(uUID).change()
+									text = bistum.find(':selected').text()
+									bistum
+										.prop 'disabled', (text not in germaniaSacra.notSpecifiedValues)
+										.trigger('refresh')
 						else if name is 'bistum'
 							$(this).val(value[name])
 							text = $(this).find(':selected').text()
-							disabledCondition = text not in germaniaSacra.notSpecifiedValues
-							$(this).prop 'disabled', disabledCondition
+							$(this).prop 'disabled', (text not in germaniaSacra.notSpecifiedValues)
 						else
 							$(this).val value[name]
 
@@ -170,7 +174,6 @@ class germaniaSacra.Editor
 			$form.find('select').autocomplete()
 			$form.find('input[type=url]').keyup()
 			$form.find('textarea').autosize()
-			# TODO: This should not be necessary, so why is it?
 			$('[type=submit]', @scope).prop('disabled', true)
 
 		).fail( ->
