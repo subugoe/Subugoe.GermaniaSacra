@@ -80,17 +80,19 @@ class OrtRepository extends Repository {
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The ort
 	 */
 	public function findOrtBySearchString($searchString) {
+		$searchString = trim($searchString);
+		$searchString = '%' . $searchString . '%';
 		$query = $this->createQuery();
-	/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
+		/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
 		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
 		$queryBuilder
 		->resetDQLParts()
 		->select('ort')
 		->from('\Subugoe\GermaniaSacra\Domain\Model\Ort', 'ort')
 		->innerJoin('ort.bistum', 'bistum')
-		->orderBy('ort.ort', 'ASC')
-		->setFirstResult(0)
-		->setMaxResults(20);
+		->where('ort.ort LIKE :ort')
+		->orderBy('ort.ort', 'ASC');
+		$queryBuilder->setParameter('ort', $searchString);
 		return $query->execute();
 	}
 
