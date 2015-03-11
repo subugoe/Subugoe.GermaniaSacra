@@ -21,7 +21,8 @@ $.fn.autocomplete = ->
 		$select.on 'refresh', ->
 			$fakeSelect
 				.val $select.find(':selected').text()
-				.attr 'title', $select.find(':selected').text() + if $select.prop('disabled') then " – keine Änderung möglich" else ""
+				.attr 'title', $select.find(':selected').text() + (if $select.prop('disabled') then " – keine Änderung möglich" else "")
+				.prop 'disabled', $select.prop('disabled')
 
 		$fakeSelect = $('<input class="select" type="text">')
 		if $select.prop('disabled') then $fakeSelect.prop('disabled', true)

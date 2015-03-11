@@ -125,7 +125,7 @@ germaniaSacra.Editor = (function() {
               $fieldset.find('.multiple:last()').addInputs(0);
             }
             return $fieldset.find('.multiple:last() label :input').each(function() {
-              var checkedCondition, disabledCondition, text, val;
+              var checkedCondition, text, val;
               name = $(this).attr('name');
               if (typeof name === 'undefined') {
                 return;
@@ -141,17 +141,19 @@ germaniaSacra.Editor = (function() {
                   text: value.ort
                 }).attr('selected', true));
                 return $(this).change(function() {
-                  return $.get("" + type + "/searchBistum/" + ($(this).val()), (function(_this) {
-                    return function(uUID) {
-                      return $(_this).closest('.multiple').find('[name="bistum[]"]').val(uUID).change().trigger('refresh');
-                    };
-                  })(this));
+                  var bistum;
+                  bistum = $(this).closest('.multiple').find('[name="bistum[]"]');
+                  return $.get("" + type + "/searchBistum/" + ($(this).val()), function(uUID) {
+                    var text;
+                    bistum.val(uUID).change();
+                    text = bistum.find(':selected').text();
+                    return bistum.prop('disabled', (__indexOf.call(germaniaSacra.notSpecifiedValues, text) < 0)).trigger('refresh');
+                  });
                 });
               } else if (name === 'bistum') {
                 $(this).val(value[name]);
                 text = $(this).find(':selected').text();
-                disabledCondition = __indexOf.call(germaniaSacra.notSpecifiedValues, text) < 0;
-                return $(this).prop('disabled', disabledCondition);
+                return $(this).prop('disabled', (__indexOf.call(germaniaSacra.notSpecifiedValues, text) < 0));
               } else {
                 return $(this).val(value[name]);
               }

@@ -17,7 +17,7 @@ $.fn.autocomplete = function() {
     isAjax = $select.hasClass('ajax');
     $select.siblings('.autocomplete').remove();
     $select.on('refresh', function() {
-      return $fakeSelect.val($select.find(':selected').text()).attr('title', $select.find(':selected').text() + ($select.prop('disabled') ? " – keine Änderung möglich" : ""));
+      return $fakeSelect.val($select.find(':selected').text()).attr('title', $select.find(':selected').text() + ($select.prop('disabled') ? " – keine Änderung möglich" : "")).prop('disabled', $select.prop('disabled'));
     });
     $fakeSelect = $('<input class="select" type="text">');
     if ($select.prop('disabled')) {
