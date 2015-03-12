@@ -875,9 +875,6 @@ class KlosterController extends AbstractBaseController {
 	 * @return array $response select options as JSON
 	 */
 	public function getOptionsAction() {
-		if ($this->cacheInterface->has('getOptions')) {
-			return $this->cacheInterface->get('getOptions');
-		}
 		// Bearbeitungsstatus data
 		$bearbeitungsstatusArr = array();
 		$this->bearbeitungsstatusRepository->setDefaultOrderings(
@@ -1002,7 +999,6 @@ class KlosterController extends AbstractBaseController {
 		$response['land'] = $landArr;
 		$response['role'] = $roleArr;
 		$getOptions = json_encode($response);
-		$this->cacheInterface->set('getOptions', $getOptions);
 		return $getOptions;
 	}
 

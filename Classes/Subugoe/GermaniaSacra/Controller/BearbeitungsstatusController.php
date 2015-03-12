@@ -134,7 +134,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$bearbeitungsstatusObj->setName($this->request->getArgument('name'));
 			$this->bearbeitungsstatusRepository->add($bearbeitungsstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('bearbeitungsstatus');
 			$this->throwStatus(201, NULL, NULL);
 		}
 	}
@@ -173,8 +172,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$bearbeitungsstatusObj->setName($this->request->getArgument('name'));
 			$this->bearbeitungsstatusRepository->update($bearbeitungsstatusObj);
 			$this->persistenceManager->persistAll();
-			$this->clearCachesFor('bearbeitungsstatus');
-
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', NULL);
@@ -199,7 +196,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 				$this->throwStatus(400, 'Entity Bearbeitungsstatus not available', NULL);
 			}
 			$this->bearbeitungsstatusRepository->remove($bearbeitungsstatusObj);
-			$this->clearCachesFor('bearbeitungsstatus');
 			$this->throwStatus(200, NULL, NULL);
 		} else {
 			$this->throwStatus(400, 'Due to dependencies Bearbeitungsstatus entity could not be deleted', NULL);
@@ -223,7 +219,6 @@ class BearbeitungsstatusController extends AbstractBaseController {
 			$this->bearbeitungsstatusRepository->update($bearbeitungsstatusObj);
 		}
 		$this->persistenceManager->persistAll();
-		$this->clearCachesFor('bearbeitungsstatus');
 		$this->throwStatus(200, NULL, NULL);
 	}
 }
