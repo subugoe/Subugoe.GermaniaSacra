@@ -430,8 +430,8 @@ class OrtController extends AbstractBaseController {
 			$this->ortRepository->update($ortObj);
 			// Fetch Ort Urls
 			$ortHasUrls = $ortObj->getOrtHasUrls();
-			$ortHasGND = false;
 			// Update GND if set
+			$ortHasGND = false;
 			if ($this->request->hasArgument('gnd')) {
 				$gnd = $this->request->getArgument('gnd');
 				if ($this->request->hasArgument('gnd_label')) {
@@ -446,14 +446,16 @@ class OrtController extends AbstractBaseController {
 						foreach ($ortHasUrls as $i => $ortHasUrl) {
 							$urlObj = $ortHasUrl->getUrl();
 							$urlTypObj = $urlObj->getUrltyp();
-							$urlTyp = $urlTypObj->getName();
-							if ($urlTyp == "GND") {
-								$urlObj->setUrl($gnd);
-								if (!empty($gnd_label)) {
-									$urlObj->setBemerkung($gnd_label);
+							if (is_object($urlTypObj)) {
+								$urlTyp = $urlTypObj->getName();
+								if ($urlTyp == "GND") {
+									$urlObj->setUrl($gnd);
+									if (!empty($gnd_label)) {
+										$urlObj->setBemerkung($gnd_label);
+									}
+									$this->urlRepository->update($urlObj);
+									$ortHasGND = true;
 								}
-								$this->urlRepository->update($urlObj);
-								$ortHasGND = true;
 							}
 						}
 					}
@@ -475,6 +477,7 @@ class OrtController extends AbstractBaseController {
 					}
 				}
 			}
+
 			//Update Wikipedia if set
 			$ortHasWiki = false;
 			if ($this->request->hasArgument('wikipedia')) {
@@ -491,14 +494,16 @@ class OrtController extends AbstractBaseController {
 					foreach ($ortHasUrls as $i => $ortHasUrl) {
 						$urlObj = $ortHasUrl->getUrl();
 						$urlTypObj = $urlObj->getUrltyp();
-						$urlTyp = $urlTypObj->getName();
-						if ($urlTyp == "Wikipedia") {
-							$urlObj->setUrl($wikipedia);
-							if (!empty($wikipedia_label)) {
-								$urlObj->setBemerkung($wikipedia_label);
+						if (is_object($urlTypObj)) {
+							$urlTyp = $urlTypObj->getName();
+							if ($urlTyp == "Wikipedia") {
+								$urlObj->setUrl($wikipedia);
+								if (!empty($wikipedia_label)) {
+									$urlObj->setBemerkung($wikipedia_label);
+								}
+								$this->urlRepository->update($urlObj);
+								$ortHasWiki = true;
 							}
-							$this->urlRepository->update($urlObj);
-							$ortHasWiki = true;
 						}
 					}
 					if (!$ortHasWiki) {
@@ -519,6 +524,7 @@ class OrtController extends AbstractBaseController {
 					}
 				}
 			}
+
 			// Add Url if set
 			if ($this->request->hasArgument('url')) {
 				$urlArr = $this->request->getArgument('url');
@@ -529,34 +535,39 @@ class OrtController extends AbstractBaseController {
 					if ($this->request->hasArgument('links_label')) {
 						$linksLabelArr = $this->request->getArgument('links_label');
 					}
-					if ((isset($urlArr) && !empty($urlArr)) && (isset($urlTypArr) && !empty($urlTypArr))) {
+					if (isset($ortHasUrls) && $ortHasUrls !== array()) {
 						foreach ($ortHasUrls as $i => $ortHasUrl) {
 							$urlObj = $ortHasUrl->getUrl();
 							$urlTypObj = $urlObj->getUrltyp();
-							$urlTyp = $urlTypObj->getName();
-							if ($urlTyp != "Wikipedia" && $urlTyp != "GND") {
+							if (is_object($urlTypObj)) {
+								$urlTyp = $urlTypObj->getName();
+							}
+							if (isset($urlTyp) && ($urlTyp != "Wikipedia" && $urlTyp != "GND")) {
 								$this->ortHasUrlRepository->remove($ortHasUrl);
 								$this->urlRepository->remove($urlObj);
 							}
 						}
-						foreach ($urlArr as $k => $url) {
-							if (!empty($url)) {
-								$urlObj = new Url();
-								$urlObj->setUrl($url);
+					}
+					foreach ($urlArr as $k => $url) {
+						if (!empty($url)) {
+							$urlObj = new Url();
+							$urlObj->setUrl($url);
+							if (isset($urlTypArr[$k]) && !empty($urlTypArr[$k])) {
 								$urlTypObj = $this->urltypRepository->findByIdentifier($urlTypArr[$k]);
 								$urlTyp = $urlTypObj->getName();
 								$urlObj->setUrltyp($urlTypObj);
-								if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
-									$urlObj->setBemerkung($linksLabelArr[$k]);
-								} else {
-									$urlObj->setBemerkung($urlTyp);
-								}
-								$this->urlRepository->add($urlObj);
-								$orthasurl = new OrtHasUrl();
-								$orthasurl->setOrt($ortObj);
-								$orthasurl->setUrl($urlObj);
-								$this->ortHasUrlRepository->add($orthasurl);
 							}
+							if (isset($linksLabelArr[$k]) && !empty($linksLabelArr[$k])) {
+								$urlObj->setBemerkung($linksLabelArr[$k]);
+							}
+							else {
+								$urlObj->setBemerkung($urlTyp);
+							}
+							$this->urlRepository->add($urlObj);
+							$orthasurl = new OrtHasUrl();
+							$orthasurl->setOrt($ortObj);
+							$orthasurl->setUrl($urlObj);
+							$this->ortHasUrlRepository->add($orthasurl);
 						}
 					}
 				}
