@@ -153,7 +153,7 @@ class germaniaSacra.List
 
 	onJsonLoad: (json) ->
 		$('#search, #list').slideDown()
-		$('#message').slideUp()
+		germaniaSacra.hideMessage()
 		for index, entity of json.data
 			# Prepare options data for selects. Currently only this one is used within the lists.
 			json.data[index].bearbeitungsstatus = germaniaSacra.selectOptions.bearbeitungsstatus[entity.bearbeitungsstatus]

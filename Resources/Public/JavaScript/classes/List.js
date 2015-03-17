@@ -171,7 +171,7 @@ germaniaSacra.List = (function() {
   List.prototype.onJsonLoad = function(json) {
     var entity, index, key, value, _ref;
     $('#search, #list').slideDown();
-    $('#message').slideUp();
+    germaniaSacra.hideMessage();
     _ref = json.data;
     for (index in _ref) {
       entity = _ref[index];
