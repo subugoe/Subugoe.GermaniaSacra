@@ -27,7 +27,7 @@ class germaniaSacra.Editor
 
 		$('form', @scope).submit (e) ->
 			e.preventDefault()
-			$(':disabled', @scope).prop('disabled', false).addClass 'disabled'
+			$(':disabled', self.scope).prop('disabled', false).addClass 'disabled'
 			if $(this).find(':input[name=uUID]').first().val().length
 				self.update()
 			else
@@ -51,12 +51,13 @@ class germaniaSacra.Editor
 	# Create a new Kloster
 	create: (data) ->
 		$form = $('form', @scope)
-		$.post(@type + '/create', $form.serialize()).done( (respond, status, jqXHR) ->
-			germaniaSacra.message 'entryCreated'
-			$form.find('.dirty').removeClass('dirty')
-			$('body').removeClass('dirty')
-		).fail ->
-			germaniaSacra.message 'entryCreateError'
+		$.post(@type + '/create', $form.serialize())
+			.done( (respond, status, jqXHR) =>
+				germaniaSacra.message 'entryCreated'
+				@reset()
+			)
+			.fail ->
+				germaniaSacra.message 'entryCreateError'
 
 	# Load a single entity into the edit form
 	edit: (id) ->
@@ -189,13 +190,17 @@ class germaniaSacra.Editor
 		uuid = $form.find(':input[name=uUID]:first').val()
 		$.post( "#{@type}/update/#{uuid}", $form.serialize() )
 			.done( (respond, status, jqXHR) =>
-				germaniaSacra.keepSelectOptions = false
 				germaniaSacra.message 'changesSaved'
-				$form.find('.dirty').removeClass('dirty')
-				$('body').removeClass('dirty')
-				$('[type=submit]', @scope).prop('disabled', true)
-				$('.close', @scope).click()
-				germaniaSacra.list.reload()
+				@reset()
 			)
 			.fail ->
 				germaniaSacra.message 'changesSaveError'
+
+	# Reset and close the editor, void select options, reload list view
+	reset: ->
+		germaniaSacra.keepSelectOptions = false
+		$('form', @scope).find('.dirty').removeClass('dirty')
+		$('body').removeClass('dirty')
+		$('[type=submit]', @scope).prop('disabled', true)
+		$('.close', @scope).click()
+		germaniaSacra.list.reload()
