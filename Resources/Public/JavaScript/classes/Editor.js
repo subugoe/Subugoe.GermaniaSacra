@@ -27,7 +27,7 @@ germaniaSacra.Editor = (function() {
     });
     $('form', this.scope).submit(function(e) {
       e.preventDefault();
-      $(':disabled', this.scope).prop('disabled', false).addClass('disabled');
+      $(':disabled', self.scope).prop('disabled', false).addClass('disabled');
       if ($(this).find(':input[name=uUID]').first().val().length) {
         self.update();
       } else {
@@ -53,11 +53,12 @@ germaniaSacra.Editor = (function() {
   Editor.prototype.create = function(data) {
     var $form;
     $form = $('form', this.scope);
-    return $.post(this.type + '/create', $form.serialize()).done(function(respond, status, jqXHR) {
-      germaniaSacra.message('entryCreated');
-      $form.find('.dirty').removeClass('dirty');
-      return $('body').removeClass('dirty');
-    }).fail(function() {
+    return $.post(this.type + '/create', $form.serialize()).done((function(_this) {
+      return function(respond, status, jqXHR) {
+        germaniaSacra.message('entryCreated');
+        return _this.reset();
+      };
+    })(this)).fail(function() {
       return germaniaSacra.message('entryCreateError');
     });
   };
@@ -217,17 +218,21 @@ germaniaSacra.Editor = (function() {
     uuid = $form.find(':input[name=uUID]:first').val();
     return $.post("" + this.type + "/update/" + uuid, $form.serialize()).done((function(_this) {
       return function(respond, status, jqXHR) {
-        germaniaSacra.keepSelectOptions = false;
         germaniaSacra.message('changesSaved');
-        $form.find('.dirty').removeClass('dirty');
-        $('body').removeClass('dirty');
-        $('[type=submit]', _this.scope).prop('disabled', true);
-        $('.close', _this.scope).click();
-        return germaniaSacra.list.reload();
+        return _this.reset();
       };
     })(this)).fail(function() {
       return germaniaSacra.message('changesSaveError');
     });
+  };
+
+  Editor.prototype.reset = function() {
+    germaniaSacra.keepSelectOptions = false;
+    $('form', this.scope).find('.dirty').removeClass('dirty');
+    $('body').removeClass('dirty');
+    $('[type=submit]', this.scope).prop('disabled', true);
+    $('.close', this.scope).click();
+    return germaniaSacra.list.reload();
   };
 
   return Editor;
