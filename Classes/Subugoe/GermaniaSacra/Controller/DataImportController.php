@@ -1094,9 +1094,9 @@ class DataImportController extends AbstractBaseController {
 								$this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 							}
 						} else {
-							$this->logger->dumpImportlogger('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+							$this->dumpImportlogger->log('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 							if (empty($personallistenstatus)) {
-								$this->logger->dumpImportlogger('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+								$this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
 							}
 						}
 					} else {
