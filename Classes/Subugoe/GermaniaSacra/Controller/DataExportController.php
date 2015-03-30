@@ -419,6 +419,10 @@ class DataExportController extends ActionController {
 							$bemerkung_standortArr[] = $bemerkung_standort;
 							$klosterstandorte[$k][$i]['bemerkung_standort'] = $bemerkung_standort;
 						}
+						else {
+							$bemerkung_standortArr[] = '';
+							$klosterstandorte[$k][$i]['bemerkung_standort'] = '';
+						}
 						unset($bemerkung_standort);
 						$gruender = $klosterstandort->getGruender();
 						if (!empty($gruender)) {
@@ -962,6 +966,9 @@ class DataExportController extends ActionController {
 
 									if (!empty($mystandort['bemerkung_standort'])) {
 										$standort_ordenArr[$k][$m][$n]['bemerkung_standort'] = $mystandort['bemerkung_standort'];
+									}
+									else {
+										$standort_ordenArr[$k][$m][$n]['bemerkung_standort'] = '';
 									}
 
 									if (!empty($mystandort['ort'])) {
