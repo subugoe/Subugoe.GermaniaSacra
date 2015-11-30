@@ -7,9 +7,7 @@ use TYPO3\Flow\Persistence\Repository;
 /**
  * @Flow\Scope("singleton")
  */
-class BandHasUrlRepository extends Repository {
-
-	// add customized methods here
-
+class BandHasUrlRepository extends Repository
+{
+    // add customized methods here
 }
-?>

@@ -7,93 +7,97 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Land {
+class Land
+{
+    /**
+    * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+    * @Flow\Inject
+    */
+    protected $persistenceManager;
 
-	/**
-	* @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	* @Flow\Inject
-	*/
-	protected $persistenceManager;
+    /**
+    * @var int
+     * @ORM\Column(nullable=TRUE)
+    */
+    protected $uid;
 
-	/**
-	* @var integer
-	 * @ORM\Column(nullable=TRUE)
-	*/
-	protected $uid;
+    /**
+    * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Ort>
+    * @ORM\OneToMany(mappedBy="land", cascade={"all"})
+    * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
+    */
+    protected $orts;
 
-	/**
-	* @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Ort>
-	* @ORM\OneToMany(mappedBy="land", cascade={"all"})
-	* @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
-	*/
-	protected $orts;
+    /**
+    * @var string
+    */
+    protected $land;
 
-	/**
-	* @var string
-	*/
-	protected $land;
+    /**
+    * @var int
+    * @ORM\Column(nullable=true)
+    */
+    protected $ist_in_deutschland = false;
 
-	/**
-	* @var integer
-	* @ORM\Column(nullable=true)
-	*/
-	protected $ist_in_deutschland = FALSE;
-	
-	/**
-	* @return integer
-	*/
-	public function getuid() {
-		return $this->uid;
-	}
+    /**
+    * @return int
+    */
+    public function getuid()
+    {
+        return $this->uid;
+    }
 
-	/**
-	* @param integer $uid
-	* @return void
-	*/
-	public function setuid($uid) {
-		$this->uid = $uid;
-	}
-	
-	/**
-	* @return string
-	*/
-	public function getLand() {
-		return $this->land;
-	}
+    /**
+    * @param int $uid
+    */
+    public function setuid($uid)
+    {
+        $this->uid = $uid;
+    }
 
-	/**
-	* @param string $status
-	* @return void
-	*/
-	public function setLand($land) {
-		$this->land = $land;
-	}
+    /**
+    * @return string
+    */
+    public function getLand()
+    {
+        return $this->land;
+    }
 
-	/**
-	* @return integer
-	*/
-	public function getIst_in_deutschland() {
-		return $this->ist_in_deutschland;
-	}
+    /**
+    * @param string $status
+    */
+    public function setLand($land)
+    {
+        $this->land = $land;
+    }
 
-	/**
-	* @param string $status
-	* @return void
-	*/
-	public function setIst_in_deutschland($ist_in_deutschland) {
-		$this->ist_in_deutschland = $ist_in_deutschland;
-	}
+    /**
+    * @return int
+    */
+    public function getIst_in_deutschland()
+    {
+        return $this->ist_in_deutschland;
+    }
 
-	public function __toString() {
-	  return $this->getLand();
-	}
+    /**
+    * @param string $status
+    */
+    public function setIst_in_deutschland($ist_in_deutschland)
+    {
+        $this->ist_in_deutschland = $ist_in_deutschland;
+    }
 
-	/**
-	* @param void
-	* @return string
-	*/
-	public function getUUID() {
+    public function __toString()
+    {
+        return $this->getLand();
+    }
+
+    /**
+    * @param void
+    * @return string
+    */
+    public function getUUID()
+    {
         return $this->persistenceManager->getIdentifierByObject($this);
     }
 }
-?>

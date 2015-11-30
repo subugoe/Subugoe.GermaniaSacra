@@ -7,9 +7,7 @@ use TYPO3\Flow\Persistence\Repository;
 /**
  * @Flow\Scope("singleton")
  */
-class OrtHasUrlRepository extends Repository {
-
-	// add customized methods here
-
+class OrtHasUrlRepository extends Repository
+{
+    // add customized methods here
 }
-?>

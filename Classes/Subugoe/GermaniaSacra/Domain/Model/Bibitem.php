@@ -7,63 +7,64 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Bibitem {
+class Bibitem
+{
+    /**
+     * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+     * @Flow\Inject
+     */
+    protected $persistenceManager;
 
-	/**
-	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	 * @Flow\Inject
-	 */
-	protected $persistenceManager;
+    /**
+     * @var int
+     * @ORM\Column(nullable=TRUE)
+     */
+    protected $uid;
 
-	/**
-	 * @var integer
-	 * @ORM\Column(nullable=TRUE)
-	 */
-	protected $uid;
+    /**
+     * @var string
+     */
+    protected $bibitem;
 
-	/**
-	 * @var string
-	 */
-	protected $bibitem;
+    /**
+     * @return int
+     */
+    public function getuid()
+    {
+        return $this->uid;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getuid() {
-		return $this->uid;
-	}
+    /**
+     * @param int $uid
+     */
+    public function setuid($uid)
+    {
+        $this->uid = $uid;
+    }
 
-	/**
-	 * @param integer $uid
-	 * @return void
-	 */
-	public function setuid($uid) {
-		$this->uid = $uid;
-	}
+    /**
+     * @return string
+     */
+    public function getBibitem()
+    {
+        return $this->bibitem;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getBibitem() {
-		return $this->bibitem;
-	}
+    /**
+     * @param string $bibitem
+     */
+    public function setBibitem($bibitem)
+    {
+        $this->bibitem = $bibitem;
+    }
 
-	/**
-	 * @param string $bibitem
-	 * @return void
-	 */
-	public function setBibitem($bibitem) {
-		$this->bibitem = $bibitem;
-	}
+    public function __toString()
+    {
+        return $this->getBibitem();
+    }
 
-	public function __toString() {
-		return $this->getBibitem();
-	}
-
-	public function getUUID() {
-		return $this->persistenceManager->getIdentifierByObject($this);
-	}
-
+    public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
 }
-
-?>

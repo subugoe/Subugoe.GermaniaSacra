@@ -8,85 +8,84 @@ use TYPO3\Flow\Reflection\ObjectAccess;
 /**
  * @Flow\Scope("singleton")
  */
-class LandRepository extends Repository {
+class LandRepository extends Repository
+{
+    /**
+    * @var array An array of associated entities
+    */
+    protected $entities = ['land' => 'land', 'ist_in_deutschland' => 'land'];
 
-	/**
-	* @var array An array of associated entities
-	*/
-	protected  $entities = array('land' => 'land', 'ist_in_deutschland' => 'land');
+    /*
+     * Searches and returns a limited number of Land entities as per search terms or the total number of search result
+     * @param integer $offset The select offset
+     * @param integer $limit The select limit
+     * @param array $orderings The ordering parameters
+     * @param array $searchArr An array of search terms
+     * @param integer $mode The search mode
+     * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+     */
+    public function searchCertainNumberOfLand($offset, $limit, $orderings, $searchArr, $mode)
+    {
+        $query = $this->createQuery();
+        /** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
+        $queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', true);
+        $queryBuilder
+        ->resetDQLParts()
+        ->select('land')
+        ->from('\Subugoe\GermaniaSacra\Domain\Model\Land', 'land');
+        $operator = 'LIKE';
+        if (is_array($searchArr) && count($searchArr) > 0) {
+            $i = 1;
+            foreach ($searchArr as $k => $v) {
+                $entity = $this->entities[$k];
+                $parameter = $k;
+                $searchStr = trim($v);
+                $value = '%' . $searchStr . '%';
+                $filter = $entity . '.' . $k;
+                if ($i === 1) {
+                    $queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
+                    $queryBuilder->setParameter($parameter, $value);
+                } else {
+                    $queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
+                    $queryBuilder->setParameter($parameter, $value);
+                }
+                $i++;
+            }
+        }
+        if ($mode === 1) {
+            $sort = $this->entities[$orderings[0]] . '.' . $orderings[0];
+            $order = $orderings[1];
+            $queryBuilder->orderBy($sort, $order);
+            $queryBuilder->setFirstResult($offset);
+            $queryBuilder->setMaxResults($limit);
+            return $query->execute();
+        } else {
+            return $query->count();
+        }
+    }
 
-	/*
-	 * Searches and returns a limited number of Land entities as per search terms or the total number of search result
-	 * @param integer $offset The select offset
-	 * @param integer $limit The select limit
-	 * @param array $orderings The ordering parameters
-	 * @param array $searchArr An array of search terms
-	 * @param integer $mode The search mode
-	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
-	 */
-	public function searchCertainNumberOfLand($offset, $limit, $orderings, $searchArr, $mode) {
-		$query = $this->createQuery();
-		/** @var $queryBuilder \Doctrine\ORM\QueryBuilder **/
-		$queryBuilder = ObjectAccess::getProperty($query, 'queryBuilder', TRUE);
-		$queryBuilder
-		->resetDQLParts()
-		->select('land')
-		->from('\Subugoe\GermaniaSacra\Domain\Model\Land', 'land');
-		$operator = 'LIKE';
-		if (is_array($searchArr) && count($searchArr) > 0) {
-			$i = 1;
-			foreach ($searchArr as $k => $v) {
-				$entity = $this->entities[$k];
-				$parameter = $k;
-				$searchStr = trim($v);
-				$value = '%' . $searchStr . '%';
-				$filter = $entity . '.' . $k;
-				if ($i === 1) {
-					$queryBuilder->where($filter . ' ' . $operator . ' :' . $parameter);
-					$queryBuilder->setParameter($parameter, $value);
-				}
-				else {
-					$queryBuilder->andWhere($filter . ' ' . $operator . ' :' . $parameter);
-					$queryBuilder->setParameter($parameter, $value);
-				}
-				$i++;
-			}
-		}
-		if ($mode === 1) {
-			$sort = $this->entities[$orderings[0]] . '.' . $orderings[0];
-			$order = $orderings[1];
-			$queryBuilder->orderBy($sort, $order);
-			$queryBuilder->setFirstResult($offset);
-			$queryBuilder->setMaxResults($limit);
-			return $query->execute();
-		}
-		else {
-			return $query->count();
-		}
-	}
+    /*
+     * Returns a limited number of Land entities
+     * @param integer $offset The select offset
+     * @param integer $limit The select limit
+     * @param array $orderings The ordering parameters
+     * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
+     */
+    public function getCertainNumberOfLand($offset, $limit, $orderings)
+    {
+        $query = $this->createQuery()
+                ->setOrderings($orderings)
+                ->setOffset($offset)
+                ->setLimit($limit);
+        return $query->execute();
+    }
 
-	/*
-	 * Returns a limited number of Land entities
-	 * @param integer $offset The select offset
-	 * @param integer $limit The select limit
-	 * @param array $orderings The ordering parameters
-	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
-	 */
-	public function getCertainNumberOfLand($offset, $limit, $orderings) {
-	    $query = $this->createQuery()
-			    ->setOrderings($orderings)
-				->setOffset($offset)
-				->setLimit($limit);
-		return $query->execute();
-	}
-
-	/*
-	 * Returns the number of Land entities
-	 * @return integer The query result count
-	 */
-	public function getNumberOfEntries() {
-		return $this->createQuery()->count();
-	}
-
+    /*
+     * Returns the number of Land entities
+     * @return integer The query result count
+     */
+    public function getNumberOfEntries()
+    {
+        return $this->createQuery()->count();
+    }
 }
-?>

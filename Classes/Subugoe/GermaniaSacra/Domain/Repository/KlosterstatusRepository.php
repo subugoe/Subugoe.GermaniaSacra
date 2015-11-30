@@ -7,9 +7,7 @@ use TYPO3\Flow\Persistence\Repository;
 /**
  * @Flow\Scope("singleton")
  */
-class KlosterstatusRepository extends Repository {
-
-	// add customized methods here
-
+class KlosterstatusRepository extends Repository
+{
+    // add customized methods here
 }
-?>

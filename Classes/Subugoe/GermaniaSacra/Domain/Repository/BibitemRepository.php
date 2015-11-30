@@ -7,9 +7,7 @@ use TYPO3\Flow\Persistence\Repository;
 /**
  * @Flow\Scope("singleton")
  */
-class BibitemRepository extends Repository {
-
-	// add customized methods here
-
+class BibitemRepository extends Repository
+{
+    // add customized methods here
 }
-?>

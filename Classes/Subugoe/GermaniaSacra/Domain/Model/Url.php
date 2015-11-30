@@ -7,113 +7,116 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Url {
+class Url
+{
+    /**
+     * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+     * @Flow\Inject
+     */
+    protected $persistenceManager;
 
-	/**
-	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	 * @Flow\Inject
-	 */
-	protected $persistenceManager;
+    /**
+     * @var int
+     * @ORM\Column(nullable=TRUE)
+     */
+    protected $uid;
 
-	/**
-	 * @var integer
-	 * @ORM\Column(nullable=TRUE)
-	 */
-	protected $uid;
+    /**
+     * @var string
+     */
+    protected $url;
 
-	/**
-	 * @var string
-	 */
-	protected $url;
+    /**
+     * @var string
+     * @ORM\Column(nullable=true)
+     */
+    protected $bemerkung;
 
-	/**
-	 * @var string
-	 * @ORM\Column(nullable=true)
-	 */
-	protected $bemerkung;
+    /**
+     * @var \Subugoe\GermaniaSacra\Domain\Model\Urltyp
+     * @ORM\ManyToOne(inversedBy="urls")
+     * @ORM\JoinColumn(onDelete="NO ACTION")
+     */
+    protected $urltyp;
 
-	/**
-	 * @var \Subugoe\GermaniaSacra\Domain\Model\Urltyp
-	 * @ORM\ManyToOne(inversedBy="urls")
-	 * @ORM\JoinColumn(onDelete="NO ACTION")
-	 */
-	protected $urltyp;
+    /**
+     * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl>
+     * @ORM\OneToMany(mappedBy="url", cascade={"all"})
+     * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
+     */
+    protected $klosterHasUrls;
 
-	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\KlosterHasUrl>
-	 * @ORM\OneToMany(mappedBy="url", cascade={"all"})
-	 * @ORM\JoinColumn(onDelete="NO ACTION", nullable=false)
-	 */
-	protected $klosterHasUrls;
+    /**
+     * @return int
+     */
+    public function getuid()
+    {
+        return $this->uid;
+    }
 
-	/**
-	 * @return integer
-	 */
-	public function getuid() {
-		return $this->uid;
-	}
+    /**
+     * @param int $uid
+     */
+    public function setuid($uid)
+    {
+        $this->uid = $uid;
+    }
 
-	/**
-	 * @param integer $uid
-	 * @return void
-	 */
-	public function setuid($uid) {
-		$this->uid = $uid;
-	}
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getUrl() {
-		return $this->url;
-	}
+    /**
+     * @param string $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
 
-	/**
-	 * @param string $url
-	 * @return void
-	 */
-	public function setUrl($url) {
-		$this->url = $url;
-	}
+    /**
+     * @return string
+     */
+    public function getBemerkung()
+    {
+        return $this->bemerkung;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getBemerkung() {
-		return $this->bemerkung;
-	}
+    /**
+     * @param string $bemerkung
+     */
+    public function setBemerkung($bemerkung)
+    {
+        $this->bemerkung = $bemerkung;
+    }
 
-	/**
-	 * @param string $bemerkung
-	 * @return void
-	 */
-	public function setBemerkung($bemerkung) {
-		$this->bemerkung = $bemerkung;
-	}
+    /**
+     * @return \Subugoe\GermaniaSacra\Domain\Model\Urltyp
+     */
+    public function getUrltyp()
+    {
+        return $this->urltyp;
+    }
 
-	/**
-	 * @return \Subugoe\GermaniaSacra\Domain\Model\Urltyp
-	 */
-	public function getUrltyp() {
-		return $this->urltyp;
-	}
+    /**
+     * @param \Subugoe\GermaniaSacra\Domain\Model\Urltyp $urltyp
+     */
+    public function setUrltyp($urltyp)
+    {
+        $this->urltyp = $urltyp;
+    }
 
-	/**
-	 * @param \Subugoe\GermaniaSacra\Domain\Model\Urltyp $urltyp
-	 * @return void
-	 */
-	public function setUrltyp($urltyp) {
-		$this->urltyp = $urltyp;
-	}
+    public function __toString()
+    {
+        return $this->getUrl();
+    }
 
-	public function __toString() {
-		return $this->getUrl();
-	}
-
-	public function getUUID() {
-		return $this->persistenceManager->getIdentifierByObject($this);
-	}
-
+    public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
 }
-
-?>
