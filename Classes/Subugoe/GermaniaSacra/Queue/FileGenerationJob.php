@@ -31,69 +31,71 @@ use TYPO3\Jobqueue\Common\Job\JobInterface;
 use TYPO3\Jobqueue\Common\Queue\Message;
 use TYPO3\Jobqueue\Common\Queue\QueueInterface;
 
-
 /**
  * Queue for generating json files
  */
-class FileGenerationJob implements JobInterface {
+class FileGenerationJob implements JobInterface
+{
+    /**
+     * @var string
+     */
+    protected $entityName;
 
-	/**
-	 * @var string
-	 */
-	protected $entityName;
+    /**
+     * @var \Subugoe\GermaniaSacra\Service\JsonGeneratorService
+     * @Flow\Inject
+     */
+    protected $jsonGeneratorService;
 
-	/**
-	 * @var \Subugoe\GermaniaSacra\Service\JsonGeneratorService
-	 * @Flow\Inject
-	 */
-	protected $jsonGeneratorService;
+    /**
+     * @var \TYPO3\Flow\Log\Logger
+     * @Flow\Inject
+     */
+    protected $logger;
 
-	/**
-	 * @var \TYPO3\Flow\Log\Logger
-	 * @Flow\Inject
-	 */
-	protected $logger;
+    public function __construct($entityName)
+    {
+        $this->entityName = $entityName;
+    }
 
-	public function __construct($entityName) {
-		$this->entityName = $entityName;
-	}
+    /**
+     * Execute the job
+     *
+     * A job should finish itself after successful execution using the queue methods.
+     *
+     * @param QueueInterface $queue
+     * @param Message $message The original message
+     * @return bool TRUE if the job was executed successfully and the message should be finished
+     */
+    public function execute(QueueInterface $queue, Message $message)
+    {
+        $jobExecuted = false;
 
-	/**
-	 * Execute the job
-	 *
-	 * A job should finish itself after successful execution using the queue methods.
-	 *
-	 * @param QueueInterface $queue
-	 * @param Message $message The original message
-	 * @return boolean TRUE if the job was executed successfully and the message should be finished
-	 */
-	public function execute(QueueInterface $queue, Message $message) {
+        try {
+            $jobExecuted = $this->jsonGeneratorService->generateJsonFile($this->entityName);
+        } catch (\Exception $e) {
+            $this->logger->logException($e);
+        }
+        return $jobExecuted;
+    }
 
-		$jobExecuted = FALSE;
+    /**
+     * Get an optional identifier for the job
+     *
+     * @return string A job identifier
+     */
+    public function getIdentifier()
+    {
+        return $this->entityName;
+    }
 
-		try {
-			$jobExecuted = $this->jsonGeneratorService->generateJsonFile($this->entityName);
-		} catch (\Exception $e) {
-			$this->logger->logException($e);
-		}
-		return $jobExecuted;
-	}
-
-	/**
-	 * Get an optional identifier for the job
-	 *
-	 * @return string A job identifier
-	 */
-	public function getIdentifier() {
-		return $this->entityName;
-	}
-
-	/**
-	 * Get a readable label for the job
-	 *
-	 * @return string A label for the job
-	 */
-	public function getLabel() {
-		return 'jsonjob';
-	}
+    /**
+     * Get a readable label for the job
+     *
+     * @return string A label for the job
+     */
+    public function getLabel()
+    {
+        return 'jsonjob';
+    }
 }

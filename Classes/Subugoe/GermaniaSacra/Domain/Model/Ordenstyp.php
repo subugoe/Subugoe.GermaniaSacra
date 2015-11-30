@@ -7,76 +7,77 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Ordenstyp {
-
-	/**
+class Ordenstyp
+{
+    /**
   * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
   * @Flow\Inject
   */
  protected $persistenceManager;
 
-	/**
-	 * @var integer
-	 * @ORM\Column(nullable=TRUE)
-	 */
-	protected $uid;
+    /**
+     * @var int
+     * @ORM\Column(nullable=TRUE)
+     */
+    protected $uid;
 
-	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Orden>
-	 * @ORM\OneToMany(mappedBy="ordenstyp")
-	 */
-	protected $ordens;
+    /**
+     * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Orden>
+     * @ORM\OneToMany(mappedBy="ordenstyp")
+     */
+    protected $ordens;
 
-	/**
-	 * @var string
-	 */
-	protected $ordenstyp;
+    /**
+     * @var string
+     */
+    protected $ordenstyp;
 
-	/**
-	 * @return integer
-	 */
-	public function getuid() {
-		return $this->uid;
-	}
+    /**
+     * @return int
+     */
+    public function getuid()
+    {
+        return $this->uid;
+    }
 
-	/**
-	 * @param integer $uid
-	 * @return void
-	 */
-	public function setuid($uid) {
-		$this->uid = $uid;
-	}
-	
-	/**
-	 * @return string
-	 */
-	public function getOrdenstyp() {
-		return $this->ordenstyp;
-	}
+    /**
+     * @param int $uid
+     */
+    public function setuid($uid)
+    {
+        $this->uid = $uid;
+    }
 
-	/**
-	 * @param string $ordenstyp
-	 * @return void
-	 */
-	public function setOrdenstyp($ordenstyp) {
-		$this->ordenstyp = $ordenstyp;
-	}
+    /**
+     * @return string
+     */
+    public function getOrdenstyp()
+    {
+        return $this->ordenstyp;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
-	{
-	  return $this->getOrdenstyp();
-	}
+    /**
+     * @param string $ordenstyp
+     */
+    public function setOrdenstyp($ordenstyp)
+    {
+        $this->ordenstyp = $ordenstyp;
+    }
 
-	/**
-	 * Returns the persistence object identifier of the object
-	 * @return string
-	 */
-	public function getUUID()
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getOrdenstyp();
+    }
+
+    /**
+     * Returns the persistence object identifier of the object
+     * @return string
+     */
+    public function getUUID()
     {
         return $this->persistenceManager->getIdentifierByObject($this);
     }
 }
-?>

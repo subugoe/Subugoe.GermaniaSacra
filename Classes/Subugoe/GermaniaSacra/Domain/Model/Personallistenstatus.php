@@ -7,69 +7,71 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Personallistenstatus {
-	/**
-	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	 * @Flow\Inject
-	 */
-	protected $persistenceManager;
+class Personallistenstatus
+{
+    /**
+     * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+     * @Flow\Inject
+     */
+    protected $persistenceManager;
 
-	/**
-	 * @var integer
-	 * @ORM\Column(nullable=TRUE)
-	 */
-	protected $uid;
+    /**
+     * @var int
+     * @ORM\Column(nullable=TRUE)
+     */
+    protected $uid;
 
-	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Kloster>
-	 * @ORM\OneToMany(mappedBy="personallistenstatus")
-	 */
-	protected $klosters;
+    /**
+     * @var \Doctrine\Common\Collections\Collection<\Subugoe\GermaniaSacra\Domain\Model\Kloster>
+     * @ORM\OneToMany(mappedBy="personallistenstatus")
+     */
+    protected $klosters;
 
-	/**
-	 * @var string
-	 */
-	protected $name;
+    /**
+     * @var string
+     */
+    protected $name;
 
 
-	/**
-	 * @return integer
-	 */
-	public function getuid() {
-		return $this->uid;
-	}
+    /**
+     * @return int
+     */
+    public function getuid()
+    {
+        return $this->uid;
+    }
 
-	/**
-	 * @param integer $uid
-	 * @return void
-	 */
-	public function setuid($uid) {
-		$this->uid = $uid;
-	}
+    /**
+     * @param int $uid
+     */
+    public function setuid($uid)
+    {
+        $this->uid = $uid;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() {
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param string $name
-	 * @return void
-	 */
-	public function setName($name) {
-		$this->name = $name;
-	}
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	public function __toString() {
-		return $this->getName();
-	}
+    public function __toString()
+    {
+        return $this->getName();
+    }
 
-	public function getUUID() {
-		return $this->persistenceManager->getIdentifierByObject($this);
-	}
-
+    public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
 }
-
-?>

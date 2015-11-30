@@ -28,8 +28,6 @@ namespace Subugoe\GermaniaSacra\Queue;
 
 use Subugoe\GermaniaSacra\Controller\DataExportController;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Exception;
-use TYPO3\Flow\Log\LoggerFactory;
 use TYPO3\Jobqueue\Common\Job\JobInterface;
 use TYPO3\Jobqueue\Common\Queue\Message;
 use TYPO3\Jobqueue\Common\Queue\QueueInterface;
@@ -40,71 +38,75 @@ ini_set('memory_limit', '-1');
 /**
  * Queue for updating the solr index
  */
-class SolrUpdateJob implements JobInterface {
+class SolrUpdateJob implements JobInterface
+{
+    /**
+     * @var \TYPO3\Flow\Log\Logger
+     * @Flow\Inject
+     */
+    protected $logger;
 
-	/**
-	 * @var \TYPO3\Flow\Log\Logger
-	 * @Flow\Inject
-	 */
-	protected $logger;
 
+    /**
+     * @var array
+     */
+    protected $settings;
 
-	/**
-	 * @var array
-	 */
-	protected $settings;
+    /**
+     * @param $settings
+     */
+    public function injectSettings($settings)
+    {
+        $this->settings = $settings;
+    }
 
-	/**
-	 * @param $settings
-	 */
-	public function injectSettings($settings) {
-		$this->settings = $settings;
-	}
+    /**
+     * Execute the job
+     *
+     * A job should finish itself after successful execution using the queue methods.
+     *
+     * @param QueueInterface $queue
+     * @param Message $message The original message
+     * @return bool TRUE if the job was executed successfully and the message should be finished
+     */
+    public function execute(QueueInterface $queue, Message $message)
+    {
 
-	/**
-	 * Execute the job
-	 *
-	 * A job should finish itself after successful execution using the queue methods.
-	 *
-	 * @param QueueInterface $queue
-	 * @param Message $message The original message
-	 * @return boolean TRUE if the job was executed successfully and the message should be finished
-	 */
-	public function execute(QueueInterface $queue, Message $message) {
+        // only one at the time to avoid stacking of requests
+        if ($queue->count() > 0) {
+            return true;
+        }
 
-		// only one at the time to avoid stacking of requests
-		if ($queue->count() > 0) {
-			return TRUE;
-		}
+        $solrExporter = new DataExportController();
+        $solrExporter->injectSettings($this->settings);
+        $solrExporter->initializeAction();
 
-		$solrExporter = new DataExportController();
-		$solrExporter->injectSettings($this->settings);
-		$solrExporter->initializeAction();
+        try {
+            $jobExecuted = $solrExporter->mysql2solrExportAction();
+        } catch (\Exception $e) {
+            $this->logger->logException($e);
+            $jobExecuted = false;
+        }
+        return $jobExecuted;
+    }
 
-		try {
-			$jobExecuted = $solrExporter->mysql2solrExportAction();
-		} catch (\Exception $e) {
-			$this->logger->logException($e);
-			$jobExecuted = FALSE;
-		}
-		return $jobExecuted;
-	}
+    /**
+     * Get an optional identifier for the job
+     *
+     * @return string A job identifier
+     */
+    public function getIdentifier()
+    {
+        return 'solr';
+    }
 
-	/**
-	 * Get an optional identifier for the job
-	 *
-	 * @return string A job identifier
-	 */
-	public function getIdentifier() {
-		return 'solr';
-	}
-
-	/**
-	 * Get a readable label for the job
-	 *
-	 * @return string A label for the job
-	 */
-	public function getLabel() {
-		return 'Solr Update Queue';
-	}
+    /**
+     * Get a readable label for the job
+     *
+     * @return string A label for the job
+     */
+    public function getLabel()
+    {
+        return 'Solr Update Queue';
+    }
 }

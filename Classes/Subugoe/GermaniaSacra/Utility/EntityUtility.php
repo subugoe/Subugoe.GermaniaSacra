@@ -29,18 +29,18 @@ namespace Subugoe\GermaniaSacra\Utility;
 /**
  * Utility to work with entity names
  */
-class EntityUtility {
+class EntityUtility
+{
+    /**
+     * @param string $className
+     * @return string
+     */
+    public static function getEntityNameFromControllerClassName($className)
+    {
+        $path = explode('\\', $className);
+        $shortClass = array_pop($path);
 
-	/**
-	 * @param string $className
-	 * @return string
-	 */
-	static public function getEntityNameFromControllerClassName($className) {
-		$path = explode('\\', $className);
-		$shortClass = array_pop($path);
-
-		$entityName = strtolower(str_replace('Controller', '', $shortClass));
-		return $entityName;
-	}
-
-} 
+        $entityName = strtolower(str_replace('Controller', '', $shortClass));
+        return $entityName;
+    }
+}

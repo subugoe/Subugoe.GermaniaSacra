@@ -25,84 +25,83 @@ namespace Subugoe\GermaniaSacra\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
-use Subugoe\GermaniaSacra\Utility\JsonGeneratorUtility;
-use TYPO3\Flow\Error\Exception;
-use TYPO3\Flow\Mvc\Controller\ActionController;
-use TYPO3\Flow\Mvc\Controller\RestController;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
  * Proxy for remote origins
  */
-class ProxyController extends AbstractBaseController {
+class ProxyController extends AbstractBaseController
+{
+    /**
+     * @var string
+     */
+    protected $geoJsonUrl;
 
-	/**
-	 * @var string
-	 */
-	protected $geoJsonUrl;
+    /**
+     * @Flow\Inject
+     * @var \TYPO3\Flow\Http\Client\Browser
+     */
+    protected $browser;
 
-	/**
-	 * @Flow\Inject
-	 * @var \TYPO3\Flow\Http\Client\Browser
-	 */
-	protected $browser;
+    /**
+     * @Flow\Inject
+     * @var \TYPO3\Flow\Http\Client\CurlEngine
+     */
+    protected $browserRequestEngine;
 
-	/**
-	 * @Flow\Inject
-	 * @var \TYPO3\Flow\Http\Client\CurlEngine
-	 */
-	protected $browserRequestEngine;
+    /**
+     * Initializes defaults
+     */
+    public function initializeAction()
+    {
+        parent::initializeAction();
+        $this->browser->setRequestEngine($this->browserRequestEngine);
+    }
 
-	/**
-	 * Initializes defaults
-	 */
-	public function initializeAction() {
-		parent::initializeAction();
-		$this->browser->setRequestEngine($this->browserRequestEngine);
-	}
+    /**
+     * @return \Guzzle\Http\EntityBodyInterface|string
+     */
+    public function geoJsonAction()
+    {
+        $geoJsonUrl = $this->settings['data']['geoJson'];
+        $this->initializeAction();
 
-	/**
-	 * @return \Guzzle\Http\EntityBodyInterface|string
-	 */
-	public function geoJsonAction() {
-		$geoJsonUrl = $this->settings['data']['geoJson'];
-		$this->initializeAction();
+        if ($this->cacheInterface->has('geoJson')) {
+            return $this->cacheInterface->get('geoJson');
+        }
+        try {
+            $geoJson = $this->browser->request($geoJsonUrl)->getContent();
+            $this->cacheInterface->set('geoJson', $geoJson);
+            return $geoJson;
+        } catch (\Exception $e) {
+            $this->systemLogger->logException($e);
+            return '';
+        }
+    }
 
-		if ($this->cacheInterface->has('geoJson')) {
-			return $this->cacheInterface->get('geoJson');
-		}
-		try {
-			$geoJson = $this->browser->request($geoJsonUrl)->getContent();
-			$this->cacheInterface->set('geoJson', $geoJson);
-			return $geoJson;
-		} catch (\Exception $e) {
-			$this->systemLogger->logException($e);
-			return '';
-		}
-	}
+    /**
+     * @return \Guzzle\Http\EntityBodyInterface|string
+     */
+    public function literatureAction()
+    {
+        $literatureUrl = $this->settings['data']['literature'];
+        $this->initializeAction();
 
-	/**
-	 * @return \Guzzle\Http\EntityBodyInterface|string
-	 */
-	public function literatureAction() {
-		$literatureUrl = $this->settings['data']['literature'];
-		$this->initializeAction();
+        try {
+            $literature = $this->browser->request($literatureUrl)->getContent();
+            return $literature;
+        } catch (\Exception $e) {
+            $this->systemLogger->logException($e);
+            return '';
+        }
+    }
 
-		try {
-			$literature = $this->browser->request($literatureUrl)->getContent();
-			return $literature;
-		} catch (\Exception $e) {
-			$this->systemLogger->logException($e);
-			return '';
-		}
-	}
-
-	/**
-	 * @param string $entityName
-	 */
-	public function entityAction($entityName) {
-		$entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
-		$this->forward('list', $entityName, 'Subugoe.GermaniaSacra', array('format' => 'json'));
-	}
-
+    /**
+     * @param string $entityName
+     */
+    public function entityAction($entityName)
+    {
+        $entityName = filter_var($entityName, FILTER_SANITIZE_STRING);
+        $this->forward('list', $entityName, 'Subugoe.GermaniaSacra', ['format' => 'json']);
+    }
 }

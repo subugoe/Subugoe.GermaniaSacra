@@ -7,83 +7,85 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @Flow\Entity
  */
-class Bib {
+class Bib
+{
+    /**
+     * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
+     * @Flow\Inject
+     */
+    protected $persistenceManager;
 
-	/**
-	 * @var \TYPO3\Flow\Persistence\PersistenceManagerInterface
-	 * @Flow\Inject
-	 */
-	protected $persistenceManager;
+    /**
+     * @var int
+     * @ORM\Column(nullable=TRUE)
+     */
+    protected $abstract;
 
-	/**
-	 * @var integer
-	 * @ORM\Column(nullable=TRUE)
-	 */
-	protected $abstract;
+    /**
+     * @var string
+     */
+    protected $address;
 
-	/**
-	 * @var string
-	 */
-	protected $address;
+    /**
+     * @var string
+     */
+    protected $affiliation;
 
-	/**
-	 * @var string
-	 */
-	protected $affiliation;
+    /**
+     * @return string
+     */
+    public function getAbstract()
+    {
+        return $this->abstract;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAbstract() {
-		return $this->abstract;
-	}
+    /**
+     * @param string $abstract
+     */
+    public function setAbstract($abstract)
+    {
+        $this->abstract = $abstract;
+    }
 
-	/**
-	 * @param string $abstract
-	 * @return void
-	 */
-	public function setAbstract($abstract) {
-		$this->abstract = $abstract;
-	}
+    /**
+     * @return string
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAddress() {
-		return $this->address;
-	}
+    /**
+     * @param string $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
 
-	/**
-	 * @param string $address
-	 * @return void
-	 */
-	public function setAddress($address) {
-		$this->address = $address;
-	}
+    /**
+     * @return string
+     */
+    public function getAffiliation()
+    {
+        return $this->affiliation;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAffiliation() {
-		return $this->affiliation;
-	}
+    /**
+     * @param string $affiliation
+     */
+    public function setAffiliation($affiliation)
+    {
+        $this->affiliation = $affiliation;
+    }
 
-	/**
-	 * @param string $affiliation
-	 * @return void
-	 */
-	public function setAffiliation($affiliation) {
-		$this->affiliation = $affiliation;
-	}
+    public function __toString()
+    {
+        return $this->getAbstract();
+    }
 
-	public function __toString() {
-		return $this->getAbstract();
-	}
-
-	public function getUUID() {
-		return $this->persistenceManager->getIdentifierByObject($this);
-	}
-
+    public function getUUID()
+    {
+        return $this->persistenceManager->getIdentifierByObject($this);
+    }
 }
-
-?>

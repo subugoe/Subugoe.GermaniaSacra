@@ -31,11 +31,11 @@ use Subugoe\GermaniaSacra\Service\JsonGeneratorService;
  * Generates json files from entities
  * @deprecated use JsonGeneratorService
  */
-class JsonGeneratorUtility {
-
-	static public function generateJsonFile($entityName) {
-		$fileService = new JsonGeneratorService();
-		$fileService->generateJsonFile($entityName);
-	}
-
-} 
+class JsonGeneratorUtility
+{
+    public static function generateJsonFile($entityName)
+    {
+        $fileService = new JsonGeneratorService();
+        $fileService->generateJsonFile($entityName);
+    }
+}
