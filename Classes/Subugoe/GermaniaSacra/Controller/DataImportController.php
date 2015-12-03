@@ -189,7 +189,7 @@ class DataImportController extends AbstractBaseController
     /**
      * @var string
      */
-    protected $dumpDirectory;
+    public $dumpDirectory;
 
     /**
      * @var \TYPO3\Flow\Log\Logger
@@ -199,12 +199,7 @@ class DataImportController extends AbstractBaseController
     /**
      * @var \TYPO3\Flow\Log\Logger
      */
-    protected $dumpImportlogger;
-
-    /**
-     * @var \TYPO3\Flow\Log\Logger
-     */
-    protected $inkDumpImportlogger;
+    public $importExportLogger;
 
     /**
      * @var array
@@ -279,7 +274,7 @@ class DataImportController extends AbstractBaseController
     /**
      * @var string
      */
-    const cacertDest = 'Data/Temporary/Production/Cache/Code/Flow_Object_Classes/Resources/';
+    const cacertDest = 'Data/Temporary/Development/Cache/Code/Flow_Object_Classes/Resources/';
 
     /**
      * @var string
@@ -294,7 +289,18 @@ class DataImportController extends AbstractBaseController
     /**
      * @var string
      */
-    const dumpLogFile = 'Persistent/GermaniaSacra/Log/klosterDumpImport.log';
+    const importLogFile = 'dataImport.log';
+
+    /**
+     * @var string
+     */
+    const executeImportDump = 'executeDataImport.txt';
+
+    /**
+     * @var \TYPO3\Flow\Security\Context
+     * @Flow\Inject
+     */
+    protected $securityContext;
 
     /**
      * Initializes defaults
@@ -306,8 +312,8 @@ class DataImportController extends AbstractBaseController
 
     public function __construct($logger = null, $settings = null)
     {
-        parent::__construct();
         $this->dumpDirectory = FLOW_PATH_ROOT . 'Data/Persistent/GermaniaSacra/Dump/';
+        $this->logDirectory = FLOW_PATH_ROOT . 'Data/Persistent/GermaniaSacra/Log/';
         $this->accessDumpFilenamePath = $this->dumpDirectory . self::accessDumpFilename;
         $this->citekeysFilenamePath = $this->dumpDirectory . self::citekeysFilename;
         $this->inkKlosterDumpFilenamePath = $this->dumpDirectory . self::inkKlosterDumpFilename;
@@ -322,9 +328,9 @@ class DataImportController extends AbstractBaseController
 
     public function logAction()
     {
-        $dumpFile = FLOW_PATH_DATA . self::dumpLogFile;
-        if (file_exists($dumpFile)) {
-            echo nl2br(file_get_contents($dumpFile));
+        $dumpLogFile = $this->logDirectory . self::importLogFile;
+        if (file_exists($dumpLogFile)) {
+            echo nl2br(file_get_contents($dumpLogFile));
         }
         exit;
     }
@@ -758,7 +764,6 @@ class DataImportController extends AbstractBaseController
         }
         $sql = 'SELECT * FROM Band';
         $Bands = $sqlConnection->fetchAll($sql);
-        $urltypArr = [];
         if (isset($Bands) and is_array($Bands)) {
             $nBand = 0;
             foreach ($Bands as $Band) {
@@ -817,7 +822,6 @@ class DataImportController extends AbstractBaseController
                     $this->urlRepository->add($urlObject);
                     $this->persistenceManager->persistAll();
                     $handleurlUUID = $urlObject->getUUID();
-
                     $bandhasurlObject = new Bandhasurl();
                     $BandObject = $this->bandRepository->findByIdentifier($bandUUID);
                     $bandhasurlObject->setBand($BandObject);
@@ -964,7 +968,7 @@ class DataImportController extends AbstractBaseController
                                     $bearbeitungsstatusUUID = $bearbeitungsstatusObject->getUUID();
                                     $bearbeitungsstatusObject = $this->bearbeitungsstatusRepository->findByIdentifier($bearbeitungsstatusUUID);
                                     $klosterObject->setBearbeitungsstatus($bearbeitungsstatusObject);
-                                    $this->dumpImportlogger->log('Bearbeitungsstatus "' . $bearbeitungsstatus . '" fehlte in der Bearbeitungsstatustabelle. Er ist nun hinzugefügt. Kloster-uid: ' . $klosterObject->getUid(), LOG_INFO);
+                                    $this->importExportLogger->log('Bearbeitungsstatus "' . $bearbeitungsstatus . '" fehlte in der Bearbeitungsstatustabelle. Er ist nun hinzugefügt. Kloster-uid: ' . $klosterObject->getUid(), LOG_INFO);
                                 }
                                 if (is_object($personallistenstatusObject)) {
                                     $klosterObject->setPersonallistenstatus($personallistenstatusObject);
@@ -1106,30 +1110,30 @@ class DataImportController extends AbstractBaseController
                                     }
                                 }
                             } else {
-                                $this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+                                $this->importExportLogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
                             }
                         } else {
-                            $this->dumpImportlogger->log('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+                            $this->importExportLogger->log('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
                             if (empty($personallistenstatus)) {
-                                $this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+                                $this->importExportLogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
                             }
                         }
                     } else {
-                        $this->dumpImportlogger->log('Bearbeiter zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+                        $this->importExportLogger->log('Bearbeiter zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
                         if (empty($bearbeitungsstatus)) {
-                            $this->dumpImportlogger->log('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+                            $this->importExportLogger->log('Bearbeitungsstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
                         }
                         if (empty($personallistenstatus)) {
-                            $this->dumpImportlogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
+                            $this->importExportLogger->log('Personallistenstatus zum Kloster ' . $uid . ' fehlt.', LOG_ERR);
                         }
                     }
                     $nKloster++;
                 } else {
-                    $this->dumpImportlogger->log('Doppelter Eintrag mit der Id = ' . $uid . ' in Klostertabelle. Der 2. Eintrag wurde ausgelassen.', LOG_ERR);
+                    $this->importExportLogger->log('Doppelter Eintrag mit der Id = ' . $uid . ' in Klostertabelle. Der 2. Eintrag wurde ausgelassen.', LOG_ERR);
                 }
 
                 if (empty($uid)) {
-                    $this->dumpImportlogger->log('Das Kloster ' . $kloster . ' hat keine Klosternummer.', LOG_ERR);
+                    $this->importExportLogger->log('Das Kloster ' . $kloster . ' hat keine Klosternummer.', LOG_ERR);
                 }
             }
             if ($this->logger) {
@@ -1255,21 +1259,21 @@ class DataImportController extends AbstractBaseController
                                         $this->persistenceManager->persistAll();
                                     }
                                 } else {
-                                    $this->dumpImportlogger->log('Kein citekey für das Buch ' . $buch . ' beim Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
+                                    $this->importExportLogger->log('Kein citekey für das Buch ' . $buch . ' beim Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
                                 }
                             } else {
-                                $this->dumpImportlogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
-                                $this->dumpImportlogger->log('Der Buchtitel lautet: ' . utf8_encode($buch), LOG_INFO);
+                                $this->importExportLogger->log('Entweder keine Literatur oder keine Übereinstimmung für das Kloster mit der Id = ' . $kloster . ' vorhanden.', LOG_ERR);
+                                $this->importExportLogger->log('Der Buchtitel lautet: ' . utf8_encode($buch), LOG_INFO);
                             }
                         }
                     }
                     $nKlosterstandort++;
                 } else {
                     if ($klosterObject === null) {
-                        $this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . ' wurde nicht gefunden.', LOG_ERR);
+                        $this->importExportLogger->log('Entweder ist das Feld Klosternummer in Klosterstandorttabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . ' wurde nicht gefunden.', LOG_ERR);
                     }
                     if ($ortObject === null) {
-                        $this->dumpImportlogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . ' wurde nicht gefunden.', LOG_ERR);
+                        $this->importExportLogger->log('Entweder ist das Feld ID_alleOrte in Klosterstandorttabelle leer oder das Ortobject in der Orttabelle für den Ort mit der Id = ' . $ort . ' wurde nicht gefunden.', LOG_ERR);
                     }
                 }
             }
@@ -1481,11 +1485,11 @@ class DataImportController extends AbstractBaseController
                     $nKlosterorden++;
                 } else {
                     if ($klosterObject === null) {
-                        $this->dumpImportlogger->log('Entweder ist das Feld Klosternummer in Klosterordentabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . ' wurde nicht gefunden.', LOG_ERR);
+                        $this->importExportLogger->log('Entweder ist das Feld Klosternummer in Klosterordentabelle leer oder das Klosterobject in der Klostertabelle für das Kloster mit der Id = ' . $kloster . ' wurde nicht gefunden.', LOG_ERR);
                     }
 
                     if ($ordenObject === null) {
-                        $this->dumpImportlogger->log('Entweder ist das Feld Orden in Klosterordentabelle leer oder das Ordenobject in der Ordentabelle für den Orden mit der Id = ' . $orden . ' wurde nicht gefunden.', LOG_ERR);
+                        $this->importExportLogger->log('Entweder ist das Feld Orden in Klosterordentabelle leer oder das Ordenobject in der Ordentabelle für den Orden mit der Id = ' . $orden . ' wurde nicht gefunden.', LOG_ERR);
                     }
                 }
             }
@@ -1506,7 +1510,7 @@ class DataImportController extends AbstractBaseController
     {
         $file = "GS-citekeys.csv";
         if (!file_exists($this->dumpDirectory . $file)) {
-            throw new \TYPO3\Flow\Resource\Exception('File ' . $file . ' not present in ' . $this->dumpDirectory, 1398846324);
+            throw new \TYPO3\Flow\Resource\Exception('File ' . $file . ' not found in ' . $this->dumpDirectory, 1398846324);
         }
         $csvArr = [];
         $csv = array_map('str_getcsv', file($this->dumpDirectory . $file));
@@ -1538,9 +1542,13 @@ class DataImportController extends AbstractBaseController
     /**
      * Process and import access SQL dump data into the corresponding flow tables
      */
-    public function access2mysqlAction()
-    {
-        $this->initializeLogger();
+    public function access2mysqlAction() {
+        $this->initializeLogger(self::importLogFile);
+        $jobOwnerFileContent = file_get_contents($this->dumpDirectory . self::executeImportDump);
+        $this->importExportLogger->log($jobOwnerFileContent);
+        if (file_exists($this->dumpDirectory . self::executeImportDump)) {
+            unlink($this->dumpDirectory . self::executeImportDump);
+        }
         /** @var \Doctrine\DBAL\Connection $sqlConnection */
         $sqlConnection = $this->entityManager->getConnection();
         $sql = 'SET unique_checks = 0';
@@ -1551,29 +1559,36 @@ class DataImportController extends AbstractBaseController
         $this->delAccessTabsAction();
         $this->importAccessAction();
         $this->emptyTabsAction();
-        $this->dumpImportlogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
+        $start = date('d.m.Y H:i:s');
+        $date1 = new \DateTime($start);
+        $this->importExportLogger->log('Start am ' . $start);
+        $this->importExportLogger->log('Folgende Datensätze wurden importiert');
         $nBearbeiter = $this->importBearbeiterAction();
-        $this->dumpImportlogger->log($nBearbeiter . ' Bearbeiter Datensätze');
+        $this->importExportLogger->log($nBearbeiter . ' Bearbeiter Datensätze');
         $this->importPersonallistenstatusAction();
         $nLand = $this->importLandAction();
-        $this->dumpImportlogger->log($nLand . ' Land Datensätze');
+        $this->importExportLogger->log($nLand . ' Land Datensätze');
         $nOrt = $this->importOrtAction();
-        $this->dumpImportlogger->log($nOrt . ' Ort Datensätze');
+        $this->importExportLogger->log($nOrt . ' Ort Datensätze');
         $nBistum = $this->importBistumAction();
-        $this->dumpImportlogger->log($nBistum . ' Bistum Datensätze');
+        $this->importExportLogger->log($nBistum . ' Bistum Datensätze');
         $nBand = $this->importBandAction();
-        $this->dumpImportlogger->log($nBand . ' Band Datensätze');
+        $this->importExportLogger->log($nBand . ' Band Datensätze');
         $nKloster = $this->importKlosterAction();
-        $this->dumpImportlogger->log($nKloster . ' Kloster Datensätze');
+        $this->importExportLogger->log($nKloster . ' Kloster Datensätze');
         $nKlosterstandort = $this->importKlosterstandortAction();
-        $this->dumpImportlogger->log($nKlosterstandort . ' Klosterstandort Datensätze');
+        $this->importExportLogger->log($nKlosterstandort . ' Klosterstandort Datensätze');
         $nOrden = $this->importOrdenAction();
-        $this->dumpImportlogger->log($nOrden . ' Orden Datensätze');
+        $this->importExportLogger->log($nOrden . ' Orden Datensätze');
         $nKlosterorden = $this->importKlosterordenAction();
-        $this->dumpImportlogger->log($nKlosterorden . ' Klosterorden Datensätze');
+        $this->importExportLogger->log($nKlosterorden . ' Klosterorden Datensätze');
         $this->delAccessTabsAction();
         $sql = 'SET foreign_key_checks = 1';
         $sqlConnection->executeUpdate($sql);
+        $end = date('d.m.Y H:i:s');
+        $date2 = new \DateTime($end);
+        $this->importExportLogger->log('Ende am ' . $end);
+        $this->importExportLogger->log('Dauer ' . $date1->diff($date2)->i . " Minuten und " . $date1->diff($date2)->s . ' Sekunden');
     }
 
     /**
@@ -2103,13 +2118,12 @@ class DataImportController extends AbstractBaseController
      */
     public function importAccessAction()
     {
-        $logger = new \TYPO3\Flow\Log\Logger();
         $dumpFileName = 'klosterdatenbankdump.sql';
         if (!is_dir($this->dumpDirectory)) {
             \TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
         }
         if (!file_exists($this->dumpDirectory . $dumpFileName)) {
-            throw new \TYPO3\Flow\Resource\Exception(1398846324);
+            throw new \TYPO3\Flow\Resource\Exception('File ' . $dumpFileName . ' not found in ' . $this->dumpDirectory, 1398846324);
         }
         $sql = file_get_contents($this->dumpDirectory . $dumpFileName);
         $sql = str_replace('CREATE DATABASE IF NOT EXISTS `Klosterdatenbank`;', '', $sql);
@@ -2218,7 +2232,6 @@ class DataImportController extends AbstractBaseController
         $inkKlosterDumpHash = $this->getFileHashAction($this->client, self::inkKlosterDumpFilename);
         $inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
         $inkKlosterDumpBlob = base64_decode($inkKlosterDumpBlob['content']);
-
         $mode = 'w';
         $fp = fopen($this->inkKlosterDumpFilenamePath, $mode);
         if (!$fp) {
@@ -2231,52 +2244,52 @@ class DataImportController extends AbstractBaseController
         $this->importAccessInkDumpAction();
         /** @var \Doctrine\DBAL\Connection $sqlConnection */
         $sqlConnection = $this->entityManager->getConnection();
-        $this->initializeLogger();
-        $this->dumpImportlogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
+        $this->initializeLogger(self::importLogFile);
+        $this->importExportLogger->log('########## Folgende Datensätze wurden importiert am ' . date('d.m.Y H:i:s') . ' ##########');
         $checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bearbeiter');
         if ($checkIfBearbeiterTableExists) {
             $nBearbeiter = $this->importBearbeiterAction();
-            $this->dumpImportlogger->log($nBearbeiter . ' Bearbeiter Datensätze');
+            $this->importExportLogger->log($nBearbeiter . ' Bearbeiter Datensätze');
         }
         $checkIfLandTableExists = $sqlConnection->getSchemaManager()->tablesExist('Land');
         if ($checkIfLandTableExists) {
             $nLand = $this->importLandAction();
-            $this->dumpImportlogger->log($nLand . ' Land Datensätze');
+            $this->importExportLogger->log($nLand . ' Land Datensätze');
         }
         $checkIfOrtTableExists = $sqlConnection->getSchemaManager()->tablesExist('Ort');
         if ($checkIfOrtTableExists) {
             $nOrt = $this->importOrtAction();
-            $this->dumpImportlogger->log($nOrt . ' Ort Datensätze');
+            $this->importExportLogger->log($nOrt . ' Ort Datensätze');
         }
         $checkIfBistumTableExists = $sqlConnection->getSchemaManager()->tablesExist('Bistum');
         if ($checkIfBistumTableExists) {
             $nBistum = $this->importBistumAction();
-            $this->dumpImportlogger->log($nBistum . ' Bistum Datensätze');
+            $this->importExportLogger->log($nBistum . ' Bistum Datensätze');
         }
         $checkIfBandTableExists = $sqlConnection->getSchemaManager()->tablesExist('Band');
         if ($checkIfBandTableExists) {
             $nBand = $this->importBandAction();
-            $this->dumpImportlogger->log($nBand . ' Band Datensätze');
+            $this->importExportLogger->log($nBand . ' Band Datensätze');
         }
         $checkIfKlosterTableExists = $sqlConnection->getSchemaManager()->tablesExist('Kloster');
         if ($checkIfKlosterTableExists) {
             $nKloster = $this->importKlosterAction();
-            $this->dumpImportlogger->log($nKloster . ' Kloster Datensätze');
+            $this->importExportLogger->log($nKloster . ' Kloster Datensätze');
         }
         $checkIfKlosterstandortTableExists = $sqlConnection->getSchemaManager()->tablesExist('Klosterstandort');
         if ($checkIfKlosterstandortTableExists) {
             $nKlosterstandort = $this->importKlosterstandortAction();
-            $this->dumpImportlogger->log($nKlosterstandort . ' Klosterstandort Datensätze');
+            $this->importExportLogger->log($nKlosterstandort . ' Klosterstandort Datensätze');
         }
         $checkIfOrdenTableExists = $sqlConnection->getSchemaManager()->tablesExist('Orden');
         if ($checkIfOrdenTableExists) {
             $nOrden = $this->importOrdenAction();
-            $this->dumpImportlogger->log($nOrden . ' Orden Datensätze');
+            $this->importExportLogger->log($nOrden . ' Orden Datensätze');
         }
         $checkIfKlosterordenTableExists = $sqlConnection->getSchemaManager()->tablesExist('Klosterorden');
         if ($checkIfKlosterordenTableExists) {
             $nKlosterorden = $this->importKlosterordenAction();
-            $this->dumpImportlogger->log($nKlosterorden . ' Klosterorden Datensätze');
+            $this->importExportLogger->log($nKlosterorden . ' Klosterorden Datensätze');
         }
         $this->delAccessTabsAction();
         if ($this->cacheInterface->has('getOptions')) {
@@ -2295,7 +2308,7 @@ class DataImportController extends AbstractBaseController
             \TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
         }
         if (!file_exists($this->inkKlosterDumpFilenamePath)) {
-            throw new \TYPO3\Flow\Resource\Exception(1398846324);
+            throw new \TYPO3\Flow\Resource\Exception('File ' . $this->inkKlosterDumpFilenamePath . ' not found in ' . $this->dumpDirectory, 1398846324);
         }
         $sql = file_get_contents($this->inkKlosterDumpFilenamePath);
         $sql = str_replace('CREATE DATABASE IF NOT EXISTS `Klosterdatenbank`;', '', $sql);
@@ -2392,19 +2405,46 @@ class DataImportController extends AbstractBaseController
         file_put_contents($usernamePasswordFile, $usernamePassword);
     }
 
-    protected function initializeLogger()
+	public function initializeLogger($logFile)
     {
         $log = new LoggerFactory();
-        if (file_exists(FLOW_PATH_DATA . self::dumpLogFile)) {
-            unlink(FLOW_PATH_DATA . self::dumpLogFile);
+        if (file_exists($this->logDirectory . $logFile)) {
+            unlink($this->logDirectory . $logFile);
         }
-        $this->dumpImportlogger = $log->create('GermaniaSacra',
+        $this->importExportLogger = $log->create('GermaniaSacra',
                 'TYPO3\Flow\Log\Logger',
                 '\TYPO3\Flow\Log\Backend\FileBackend',
                 [
-                        'logFileUrl' => FLOW_PATH_DATA . self::dumpLogFile,
+                        'logFileUrl' => $this->logDirectory . $logFile,
                         'createParentDirectories' => true
                 ]
         );
+    }
+
+    public function dataimportAction()
+    {
+        $executeDumpImportFile = $this->dumpDirectory . self::executeImportDump;
+        if (!file_exists($executeDumpImportFile) && $fileHandle = fopen($executeDumpImportFile, "w")) {
+            $txt = '';
+            if ($this->securityContext->canBeInitialized()) {
+                if ($account = $this->securityContext->getAccount()) {
+                    $jobOwner = $this->bearbeiterRepository->findOneByAccount($account);
+                    $txt = 'Dieser Import wurde angelegt am ' . date('d.m.Y H:i:s') . ' von ' . $jobOwner;
+                }
+            }
+            fwrite($fileHandle, $txt);
+            fclose($fileHandle);
+            $currentTimeMinutes = date('i');
+            $nextImportDumpExecution = 60 - $currentTimeMinutes;
+            echo 'Der nächste Import wird in ' . $nextImportDumpExecution . ' Minuten durchgeführt.' . '<br>';
+            echo 'Er dauert ca. 1 Stunde.' . '<br>';
+        }
+        elseif (file_exists($executeDumpImportFile)) {
+            echo "Der Import ist bereits vorgemerkt.";
+        }
+        else {
+            echo "Der Import-Job konnte leider nicht angelegt werden.";
+        }
+        exit;
     }
 }

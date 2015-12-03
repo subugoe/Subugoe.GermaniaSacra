@@ -37,6 +37,10 @@ germaniaSacra.config(function($routeProvider, $locationProvider) {
     templateUrl: templatePath + 'Publish.html'
   }).when('/importlog', {
     templateUrl: templatePath + 'Importlog.html'
+  }).when('/exportlog', {
+    templateUrl: templatePath + 'Exportlog.html'
+  }).when('/dataimport', {
+    templateUrl: templatePath + 'Dataimport.html'
   }).otherwise({
     redirectTo: '/'
   });
