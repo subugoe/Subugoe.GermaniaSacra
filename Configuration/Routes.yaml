@@ -33,11 +33,32 @@
     '@action': 'search'
 
 -
+  name: 'data import'
+  uriPattern: 'importdump'
+  defaults:
+    '@controller': 'DataImport'
+    '@action': 'importdump'
+
+-
+  name: 'incremental data import'
+  uriPattern: 'importinkdump'
+  defaults:
+    '@controller': 'dataimport'
+    '@action': 'importinkdump'
+
+-
   name: 'publish'
   uriPattern: 'publish'
   defaults:
     '@controller': 'DataExport'
     '@action': 'mysql2solrExport'
+
+-
+  name: 'create mysql database dump'
+  uriPattern: 'dump'
+  defaults:
+    '@controller': 'Dump'
+    '@action':     'dump'
 
 -
   name: 'importlog'
@@ -59,22 +80,6 @@
   defaults:
     '@package': 'Subugoe.GermaniaSacra'
     '@action':     'list'
-
--
-  name: 'create mysql database dump'
-  uriPattern: 'dump/dump'
-  defaults:
-    '@package': 'Subugoe.GermaniaSacra'
-    '@controller': 'Dump'
-    '@action':     'dump'
-
--
-  name: 'incremental data import'
-  uriPattern: 'dataimport/importinkdump'
-  defaults:
-    '@package': 'Subugoe.GermaniaSacra'
-    '@controller': 'dataimport'
-    '@action':     'importinkdump'
 
 -
   name: 'Default list routes (controller with action)'

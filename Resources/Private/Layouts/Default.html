@@ -79,10 +79,13 @@
 						<li class="has-dropdown"><a href="#">Admin</a>
 							<ul class="dropdown">
 								<li>
-									<f:link.action controller="Dump" action="dump" target="_self"><i class="icon-download"></i> SQL-Dump</f:link.action>
+									<f:link.action action="dump" controller="Dump" target="_self"><i class="icon-download"></i> SQL-Dump</f:link.action>
 								</li>
 								<li>
-									<f:link.action controller="DataImport" action="importInkDump" target="_self"><i class="icon-upload"></i> Daten-Import</f:link.action>
+									<f:link.action action="importdump" controller="DataImport" format="html"><i class="icon-upload"></i>  Daten-Import</f:link.action>
+								</li>
+								<li>
+									<f:link.action action="importInkDump" controller="DataImport" target="_self"><i class="icon-upload"></i>Ink. Daten-Import</f:link.action>
 								</li>
 								<li>
 									<f:link.action action="list" controller="Bearbeiter" format="html"><i class="icon-users"></i> <f:translate id="bearbeiter" /></f:link.action>
