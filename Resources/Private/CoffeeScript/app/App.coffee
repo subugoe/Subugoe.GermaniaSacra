@@ -19,6 +19,7 @@ germaniaSacra.config ($routeProvider, $locationProvider) ->
 		.when('/bearbeiter', { templateUrl: templatePath + 'Bearbeiter.html' })
 		.when('/publish', { templateUrl: templatePath + 'Publish.html' })
 		.when('/importlog', { templateUrl: templatePath + 'Importlog.html' })
+		.when('/importdump', { templateUrl: templatePath + 'Importdump.html' })
 		.otherwise({ redirectTo: '/' })
 
 germaniaSacra.notSpecifiedValues = ['––', 'keine Angabe', 'unbekannt'] # –– is two n-dashes, not just --

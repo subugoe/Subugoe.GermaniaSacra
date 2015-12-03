@@ -297,6 +297,11 @@ class DataImportController extends AbstractBaseController
     const dumpLogFile = 'Persistent/GermaniaSacra/Log/klosterDumpImport.log';
 
     /**
+     * @var string
+     */
+    const executeImportDump = 'executeImportDump.txt';
+
+    /**
      * Initializes defaults
      */
     public function initializeAction()
@@ -758,7 +763,6 @@ class DataImportController extends AbstractBaseController
         }
         $sql = 'SELECT * FROM Band';
         $Bands = $sqlConnection->fetchAll($sql);
-        $urltypArr = [];
         if (isset($Bands) and is_array($Bands)) {
             $nBand = 0;
             foreach ($Bands as $Band) {
@@ -817,7 +821,6 @@ class DataImportController extends AbstractBaseController
                     $this->urlRepository->add($urlObject);
                     $this->persistenceManager->persistAll();
                     $handleurlUUID = $urlObject->getUUID();
-
                     $bandhasurlObject = new Bandhasurl();
                     $BandObject = $this->bandRepository->findByIdentifier($bandUUID);
                     $bandhasurlObject->setBand($BandObject);
@@ -1506,7 +1509,7 @@ class DataImportController extends AbstractBaseController
     {
         $file = "GS-citekeys.csv";
         if (!file_exists($this->dumpDirectory . $file)) {
-            throw new \TYPO3\Flow\Resource\Exception('File ' . $file . ' not present in ' . $this->dumpDirectory, 1398846324);
+            throw new \TYPO3\Flow\Resource\Exception('File ' . $file . ' not found in ' . $this->dumpDirectory, 1398846324);
         }
         $csvArr = [];
         $csv = array_map('str_getcsv', file($this->dumpDirectory . $file));
@@ -1540,6 +1543,9 @@ class DataImportController extends AbstractBaseController
      */
     public function access2mysqlAction()
     {
+        if (file_exists($this->dumpDirectory . 'executeImportDump.txt')) {
+            unlink($this->dumpDirectory . 'executeImportDump.txt');
+        }
         $this->initializeLogger();
         /** @var \Doctrine\DBAL\Connection $sqlConnection */
         $sqlConnection = $this->entityManager->getConnection();
@@ -2109,7 +2115,7 @@ class DataImportController extends AbstractBaseController
             \TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
         }
         if (!file_exists($this->dumpDirectory . $dumpFileName)) {
-            throw new \TYPO3\Flow\Resource\Exception(1398846324);
+	        throw new \TYPO3\Flow\Resource\Exception('File ' . $dumpFileName . ' not found in ' . $this->dumpDirectory, 1398846324);
         }
         $sql = file_get_contents($this->dumpDirectory . $dumpFileName);
         $sql = str_replace('CREATE DATABASE IF NOT EXISTS `Klosterdatenbank`;', '', $sql);
@@ -2295,7 +2301,7 @@ class DataImportController extends AbstractBaseController
             \TYPO3\Flow\Utility\Files::createDirectoryRecursively($this->dumpDirectory);
         }
         if (!file_exists($this->inkKlosterDumpFilenamePath)) {
-            throw new \TYPO3\Flow\Resource\Exception(1398846324);
+            throw new \TYPO3\Flow\Resource\Exception('File ' . $this->inkKlosterDumpFilenamePath . ' not found in ' . $this->dumpDirectory, 1398846324);
         }
         $sql = file_get_contents($this->inkKlosterDumpFilenamePath);
         $sql = str_replace('CREATE DATABASE IF NOT EXISTS `Klosterdatenbank`;', '', $sql);
@@ -2406,5 +2412,22 @@ class DataImportController extends AbstractBaseController
                         'createParentDirectories' => true
                 ]
         );
+    }
+
+    public function importdumpAction() {
+        $executeDumpImportFile = $this->dumpDirectory . self::executeImportDump;
+        if ($fileHandle = fopen($executeDumpImportFile, "w")) {
+            $txt = "Import dump\n";
+            fwrite($fileHandle, $txt);
+            fclose($fileHandle);
+            $currentTimeMinutes = date('i');
+            $nextImportDumpExecution = 60 - $currentTimeMinutes;
+            echo 'Der nächste Import wird in ' . $nextImportDumpExecution . ' Minuten durchgeführt.' . '<br>';
+            echo 'Der Import dauert ca. 1 Stunde.' . '<br>';
+        }
+        else {
+            echo "Der Import-Job konnte leider nicht angelegt werden.";
+        }
+        exit;
     }
 }
