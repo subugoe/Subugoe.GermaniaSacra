@@ -17,6 +17,8 @@ TYPO3:
       # automatically.
       inactivityTimeout: 86400
 
+    i18n:
+      defaultLocale: 'de'
   Jobqueue:
     Common:
       queues:

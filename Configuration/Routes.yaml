@@ -34,16 +34,16 @@
 
 -
   name: 'data import'
-  uriPattern: 'importdump'
+  uriPattern: 'dataimport'
   defaults:
     '@controller': 'DataImport'
-    '@action': 'importdump'
+    '@action': 'dataimport'
 
 -
   name: 'incremental data import'
   uriPattern: 'importinkdump'
   defaults:
-    '@controller': 'dataimport'
+    '@controller': 'DataImport'
     '@action': 'importinkdump'
 
 -
@@ -51,7 +51,7 @@
   uriPattern: 'publish'
   defaults:
     '@controller': 'DataExport'
-    '@action': 'mysql2solrExport'
+    '@action': 'dataexport'
 
 -
   name: 'create mysql database dump'
@@ -66,6 +66,13 @@
   defaults:
     '@controller': 'DataImport'
     '@action': 'log'
+
+-
+  name: 'exportlog'
+  uriPattern: 'exportlog'
+  defaults:
+    '@controller': 'DataExport'
+    '@action': 'exportLog'
 
 -
   name: 'Get select options'

@@ -50,11 +50,6 @@ abstract class AbstractBaseController extends ActionController
     protected $dumpLogFileExists;
 
     /**
-     * @var string
-     */
-    const dumpLogFile = 'Application/Subugoe.GermaniaSacra/Resources/Public/DumpImportLog/klosterDumpImport.log';
-
-    /**
      * Initializes the controller before invoking an action method.
      *
      */
@@ -65,9 +60,6 @@ abstract class AbstractBaseController extends ActionController
             $this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
         }
         $this->cacheInterface = $this->cacheManager->getCache('GermaniaSacra_GermaniaCache');
-        if (file_exists(FLOW_PATH_PACKAGES . self::dumpLogFile)) {
-            $this->dumpLogFileExists = true;
-        }
     }
 
     /**
