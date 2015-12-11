@@ -274,7 +274,7 @@ class DataImportController extends AbstractBaseController
     /**
      * @var string
      */
-    const cacertDest = 'Data/Temporary/Development/Cache/Code/Flow_Object_Classes/Resources/';
+    const cacertDest = 'Data/Temporary/Production/Cache/Code/Flow_Object_Classes/Resources/';
 
     /**
      * @var string
@@ -326,6 +326,9 @@ class DataImportController extends AbstractBaseController
         $this->method = \Github\Client::AUTH_URL_TOKEN;
     }
 
+    /**
+     *  Displays the content of data import log file
+     */
     public function logAction()
     {
         $dumpLogFile = $this->logDirectory . self::importLogFile;
@@ -1505,6 +1508,7 @@ class DataImportController extends AbstractBaseController
     /**
      * Process GS-citekeys.csv file and return an array for further Literatur processing
      * @return array $csvArr The array created from csv file
+     * @throws \Exception
      */
     public function citekeysAction()
     {
@@ -2172,8 +2176,8 @@ class DataImportController extends AbstractBaseController
             }
         }
         if (!is_file($this->cacertFilenamePath)) {
-            if (!is_dir(self::cacertDest)) {
-                \TYPO3\Flow\Utility\Files::createDirectoryRecursively(self::cacertDest);
+            if (!is_dir(FLOW_PATH_ROOT .self::cacertDest)) {
+                \TYPO3\Flow\Utility\Files::createDirectoryRecursively(FLOW_PATH_ROOT . self::cacertDest);
             }
             if (!copy($this->cacertSourcePath, $this->cacertDestPath)) {
                 throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
@@ -2218,7 +2222,6 @@ class DataImportController extends AbstractBaseController
                 throw new \TYPO3\Flow\Resource\Exception('Can\'t unlink the incremental kloster dump file.', 1406721073);
             }
         }
-
         if (!is_file($this->cacertFilenamePath)) {
             if (!is_dir(FLOW_PATH_ROOT . self::cacertDest)) {
                 \TYPO3\Flow\Utility\Files::createDirectoryRecursively(FLOW_PATH_ROOT . self::cacertDest);
@@ -2227,7 +2230,6 @@ class DataImportController extends AbstractBaseController
                 throw new \TYPO3\Flow\Resource\Exception('Can\'t copy the cacert file.', 1406721027);
             }
         }
-
         $this->client->authenticate($this->settings['git']['token'], $password = '', $this->method);
         $inkKlosterDumpHash = $this->getFileHashAction($this->client, self::inkKlosterDumpFilename);
         $inkKlosterDumpBlob = $this->client->api('git_data')->blobs()->show(self::githubUser, self::githubRepository, $inkKlosterDumpHash);
@@ -2358,6 +2360,7 @@ class DataImportController extends AbstractBaseController
     }
 
     /**
+     * Creates and returns an username
      * @param string $fullName
      * @return string
      */
@@ -2372,6 +2375,7 @@ class DataImportController extends AbstractBaseController
     }
 
     /**
+     * Creates and returns a password
      * @return string
      */
     private function createPassword()
@@ -2405,7 +2409,11 @@ class DataImportController extends AbstractBaseController
         file_put_contents($usernamePasswordFile, $usernamePassword);
     }
 
-	public function initializeLogger($logFile)
+    /**
+     * Creates a log file
+     * @param string $logFile The name of the log file
+     */
+    public function initializeLogger($logFile)
     {
         $log = new LoggerFactory();
         if (file_exists($this->logDirectory . $logFile)) {
@@ -2421,6 +2429,9 @@ class DataImportController extends AbstractBaseController
         );
     }
 
+    /**
+     * Creats a file to be checked be cronjob before importing the data
+     */
     public function dataimportAction()
     {
         $executeDumpImportFile = $this->dumpDirectory . self::executeImportDump;

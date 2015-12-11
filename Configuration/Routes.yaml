@@ -43,7 +43,7 @@
   name: 'incremental data import'
   uriPattern: 'importinkdump'
   defaults:
-    '@controller': 'dataimport'
+    '@controller': 'DataImport'
     '@action': 'importinkdump'
 
 -

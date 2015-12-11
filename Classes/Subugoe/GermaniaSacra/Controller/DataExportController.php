@@ -234,7 +234,9 @@ class DataExportController extends ActionController
         return $logMessage;
     }
 
-
+    /**
+     * Displays the content of data export log file
+     */
     public function exportLogAction()
     {
         $exportLogFile = $this->dataImport->logDirectory . self::exportLogFile;
@@ -1268,6 +1270,9 @@ class DataExportController extends ActionController
         }
     }
 
+    /**
+     * Creats a file to be checked be cronjob before exporting the data
+     */
     public function dataexportAction()
     {
         $dumpDirectory = $this->dataImport->dumpDirectory;
