@@ -1282,7 +1282,7 @@ class DataExportController extends ActionController
             if ($this->securityContext->canBeInitialized()) {
                 if ($account = $this->securityContext->getAccount()) {
                     $jobOwner = $this->bearbeiterRepository->findOneByAccount($account);
-                    $txt = 'Dieser Export wurde angelegt am ' . date('d.m.Y H:i:s') . ' von ' . $jobOwner;
+                    $txt = 'Dieser Export wurde angelegt von ' . $jobOwner;
                 }
             }
             fwrite($fileHandle, $txt);
