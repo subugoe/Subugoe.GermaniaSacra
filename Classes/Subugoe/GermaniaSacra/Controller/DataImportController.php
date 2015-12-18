@@ -2440,7 +2440,7 @@ class DataImportController extends AbstractBaseController
             if ($this->securityContext->canBeInitialized()) {
                 if ($account = $this->securityContext->getAccount()) {
                     $jobOwner = $this->bearbeiterRepository->findOneByAccount($account);
-                    $txt = 'Dieser Import wurde angelegt am ' . date('d.m.Y H:i:s') . ' von ' . $jobOwner;
+                    $txt = 'Dieser Import wurde angelegt von ' . $jobOwner;
                 }
             }
             fwrite($fileHandle, $txt);
