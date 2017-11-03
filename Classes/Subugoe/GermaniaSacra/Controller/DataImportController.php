@@ -379,6 +379,7 @@ class DataImportController extends AbstractBaseController
             $sqlConnection->executeUpdate($sql);
             $nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
         }
+
         return $nBearbeiter;
     }
 
@@ -1017,7 +1018,9 @@ class DataImportController extends AbstractBaseController
                                             if ((isset($url) && !empty($url))) {
                                                 $urlObject = new Url();
                                                 $urlObject->setUrl($url);
-                                                $urlObject->setBemerkung($urlBemerkung);
+                                                if (isset($urlBemerkung) && !empty($urlBemerkung)) {
+                                                    $urlObject->setBemerkung($urlBemerkung);
+                                                }
                                                 /** @var UrlTyp $urltypObject */
                                                 $urltypObject = $this->urltypRepository->findByIdentifier($urltypUUID);
                                                 $urlObject->setUrltyp($urltypObject);
@@ -1180,10 +1183,10 @@ class DataImportController extends AbstractBaseController
                 $breite = $Klosterstandort['Breite'];
                 $laenge = $Klosterstandort['Laenge'];
                 if ($laenge > 180 || $laenge < -180) {
-                    $laenge = '';
+                    $laenge = null;
                 }
                 if ($breite > 90 || $breite < -90) {
-                    $breite = '';
+                    $breite = null;
                 }
                 $bemerkung_standort = $Klosterstandort['BemerkungenStandort'];
                 $temp_literatur_alt = $Klosterstandort['Literaturnachweise'];
