@@ -553,20 +553,20 @@ class KlosterController extends AbstractBaseController
                     }
                     $this->ortRepository->update($ort);
                 }
-                $klosterstandort->setGruender($ko['gruender']);
-                $klosterstandort->setBreite($ko['breite']);
-                $klosterstandort->setLaenge($ko['laenge']);
-                $klosterstandort->setBemerkung($ko['bemerkung']);
-                $klosterstandort->setBemerkung_standort($ko['bemerkung_standort']);
+                $klosterstandort->setGruender($ko['gruender'] ? $ko['gruender']:Null);
+                $klosterstandort->setBreite($ko['breite'] ? $ko['breite']:Null);
+                $klosterstandort->setLaenge($ko['laenge'] ? $ko['laenge']:Null);
+                $klosterstandort->setBemerkung($ko['bemerkung'] ? $ko['bemerkung']:Null);
+                $klosterstandort->setBemerkung_standort($ko['bemerkung_standort'] ? $ko['bemerkung_standort']:Null);
                 if (isset($ko['temp_literatur_alt']) && !empty($ko['temp_literatur_alt'])) {
                     $klosterstandort->setTemp_literatur_alt($ko['temp_literatur_alt']);
                 }
-                $klosterstandort->setVon_von($ko['von_von']);
-                $klosterstandort->setVon_bis($ko['von_bis']);
-                $klosterstandort->setVon_verbal($ko['von_verbal']);
-                $klosterstandort->setBis_von($ko['bis_von']);
-                $klosterstandort->setBis_bis($ko['bis_bis']);
-                $klosterstandort->setBis_verbal($ko['bis_verbal']);
+                $klosterstandort->setVon_von($ko['von_von'] ? $ko['von_von']:Null);
+                $klosterstandort->setVon_bis($ko['von_bis'] ? $ko['von_bis']:Null);
+                $klosterstandort->setVon_verbal($ko['von_verbal'] ? $ko['von_verbal']:Null);
+                $klosterstandort->setBis_von($ko['bis_von'] ? $ko['bis_von']:Null);
+                $klosterstandort->setBis_bis($ko['bis_bis'] ? $ko['bis_bis']:Null);
+                $klosterstandort->setBis_verbal($ko['bis_verbal'] ? $ko['bis_verbal']:Null);
                 $this->klosterstandortRepository->add($klosterstandort);
             }
             // Add Orden
@@ -600,19 +600,19 @@ class KlosterController extends AbstractBaseController
                 $kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
                 $klosterorden->setUid(++$lastKlosterordentId);
                 $klosterorden->setKloster($kloster);
-                $klosterorden->setVon_von($ko['orden_von_von']);
-                $klosterorden->setVon_bis($ko['orden_von_bis']);
-                $klosterorden->setVon_verbal($ko['orden_von_verbal']);
-                $klosterorden->setBis_von($ko['orden_bis_von']);
-                $klosterorden->setBis_bis($ko['orden_bis_bis']);
-                $klosterorden->setBis_verbal($ko['orden_bis_verbal']);
+                $klosterorden->setVon_von($ko['orden_von_von'] ? $ko['orden_von_von']:Null);
+                $klosterorden->setVon_bis($ko['orden_von_bis'] ? $ko['orden_von_bis']:Null);
+                $klosterorden->setVon_verbal($ko['orden_von_verbal'] ? $ko['orden_von_verbal']:Null);
+                $klosterorden->setBis_von($ko['orden_bis_von'] ? $ko['orden_bis_von']:Null);
+                $klosterorden->setBis_bis($ko['orden_bis_bis'] ? $ko['orden_bis_bis']:Null);
+                $klosterorden->setBis_verbal($ko['orden_bis_verbal'] ? $ko['orden_bis_verbal']:Null);
                 $orden_uuid = $ko['orden'];
                 $orden = $this->ordenRepository->findByIdentifier($orden_uuid);
                 $klosterorden->setOrden($orden);
                 $klosterstatus_uuid = $ko['klosterstatus'];
                 $klosterstatus = $this->klosterstatusRepository->findByIdentifier($klosterstatus_uuid);
                 $klosterorden->setKlosterstatus($klosterstatus);
-                $klosterorden->setBemerkung($ko['bemerkung_orden']);
+                $klosterorden->setBemerkung($ko['bemerkung_orden'] ? $ko['bemerkung_orden']:Null);
                 $this->klosterordenRepository->add($klosterorden);
             }
             if ($this->request->hasArgument('literatur')) {
@@ -1120,17 +1120,17 @@ class KlosterController extends AbstractBaseController
                     $ort = $this->ortRepository->findByIdentifier($ort_uuid);
                     $klosterstandort->setOrt($ort);
                 }
-                $klosterstandort->setGruender($ko['gruender']);
-                $klosterstandort->setBreite($ko['breite']);
-                $klosterstandort->setLaenge($ko['laenge']);
-                $klosterstandort->setVon_von($ko['von_von']);
-                $klosterstandort->setVon_bis($ko['von_bis']);
-                $klosterstandort->setVon_verbal($ko['von_verbal']);
-                $klosterstandort->setBis_von($ko['bis_von']);
-                $klosterstandort->setBis_bis($ko['bis_bis']);
-                $klosterstandort->setBis_verbal($ko['bis_verbal']);
-                $klosterstandort->setBemerkung_standort($ko['bemerkung_standort']);
-                $klosterstandort->setBemerkung($ko['bemerkung']);
+                $klosterstandort->setGruender($ko['gruender'] ? $ko['gruender']:Null);
+                $klosterstandort->setBreite($ko['breite'] ? $ko['breite']:Null);
+                $klosterstandort->setLaenge($ko['laenge'] ? $ko['laenge']:Null);
+                $klosterstandort->setVon_von($ko['von_von'] ? $ko['von_von']:Null);
+                $klosterstandort->setVon_bis($ko['von_bis'] ? $ko['von_bis']:Null);
+                $klosterstandort->setVon_verbal($ko['von_verbal'] ? $ko['von_verbal']:Null);
+                $klosterstandort->setBis_von($ko['bis_von'] ? $ko['bis_von']:Null);
+                $klosterstandort->setBis_bis($ko['bis_bis'] ? $ko['bis_bis']:Null);
+                $klosterstandort->setBis_verbal($ko['bis_verbal'] ? $ko['bis_verbal']:Null);
+                $klosterstandort->setBemerkung_standort($ko['bemerkung_standort'] ? $ko['bemerkung_standort']:Null);
+                $klosterstandort->setBemerkung($ko['bemerkung'] ? $ko['bemerkung']:Null);
                 $this->klosterstandortRepository->add($klosterstandort);
                 if (isset($ort) && is_object($ort)) {
                     $ort->setWuestung($ko['wuestung']);
@@ -1182,12 +1182,12 @@ class KlosterController extends AbstractBaseController
                 $kloster = $this->klosterRepository->findByIdentifier($kloster_uuid);
                 $klosterorden->setUid(++$lastKlosterordentId);
                 $klosterorden->setKloster($kloster);
-                $klosterorden->setVon_von($ko['orden_von_von']);
-                $klosterorden->setVon_bis($ko['orden_von_bis']);
-                $klosterorden->setVon_verbal($ko['orden_von_verbal']);
-                $klosterorden->setBis_von($ko['orden_bis_von']);
-                $klosterorden->setBis_bis($ko['orden_bis_bis']);
-                $klosterorden->setBis_verbal($ko['orden_bis_verbal']);
+                $klosterorden->setVon_von($ko['orden_von_von'] ? $ko['orden_von_von']:Null);
+                $klosterorden->setVon_bis($ko['orden_von_bis'] ? $ko['orden_von_bis']:Null);
+                $klosterorden->setVon_verbal($ko['orden_von_verbal'] ? $ko['orden_von_verbal']:Null);
+                $klosterorden->setBis_von($ko['orden_bis_von'] ? $ko['orden_bis_von']:Null);
+                $klosterorden->setBis_bis($ko['orden_bis_bis'] ? $ko['orden_bis_bis']:Null);
+                $klosterorden->setBis_verbal($ko['orden_bis_verbal'] ? $ko['orden_bis_verbal']:Null);
                 $orden_uuid = $ko['orden'];
                 $orden = $this->ordenRepository->findByIdentifier($orden_uuid);
                 $klosterorden->setOrden($orden);

@@ -375,7 +375,6 @@ class DataExportController extends ActionController
                 $standortuidArr = [];
                 $koordinatenArr = [];
                 $koordinaten_institutionengenauArr = [];
-                $gruenderArr = [];
                 $von_vonArr = [];
                 $von_bisArr = [];
                 $von_verbalArr = [];
@@ -433,13 +432,6 @@ class DataExportController extends ActionController
                             $klosterstandorte[$k][$i]['bemerkung_standort'] = '';
                         }
                         unset($bemerkung_standort);
-                        $gruender = $klosterstandort->getGruender();
-                        if (!empty($gruender)) {
-                            $gruenderArr[] = $gruender;
-                            $klosterstandorte[$k][$i]['gruender'] = $gruender;
-                        } else {
-                            $klosterstandorte[$k][$i]['gruender'] = '';
-                        }
                         $von_von = $klosterstandort->getVon_von();
                         if (!empty($von_von)) {
                             $von_vonArr[] = $von_von;
@@ -905,11 +897,6 @@ class DataExportController extends ActionController
                                         $standort_ordenArr[$k][$m][$n]['standort_bis_verbal'] = '';
                                     }
                                     $standort_ordenArr[$k][$m][$n]['standort_uid'] = explode('-', $mystandort['id'])[2];
-                                    if (!empty($mystandort['gruender'])) {
-                                        $standort_ordenArr[$k][$m][$n]['gruender'] = $mystandort['gruender'];
-                                    } else {
-                                        $standort_ordenArr[$k][$m][$n]['gruender'] = '';
-                                    }
                                     if (!empty($mystandort['bemerkung_standort'])) {
                                         $standort_ordenArr[$k][$m][$n]['bemerkung_standort'] = $mystandort['bemerkung_standort'];
                                     } else {
@@ -1125,11 +1112,6 @@ class DataExportController extends ActionController
                 }
                 if (isset($koordinaten_institutionengenauArr) && !empty($koordinaten_institutionengenauArr)) {
                     $klosterArr[$k]['koordinaten_institutionengenau'] = $koordinaten_institutionengenauArr;
-                }
-                if (isset($gruenderArr) && !empty($gruenderArr)) {
-                    $klosterArr[$k]['gruender'] = $gruenderArr;
-                } else {
-                    $klosterArr[$k]['gruender'] = '';
                 }
                 if (isset($von_vonArr) && !empty($von_vonArr)) {
                     $klosterArr[$k]['standort_von_von'] = ($von_vonArr);
