@@ -1,9 +1,11 @@
 <?php
 namespace Subugoe\GermaniaSacra\Controller;
 
+use Flowpack\JobQueue\Common\Job\JobManager;
 use Subugoe\GermaniaSacra\Queue\SolrUpdateJob;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Mvc\Controller\ActionController;
+use TYPO3\Flow\Security\Context;
 
 /**
  * An action controller with base functionality for all action controllers
@@ -39,12 +41,6 @@ abstract class AbstractBaseController extends ActionController
     protected $cacheInterface;
 
     /**
-     * @Flow\Inject
-     * @var \TYPO3\Jobqueue\Common\Job\JobManager
-     */
-    protected $jobManager;
-
-    /**
      * @var bool
      */
     protected $dumpLogFileExists;
@@ -55,8 +51,9 @@ abstract class AbstractBaseController extends ActionController
      */
     public function initializeAction()
     {
-        if ($this->securityContext->canBeInitialized()) {
-            $account = $this->securityContext->getAccount();
+        $securityContext = new Context();
+        if ($securityContext->canBeInitialized()) {
+            $account = $securityContext->getAccount();
             $this->bearbeiterObj = $this->bearbeiterRepository->findOneByAccount($account);
         }
         $this->cacheInterface = $this->cacheManager->getCache('GermaniaSacra_GermaniaCache');
@@ -81,7 +78,8 @@ abstract class AbstractBaseController extends ActionController
     protected function triggerSolrUpdate()
     {
         $job = new SolrUpdateJob('solr');
-        $this->jobManager->queue('solr', $job);
+        $jobManager = new JobManager();
+        $jobManager->queue('solr', $job);
     }
 
     /**

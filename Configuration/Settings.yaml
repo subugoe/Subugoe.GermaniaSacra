@@ -23,6 +23,6 @@ TYPO3:
     Common:
       queues:
         'kloster':
-          className: 'Subugoe\Jobqueue\Redis\Queue\RedisQueue'
+          className: 'Flowpack\Jobqueue\Redis\Queue\RedisQueue'
         'solr':
-          className: 'Subugoe\Jobqueue\Redis\Queue\RedisQueue'
+          className: 'Flowpack\Jobqueue\Redis\Queue\RedisQueue'

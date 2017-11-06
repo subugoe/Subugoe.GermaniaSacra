@@ -122,7 +122,7 @@ class KlosterController extends AbstractBaseController
 
     /**
      * @Flow\Inject
-     * @var \TYPO3\Flow\Security\Policy\RoleRepository
+     * @var \TYPO3\Flow\Security\AccountRepository
      */
     protected $roleRepository;
 

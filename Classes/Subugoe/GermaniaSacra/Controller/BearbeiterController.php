@@ -31,7 +31,7 @@ class BearbeiterController extends AbstractBaseController
     protected $securityContext;
 
     /**
-     * @var \TYPO3\Flow\Security\Policy\RoleRepository
+     * @var \TYPO3\Flow\Security\AccountRepository
      * @Flow\Inject
      */
     protected $roleRepository;

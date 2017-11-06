@@ -346,18 +346,18 @@ class DataImportController extends AbstractBaseController
     {
         /** @var \Doctrine\DBAL\Connection $sqlConnection */
         $sqlConnection = $this->entityManager->getConnection();
-        $checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist('subugoe_germaniasacra_domain_model_bearbeiter');
+        $checkIfBearbeiterTableExists = $sqlConnection->getSchemaManager()->tablesExist(['subugoe_germaniasacra_domain_model_bearbeiter']);
         if ($checkIfBearbeiterTableExists) {
             $numberOfBearbeiter = count($this->bearbeiterRepository->findAll());
         }
-        $checkIfAccountTableExists = $sqlConnection->getSchemaManager()->tablesExist('typo3_flow_security_account');
+        $checkIfAccountTableExists = $sqlConnection->getSchemaManager()->tablesExist(['typo3_flow_security_account']);
         if ($checkIfAccountTableExists) {
             $numberOfAccounts = count($this->accountRepository->findAll());
         }
         $nBearbeiter = 0;
-        if ($numberOfBearbeiter == 0 && $numberOfAccounts == 0) {
+        if ($numberOfBearbeiter === 0 && $numberOfAccounts === 0) {
             $nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
-        } elseif ($numberOfBearbeiter == 0 && $numberOfAccounts != 0) {
+        } elseif ($numberOfBearbeiter == 0 && $numberOfAccounts !== 0) {
             $sql = 'SET foreign_key_checks = 0';
             $sqlConnection->executeUpdate($sql);
             $accountTbl = 'typo3_flow_security_account';
@@ -369,7 +369,7 @@ class DataImportController extends AbstractBaseController
             $sql = 'SET foreign_key_checks = 1';
             $sqlConnection->executeUpdate($sql);
             $nBearbeiter = $this->importAndJoinBearbeiterWithAccount();
-        } elseif ($numberOfBearbeiter != 0 && $numberOfAccounts == 0) {
+        } elseif ($numberOfBearbeiter != 0 && $numberOfAccounts === 0) {
             $sql = 'SET foreign_key_checks = 0';
             $sqlConnection->executeUpdate($sql);
             $bearbeiterTbl = 'subugoe_germaniasacra_domain_model_bearbeiter';
@@ -400,7 +400,7 @@ class DataImportController extends AbstractBaseController
                 $bearbeiter = $be['Bearbeiter'];
                 $userName = $this->createUsername($bearbeiter);
                 $password = $this->createPassword();
-                $account = $this->accountFactory->createAccountWithPassword($userName, $password, ['Flow.Login:Administrator']);
+                $account = $this->accountFactory->createAccountWithPassword($userName, $password, ['TYPO3.AccountManagement:Administrator']);
                 $this->accountRepository->add($account);
                 $bearbeiterObject = new Bearbeiter();
                 $bearbeiterObject->setUid($uid);

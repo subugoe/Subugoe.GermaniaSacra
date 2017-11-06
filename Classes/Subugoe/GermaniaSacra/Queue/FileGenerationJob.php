@@ -27,9 +27,9 @@ namespace Subugoe\GermaniaSacra\Queue;
  * ************************************************************* */
 
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Jobqueue\Common\Job\JobInterface;
-use TYPO3\Jobqueue\Common\Queue\Message;
-use TYPO3\Jobqueue\Common\Queue\QueueInterface;
+use Flowpack\Jobqueue\Common\Job\JobInterface;
+use Flowpack\Jobqueue\Common\Queue\Message;
+use Flowpack\Jobqueue\Common\Queue\QueueInterface;
 
 /**
  * Queue for generating json files

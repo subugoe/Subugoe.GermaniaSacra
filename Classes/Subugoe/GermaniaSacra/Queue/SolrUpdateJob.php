@@ -28,9 +28,9 @@ namespace Subugoe\GermaniaSacra\Queue;
 
 use Subugoe\GermaniaSacra\Controller\DataExportController;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Jobqueue\Common\Job\JobInterface;
-use TYPO3\Jobqueue\Common\Queue\Message;
-use TYPO3\Jobqueue\Common\Queue\QueueInterface;
+use Flowpack\Jobqueue\Common\Job\JobInterface;
+use Flowpack\Jobqueue\Common\Queue\Message;
+use Flowpack\Jobqueue\Common\Queue\QueueInterface;
 
 ini_set('memory_limit', '-1');
 
@@ -38,7 +38,7 @@ ini_set('memory_limit', '-1');
 /**
  * Queue for updating the solr index
  */
-class SolrUpdateJob implements JobInterface
+class SolrUpdateJob implements \Flowpack\JobQueue\Common\Job\JobInterface
 {
     /**
      * @var \TYPO3\Flow\Log\Logger
